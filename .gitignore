@@ -1,0 +1,44 @@
+### 🚀 PNPM & Node.js ###
+node_modules/
+.pnpm-store/
+.pnp/
+.pnp.cjs
+.pnpm-debug.log
+.pnpm-lock.yaml
+.npmrc
+
+### 🚀 Monorepo ###
+.vscode/
+# .idea/
+.DS_Store
+Thumbs.db
+*.log
+yarn.lock
+lerna-debug.log
+.nx/
+
+### 🚀 TypeScript ###
+*.tsbuildinfo
+
+### 🚀 Frontend (React, Next.js, Expo) ###
+apps/**/.next/
+apps/**/.expo/
+apps/**/.expo-shared/
+apps/**/dist/
+apps/**/build/
+apps/**/.turbo/
+apps/**/coverage/
+apps/**/.parcel-cache/
+
+### 🚀 Backend (AWS, Lambda, NestJS, etc.) ###
+# packages/backend/.serverless/
+# packages/backend/.webpack/
+# packages/backend/.dist/
+# packages/backend/logs/
+# packages/backend/.env
+
+### 🚀 Git ###
+.git/
+*.swp
+*.swo
+*.swn
