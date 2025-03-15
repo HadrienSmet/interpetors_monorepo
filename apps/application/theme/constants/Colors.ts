@@ -14,8 +14,8 @@ const transparentColor = "transparent";
 export const Colors = {
     light: {
         backgroundPrimary: "#F3F4F8",
-        backgroundSecondary: "rgb(0, 192, 237)",
-        backgroundTertiary: "rgb(0, 99, 122)",
+        backgroundSecondary: "rgb(0, 99, 122)",
+        backgroundTertiary: "rgb(115, 170, 182)",
         
         icon: lightIcon,
 
@@ -24,6 +24,7 @@ export const Colors = {
         tabIconSelected: tintColorLight,
 
         textPrimary: "rgba(0,0,0, 0.8)",
+        textOnBackground: "#F3F4F8",
         
         error: errorColor,
         link: linkColor,
@@ -31,8 +32,8 @@ export const Colors = {
     },
     dark: {
         backgroundPrimary: "rgba(0,0,0, 0.8)",
-        backgroundSecondary: "rgb(0, 192, 237)",
-        backgroundTertiary: "rgb(0, 99, 122)",
+        backgroundSecondary: "rgb(0, 99, 122)",
+        backgroundTertiary: "rgb(115, 170, 182)",
         
         icon: darkIcon,
 
@@ -41,6 +42,7 @@ export const Colors = {
         tabIconSelected: tintColorDark,
 
         textPrimary: "#F3F4F8",
+        textOnBackground: "rgba(0,0,0, 0.8)",
         
         error: errorColor,
         link: linkColor,

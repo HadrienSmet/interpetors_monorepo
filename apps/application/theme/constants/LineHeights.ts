@@ -1,5 +1,5 @@
 export const LineHeights = {
     default: 24,
     link: 30,
-    title: 32,
+    title: 28,
 } as const;

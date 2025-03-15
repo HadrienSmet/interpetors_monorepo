@@ -6,7 +6,7 @@ import { Spacings } from "@/theme";
 export const Content = () => {
     return (
         <View style={styles.content}>
-            <ButtonPrimary onPress={() => console.log("hello")} label="Log in" />
+            <ButtonPrimary onPress={() => console.log("hello")} labelKey="views.welcome.button" />
         </View>
     );
 };

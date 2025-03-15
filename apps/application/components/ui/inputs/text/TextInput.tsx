@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 import { Eye, EyeSlash } from "@/assets";
@@ -10,7 +11,16 @@ import { TextInputProps, TextInputRef, TextInputState } from "./textInput.types"
 
 const ICON_SIZE = 24 as const;
 
-export const Input = forwardRef<TextInputRef, TextInputProps>(({ label, textContentType, isSecuredInput = false }, ref) => {
+export const Input = forwardRef<TextInputRef, TextInputProps>((
+    { 
+        labelKey, 
+        placeholderKey, 
+        textContentType, 
+        isSecuredInput = false, 
+        onBackground = false,
+    }, 
+    ref
+) => {
     const [inputState, setInputState] = useState<TextInputState>({
         value: null,
         isVisible: isSecuredInput,
@@ -20,6 +30,8 @@ export const Input = forwardRef<TextInputRef, TextInputProps>(({ label, textCont
 
     const iconColor = useThemeColor({ colorName: "icon" });
     const inputBg = useThemeColor({ colorName: "backgroundPrimary" });
+    const labelColor = useThemeColor({ colorName: "textOnBackground" });
+    const { t } = useTranslation();
 
     const setValue = (value: string) => setInputState(state => ({ ...state, value }));
     const toggleVisibility = () => setInputState(state => ({ ...state, isVisible: !state.isVisible }));
@@ -35,16 +47,22 @@ export const Input = forwardRef<TextInputRef, TextInputProps>(({ label, textCont
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>{label}</Text>
+            <Text 
+                style={[
+                    onBackground && { color: labelColor }, 
+                    styles.label,
+                ]}
+            >{t(labelKey)}</Text>
             <View style={styles.inputContainer}>
                 <TextInput 
-                    textContentType={textContentType} 
-                    style={[styles.input, { backgroundColor: inputBg }]} 
-                    onChangeText={setValue}
+                    placeholder={t(placeholderKey)}
                     secureTextEntry={isSecuredInput 
                         ? inputState.isVisible 
                         : isSecuredInput
                     }
+                    textContentType={textContentType} 
+                    style={[styles.input, { backgroundColor: inputBg }]} 
+                    onChangeText={setValue}
                 />
                 {isSecuredInput && (
                     <TouchableOpacity 

@@ -3,5 +3,5 @@ export const Sizes = {
     header: 24,
     label: 12,
     subTitle: 20,
-    title: 32,
+    title: 28,
 };

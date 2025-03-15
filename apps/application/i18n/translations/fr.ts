@@ -10,11 +10,14 @@ export const fr = {
                 placeholder: "********",
             }
         },
-        sessions: {
-            title: "Bijour je serai la page des sessions",
-        },
-        welcome: {
-            title: "Heureux de vous revoir !",
-        },
+        views: {
+            sessions: {
+                title: "Bijour je serai la page des sessions",
+            },
+            welcome: {
+                title: "Heureux de vous revoir !",
+                button: "Se connecter",
+            },
+        }
     }
 };

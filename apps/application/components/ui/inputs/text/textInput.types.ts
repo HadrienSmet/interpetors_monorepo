@@ -6,10 +6,12 @@ export type TextInputRef = {
     readonly getValue: () => string | null;
 };
 export type TextInputProps = {
-    readonly label: string;
+    readonly labelKey: string;
+    readonly placeholderKey: string;
     readonly textContentType: TextContentType;
     
     readonly isSecuredInput?: boolean;
+    readonly onBackground?: boolean;
 };
 export type TextInputState = {
     value: string | null;

@@ -1,24 +1,25 @@
 import { StyleSheet } from "react-native";
 
-import { Spacings } from "@/theme";
+import { Spacings, useThemeColor } from "@/theme";
 
 import { ButtonCore, ButtonProps } from "./core";
 
 export const ButtonPrimary = (props: ButtonProps) => {
+    const labelColor = useThemeColor({ colorName: "textOnBackground" });
+    const buttonColor = useThemeColor({ colorName: "backgroundSecondary" });
 
     return (
         <ButtonCore
             {...props} 
-            labelStyle={styles.label} 
-            containerStyle={[styles.container, props.containerStyle]} 
+            labelStyle={[{ color: labelColor }, styles.label]} 
+            containerStyle={[{ backgroundColor: buttonColor }, styles.container, props.containerStyle]} 
         />
     )
 };
 
 const styles = StyleSheet.create({
-    label: { color: "yellow" },
-    container: { 
-        backgroundColor: "green", 
+    label: {},
+    container: {
         paddingBlock: Spacings.s,
     },
 });

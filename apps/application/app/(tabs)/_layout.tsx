@@ -3,8 +3,6 @@ import React from "react";
 import { Platform } from "react-native";
 
 import { Brain, GraduationCap } from "@/assets";
-import { HapticTab } from "@/components/navigation";
-import TabBarBackground from "@/components/navigation/tabBarBackground/TabBarBackground";
 import { Colors, useColorScheme } from "@/theme";
 
 type TabBarIconProps = {
@@ -60,8 +58,8 @@ export default function TabLayout() {
             screenOptions={{
                 tabBarActiveTintColor: Colors[colorScheme ?? "light"].tabBarActiveTint,
                 headerShown: false,
-                tabBarButton: HapticTab,
-                tabBarBackground: TabBarBackground,
+                // tabBarButton: HapticTab,
+                // tabBarBackground: TabBarBackground,
                 tabBarStyle: Platform.select({
                     ios: {
                         // Use a transparent background on iOS to show the blur effect

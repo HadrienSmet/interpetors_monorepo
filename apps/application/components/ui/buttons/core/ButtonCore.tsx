@@ -1,4 +1,5 @@
 import { PropsWithChildren, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
     GestureResponderEvent,
     StyleProp,
@@ -16,7 +17,7 @@ type ButtonIntrinsequeProps = {
     readonly containerStyle: StyleProp<ViewStyle>;
     readonly onPress: (event: GestureResponderEvent) => void;
 
-    readonly label?: string; 
+    readonly labelKey?: string; 
     readonly labelStyle?: StyleProp<TextStyle>;
 };
 
@@ -28,11 +29,13 @@ export type ButtonProps =
     & { containerStyle?: StyleProp<ViewStyle> };
 
 export const ButtonCore = (props: GenericButtonProps) => {
+    const { t } = useTranslation();
+
     const buttonContent = useMemo(() => (
-        "label" in props
-            ? <Text style={props.labelStyle}>{props.label}</Text>
+        props.labelKey
+            ? <Text style={props.labelStyle}>{t(props.labelKey)}</Text>
             : props.children
-    ), [props]);
+    ), [props, t]);
 
     return (
         <TouchableOpacity 

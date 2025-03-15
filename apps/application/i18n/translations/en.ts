@@ -10,11 +10,14 @@ export const en = {
                 placeholder: "********",
             }
         },
-        sessions: {
-            title: "Here is the sessions page",
-        },
-        welcome: {
-            title: "Welcome back!",
-        },
+        views: {
+            sessions: {
+                title: "Here is the sessions page",
+            },
+            welcome: {
+                title: "Welcome back!",
+                button: "Log in",
+            },
+        }
     },
 };

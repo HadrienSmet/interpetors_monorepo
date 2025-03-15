@@ -6,6 +6,6 @@ export const Prepare = () => {
     const { t } = useTranslation();
 
     return (
-        <Text>{t("sessions.title")}</Text>
+        <Text>{t("views.sessions.title")}</Text>
     );
 };
