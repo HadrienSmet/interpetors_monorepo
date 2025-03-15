@@ -1,0 +1,1 @@
+# Will contains all the function, constants and types shared by the differents projects
