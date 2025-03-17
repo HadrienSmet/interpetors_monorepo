@@ -11,10 +11,17 @@ export const ButtonPrimary = (props: ButtonProps) => {
     return (
         <ButtonCore
             {...props} 
-            labelStyle={[{ color: labelColor }, styles.label]} 
-            containerStyle={[{ backgroundColor: buttonColor }, styles.container, props.containerStyle]} 
+            labelStyle={[
+                { color: labelColor }, 
+                styles.label,
+            ]} 
+            containerStyle={[
+                { backgroundColor: buttonColor }, 
+                styles.container, 
+                props.containerStyle,
+            ]} 
         />
-    )
+    );
 };
 
 const styles = StyleSheet.create({

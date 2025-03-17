@@ -15,6 +15,7 @@ import { Text } from "../../text";
 
 type ButtonIntrinsequeProps = {
     readonly containerStyle: StyleProp<ViewStyle>;
+    readonly isLoading?: boolean;
     readonly onPress: (event: GestureResponderEvent) => void;
 
     readonly labelKey?: string; 
@@ -28,19 +29,28 @@ export type ButtonProps =
     & Omit<GenericButtonProps, "containerStyle"> 
     & { containerStyle?: StyleProp<ViewStyle> };
 
-export const ButtonCore = (props: GenericButtonProps) => {
+export const ButtonCore = ({
+    children,
+    containerStyle,
+    isLoading = false,
+    labelKey,
+    labelStyle,
+    onPress,
+}: GenericButtonProps) => {
     const { t } = useTranslation();
 
     const buttonContent = useMemo(() => (
-        props.labelKey
-            ? <Text style={props.labelStyle}>{t(props.labelKey)}</Text>
-            : props.children
-    ), [props, t]);
+        isLoading 
+            ? <Text>Loading...</Text>
+            : labelKey
+                ? <Text style={labelStyle}>{t(labelKey)}</Text>
+                : children
+    ), [isLoading, labelKey, labelStyle, children, t]);
 
     return (
         <TouchableOpacity 
-            onPress={props.onPress} 
-            style={[styles.container, props.containerStyle]}
+            onPress={onPress} 
+            style={[styles.container, containerStyle]}
         >
             {buttonContent}
         </TouchableOpacity>

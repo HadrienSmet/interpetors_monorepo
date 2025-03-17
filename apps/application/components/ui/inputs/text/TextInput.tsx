@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 import { Eye, EyeSlash } from "@/assets";
-import { Radius, Shadows, Sizes, Spacings, useThemeColor } from "@/theme";
+import { LineHeights, Radius, Shadows, Sizes, Spacings, useThemeColor } from "@/theme";
 
 import { Text } from "../../text";
 
@@ -16,14 +16,15 @@ export const Input = forwardRef<TextInputRef, TextInputProps>((
         labelKey, 
         placeholderKey, 
         textContentType, 
+        errorMessage,
         isSecuredInput = false, 
         onBackground = false,
     }, 
     ref
 ) => {
     const [inputState, setInputState] = useState<TextInputState>({
-        value: null,
         isVisible: isSecuredInput,
+        value: null,
     });
 
     const inputRef = useRef<TextInput>(null);
@@ -37,7 +38,9 @@ export const Input = forwardRef<TextInputRef, TextInputProps>((
     const toggleVisibility = () => setInputState(state => ({ ...state, isVisible: !state.isVisible }));
 
     useImperativeHandle(ref, () => ({
-        focus: () => inputRef.current?.focus(),
+        focus: () => {
+            inputRef.current?.focus();
+        },
         clear: () => {
             setInputState(state => ({ ...state, value: null }));
             inputRef.current?.clear();
@@ -55,13 +58,14 @@ export const Input = forwardRef<TextInputRef, TextInputProps>((
             >{t(labelKey)}</Text>
             <View style={styles.inputContainer}>
                 <TextInput 
+                    ref={inputRef}
                     placeholder={t(placeholderKey)}
                     secureTextEntry={isSecuredInput 
                         ? inputState.isVisible 
                         : isSecuredInput
                     }
-                    textContentType={textContentType} 
                     style={[styles.input, { backgroundColor: inputBg }]} 
+                    textContentType={textContentType} 
                     onChangeText={setValue}
                 />
                 {isSecuredInput && (
@@ -77,6 +81,12 @@ export const Input = forwardRef<TextInputRef, TextInputProps>((
             
                 )}
             </View>
+            {errorMessage && (
+                <Text 
+                    style={styles.errorMessage} 
+                    type="errorMessage"
+                >{t(errorMessage)}</Text>
+            )}
         </View>
     );
 });
@@ -90,6 +100,11 @@ const styles = StyleSheet.create({
     container: { 
         width: "100%", 
     },
+    errorMessage: { 
+        textAlign: "center", 
+        position: "absolute", 
+        bottom: 0, 
+    },
     input: { 
         borderRadius: Radius.circle, 
         padding: Spacings.m,
@@ -98,7 +113,8 @@ const styles = StyleSheet.create({
     },
     inputContainer: { 
         display: "flex", 
-        justifyContent: "center", 
+        justifyContent: "center",
+        marginBottom: LineHeights.errorMessage,
     },
     label: {
         fontSize: Sizes.label,

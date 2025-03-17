@@ -6,13 +6,26 @@ import { Input, Text, TextInputRef } from "@/components/ui";
 import { APP_NAME } from "@/constants";
 import { Sizes, Spacings, useThemeColor } from "@/theme";
 
-type HeaderProps = {
-    readonly emailRef: MutableRefObject<TextInputRef | null>;
-    readonly passwordRef: MutableRefObject<TextInputRef | null>;
+type InputHeaderProps = {
+    ref: MutableRefObject<TextInputRef | null>;
+    errorMessage: string | null;
 };
-export const Header = ({ emailRef, passwordRef }: HeaderProps) => {
+type HeaderProps = {
+    readonly email: InputHeaderProps;
+    readonly password: InputHeaderProps;
+};
+export const Header = ({ email, password }: HeaderProps) => {
     const { t } = useTranslation();
     const titleColor = useThemeColor({ colorName: "textOnBackground" });
+
+    const {
+        ref: passwordRef,
+        errorMessage: passwordErrorMessage,
+    } = password;
+    const {
+        ref: emailRef,
+        errorMessage: emailErrorMessage,
+    } = email;
 
     return (
         <View style={styles.container}>
@@ -22,6 +35,7 @@ export const Header = ({ emailRef, passwordRef }: HeaderProps) => {
                 <View style={styles.formContainer}>
                     <Input 
                         ref={emailRef} 
+                        errorMessage={emailErrorMessage}
                         labelKey="inputs.email.label" 
                         placeholderKey="inputs.email.placeholder"
                         textContentType="emailAddress" 
@@ -29,6 +43,7 @@ export const Header = ({ emailRef, passwordRef }: HeaderProps) => {
                     />
                     <Input 
                         ref={passwordRef} 
+                        errorMessage={passwordErrorMessage}
                         labelKey="inputs.password.label" 
                         placeholderKey="inputs.password.placeholder"
                         textContentType="password" 

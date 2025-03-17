@@ -8,16 +8,20 @@ export const en = {
             password: {
                 label: "Password",
                 placeholder: "********",
-            }
+            },
         },
         views: {
             sessions: {
                 title: "Here is the sessions page",
             },
             welcome: {
-                title: "Welcome back!",
                 button: "Log in",
+                errorMessages: {
+                    email: "You must provide an email address to log in.",
+                    password: "You must provide a password to log in.",
+                },
+                title: "Welcome back!",
             },
-        }
+        },
     },
 };
