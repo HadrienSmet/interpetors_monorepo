@@ -6,6 +6,8 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import { TranslationContext } from "@/contexts";
 import { getTranslation } from "@/i18n";
 
+const STORAGE_KEY = "locale";
+
 export const TranslationProvider = (props: PropsWithChildren) => {
     const [t, setT] = useState<((key: string) => string) | null>(null);
 
@@ -28,9 +30,24 @@ export const TranslationProvider = (props: PropsWithChildren) => {
     const switchLocale = (newLocale: string) => {
         const updatedPathname = updatePathname(newLocale);
         
+        localStorage.setItem(STORAGE_KEY, newLocale);
         router.push(updatedPathname);
     };
 
+    // On mount: Checks if the locale match with the one in local storage
+    // If not match redirect to the right translation
+    useEffect(() => {
+        const storedLocale = localStorage.getItem(STORAGE_KEY);
+
+        if (storedLocale && storedLocale !== locale) {
+            const updatedPathname = updatePathname(storedLocale);
+
+            router.push(updatedPathname);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Handles the t function any time the locale changes
     useEffect(() => {
         if (!locale) return;
 
