@@ -31,7 +31,9 @@ export const Header = ({ email, password }: HeaderProps) => {
         <View style={styles.container}>
             <Text style={styles.title}>{APP_NAME}</Text>
             <View style={styles.mainContent}>
-                <Text style={{ color: titleColor }} type="title">{t("views.welcome.title")}</Text>
+                <View style={styles.titleContainer}>
+                    <Text style={{ color: titleColor }} type="title">{t("views.welcome.title")}</Text>
+                </View>
                 <View style={styles.formContainer}>
                     <Input 
                         ref={emailRef} 
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
     },
     mainContent: {
         alignItems: "center",
-        display: "flex",
+        flex: 1,
         justifyContent: "space-between",
         paddingBlock: Spacings.m,
         width: "100%",
@@ -78,5 +80,9 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: "Title",
         fontSize: Sizes.header,
+    },
+    titleContainer: { 
+        flexGrow: 1, 
+        justifyContent: "center",
     },
 });

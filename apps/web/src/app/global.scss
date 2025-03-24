@@ -1,0 +1,98 @@
+html {
+    background-color: var(--clr-bg-dark);
+    color: var(--clr-txt--primary);
+    height: 100%;
+    scroll-behavior: smooth;
+    transition: var(--transition-theme);
+}
+body {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    font-family: var(--font-default);
+    transition: var(--transition-theme);
+    &::-webkit-scrollbar {
+        background-color: transparent;
+        transition: display 0.2s ease-in-out;
+        width: 16px;
+    }
+    &:not([no-y-overflow])::-webkit-scrollbar-thumb {
+        background-clip: content-box;
+        border: 4px solid transparent;
+        border-radius: 8px;
+        height: 56px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-clip: content-box;
+        background-color: hsl(0, 0%, 67%);
+        border: 4px solid transparent;
+        border-radius: 8px;
+        height: 56px;
+        &:hover {
+            background-color: lighten(hsl(0, 0%, 67%), 5);
+        }
+    }
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+}
+button, 
+input[type="submit"], 
+input[type="reset"] {
+	background: none;
+	border: none;
+	color: inherit;
+	cursor: pointer;
+	font: inherit;
+	outline: inherit;
+	padding: 0;
+}
+footer {
+    align-items: center;
+    display: flex;
+    font-family: var(--font-title);
+    justify-content: center;
+    padding: var(--space-m);
+    position: relative;
+    &::before {
+        background-color: var(--clr-txt--primary-01);
+        content: "";
+        height: 0.5px;
+        position: absolute;
+        top: 0;
+        width: 50%;
+    }
+}
+header {
+    align-items: center;
+    background-color: var(--clr-bg);
+    display: flex;
+    font-family: var(--font-title);
+    justify-content: space-between;
+    padding: var(--size-m) var(--size-l);
+    transition: var(--transition-theme);
+}
+img {
+    object-fit: cover;
+}
+main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: auto;
+}
+select {
+    background-color: var(--clr-bg-dark);
+    border: none;
+    border-radius: var(--radius-round);
+    color: var(--clr-txt--primary);
+    padding-inline: var(--space-l);
+}
+ul {
+    list-style: none;
+}

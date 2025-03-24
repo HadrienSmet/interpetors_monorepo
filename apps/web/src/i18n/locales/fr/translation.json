@@ -1,0 +1,10 @@
+{
+    "views": {
+        "prepare": {
+            "title": "Préparer un discours",
+            "inputs": {
+                "languages": "Définis les langues avec lesquelles tu pratiques."
+            }
+        }
+    }
+}

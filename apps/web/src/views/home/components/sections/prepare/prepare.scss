@@ -1,0 +1,7 @@
+.prepare {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--space-l);
+    padding: var(--space-xl) var(--space-xh);
+}

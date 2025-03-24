@@ -1,0 +1,78 @@
+:root {
+    //=====================
+    //=   BORDER WIDTHS   =
+    //=====================
+    --border-s:        1px;
+    --border-m:        2px;
+    --border-l:        4px;
+    
+    //=====================
+    //=       COLORS      =
+    //=====================
+    --clr-bg:                  rgb(238,240,242);
+    --clr-bg-dark:             rgb(228,229,231);
+    --clr-bg-light:            rgb(255,255,255);
+    --clr-txt--primary:              rgb(0,0,0);
+    --clr-txt--primary-06:     rgba(0,0,0, 0.6);
+    --clr-txt--primary-04:      rgba(0,0,0,0.4);
+    --clr-txt--primary-02:      rgba(0,0,0,0.2);
+    --clr-txt--primary-01:      rgba(0,0,0,0.1);
+    --clr-txt--onBg:           rgb(238,240,242);
+    --clr-txt--onBg-06:   rgba(238,240,242,0.6);
+    --clr-txt--onBg-04:   rgba(238,240,242,0.4);
+    --clr-txt--onBg-02:   rgba(238,240,242,0.2);
+    --clr-txt--onBg-01:   rgba(238,240,242,0.1);
+    
+    //=====================
+    //=   BORDER RADIUS   =
+    //=====================
+    --radius-s:        0.25rem;
+    --radius-m:         0.5rem;
+    --radius-l:           1rem;
+    --radius-round:      500px;
+
+    //=================
+    //=     SIZES     =
+    //=================
+    --size-s:     12px;
+    --size-m:     20px;
+    --size-l:     28px;
+    --size-xl:    36px;
+    --size-title: 48px;
+
+    //=================
+    //=     SPACES    =
+    //=================
+    --space-none:  0px;
+    --space-xxs:   1px;
+    --space-xs:    2px;
+    --space-s:     4px;
+    --space-m:     8px;
+    --space-l:    12px;
+    --space-xl:   16px;
+    --space-h:    20px;
+    --space-xh:   24px;
+    --space-giga: 28px;
+
+    // =================
+    // =  TRANSITIONS  =
+    // =================
+    --transition-theme: 0.4s;
+}
+
+[data-theme="dark"] {
+    --clr-bg:                       rgb(0, 28, 52);
+    --clr-bg-dark:                  rgb(1, 22, 42);
+    --clr-bg-light:                 rgb(0, 37, 69);
+    --clr-txt--onBg:                    rgb(0,0,0);
+    --clr-txt--onBg-06:           rgba(0,0,0, 0.6);
+    --clr-txt--onBg-04:            rgba(0,0,0,0.4);
+    --clr-txt--onBg-02:            rgba(0,0,0,0.2);
+    --clr-txt--onBg-01:            rgba(0,0,0,0.1);
+    --clr-txt--primary:           rgb(238,240,242);
+    --clr-txt--primary-06:  rgba(255,255,255, 0.6);
+    --clr-txt--primary-04:   rgba(255,255,255,0.4);
+    --clr-txt--primary-02:   rgba(255,255,255,0.2);
+    --clr-txt--primary-01:   rgba(255,255,255,0.1);
+    --clr-txt--special:          rgb(209, 199, 87);
+}

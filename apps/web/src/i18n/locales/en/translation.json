@@ -1,0 +1,10 @@
+{
+    "views": {
+        "prepare": {
+            "title": "Prepare a speech",
+            "inputs": {
+                "languages": "Define the languages you are working with"
+            }
+        }
+    }
+}
