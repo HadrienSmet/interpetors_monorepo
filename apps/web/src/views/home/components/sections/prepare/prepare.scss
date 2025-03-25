@@ -4,4 +4,10 @@
     flex: 1;
     gap: var(--space-l);
     padding: var(--space-xl) var(--space-xh);
+    > div {
+        align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-s);
+    }
 }
