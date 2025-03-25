@@ -15,6 +15,7 @@ type SelectProps = {
     readonly id?: string;
     readonly name: string;
     readonly options: Array<SelectOption>;
+    readonly backgroundColor?: string;
 
     readonly onChange: ChangeEventHandler<HTMLSelectElement>;
 };
@@ -34,6 +35,7 @@ export const Select = (props: SelectProps) => {
                 onChange={props.onChange}
                 onBlur={handleBlur}
                 onClick={handleClick}
+                style={{ backgroundColor: props.backgroundColor }}
             >
                 {props.options.map((option, index) => (
                     <option key={`${option.value}-${index}`} value={option.value}>

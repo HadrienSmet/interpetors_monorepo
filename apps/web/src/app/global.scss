@@ -1,6 +1,6 @@
 html {
     background-color: var(--clr-bg-dark);
-    color: var(--clr-txt--primary);
+    color: var(--clr-txt);
     height: 100%;
     scroll-behavior: smooth;
     transition: var(--transition-theme);
@@ -60,7 +60,7 @@ footer {
     padding: var(--space-m);
     position: relative;
     &::before {
-        background-color: var(--clr-txt--primary-01);
+        background-color: var(--clr-txt-01);
         content: "";
         height: 0.5px;
         position: absolute;
@@ -71,6 +71,7 @@ footer {
 header {
     align-items: center;
     background-color: var(--clr-bg);
+    box-shadow: 0 2px 8px var(--clr-txt-01);
     display: flex;
     font-family: var(--font-title);
     justify-content: space-between;
