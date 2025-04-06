@@ -1,9 +1,17 @@
 {
+    "inputs": {
+        "folders": "Drag and drop you folder here"
+    },
     "views": {
         "prepare": {
             "title": "Prepare a speech",
             "inputs": {
-                "languages": "Define the languages you are working with"
+                "meeting-documents": "Provide the documents related to the reunion that you are preparing.",
+                "native-language": {
+                    "label": "Wich one of the following is your native language?",
+                    "placeholder": "Please select some work languages."
+                },
+                "work-languages": "Define the languages you are working with."
             }
         }
     }

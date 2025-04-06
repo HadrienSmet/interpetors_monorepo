@@ -1,1 +1,0 @@
-# Will contains all the aws stacks for the app and the website

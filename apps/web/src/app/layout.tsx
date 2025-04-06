@@ -49,7 +49,7 @@ export function generateStaticParams() {
 // Tous les documents qui sont fournis => Do what???
 // Contexte is very important => Why this reunion, why those speakers, why now
 
-// Teamsheets 
+// Teamsheets
 // analysing txt
 // Names of the peoples, institutions, organizations, ...
 // Connaitre les correspondances des choses specifiques a chauqe pays (education)
@@ -58,4 +58,4 @@ export function generateStaticParams() {
 
 // Programm : Connaitres les intervenants, les enjeux, le contexte, le but, les termes
 // Eurodéputés qui vont parler dans les langues que je possède
-// Call en plus Connaitre les eruo députés de ma langue principale (connaitre ses clients) 
+// Call en plus Connaitre les eruo députés de ma langue principale (connaitre ses clients)

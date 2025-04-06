@@ -21,11 +21,12 @@ type LanguageSelectProps = {
 export const LanguageSelect = (props: LanguageSelectProps) => {
     const { locale } = useTranslation();
 
-    const filteredLanguages: Array<string> = languages
+    const filteredLanguages = languages
         .map(language => getLanguageTranslation(language.code, locale))
         // TODO: Improve that filter...
-        .filter(language => language != null)
-        .filter(language => language.length > 2);
+        .filter((language): language is string => language != null)
+        .filter(language => language.length > 2)
+        .sort();
     const onChange: ChangeEventHandler<HTMLSelectElement> = (e) => props.onChange(e.target.value)
 
     return (

@@ -1,9 +1,17 @@
 {
+    "inputs": {
+        "folders": "Glissez-déposez un dossier ici"
+    },
     "views": {
         "prepare": {
             "title": "Préparer un discours",
             "inputs": {
-                "languages": "Définis les langues avec lesquelles tu pratiques."
+                "meeting-documents": "Fournissez les documents relatifs à la réunion à laquelle vous souhaitez vous préparer.",
+                "native-language": {
+                    "label": "Parmis ces langues, laquelle est ta langue maternelle ?",
+                    "placeholder": "Veuillez définir les langues avec lesquelles vous pratiquez."
+                },
+                "work-languages": "Définis les langues avec lesquelles tu pratiques."
             }
         }
     }

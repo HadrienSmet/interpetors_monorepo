@@ -1,4 +1,4 @@
-export const languages = [
+export const languages: Array<{ code: string; name: string; }> = [
     { code: 'ab', name: 'Abkhazian' },
     { code: 'aa', name: 'Afar' },
     { code: 'af', name: 'Afrikaans' },
