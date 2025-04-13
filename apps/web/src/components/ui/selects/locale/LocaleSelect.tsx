@@ -14,9 +14,9 @@ export const LocaleSelect = () => {
 
     return (
         <Select
-            onChange={onChange}
             defaultValue={locale}
             name="locale"
+            onChange={onChange}
             options={languages.map(lang => ({ value: lang, label: lang.toUpperCase() }))}
         />
     );

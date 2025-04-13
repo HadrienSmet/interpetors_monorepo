@@ -8,13 +8,13 @@ type SelectOption = {
     readonly label: string;
 };
 type SelectProps = {
+    readonly backgroundColor?: string;
     readonly className?: string;
     readonly defaultValue?: string;
     readonly disabled?: boolean;
     readonly id?: string;
     readonly name: string;
     readonly options: Array<SelectOption>;
-    readonly backgroundColor?: string;
 
     readonly onChange: ChangeEventHandler<HTMLSelectElement>;
 };
@@ -22,7 +22,7 @@ export const Select = (props: SelectProps) => {
     return (
         <div className="select-container">
             <select
-                className={props.className}
+                className={`${props.className} input`}
                 defaultValue={props.defaultValue}
                 disabled={props.disabled ?? false}
                 id={props.id}

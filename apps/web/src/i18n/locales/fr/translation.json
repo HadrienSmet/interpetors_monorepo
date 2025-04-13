@@ -1,17 +1,54 @@
 {
+    "actions": {
+        "confirm": "Confirmer",
+        "workspace": {
+            "create": "Créer mon espace de travail"
+        }
+    },
     "inputs": {
         "folders": "Glissez-déposez un dossier ici"
     },
-    "views": {
-        "prepare": {
+    "home": {
+        "navigation": {
+            "buttons": {
+                "new": "Nouvelle préparation",
+                "old": "Anciennes préparations",
+                "voc": "Vocabulaire généré"
+            }
+        },
+        "new": {
             "title": "Préparer un discours",
             "inputs": {
                 "meeting-documents": "Fournissez les documents relatifs à la réunion à laquelle vous souhaitez vous préparer.",
-                "native-language": {
-                    "label": "Parmis ces langues, laquelle est ta langue maternelle ?",
-                    "placeholder": "Veuillez définir les langues avec lesquelles vous pratiquez."
-                },
+                "native-language": "Choisissez-en une en tant que langue maternelle.",
+                "title": "Définissez un titre",
                 "work-languages": "Définis les langues avec lesquelles tu pratiques."
+            }
+        },
+        "old": {
+            "title": "Mes préparations"
+        },
+        "voc": {
+            "title": "Vocabulaire généré"
+        },
+        "workspace": {
+            "title": "Crées ton environnement de travail personnalisé.",
+            "inputs": {
+                "title": {
+                    "label": "Définissez un titre à votre espace de travail",
+                    "errorMessages": {
+                        "length": "La longueur du titre doit être comprise entre 3 et 45 caractères."
+                    }
+                },
+                "work-languages": {
+                    "label": "Définissez les langues avec lesquelles vous pratiquez",
+                    "errorMessages": {
+                        "length": "Sélectionnez deux langues minimum"
+                    }
+                },
+                "native-language": {
+                    "label": "Choisissez-en une en tant que langue maternelle."
+                }
             }
         }
     }

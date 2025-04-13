@@ -4,8 +4,9 @@ import { Montserrat, Poiret_One } from "next/font/google";
 import { ThemeProvider } from "@/contexts";
 import { languages } from "@/i18n/settings";
 
-import "./global.scss";
-import "./root.scss";
+import "./global.classes.scss";
+import "./global.root.scss";
+import "./global.tags.scss";
 
 const montserrat = Montserrat({
     subsets: ["latin"],

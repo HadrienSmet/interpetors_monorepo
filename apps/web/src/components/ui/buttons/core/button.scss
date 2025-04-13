@@ -1,0 +1,12 @@
+.button {
+    background-color: var(--clr-txt);
+    border-radius: var(--radius-s);
+    color: var(--clr-bg);
+    font-weight: 900;
+    letter-spacing: 1.1;
+    padding: var(--space-m) var(--space-xl);
+    &:disabled {
+        background-color: var(--clr-txt-04);
+        cursor:not-allowed;
+    }
+}
