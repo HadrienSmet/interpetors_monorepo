@@ -1,8 +1,8 @@
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { FolderDropzone, InputStyleLess } from "@/components";
-import { useCssVariable, useLocale } from "@/hooks";
+import { useCssVariable } from "@/hooks";
 
 import "./prepare.scss";
 
@@ -16,7 +16,6 @@ export const Prepare = () => {
         title: "",
     });
 
-    const { locale } = useLocale();
     const { t } = useTranslation();
 
     const handleTitle = (e: ChangeEvent<HTMLInputElement>) => setPrepareState(state => ({
