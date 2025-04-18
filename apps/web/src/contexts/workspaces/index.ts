@@ -1,3 +1,3 @@
-export * from "./WorkSpacesContext";
-export * from "./WorkSpacesProvider";
 export * from "./workspaces.types";
+export * from "./WorkSpacesContext";
+export * from "./workspacesProvider";

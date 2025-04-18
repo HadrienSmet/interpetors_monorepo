@@ -1,0 +1,40 @@
+@font-face {
+    font-family: "--font-default";
+    src: local("Montserrat-Regular"),
+        url("../assets/fonts/Montserrat-Regular.ttf");
+}
+@font-face {
+    font-family: "--font-title";
+    src: local("PoiretOne-Regular"),
+        url("../assets/fonts/PoiretOne-Regular.ttf");
+}
+
+#root {
+    height: 100%;
+}
+
+main {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    section {
+        max-width: 800px;
+        width: 75%
+    }
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    &-container {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+    }
+    &-content {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+    }
+}

@@ -11,10 +11,8 @@
     padding-left: var(--space-l);
     padding-right: var(--space-xh);
     transition: var(--transition-theme);
+
     &:focus {
         outline: none;
-    }
-    &:not([name="locale"]) {
-        width: 300px;
     }
 }

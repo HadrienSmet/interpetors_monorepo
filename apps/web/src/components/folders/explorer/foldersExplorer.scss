@@ -1,0 +1,27 @@
+.folders-explorer {
+    border-right: var(--border-s) solid var(--clr-txt-02);
+    overflow-y: auto;
+    width: 30%;
+    &__item {
+        align-items: center;
+        cursor: pointer;
+        display: flex;
+        gap: var(--space-s);
+        padding: var(--space-xs);
+        transition: 0.2s ease-in-out;
+
+        &:hover {
+            background-color: var(--clr-txt-01);
+        }
+        svg {
+            flex-shrink: 0;
+        }
+        &.folder {
+            font-weight: 900;
+        }
+        &.selected {
+            background-color: var(--clr-txt-04);
+            color: var(--clr-bg-light);
+        }
+    }
+}

@@ -1,10 +1,10 @@
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, CSSProperties } from "react";
 
-import { useTranslation } from "@/contexts";
+import { useLocale } from "@/hooks";
 
 import { Select } from "../core";
 
-import { languages } from "./allLanguages";
+import { languages } from "./languageSelect.constants";
 
 const getLanguageTranslation = (langCode: string, locale: string) => {
     try {
@@ -14,12 +14,12 @@ const getLanguageTranslation = (langCode: string, locale: string) => {
     }
 };
 type LanguageSelectProps = {
-    readonly backgroundColor?: string;
     readonly name: string;
-    onChange: (language: string) => void
+    readonly onChange: (language: string) => void;
+    readonly style?: CSSProperties;
 };
 export const LanguageSelect = (props: LanguageSelectProps) => {
-    const { locale } = useTranslation();
+    const { locale } = useLocale();
 
     const filteredLanguages = languages
         .map(language => getLanguageTranslation(language.code, locale))

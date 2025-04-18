@@ -9,7 +9,7 @@ body {
     display: flex;
     height: 100%;
     flex-direction: column;
-    font-family: var(--font-default);
+    font-family: --font-default;
     transition: var(--transition-theme);
     &::-webkit-scrollbar {
         background-color: transparent;
@@ -55,7 +55,7 @@ input[type="reset"] {
 footer {
     align-items: center;
     display: flex;
-    font-family: var(--font-title);
+    font-family: --font-title;
     justify-content: center;
     padding: var(--space-m);
     position: relative;
@@ -73,7 +73,7 @@ header {
     background-color: var(--clr-bg-dark);
     box-shadow: 0 2px 8px var(--clr-txt-01);
     display: flex;
-    font-family: var(--font-title);
+    font-family: --font-title;
     justify-content: space-between;
     padding: var(--space-xl) var(--space-h);
     transition: var(--transition-theme);

@@ -1,8 +1,6 @@
-"use client";
-
 import { createContext, useContext } from "react";
 
-import { getContextError } from "../errorMessage";
+import { getContextError } from "../utils";
 
 import { WorkSpacesContextType } from "./workspaces.types";
 

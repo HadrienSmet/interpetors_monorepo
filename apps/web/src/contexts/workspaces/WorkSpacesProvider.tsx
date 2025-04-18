@@ -1,5 +1,3 @@
-"use client";
-
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { WorkSpace, WorkSpacesState } from "./workspaces.types";

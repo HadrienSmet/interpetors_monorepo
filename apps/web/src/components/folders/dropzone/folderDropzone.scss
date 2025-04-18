@@ -1,0 +1,17 @@
+.folder-dropzone {
+    height: 100%;
+    width: 100%;
+    &.dragged {
+        background-color: var(--clr-txt-04);
+        color: var(--clr-bg-light);
+    }
+    &.empty {
+        align-items: center;
+        border: var(--border-s) solid var(--clr-txt-02);
+        border-radius: var(--radius-s);
+        color: var(--clr-txt-04);
+        display: flex;
+        justify-content: center;
+        transition: 0.2s ease-out;
+    }
+}

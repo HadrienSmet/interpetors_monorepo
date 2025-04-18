@@ -1,23 +1,21 @@
-"use client";
-
 import { ChangeEvent } from "react";
 
-import { useTranslation } from "@/contexts";
-import { languages } from "@/i18n/settings";
+import { useLocale } from "@/hooks";
+import { SUPPORTED_LANGUAGES } from "@/i18n/translations";
 
 import { Select } from "../core";
 
 export const LocaleSelect = () => {
-    const { locale, switchLocale } = useTranslation();
+    const { locale, setLocale } = useLocale();
 
-    const onChange = (event: ChangeEvent<HTMLSelectElement>) => switchLocale(event.target.value);
+    const onChange = (event: ChangeEvent<HTMLSelectElement>) => setLocale(event.target.value);
 
     return (
         <Select
             defaultValue={locale}
             name="locale"
             onChange={onChange}
-            options={languages.map(lang => ({ value: lang, label: lang.toUpperCase() }))}
+            options={Object.keys(SUPPORTED_LANGUAGES).map(lang => ({ value: lang, label: lang.toUpperCase() }))}
         />
     );
 };

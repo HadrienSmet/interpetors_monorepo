@@ -1,0 +1,18 @@
+.resizable-section {
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+
+    &__resizer {
+        background-color: var(--clr-txt-01);
+        cursor: col-resize;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        z-index: 100;
+        &:hover {
+            background-color: var(--clr-txt-02);
+            width: 3px;
+        }
+    }
+}

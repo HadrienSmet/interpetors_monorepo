@@ -1,1 +1,4 @@
-export * from "./home";
+export * from "./preparations";
+export * from "./prepare";
+export * from "./vocabulary";
+export * from "./workSpaceCreator";
