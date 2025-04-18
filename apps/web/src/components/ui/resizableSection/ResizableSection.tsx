@@ -10,6 +10,7 @@ type ResizableSectionProps =
     & PropsWithChildren;
 
 const RESIZER_WIDTH = 3 as const;
+const COLUMN_MIN_WIDTH = 50 as const;
 export const ResizableSection = ({
     children,
     initialWidth,
@@ -28,10 +29,10 @@ export const ResizableSection = ({
 
             if (resizableSide === "right") {
                 const newWidth = e.clientX - containerLeft;
-                setWidth(Math.max(100, newWidth)); // minimum width 100px
+                setWidth(Math.max(COLUMN_MIN_WIDTH, newWidth));
             } else {
                 const newWidth = containerRight - e.clientX;
-                setWidth(Math.max(100, newWidth));
+                setWidth(Math.max(COLUMN_MIN_WIDTH, newWidth));
             }
         };
 

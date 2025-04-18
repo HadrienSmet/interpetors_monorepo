@@ -1,6 +1,7 @@
 .style-less {
     background-color: transparent;
     border: none;
+    color: var(--clr-txt);
     position: relative;
     + .fake-border {
         background-color: var(--clr-txt-06);
