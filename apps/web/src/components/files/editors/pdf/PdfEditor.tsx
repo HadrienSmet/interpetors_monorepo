@@ -3,8 +3,10 @@ import { Document, Page } from "react-pdf";
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
 
-import { Loader } from "@/components/ui";
+import { Loader } from "@/components";
 import "@/workers/pdfConfig";
+
+import "./pdfEditor.scss";
 
 const options = {
     cMapUrl: "/cmaps/",
@@ -16,23 +18,39 @@ type PDFFile = string | File | null;
 export const PdfEditor = (props: { file: PDFFile; }) => {
     const [numPages, setNumPages] = useState<number>();
 
-
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => {
         setNumPages(nextNumPages);
     };
 
     return (
+
         <Document
             file={props.file}
-            loading={<Loader />}
+            loading={(
+                <div
+                    style={{
+                        alignItems: "center",
+                        display: "flex",
+                        height: "100%",
+                        justifyContent: "center",
+                        width: "100%",
+                    }}
+                >
+                    <Loader size="fullScreen" />
+                </div>
+            )}
             onLoadSuccess={onDocumentLoadSuccess}
             options={options}
         >
             {Array.from(new Array(numPages), (_, index) => (
-                <Page
+                <div
+                    className="page-container"
                     key={`page_${index + 1}`}
-                    pageNumber={index + 1}
-                />
+                >
+                    <Page
+                        pageNumber={index + 1}
+                    />
+                </div>
             ))}
         </Document>
     );

@@ -4,7 +4,9 @@ import "./resizableSection.scss";
 
 type ResizableSectionProps =
     & {
+        readonly getMaxWidth?: () => number;
         readonly initialWidth: number;
+        readonly minWidth?: number;
         readonly resizableSide?: "left" | "right";
     }
     & PropsWithChildren;
@@ -15,33 +17,55 @@ export const ResizableSection = ({
     children,
     initialWidth,
     resizableSide = "right",
+    minWidth = COLUMN_MIN_WIDTH,
+    getMaxWidth,
 }: ResizableSectionProps) => {
     const [width, setWidth] = useState(initialWidth);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        let isResizing = false;
+
         const handleMouseMove = (e: MouseEvent) => {
-            if (!containerRef.current) return;
+            if (!isResizing || !containerRef.current) return;
+
+            e.preventDefault();
 
             const container = containerRef.current;
             const containerLeft = container.getBoundingClientRect().left;
             const containerRight = container.getBoundingClientRect().right;
 
+            let newWidth: number;
+
             if (resizableSide === "right") {
-                const newWidth = e.clientX - containerLeft;
-                setWidth(Math.max(COLUMN_MIN_WIDTH, newWidth));
+                newWidth = e.clientX - containerLeft;
             } else {
-                const newWidth = containerRight - e.clientX;
-                setWidth(Math.max(COLUMN_MIN_WIDTH, newWidth));
+                newWidth = containerRight - e.clientX;
             }
+
+            newWidth = Math.max(minWidth, newWidth);
+
+            if (getMaxWidth) {
+                const maxWidth = getMaxWidth();
+                newWidth = Math.min(newWidth, maxWidth);
+            }
+
+            setWidth(newWidth);
         };
 
         const stopResize = () => {
-            window.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseup", stopResize);
+            if (isResizing) {
+                isResizing = false;
+                document.body.style.userSelect = "";
+                window.removeEventListener("mousemove", handleMouseMove);
+                window.removeEventListener("mouseup", stopResize);
+            }
         };
 
         const startResize = () => {
+            isResizing = true;
+
+            document.body.style.userSelect = "none"; // 👈 Désactive la sélection de texte pendant le drag
             window.addEventListener("mousemove", handleMouseMove);
             window.addEventListener("mouseup", stopResize);
         };
@@ -51,9 +75,9 @@ export const ResizableSection = ({
 
         return () => {
             resizer?.removeEventListener("mousedown", startResize);
-            stopResize(); // cleanup
+            stopResize();
         };
-    }, [resizableSide]);
+    }, [getMaxWidth, minWidth, resizableSide]);
 
     return (
         <div

@@ -30,6 +30,7 @@ const FileToRender = ({ file }: FileToRenderProps) => {
     );
 };
 
+export const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
 type FileDisplayerProps = {
     readonly selectedFile: File | null;
 };
@@ -37,7 +38,7 @@ export const FileDisplayer = (props: FileDisplayerProps) => {
     const { t } = useTranslation();
 
     return (
-        <div className="file-displayer">
+        <div className="file-displayer" style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}>
             {props.selectedFile
                 ? (<FileToRender file={props.selectedFile} />)
                 : (

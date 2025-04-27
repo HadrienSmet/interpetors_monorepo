@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { VscFolder, VscFolderOpened } from "react-icons/vsc";
 
-import { FileIcon } from "../../files";
+import { FILE_DISPLAYER_MIN_WIDTH, FileIcon } from "../../files";
 import { ResizableSection } from "../../ui";
 
 import { FolderStructure } from "../folders.types";
@@ -76,7 +76,18 @@ type FoldersExplorerProps = {
 };
 export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFile }: FoldersExplorerProps) => {
     return (
-        <ResizableSection initialWidth={INITIAL_WIDTH}>
+        <ResizableSection
+            initialWidth={INITIAL_WIDTH}
+            getMaxWidth={() => {
+                // very bad to do that
+                const folderDisplayer = document.querySelector(".folders-displayer") as HTMLElement;
+                const totalWidth = folderDisplayer?.offsetWidth || 0;
+
+                return (
+                    Math.max(0, totalWidth - (FILE_DISPLAYER_MIN_WIDTH))
+                );
+            }}
+        >
             {foldersStructures.map((structure, idx) =>
                 Object.entries(structure).map(([name, node]) => (
                     <TreeNode
