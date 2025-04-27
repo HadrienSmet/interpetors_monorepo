@@ -13,20 +13,24 @@ export const fr = {
                 unsupported: "Type de fichier non supporté. Types de fichier supportés: ",
             },
         },
-        home: {
-            navigation: {
-                buttons: {
-                    new: "Nouvelle préparation",
-                    old: "Anciennes préparations",
-                    voc: "Vocabulaire généré",
-                },
+        navigation: {
+            buttons: {
+                new: "Nouvelle préparation",
+                old: "Anciennes préparations",
+                voc: "Vocabulaire généré",
             },
+        },
+        views: {
             new: {
                 title: "Préparer un discours",
                 inputs: {
                     "meeting-documents": "Fournissez les documents relatifs à la réunion à laquelle vous souhaitez vous préparer.",
                     title: "Définissez un titre à votre préparation.",
                 },
+            },
+            notFound: {
+               title: "Oops, on s'est perdu ?",
+               buttonLabel: "Retour en sécurité"
             },
             old: {
                 title: "Mes préparations",

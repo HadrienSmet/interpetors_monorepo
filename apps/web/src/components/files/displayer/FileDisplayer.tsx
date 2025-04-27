@@ -12,9 +12,7 @@ const FileToRender = ({ file }: FileToRenderProps) => {
     const { t } = useTranslation();
 
     if (file.type.startsWith(SUPPORTED_TYPES.PDF)) {
-        return (<PdfEditor
-            // file={file} onLinkClick={() => console.log("clicked")}
-            />);
+        return (<PdfEditor file={file} />);
     }
     if (file.type.startsWith(SUPPORTED_TYPES.WORD)) {
         return (<p>Word will be supported soon</p>);

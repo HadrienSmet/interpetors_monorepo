@@ -13,20 +13,24 @@ export const en = {
                 unsupported: "Type of file not supported. Supported type of files: ",
             },
         },
-        home: {
-            navigation: {
-                buttons: {
-                    new: "New preparation",
-                    old: "Old preparations",
-                    voc: "Generated vocabulary",
-                },
+        navigation: {
+            buttons: {
+                new: "New preparation",
+                old: "Old preparations",
+                voc: "Generated vocabulary",
             },
+        },
+        views: {
             new: {
                 title: "Prepare a speech",
                 inputs: {
                     "meeting-documents": "Provide the documents related to the reunion that you are preparing.",
                     title: "Define a title for this preparation",
                 },
+            },
+            notFound: {
+                title: "Oops, someone got lost?",
+                buttonLabel: "Back to safety"
             },
             old: {
                 title: "My preparations",

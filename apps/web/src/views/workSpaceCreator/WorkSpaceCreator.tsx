@@ -41,7 +41,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
 
     return (
         <>
-            <p>{t("home.workspace.inputs.native-language.label")}</p>
+            <p>{t("views.workspace.inputs.native-language.label")}</p>
             <div className="work-languages__list active">
                 {workspaceCreatorState.workSpace.languages.work.map(language => (
                     <div
@@ -70,11 +70,11 @@ export const WorkSpaceCreator = () => {
 
     return (
         <main className="workspace">
-            <h1>{t("home.workspace.title")}</h1>
+            <h1>{t("views.workspace.title")}</h1>
             <div className="field-container">
                 <div className={`step work-languages ${workspaceCreatorState.currentStep === creationSteps[0] ? "active" : ""}`}>
                     <label htmlFor="work-languages">
-                        {t("home.workspace.inputs.work-languages.label")}
+                        {t("views.workspace.inputs.work-languages.label")}
                     </label>
                     <LanguageSelect
                         name="work-languages"

@@ -29,7 +29,7 @@ export const NavigationButton = (props: NavigationButtonProps) => {
             ref={buttonRef}
             onClick={() => props.setNavigation(props.buttonId)}
         >
-            {props.icon} {t(`home.navigation.buttons.${props.buttonId}`)}
+            {props.icon} {t(`navigation.buttons.${props.buttonId}`)}
         </button>
     );
 };

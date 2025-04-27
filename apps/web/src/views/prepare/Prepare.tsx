@@ -33,7 +33,7 @@ export const Prepare = () => {
             <InputStyleLess
                 name="preparation-title"
                 onChange={handleTitle}
-                placeholder={t("home.new.inputs.title")}
+                placeholder={t("views.new.inputs.title")}
                 style={{
                     fontSize: useCssVariable("--size-xl"),
                     fontWeight: 600,

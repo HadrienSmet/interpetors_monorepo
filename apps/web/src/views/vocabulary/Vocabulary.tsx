@@ -5,7 +5,7 @@ export const Vocabulary = () => {
 
     return (
         <main>
-            <h1>{t("home.voc.title")}</h1>
+            <h1>{t("views.voc.title")}</h1>
         </main>
     );
 };

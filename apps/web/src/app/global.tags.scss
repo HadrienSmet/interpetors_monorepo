@@ -3,14 +3,14 @@ html {
     color: var(--clr-txt);
     height: 100%;
     scroll-behavior: smooth;
-    transition: var(--transition-theme);
+    transition: background-color var(--transition-theme);
 }
 body {
     display: flex;
     height: 100%;
     flex-direction: column;
     font-family: --font-default;
-    transition: var(--transition-theme);
+    transition: background-color var(--transition-theme);
     &::-webkit-scrollbar {
         background-color: transparent;
         transition: display 0.2s ease-in-out;
@@ -76,7 +76,7 @@ header {
     font-family: --font-title;
     justify-content: space-between;
     padding: var(--space-xl) var(--space-h);
-    transition: var(--transition-theme);
+    transition: background-color var(--transition-theme);
 }
 img {
     object-fit: cover;
@@ -86,6 +86,13 @@ main {
     flex: 1;
     flex-direction: column;
     height: auto;
+}
+h1,
+h2,
+h3,
+p {
+    cursor: unset;
+    pointer-events: none;
 }
 ul {
     list-style: none;

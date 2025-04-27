@@ -10,7 +10,8 @@
     padding-block: var(--space-m);
     padding-left: var(--space-l);
     padding-right: var(--space-xh);
-    transition: var(--transition-theme);
+    transition:
+        background-color var(--transition-theme);
 
     &:focus {
         outline: none;

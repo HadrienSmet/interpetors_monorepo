@@ -1,10 +1,11 @@
-import { Error, NavigationState } from "@/components";
-import { Preparations, Prepare, Vocabulary } from "@/views";
+import { NavigationState } from "@/components";
+import { NotFound, Preparations, Prepare, Vocabulary } from "@/views";
 
 type ContentProps = {
     readonly navigationState: NavigationState;
+    readonly onError404: () => void;
 };
-export const Main = ({ navigationState }: ContentProps) => {
+export const Main = ({ navigationState, onError404 }: ContentProps) => {
     if (navigationState === "new") {
         return (<Prepare />);
     };
@@ -15,5 +16,5 @@ export const Main = ({ navigationState }: ContentProps) => {
         return (<Vocabulary />);
     };
 
-    return (<Error message="Navigation error" />);
+    return (<NotFound onError404={onError404} />);
 };

@@ -1,6 +1,3 @@
-// TODO
-export const Loader = () => {
-    return (
-        <p>Loading...</p>
-    );
-};
+import { Loading, AnimationProps } from "@/assets";
+
+export const Loader = (props: AnimationProps) => (<Loading {...props} />);

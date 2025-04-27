@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { FileDisplayer } from "../../files";
 
-import { FolderStructure } from "../folders.types";
 import { FoldersExplorer } from "../explorer";
+import { FolderStructure } from "../folders.types";
 
 import './foldersDisplayer.scss';
 

@@ -5,7 +5,7 @@ export const Preparations = () => {
 
     return (
         <main>
-            <h1>{t("home.old.title")}</h1>
+            <h1>{t("views.old.title")}</h1>
         </main>
     );
 };

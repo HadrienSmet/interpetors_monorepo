@@ -11,8 +11,12 @@ import "./global.tags.scss";
 
 import "./app.scss";
 
+const DEFAULT_TABS = NAVIGATION.NEW.id;
+
 const AppChild = () => {
-    const [navigation, setNavigation] = useState<NavigationState>(NAVIGATION.NEW.id);
+    const [navigation, setNavigation] = useState<NavigationState>(DEFAULT_TABS);
+
+    const onError404 = () => setNavigation(DEFAULT_TABS);
 
     return (
         <div className="app">
@@ -23,7 +27,10 @@ const AppChild = () => {
                     setNavigation={setNavigation}
                 />
                 <div className="app-content">
-                    <Main navigationState={navigation} />
+                    <Main
+                        navigationState={navigation}
+                        onError404={onError404}
+                    />
                     <Footer />
                 </div>
             </div>
