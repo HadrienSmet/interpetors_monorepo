@@ -13,8 +13,8 @@
         background: linear-gradient(to bottom, var(--clr-bg-light), var(--clr-bg-dark));
         border-radius: 50%;
         box-shadow: 0 1px 12px var(--clr-txt-04),
-                    inset 0 1px 1px var(--clr-txt--onBg-01),
-                    inset 0 -1px 1px var(--clr-txt--onBg-01);
+                    inset 0 1px 1px var(--clr-bg-01),
+                    inset 0 -1px 1px var(--clr-bg-01);
         position: absolute;
         top: 0;
         transform: scale(0.87);
