@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { FocusEvent, ReactNode, useEffect, useState } from "react";
 
 import { useLocale } from "@/hooks";
 
@@ -10,24 +10,26 @@ export const InputStyleLess = (props: InputProps): ReactNode => {
     const [placeholder, setPlaceholder] = useState(props.placeholder || "");
     const { locale } = useLocale();
 
-    const handleFocus = () => setPlaceholder("");
-    const handleBlur = () => setPlaceholder(props.placeholder || "");
+    const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
+        setPlaceholder("");
+        if (props.onFocus) props.onFocus(e);
+    };
+    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+        setPlaceholder(props.placeholder || "");
+        if (props.onBlur) props.onBlur(e);;
+    };
 
     useEffect(() => { // Re-render with right placeholders whenever locale changes
-        handleBlur();
+        setPlaceholder(props.placeholder || "");
     }, [locale])
 
     return (
         <input
             className={`${props.className} style-less`}
-            disabled={props.disabled}
-            id={props.id}
-            name={props.name}
+            {...props}
             onBlur={handleBlur}
-            onChange={props.onChange}
             onFocus={handleFocus}
             placeholder={placeholder}
-            style={props.style}
         />
     );
 };

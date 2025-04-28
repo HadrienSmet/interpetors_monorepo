@@ -1,9 +1,10 @@
 import { useState } from "react";
 
+import { FolderStructure } from "@/contexts";
+
 import { FileDisplayer } from "../../files";
 
 import { FoldersExplorer } from "../explorer";
-import { FolderStructure } from "../folders.types";
 
 import './foldersDisplayer.scss';
 

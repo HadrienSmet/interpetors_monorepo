@@ -1,38 +1,86 @@
-import { useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { VscFolder, VscFolderOpened } from "react-icons/vsc";
 
-import { FILE_DISPLAYER_MIN_WIDTH, FileIcon } from "../../files";
-import { ResizableSection } from "../../ui";
+import { FolderStructure, useFoldersManager } from "@/contexts";
 
-import { FolderStructure } from "../folders.types";
+import { FILE_DISPLAYER_MIN_WIDTH, FileIcon } from "../../files";
+import { InputStyleLess, ResizableSection } from "../../ui";
 
 import "./foldersExplorer.scss";
+
+const getPaddingLeft = (depth: number) => ((depth * 16) + 4);
 
 type TreeNodeProps = {
     readonly depth: number;
     readonly name: string;
     readonly node: FolderStructure | File;
     readonly onFileClick: (file: File) => void;
-    readonly path: string;
     readonly selectedFile: File | null;
 };
-const TreeNode = ({ depth, name, node, onFileClick, path, selectedFile }: TreeNodeProps) => {
-    const [isOpen, setIsOpen] = useState(true);
+type FileNodeProps =
+    & Omit<TreeNodeProps, "node">
+    & { readonly node: File; };
+const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileNodeProps) => {
+    const [isEditingFile, setIsEditingFile] = useState(false);
+    const [newFileName, setNewFileName] = useState(name);
 
-    const fullPath = path
-        ? `${path}/${name}`
-        : name;
+    const { files } = useFoldersManager();
+
+    const handleRename = () => {
+        if (newFileName.trim() && newFileName !== node.name)
+            files.changeName(node, newFileName.trim());
+
+        setIsEditingFile(false);
+    };
+
+    const onChange = (e: ChangeEvent<HTMLInputElement>) => setNewFileName(e.target.value);
+    const onClick = () => onFileClick(node);
+    const onDoubleClick = () => setIsEditingFile(true);
+    const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") handleRename();
+    };
+
+    return (
+        <div
+            className={`folders-explorer__item ${(selectedFile && node.name === selectedFile.name) ? "selected" : ""}`}
+            onClick={onClick}
+            onDoubleClick={onDoubleClick}
+            style={{ paddingLeft: getPaddingLeft(depth) }}
+        >
+            {isEditingFile
+                ? (
+                    <InputStyleLess
+                        autoFocus
+                        name="file-name-input"
+                        onChange={onChange}
+                        onKeyDown={onKeyDown}
+                        value={newFileName}
+                    />
+                )
+                : (
+                    <>
+                        <FileIcon node={node} />
+                        <p>{name}</p>
+                    </>
+                )
+            }
+        </div>
+    );
+};
+const TreeNode = ({ depth, name, node, onFileClick, selectedFile }: TreeNodeProps) => {
+    const [isOpen, setIsOpen] = useState(depth === 0);
+
+    const onClick = () => setIsOpen(!isOpen);
 
     if (node instanceof File) {
         return (
-            <div
-                className={`folders-explorer__item ${(selectedFile && node.name === selectedFile.name) ? "selected" : ""}`}
-                onClick={() => onFileClick(node)}
-                style={{ paddingLeft: (depth * 16) + 4 }}
-            >
-                <FileIcon node={node} />
-                <p>{name}</p>
-            </div>
+            <FileNode
+                depth={depth}
+                name={name}
+                node={node}
+                onFileClick={onFileClick}
+                selectedFile={selectedFile}
+            />
         );
     }
 
@@ -40,8 +88,8 @@ const TreeNode = ({ depth, name, node, onFileClick, path, selectedFile }: TreeNo
         <>
             <div
                 className="folders-explorer__item folder"
-                onClick={() => setIsOpen(!isOpen)}
-                style={{ paddingLeft: (depth * 16) + 4 }}
+                onClick={onClick}
+                style={{ paddingLeft: getPaddingLeft(depth) }}
             >
                 {isOpen
                     ? <VscFolderOpened />
@@ -57,7 +105,6 @@ const TreeNode = ({ depth, name, node, onFileClick, path, selectedFile }: TreeNo
                             key={childName}
                             name={childName}
                             node={childNode}
-                            path={fullPath}
                             onFileClick={onFileClick}
                             selectedFile={selectedFile}
                         />
@@ -75,18 +122,18 @@ type FoldersExplorerProps = {
     readonly selectedFile: File | null;
 };
 export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFile }: FoldersExplorerProps) => {
+    const getMaxWidth = () => {
+        // very bad to do that
+        const folderDisplayer = document.querySelector(".folders-displayer") as HTMLElement;
+        const totalWidth = folderDisplayer?.offsetWidth || 0;
+
+        return (Math.max(0, totalWidth - (FILE_DISPLAYER_MIN_WIDTH)));
+    };
+
     return (
         <ResizableSection
             initialWidth={INITIAL_WIDTH}
-            getMaxWidth={() => {
-                // very bad to do that
-                const folderDisplayer = document.querySelector(".folders-displayer") as HTMLElement;
-                const totalWidth = folderDisplayer?.offsetWidth || 0;
-
-                return (
-                    Math.max(0, totalWidth - (FILE_DISPLAYER_MIN_WIDTH))
-                );
-            }}
+            getMaxWidth={getMaxWidth}
         >
             {foldersStructures.map((structure, idx) =>
                 Object.entries(structure).map(([name, node]) => (
@@ -95,7 +142,6 @@ export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFi
                         key={`${idx}-${name}`}
                         name={name}
                         node={node}
-                        path=""
                         onFileClick={handleFileClick}
                         selectedFile={selectedFile}
                     />

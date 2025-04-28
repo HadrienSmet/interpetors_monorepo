@@ -3,11 +3,14 @@ export type Preparation = {
     readonly customColor?: string;
     readonly files: FilesRecord;
     readonly id: string;
+    // readonly notes: Array<any>;
     readonly title: string;
+    // readonly vocabulary: Vocabulary;
 };
 export type Vocabulary = {
     readonly languages: Array<string>;
-    readonly translations: Record<string, Array<string>>
+    // TODO: Need to add the occurences
+    readonly translations: Record<string, Array<string>>;
 };
 export type WorkSpace = {
     readonly id: number;

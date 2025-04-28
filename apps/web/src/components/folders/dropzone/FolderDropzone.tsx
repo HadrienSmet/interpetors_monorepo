@@ -1,8 +1,9 @@
 import { DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { FoldersManagerProvider, FolderStructure, useFoldersManager } from "@/contexts";
+
 import { FoldersDisplayer } from "../displayer";
-import { FolderStructure } from "../folders.types";
 
 import "./folderDropzone.scss";
 
@@ -38,13 +39,13 @@ const readDirectory = async (
     for (const entry of entries) {
         const fullPath = `${pathPrefix}/${entry.name}`;
 
-        if (entry.isDirectory) {
+        if (entry.isDirectory)
             await readDirectory(
                 entry as FileSystemDirectoryEntry,
                 root,
                 fullPath
             );
-        } else {
+        else
             await new Promise<void>((resolve) => {
                 (entry as FileSystemFileEntry).file((file) => {
                     const pathArray = fullPath.split("/");
@@ -53,13 +54,12 @@ const readDirectory = async (
                     resolve();
                 });
             });
-        }
     }
 };
-export const FolderDropzone = () => {
+const FolderDropzoneChild = () => {
     const [isDragged, setIsDragged] = useState(false);
-    const [foldersStructures, setFoldersStructures] = useState<Array<FolderStructure>>([]);
 
+    const foldersManager = useFoldersManager();
     const { t } = useTranslation();
 
     const handleDragEnter = () => setIsDragged(true);
@@ -72,24 +72,24 @@ export const FolderDropzone = () => {
         for (const item of items) {
             if (item.kind === "file") {
                 const entry = item.webkitGetAsEntry();
-                if (entry?.isDirectory) {
+                if (entry?.isDirectory)
                     await readDirectory(entry as FileSystemDirectoryEntry, newFileTree, entry.name);
-                } else if (entry?.isFile) {
+                else if (entry?.isFile) {
                     const file = item.getAsFile();
-                    if (file) {
+
+                    if (file)
                         setNestedFile(newFileTree, [file.name], file);
-                    }
                 }
             }
         }
 
-        setFoldersStructures(state => ([...state, newFileTree]));
+        foldersManager.folders.onDrop(newFileTree);
         handleDragLeave();
     };
 
     return (
         <div style={{ flex: 1, width: "100%" }}>
-            {foldersStructures.length > 0
+            {foldersManager.foldersStructures.length > 0
                 ?   (
                     <div
                         className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
@@ -98,7 +98,7 @@ export const FolderDropzone = () => {
                         onDragOver={preventDefault}
                         onDrop={handleDrop}
                     >
-                        <FoldersDisplayer foldersStructures={foldersStructures} />
+                        <FoldersDisplayer foldersStructures={foldersManager.foldersStructures} />
                     </div>
                 )
                 : (
@@ -116,3 +116,9 @@ export const FolderDropzone = () => {
         </div>
     );
 };
+
+export const FolderDropzone = () => (
+    <FoldersManagerProvider>
+        <FolderDropzoneChild />
+    </FoldersManagerProvider>
+);
