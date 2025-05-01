@@ -46,13 +46,16 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
         >
             {isEditingFile
                 ? (
-                    <InputStyleLess
-                        autoFocus
-                        name="file-name-input"
-                        onChange={onChange}
-                        onKeyDown={onKeyDown}
-                        value={newFileName}
-                    />
+                    <>
+                        <FileIcon node={node} />
+                        <InputStyleLess
+                            autoFocus
+                            name="file-name-input"
+                            onChange={onChange}
+                            onKeyDown={onKeyDown}
+                            value={newFileName}
+                        />
+                    </>
                 )
                 : (
                     <>

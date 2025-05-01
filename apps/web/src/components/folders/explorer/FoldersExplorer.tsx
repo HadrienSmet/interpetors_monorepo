@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { FolderStructure } from "@/contexts";
 
@@ -29,7 +29,7 @@ export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFi
 
     const foldersTree = useMemo(() => (
         foldersStructures.map((structure, idx) =>
-            Object.entries(structure).map(([name, node]) => (
+            Object.entries(structure).sort().map(([name, node]) => (
                 <TreeNode
                     depth={0}
                     highlightedFolderPath={highlightedFolderPath}
@@ -43,7 +43,7 @@ export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFi
                 />
             ))
         )
-    ), [foldersStructures])
+    ), [foldersStructures, highlightedFolderPath]);
 
     return (
         <ResizableSection

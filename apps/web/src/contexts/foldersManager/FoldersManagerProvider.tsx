@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 
 import { FoldersManagerContext, FoldersManagerContextType, FolderStructure } from "./FoldersManagerContext";
 
@@ -84,10 +84,6 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
     };
 
     const onDrop = (folder: FolderStructure) => setFoldersStructures(state => [...state, folder]);
-
-    useEffect(() => {
-        console.log({ foldersStructures });
-    }, [foldersStructures]);
 
     const value: FoldersManagerContextType = {
         files: {

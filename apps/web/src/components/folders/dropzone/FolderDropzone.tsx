@@ -91,15 +91,14 @@ const FolderDropzoneChild = () => {
         <div style={{ flex: 1, width: "100%" }}>
             {foldersManager.foldersStructures.length > 0
                 ?   (
-                    <div
-                        className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
+                    <FoldersDisplayer
+                        foldersStructures={foldersManager.foldersStructures}
+                        isDragged={isDragged}
                         onDragEnter={handleDragEnter}
                         onDragLeave={handleDragLeave}
                         onDragOver={preventDefault}
                         onDrop={handleDrop}
-                    >
-                        <FoldersDisplayer foldersStructures={foldersManager.foldersStructures} />
-                    </div>
+                    />
                 )
                 : (
                     <div

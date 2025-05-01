@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { DragEventHandler, useState } from "react";
 
 import { FolderStructure } from "@/contexts";
 
@@ -10,8 +10,20 @@ import './foldersDisplayer.scss';
 
 type FoldersDisplayerProps = {
     readonly foldersStructures: Array<FolderStructure>;
+    readonly isDragged: boolean;
+    readonly onDragEnter: DragEventHandler<HTMLDivElement>;
+    readonly onDragLeave: DragEventHandler<HTMLDivElement>;
+    readonly onDragOver: DragEventHandler<HTMLDivElement>;
+    readonly onDrop: DragEventHandler<HTMLDivElement>;
 };
-export const FoldersDisplayer = ({ foldersStructures }: FoldersDisplayerProps) => {
+export const FoldersDisplayer = ({
+    foldersStructures,
+    isDragged,
+    onDragEnter,
+    onDragLeave,
+    onDragOver,
+    onDrop
+}: FoldersDisplayerProps) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const handleFileClick = (file: File) => setSelectedFile(file);
@@ -23,7 +35,16 @@ export const FoldersDisplayer = ({ foldersStructures }: FoldersDisplayerProps) =
                 handleFileClick={handleFileClick}
                 selectedFile={selectedFile}
             />
-            <FileDisplayer selectedFile={selectedFile} />
+            <div
+                className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
+                onDragEnter={onDragEnter}
+                onDragLeave={onDragLeave}
+                onDragOver={onDragOver}
+                onDrop={onDrop}
+                style={{ display: "flex", flex: "1" }}
+            >
+                <FileDisplayer selectedFile={selectedFile} />
+            </div>
         </div>
     );
 };

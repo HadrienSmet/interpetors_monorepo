@@ -58,10 +58,11 @@
 
 [data-theme="dark"] {
     --clr-bg:             rgb(0, 28, 52);
+    --clr-bg-01:     rgba(0, 28, 52,0.1);
+
     --clr-bg-dark:        rgb(1, 22, 42);
     --clr-bg-light:       rgb(1, 33, 61);
 
-    --clr-bg-01:     rgba(0, 28, 52,0.1);
     --clr-txt:          rgb(238,240,242);
     --clr-txt-06: rgba(255,255,255, 0.6);
     --clr-txt-04:  rgba(255,255,255,0.4);

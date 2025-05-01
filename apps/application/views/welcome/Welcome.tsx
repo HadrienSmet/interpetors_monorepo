@@ -13,7 +13,7 @@ type FormState = {
         readonly email: string | null;
         readonly password: string | null;
     };
-    
+
     readonly errorMessageKey?: string;
 };
 type ErrorMessageKeys = keyof FormState["errorMessageKeys"];
@@ -26,7 +26,7 @@ export const Welcome = () => {
             password: null,
         },
     });
-    
+
     const emailRef = useRef<TextInputRef>(null);
     const passwordRef = useRef<TextInputRef>(null);
 
@@ -34,7 +34,7 @@ export const Welcome = () => {
         ...state,
         errorMessageKeys: {
             ...state.errorMessageKeys,
-            [inputKey]: remove 
+            [inputKey]: remove
                 ? null
                 : `views.welcome.errorMessages.${inputKey}`,
         },
@@ -71,7 +71,7 @@ export const Welcome = () => {
             passwordRef.current.focus();
             return;
         }
-        
+
         // Authenticating user
         handleLoading(true);
         console.log({ emailValue, passwordValue })
@@ -83,15 +83,15 @@ export const Welcome = () => {
             ratio: [3, 2],
             first: {
                 element: (
-                    <Header 
+                    <Header
                         email={{
-                            ref: emailRef, 
+                            ref: emailRef,
                             errorMessage: formState.errorMessageKeys.email,
-                        }} 
+                        }}
                         password={{
                             ref: passwordRef,
                             errorMessage: formState.errorMessageKeys.password,
-                        }} 
+                        }}
                     />
                 ),
             },
