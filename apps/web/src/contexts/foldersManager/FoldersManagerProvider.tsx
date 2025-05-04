@@ -2,6 +2,39 @@ import { PropsWithChildren, useState } from "react";
 
 import { FoldersManagerContext, FoldersManagerContextType, FolderStructure } from "./FoldersManagerContext";
 
+type Visitor = (key: string, value: File, path: string[]) => [string, File] | null;
+/**
+ * @description Browse a folder structure to perform an action on a file
+ * @returns FolderStructure
+ */
+const browseStructure = (
+    structure: FolderStructure,
+    visitor: Visitor,
+    path: string[] = []
+): FolderStructure => {
+    const result: FolderStructure = {};
+
+    for (const [key, value] of Object.entries(structure)) {
+        const currentPath = [...path, key];
+
+        if (value instanceof File) {
+            const update = visitor(key, value, currentPath);
+            if (update) {
+                const [newKey, newValue] = update;
+
+                result[newKey] = newValue;
+            }
+        } else {
+            const newSub = browseStructure(value, visitor, currentPath);
+            if (Object.keys(newSub).length > 0) {
+                result[key] = newSub;
+            }
+        }
+    }
+
+    return (result);
+};
+
 export const FoldersManagerProvider = (props: PropsWithChildren) => {
     const [foldersStructures, setFoldersStructures] = useState<Array<FolderStructure>>([]);
 
@@ -21,11 +54,12 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
                 } else {
                     const [newSubStructure, moved] = moveFile(value);
                     result[key] = newSubStructure;
+
                     if (moved) fileToMove = moved;
                 }
             }
 
-            return [result, fileToMove];
+            return ([result, fileToMove]);
         };
 
         const insertFile = (structure: FolderStructure, pathParts: string[], file: File): void => {
@@ -44,66 +78,43 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             }
         };
 
-        setFoldersStructures(state => {
-            return state.map(structure => {
+        setFoldersStructures(state => (
+            state.map(structure => {
                 const [newStructure, fileToMove] = moveFile(structure);
 
-                if (!fileToMove) return newStructure; // If the file wasn't found in this structure
+                if (!fileToMove) return (newStructure); // File not found in this structure
 
-                const pathParts = targetFullPath.split("/").filter(Boolean); // Ex: "folderA/folderB"
+                const pathParts = targetFullPath.split("/").filter(Boolean); // Retrieving the path tp the new location
                 insertFile(newStructure, pathParts, fileToMove);
 
-                return newStructure;
-            });
-        });
+                return (newStructure);
+            })
+        ));
     };
-    const changeFileName = (file: File, newName: string) => {
-        // TODO: refacto
-        const updateStructure = (structure: FolderStructure): FolderStructure => {
-            const result: FolderStructure = {};
+    const changeFileName = (target: File, newName: string) => {
+        const visitor: Visitor = (key, value) => {
+            if (value === target) {
+                const updated = new File([value], newName, {
+                    type: value.type,
+                    lastModified: value.lastModified
+                });
 
-            for (const [key, value] of Object.entries(structure)) {
-                if (value instanceof File && value === file) {
-                    const updated = new File(
-                        [value],
-                        newName,
-                        { type: value.type, lastModified: value.lastModified }
-                    );
-
-                    result[newName] = updated;
-                } else if (value instanceof File) {
-                    result[key] = value;
-                } else {
-                    result[key] = updateStructure(value);
-                }
+                return ([newName, updated]);
             }
 
-            return (result);
+            return ([key, value]);
         };
 
-        // TODO: improve time complexity
-        setFoldersStructures(state => state.map(updateStructure));
+        setFoldersStructures(state => state.map(s => browseStructure(s, visitor)));
     };
-    const deleteFile = (file: File) => {
-        // TODO: refacto
-        const updateStructure = (structure: FolderStructure): FolderStructure => {
-            const result: FolderStructure = {};
+    const deleteFile = (target: File) => {
+        const visitor: Visitor = (key, value) => {
+            if (value === target) return (null);
 
-            for (const [key, value] of Object.entries(structure)) {
-                if (value instanceof File && value === file) {
-                    continue;
-                } else if (value instanceof File) {
-                    result[key] = value;
-                } else {
-                    result[key] = updateStructure(value);
-                }
-            }
-
-            return (result);
+            return ([key, value]);
         };
 
-        // TODO: improve time complexity
-        setFoldersStructures(state => state.map(updateStructure));
+        setFoldersStructures(state => state.map(s => browseStructure(s, visitor)));
     };
 
     // ---------- Folders methods ----------
