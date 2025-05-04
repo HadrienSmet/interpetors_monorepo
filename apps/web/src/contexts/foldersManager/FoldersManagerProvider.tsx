@@ -40,7 +40,6 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
 
     // ---------- Files methods ----------
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {
-        // TODO: refacto
         const moveFile = (structure: FolderStructure): [FolderStructure, File | null] => {
             const result: FolderStructure = {};
             let fileToMove: File | null = null;
