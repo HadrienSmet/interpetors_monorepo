@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { NAVIGATION, Navigation, NavigationState } from "@/components";
-import { ThemeProvider } from "@/contexts";
+import { ContextMenu, NAVIGATION, Navigation, NavigationState } from "@/components";
+import { ContextMenuProvider, ThemeProvider } from "@/contexts";
 import { Footer, Header, Main } from "@/layout";
 import { WorkSpaceWrapper } from "@/wrappers";
 
@@ -34,6 +34,7 @@ const AppChild = () => {
                     <Footer />
                 </div>
             </div>
+            <ContextMenu />
         </div>
     );
 };
@@ -41,9 +42,11 @@ const AppChild = () => {
 export const App = () => {
     return (
         <ThemeProvider>
-            <WorkSpaceWrapper>
-                <AppChild />
-            </WorkSpaceWrapper>
+            <ContextMenuProvider>
+                <WorkSpaceWrapper>
+                    <AppChild />
+                </WorkSpaceWrapper>
+            </ContextMenuProvider>
         </ThemeProvider>
     );
 };

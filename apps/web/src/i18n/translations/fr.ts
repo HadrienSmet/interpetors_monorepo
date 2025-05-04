@@ -22,11 +22,21 @@ export const fr = {
         },
         views: {
             new: {
-                title: "Préparer un discours",
+                "context-menu": {
+                    file: {
+                        delete: "Supprimer le fichier",
+                        rename: "Renommer le fichier",
+                    },
+                    folder: {
+                        delete: "Supprimer le dossier",
+                        rename: "Renommer le dossier",
+                    },
+                },
                 inputs: {
                     "meeting-documents": "Fournissez les documents relatifs à la réunion à laquelle vous souhaitez vous préparer.",
                     title: "Définissez un titre à votre préparation.",
                 },
+                title: "Préparer un discours",
             },
             notFound: {
                title: "Oops, on s'est perdu ?",

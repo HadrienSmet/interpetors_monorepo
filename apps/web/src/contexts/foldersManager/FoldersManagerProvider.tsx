@@ -7,6 +7,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
 
     // ---------- Files methods ----------
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {
+        // TODO: refacto
         const moveFile = (structure: FolderStructure): [FolderStructure, File | null] => {
             const result: FolderStructure = {};
             let fileToMove: File | null = null;
@@ -57,6 +58,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
         });
     };
     const changeFileName = (file: File, newName: string) => {
+        // TODO: refacto
         const updateStructure = (structure: FolderStructure): FolderStructure => {
             const result: FolderStructure = {};
 
@@ -82,6 +84,29 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
         // TODO: improve time complexity
         setFoldersStructures(state => state.map(updateStructure));
     };
+    const deleteFile = (file: File) => {
+        // TODO: refacto
+        const updateStructure = (structure: FolderStructure): FolderStructure => {
+            const result: FolderStructure = {};
+
+            for (const [key, value] of Object.entries(structure)) {
+                if (value instanceof File && value === file) {
+                    continue;
+                } else if (value instanceof File) {
+                    result[key] = value;
+                } else {
+                    result[key] = updateStructure(value);
+                }
+            }
+
+            return (result);
+        };
+
+        // TODO: improve time complexity
+        setFoldersStructures(state => state.map(updateStructure));
+    };
+
+    // ---------- Folders methods ----------
 
     const onDrop = (folder: FolderStructure) => setFoldersStructures(state => [...state, folder]);
 
@@ -89,7 +114,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
         files: {
             changeDirectory: changeFileDirectory,
             changeName: changeFileName,
-            delete: () => null,
+            delete: deleteFile,
         },
         folders: {
             changeDirectory: () => null,

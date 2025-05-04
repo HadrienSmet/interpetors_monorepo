@@ -22,11 +22,21 @@ export const en = {
         },
         views: {
             new: {
-                title: "Prepare a speech",
+                "context-menu": {
+                    file: {
+                        delete: "Delete the file",
+                        rename: "Rename the file",
+                    },
+                    folder: {
+                        delete: "Delete the folder",
+                        rename: "Rename the folder",
+                    },
+                },
                 inputs: {
                     "meeting-documents": "Provide the documents related to the reunion that you are preparing.",
                     title: "Define a title for this preparation",
                 },
+                title: "Prepare a speech",
             },
             notFound: {
                 title: "Oops, someone got lost?",

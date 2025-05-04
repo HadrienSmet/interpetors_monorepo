@@ -1,0 +1,19 @@
+.context-menu {
+    background-color: var(--clr-bg-06);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--radius-m);
+    box-shadow: 0 2px 8px var(--clr-txt-01);
+    overflow: hidden;
+    position: absolute;
+    z-index: 10;
+
+    &__item {
+        cursor: pointer;
+        padding: var(--space-m);
+        pointer-events: all;
+        &:hover {
+            background-color: var(--clr-bg-dark);
+        }
+    }
+}

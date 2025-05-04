@@ -2,6 +2,11 @@
     border-right: var(--border-s) solid var(--clr-txt-02);
     overflow-y: auto;
     width: 30%;
+
+    &__context-menu-item {
+        display: flex;
+        gap: var(--space-s);
+    }
     &__item {
         align-items: center;
         cursor: pointer;

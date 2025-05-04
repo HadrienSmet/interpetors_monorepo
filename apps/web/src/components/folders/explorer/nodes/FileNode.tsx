@@ -1,6 +1,8 @@
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from "react";
+import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
-import { useFoldersManager } from "@/contexts";
+import { useContextMenu, useFoldersManager } from "@/contexts";
 
 import { FileIcon } from "../../../files";
 import { InputStyleLess } from "../../../ui";
@@ -15,7 +17,36 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
 
+    const { removeContextMenu, setContextMenu } = useContextMenu();
     const { files } = useFoldersManager();
+    const { t } = useTranslation();
+
+    const items = [
+        (
+            <div
+                className="folders-explorer__context-menu-item"
+                onClick={() => {
+                    setIsEditingFile(true);
+                    removeContextMenu();
+                }}
+            >
+                <MdDriveFileRenameOutline />
+                <p>{t("views.new.context-menu.file.rename")}</p>
+            </div>
+        ),
+        (
+            <div
+                className="folders-explorer__context-menu-item"
+                onClick={() => {
+                    files.delete(node);
+                    removeContextMenu();
+                }}
+            >
+                <MdDelete />
+                <p>{t("views.new.context-menu.file.delete")}</p>
+            </div>
+        ),
+    ];
 
     const handleRename = () => {
         if (newFileName.trim() && newFileName !== node.name)
@@ -26,6 +57,12 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setNewFileName(e.target.value);
     const onClick = () => onFileClick(node);
+    const onContextMenu = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setContextMenu({ x: e.clientX, y: e.clientY }, items);
+    };
     const onDoubleClick = () => setIsEditingFile(true);
     const onDragStart = (e: React.DragEvent<HTMLDivElement>) => e.dataTransfer.setData(
         "application/json",
@@ -40,6 +77,7 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
             className={`folders-explorer__item ${(selectedFile && node.name === selectedFile.name) ? "selected" : ""}`}
             draggable
             onClick={onClick}
+            onContextMenu={onContextMenu}
             onDoubleClick={onDoubleClick}
             onDragStart={onDragStart}
             style={{ paddingLeft: getPaddingLeft(depth) }}
