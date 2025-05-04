@@ -17,40 +17,34 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
 
-    const { removeContextMenu, setContextMenu } = useContextMenu();
+    const { setContextMenu } = useContextMenu();
     const { files } = useFoldersManager();
     const { t } = useTranslation();
 
     const items = [
-        (
-            <div
-                className="folders-explorer__context-menu-item"
-                onClick={() => {
-                    setIsEditingFile(true);
-                    removeContextMenu();
-                }}
-            >
-                <MdDriveFileRenameOutline />
-                <p>{t("views.new.context-menu.file.rename")}</p>
-            </div>
-        ),
-        (
-            <div
-                className="folders-explorer__context-menu-item"
-                onClick={() => {
-                    files.delete(node);
-                    removeContextMenu();
-                }}
-            >
-                <MdDelete />
-                <p>{t("views.new.context-menu.file.delete")}</p>
-            </div>
-        ),
+        {
+            children: (
+                <>
+                    <MdDriveFileRenameOutline />
+                    <p>{t("views.new.context-menu.file.rename")}</p>
+                </>
+            ),
+            onClick: () => setIsEditingFile(true),
+        },
+        {
+            children: (
+                <>
+                    <MdDelete />
+                    <p>{t("views.new.context-menu.file.delete")}</p>
+                </>
+            ),
+            onClick: () => files.delete(node),
+        },
     ];
 
     const handleRename = () => {
         if (newFileName.trim() && newFileName !== node.name)
-            files.changeName(node, newFileName.trim());
+            files.rename(node, newFileName.trim());
 
         setIsEditingFile(false);
     };
@@ -82,25 +76,18 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
             onDragStart={onDragStart}
             style={{ paddingLeft: getPaddingLeft(depth) }}
         >
+            <FileIcon node={node} />
             {isEditingFile
                 ? (
-                    <>
-                        <FileIcon node={node} />
-                        <InputStyleLess
-                            autoFocus
-                            name="file-name-input"
-                            onChange={onChange}
-                            onKeyDown={onKeyDown}
-                            value={newFileName}
-                        />
-                    </>
+                    <InputStyleLess
+                        autoFocus
+                        name="file-name-input"
+                        onChange={onChange}
+                        onKeyDown={onKeyDown}
+                        value={newFileName}
+                    />
                 )
-                : (
-                    <>
-                        <FileIcon node={node} />
-                        <p>{name}</p>
-                    </>
-                )
+                : (<p>{name}</p>)
             }
         </div>
     );

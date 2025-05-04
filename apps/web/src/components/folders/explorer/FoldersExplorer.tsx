@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { FolderStructure } from "@/contexts";
 
@@ -6,6 +6,7 @@ import { FILE_DISPLAYER_MIN_WIDTH } from "../../files";
 import { ResizableSection } from "../../ui";
 
 import { TreeNode } from "./nodes";
+
 import "./foldersExplorer.scss";
 
 

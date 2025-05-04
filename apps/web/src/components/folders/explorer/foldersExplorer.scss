@@ -3,10 +3,6 @@
     overflow-y: auto;
     width: 30%;
 
-    &__context-menu-item {
-        display: flex;
-        gap: var(--space-s);
-    }
     &__item {
         align-items: center;
         cursor: pointer;

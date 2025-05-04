@@ -10,6 +10,8 @@
 
     &__item {
         cursor: pointer;
+        display: flex;
+        gap: var(--space-m);
         padding: var(--space-m);
         pointer-events: all;
         &:hover {

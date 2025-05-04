@@ -1,9 +1,26 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
-import { useContextMenu } from "@/contexts";
+import { ContextMenuItemParams, useContextMenu } from "@/contexts";
 
 import "./contextMenu.scss";
+
+export type ContextMenuItemProps = ContextMenuItemParams;
+const ContextMenuItem = (props: ContextMenuItemProps) => {
+    const { removeContextMenu } = useContextMenu();
+
+    return (
+        <div
+            className="context-menu__item"
+            onClick={() => {
+                props.onClick();
+                removeContextMenu();
+            }}
+        >
+            {props.children}
+        </div>
+    );
+};
 
 export const ContextMenu = () => {
     const { position, items, removeContextMenu } = useContextMenu();
@@ -45,12 +62,7 @@ export const ContextMenu = () => {
                 }}
             >
                 {items.map((item, index) => (
-                    <div
-                        className="context-menu__item"
-                        key={`context-menu__item-${index}`}
-                    >
-                        {item}
-                    </div>
+                    <ContextMenuItem key={`context-item-${index}`} {...item} />
                 ))}
             </div>,
             portalsRoot

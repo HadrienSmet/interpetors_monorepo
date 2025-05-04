@@ -7,14 +7,18 @@ export type Position = {
     readonly x: number;
     readonly y: number;
 };
+export type ContextMenuItemParams =  {
+    readonly children: ReactNode;
+    readonly onClick: () => void;
+};
 export type ContextMenuContextState = {
-    readonly items: Array<ReactNode>;
+    readonly items: Array<ContextMenuItemParams>;
     readonly position: Position;
 };
 export type ContextMenuContextValue =
     & ContextMenuContextState
     & {
-        readonly setContextMenu: (position: Position, items: Array<ReactNode>) => void;
+        readonly setContextMenu: (position: Position, items: Array<ContextMenuItemParams>) => void;
         readonly removeContextMenu: () => void;
     };
 

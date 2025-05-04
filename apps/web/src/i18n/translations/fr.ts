@@ -28,6 +28,7 @@ export const fr = {
                         rename: "Renommer le fichier",
                     },
                     folder: {
+                        create: "Nouveau dossier",
                         delete: "Supprimer le dossier",
                         rename: "Renommer le dossier",
                     },

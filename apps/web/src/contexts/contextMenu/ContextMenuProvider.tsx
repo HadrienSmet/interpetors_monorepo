@@ -1,6 +1,6 @@
-import { PropsWithChildren, ReactNode, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 
-import { ContextMenuContext, ContextMenuContextState, Position } from "./ContextMenuContext";
+import { ContextMenuContext, ContextMenuContextState, ContextMenuItemParams, Position } from "./ContextMenuContext";
 
 const INITIAL_STATE = {
     position: { x: -1, y: -1 },
@@ -11,7 +11,7 @@ export const ContextMenuProvider = (props: PropsWithChildren) => {
     const [contextMenuState, setContextMenuState] = useState<ContextMenuContextState>({ ...INITIAL_STATE });
 
     const removeContextMenu = () => setContextMenuState({ ...INITIAL_STATE });
-    const setContextMenu = (position: Position, items: Array<ReactNode>) => (
+    const setContextMenu = (position: Position, items: Array<ContextMenuItemParams>) => (
         setContextMenuState({
             position,
             items,
