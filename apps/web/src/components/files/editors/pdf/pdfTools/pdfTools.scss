@@ -60,13 +60,29 @@
         &.column {
             flex-direction: column;
 
-            button:hover {
-                transform: translateX(-10%) scale(1.05);
+            &.left {
+                button:hover {
+                    transform: translateX(10%) scale(1.05);
+                }
+            }
+            &.right {
+                button:hover {
+                    transform: translateX(-10%) scale(1.05);
+                }
             }
         }
-        &.row button:hover {
-            transform: translateY(-10%) scale(1.05);
-        }
+        &.row {
+            &.bot {
+                button:hover {
+                    transform: translateY(-10%) scale(1.05);
+                }
+            }
+            &.top {
+                button:hover {
+                    transform: translateY(10%) scale(1.05);
+                }
+            }
+    }
 
 
         button {

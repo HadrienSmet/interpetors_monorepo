@@ -13,12 +13,13 @@ export type ContextMenuItemParams =  {
 };
 export type ContextMenuContextState = {
     readonly items: Array<ContextMenuItemParams>;
+    readonly onBlur?: (() => void) | undefined;
     readonly position: Position;
 };
 export type ContextMenuContextValue =
     & ContextMenuContextState
     & {
-        readonly setContextMenu: (position: Position, items: Array<ContextMenuItemParams>) => void;
+        readonly setContextMenu: (position: Position, items: Array<ContextMenuItemParams>, onBlur?: () => void) => void;
         readonly removeContextMenu: () => void;
     };
 

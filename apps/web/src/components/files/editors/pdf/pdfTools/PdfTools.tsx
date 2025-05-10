@@ -18,7 +18,9 @@ import "./pdfTools.scss";
 export const PdfTools = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [isLandscape, setIsLandscape] = useState(false);
+    const [isLeftSide, setIsLeftSide] = useState(true);
     const [isOpen, setIsOpen] = useState(true);
+    const [isTopSide, setIsTopSide] = useState(true);
     const [position, setPosition] = useState({ x: 0, y: 0 });
 
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -63,6 +65,11 @@ export const PdfTools = () => {
         );
 
         setPosition({ x: clampedX, y: clampedY });
+
+        const centerX = parentRect.width / 2;
+        setIsLeftSide(clampedX < centerX);
+
+        setIsTopSide(e.clientY < (window.innerHeight/2));
     };
 
     const onMouseUp = () => setIsDragging(false);
@@ -137,7 +144,7 @@ export const PdfTools = () => {
                 <>
                     <div className={`divider ${dynamicClass}`} />
                     <div
-                        className={`tools-container ${dynamicClass}`}
+                        className={`tools-container ${dynamicClass} ${isLeftSide ? "left" : "right"} ${isTopSide ? "top" : "bot"}`}
                     >
                         <button title={t("views.new.fileEditor.settings.underline")}>
                             <MdBorderColor />

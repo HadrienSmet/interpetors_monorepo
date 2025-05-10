@@ -122,7 +122,7 @@ export const TreeNode = ({
         e.stopPropagation();
 
         setHighlightedFolderPath(fullPath);
-        setContextMenu({ x: e.clientX, y: e.clientY }, contextMenuItems);
+        setContextMenu({ x: e.clientX, y: e.clientY }, contextMenuItems, () => setHighlightedFolderPath(null));
     };
     const onCreateChange = (e: ChangeEvent<HTMLInputElement>) => setNewFolderName(e.target.value);
     const onCreateKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
