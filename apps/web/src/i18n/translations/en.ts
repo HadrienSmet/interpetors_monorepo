@@ -40,9 +40,11 @@ export const en = {
                         drag: "Drag",
                         highlight: "Highlight",
                         horizontal: "Horizontal display",
+                        note: "Add a note",
                         open: "Open",
                         underline: "Underline",
                         vertical: "Vertical display",
+                        vocabulary: "Add to vocabulary",
                     }
                 },
                 inputs: {

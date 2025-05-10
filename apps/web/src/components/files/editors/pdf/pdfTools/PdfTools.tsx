@@ -3,10 +3,12 @@ import { useTranslation } from "react-i18next";
 import {
     MdBorderColor,
     MdBrush,
+    MdComment,
     MdDragIndicator,
     MdExpandLess,
     MdExpandMore,
     MdFormatColorFill,
+    MdOutlineMenuBook,
     MdOutlineMoreHoriz,
     MdOutlineMoreVert,
 } from "react-icons/md";
@@ -145,6 +147,12 @@ export const PdfTools = () => {
                         </button>
                         <button title={t("views.new.fileEditor.settings.brush")}>
                             <MdBrush />
+                        </button>
+                        <button title={t("views.new.fileEditor.settings.note")}>
+                            <MdComment />
+                        </button>
+                        <button title={t("views.new.fileEditor.settings.vocabulary")}>
+                            <MdOutlineMenuBook />
                         </button>
                     </div>
                 </>

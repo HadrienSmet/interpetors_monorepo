@@ -40,9 +40,11 @@ export const fr = {
                         drag: "Déplacer la palette d'outils",
                         highlight: "Surligner",
                         horizontal: "Afficher horizontalement",
+                        note: "Ajouter une note",
                         open: "Ouvrir la palette d'outils",
                         underline: "Souligner",
                         vertical: "Afficher verticalement",
+                        vocabulary: "Ajouter au vocabulaire"
                     }
                 },
                 inputs: {
