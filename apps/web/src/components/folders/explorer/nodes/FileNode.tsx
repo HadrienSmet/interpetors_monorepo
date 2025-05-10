@@ -58,10 +58,14 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
         setContextMenu({ x: e.clientX, y: e.clientY }, items);
     };
     const onDoubleClick = () => setIsEditingFile(true);
-    const onDragStart = (e: React.DragEvent<HTMLDivElement>) => e.dataTransfer.setData(
-        "application/json",
-        JSON.stringify({ fileName: node.name })
-    );
+    const onDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+
+        e.dataTransfer.setData(
+            "application/json",
+            JSON.stringify({ fileName: node.name })
+        );
+    };
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") handleRename();
     };
@@ -70,6 +74,7 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
         <div
             className={`folders-explorer__item ${(selectedFile && node.name === selectedFile.name) ? "selected" : ""}`}
             draggable
+            onBlur={() => setIsEditingFile(false)}
             onClick={onClick}
             onContextMenu={onContextMenu}
             onDoubleClick={onDoubleClick}

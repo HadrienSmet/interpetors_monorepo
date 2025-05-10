@@ -55,7 +55,9 @@
     // =================
     // =  TRANSITIONS  =
     // =================
+    --transition-hover: 0.2s;
     --transition-theme: 0.4s;
+    --transition-appear: 0.6s;
 }
 
 [data-theme="dark"] {

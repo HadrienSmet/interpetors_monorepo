@@ -27,10 +27,14 @@ export const TreeNode = ({
     selectedFile,
     setHighlightedFolderPath,
 }: FolderNodeProps) => {
+    /** Indicates if user is creating a folder inside the TreeNode */
     const [isCreating, setIsCreating] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
+    /** Indicates if user is renaming the TreeNode */
+    const [isRenaming, setIsRenaming] = useState(false);
     const [isOpen, setIsOpen] = useState(depth === 0);
+    /** Name of the sub folder that is being created */
     const [newFolderName, setNewFolderName] = useState("");
+    /** Name of the folder while getting renamed */
     const [updatedName, setUpdatedName] = useState(name);
 
     const folderRef = useRef<HTMLDivElement | null>(null);
@@ -60,6 +64,7 @@ export const TreeNode = ({
             folders.create(trimmed, fullPath);
         }
 
+        setNewFolderName("");
         setIsCreating(false);
     };
     const handleRename = () => {
@@ -69,7 +74,7 @@ export const TreeNode = ({
             folders.rename(fullPath, trimmed);
         }
 
-        setIsEditing(false);
+        setIsRenaming(false);
     };
 
     const contextMenuItemClick = (action: () => void) => {
@@ -96,7 +101,7 @@ export const TreeNode = ({
                     <p>{t("views.new.context-menu.folder.rename")}</p>
                 </>
             ),
-            onClick: () => contextMenuItemClick(() => setIsEditing(true)),
+            onClick: () => contextMenuItemClick(() => setIsRenaming(true)),
         },
         {
             children: (
@@ -123,7 +128,7 @@ export const TreeNode = ({
     const onCreateKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") handleCreation();
     };
-    const onDoubleClick = () => setIsEditing(true);
+    const onDoubleClick = () => setIsRenaming(true);
     const onDragEnter = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -147,18 +152,31 @@ export const TreeNode = ({
     const onDragOver = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
     };
+    const onDragStart = (e: DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+
+        e.dataTransfer.setData("application/folder-path", fullPath);
+        e.dataTransfer.effectAllowed = "move";
+    }
     const onDrop = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
         setHighlightedFolderPath(null);
 
-        const data = e.dataTransfer.getData("application/json");
-        if (!data) return;
+        const fileData = e.dataTransfer.getData("application/json");
+        if (fileData) {
+            const { fileName } = JSON.parse(fileData);
 
-        const { fileName } = JSON.parse(data);
+            files.changeDirectory(fileName, fullPath);
+        }
 
-        files.changeDirectory(fileName, fullPath);
+        const originPath = e.dataTransfer.getData("application/folder-path");
+        if (!originPath) {
+            return;
+        };
+
+        folders.changeDirectory(originPath, fullPath);
     };
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") handleRename();
@@ -178,10 +196,12 @@ export const TreeNode = ({
 
     return (
         <div
+            draggable
             onContextMenu={onContextMenu}
             onDragEnter={onDragEnter}
             onDragLeave={onDragLeave}
             onDragOver={onDragOver}
+            onDragStart={onDragStart}
             onDrop={onDrop}
             ref={folderRef}
             style={{
@@ -203,15 +223,17 @@ export const TreeNode = ({
                     ? <VscFolderOpened />
                     : <VscFolder />
                 }
-                {isEditing
-                    ? (<InputStyleLess
-                        autoFocus
-                        name="folder-update-name"
-                        onBlur={() => setIsEditing(false)}
-                        onChange={onChange}
-                        onKeyDown={onKeyDown}
-                        value={updatedName}
-                    />)
+                {isRenaming
+                    ? (
+                        <InputStyleLess
+                            autoFocus
+                            name="folder-update-name"
+                            onBlur={() => setIsRenaming(false)}
+                            onChange={onChange}
+                            onKeyDown={onKeyDown}
+                            value={updatedName}
+                        />
+                    )
                     : (<p>{name}</p>)
                 }
 
@@ -219,15 +241,20 @@ export const TreeNode = ({
             {isOpen && (
                 <div className="nested-content">
                     {isCreating && (
-                        <InputStyleLess
-                            autoFocus
-                            name="folder-create-name"
-                            onBlur={() => setIsCreating(false)}
-                            onChange={onCreateChange}
-                            onKeyDown={onCreateKeyDown}
+                        <div
+                            className="folders-explorer__item folder"
                             style={{ marginLeft: getPaddingLeft(depth + 1) }}
-                            value={newFolderName}
-                        />
+                        >
+                            <VscFolder />
+                            <InputStyleLess
+                                autoFocus
+                                name="folder-create-name"
+                                onBlur={() => setIsCreating(false)}
+                                onChange={onCreateChange}
+                                onKeyDown={onCreateKeyDown}
+                                value={newFolderName}
+                            />
+                        </div>
                     )}
                     {Object.entries(node).sort().map(([childName, childNode]) => (
                         <TreeNode

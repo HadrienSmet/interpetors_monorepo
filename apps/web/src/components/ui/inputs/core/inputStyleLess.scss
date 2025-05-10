@@ -3,18 +3,7 @@
     border: none;
     color: var(--clr-txt);
     position: relative;
-    + .fake-border {
-        background-color: var(--clr-txt-06);
-        height: var(--border-m);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: 0.3s ease-in-out;
-        width: 100%;
-    }
     &:focus {
         outline: none;
-        + .fake-border {
-            transform: scaleX(1);
-        }
     }
 }

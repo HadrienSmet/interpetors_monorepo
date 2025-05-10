@@ -13,7 +13,7 @@ body {
     transition: background-color var(--transition-theme);
     &::-webkit-scrollbar {
         background-color: transparent;
-        transition: display 0.2s ease-in-out;
+        transition: display var(--transition-hover) ease-in-out;
         width: 16px;
     }
     &:not([no-y-overflow])::-webkit-scrollbar-thumb {

@@ -12,6 +12,6 @@
         color: var(--clr-txt-04);
         display: flex;
         justify-content: center;
-        transition: 0.2s ease-out;
+        transition: var(--transition-hover) ease-out;
     }
 }

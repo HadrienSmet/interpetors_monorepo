@@ -12,7 +12,7 @@ export type FoldersManagerContextType = {
         readonly rename: (file: File, name: string) => void;
     };
     readonly folders: {
-        readonly changeDirectory: (folder: FolderStructure, destination: string) => void;
+        readonly changeDirectory: (source: string, destination: string) => void;
         readonly create: (name: string, destination: string) => void;
         readonly delete: (destination: string) => void;
         readonly onDrop: (folder: FolderStructure) => void;

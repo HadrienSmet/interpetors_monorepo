@@ -118,6 +118,71 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
     };
 
     // ---------- Folders methods ----------
+    const changeFolderDirectory = (sourcePath: string, destinatationPath: string) => {
+        const sourceParts = getTargetKeys(sourcePath);
+        const destinationParts = getTargetKeys(destinatationPath);
+
+        const moveFolder = (structure: FolderStructure): [FolderStructure, FolderStructure | null] => {
+            const result: FolderStructure = {};
+            let folderToMove: FolderStructure | null = null;
+
+            for (const [key, value] of Object.entries(structure)) {
+                if (!(value instanceof File)) {
+                    if (sourceParts[0] === key) {
+                        if (sourceParts.length === 1) {
+                            // This is the folder we want to remove.
+                            folderToMove = value;
+                            // skip from result
+                            continue;
+                        }
+
+                        sourceParts.shift();
+                    }
+
+                    const [newSubStructure, moved] = moveFolder(value);
+                    result[key] = newSubStructure;
+
+                    if (moved) {
+                        folderToMove = moved;
+                    };
+                } else {
+                    result[key] = value;
+                }
+            }
+
+            return ([result, folderToMove]);
+        };
+        const insertFolder = (structure: FolderStructure, parts: string[], folder: FolderStructure): void => {
+            const [head, ...rest] = parts;
+
+            if (!head) return;
+
+            if (!(head in structure)) {
+                structure[head] = {};
+            }
+
+            if (rest.length === 0) {
+                // Insert folder here
+                Object.assign((structure[head] as FolderStructure), folder);
+            } else {
+                insertFolder(structure[head] as FolderStructure, rest, folder);
+            }
+        };
+
+        setFoldersStructures(state =>
+            state.map(structure => {
+                const [newStructure, folderToMove] = moveFolder(structure);
+
+                if (!folderToMove) return (newStructure);
+
+                insertFolder(newStructure, destinationParts, {
+                    [sourceParts[sourceParts.length - 1]]: folderToMove,
+                });
+
+                return (newStructure);
+            })
+        );
+    };
     const createFolder = (folderName: string, targetPath: string) => {
         const pathParts = getTargetKeys(targetPath);
 
@@ -160,13 +225,11 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
 
             for (const [key, value] of Object.entries(structure)) {
                 if (key === current) {
-                    // Si on est au bon niveau et que c’est un dossier à supprimer
                     if (rest.length === 0 && !(value instanceof File)) {
                         // Skip it = delete
                         continue;
                     }
 
-                    // Sinon, on continue à descendre
                     if (!(value instanceof File)) {
                         result[key] = removeFolder(value, rest);
                     } else {
@@ -223,7 +286,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             rename: renameFile,
         },
         folders: {
-            changeDirectory: () => null,
+            changeDirectory: changeFolderDirectory,
             create: createFolder,
             delete: deleteFolder,
             onDrop,

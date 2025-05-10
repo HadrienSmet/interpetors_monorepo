@@ -9,10 +9,13 @@
         display: flex;
         gap: var(--space-s);
         padding: var(--space-xs);
-        transition: 0.2s ease-in-out;
+        transition: var(--transition-hover) ease-in-out;
 
         &:hover {
             background-color: var(--clr-txt-01);
+        }
+        input {
+            font-family: "--font-default";
         }
         svg {
             flex-shrink: 0;
