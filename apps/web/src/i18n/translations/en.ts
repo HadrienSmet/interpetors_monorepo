@@ -33,6 +33,18 @@ export const en = {
                         rename: "Rename the folder",
                     },
                 },
+                fileEditor: {
+                    settings: {
+                        brush: "Brush",
+                        close: "Close",
+                        drag: "Drag",
+                        highlight: "Highlight",
+                        horizontal: "Horizontal display",
+                        open: "Open",
+                        underline: "Underline",
+                        vertical: "Vertical display",
+                    }
+                },
                 inputs: {
                     "meeting-documents": "Provide the documents related to the reunion that you are preparing.",
                     title: "Define a title for this preparation",

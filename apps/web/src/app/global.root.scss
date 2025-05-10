@@ -1,5 +1,9 @@
 :root {
     //=====================
+    //=       BLURS       =
+    //=====================
+    --blur-modal:      4px;
+    //=====================
     //=   BORDER WIDTHS   =
     //=====================
     --border-s:        1px;
@@ -63,6 +67,7 @@
 [data-theme="dark"] {
     --clr-bg:             rgb(0, 28, 52);
     --clr-bg-01:     rgba(0, 28, 52,0.1);
+    --clr-bg-06:     rgba(0, 28, 52,0.6);
 
     --clr-bg-dark:        rgb(1, 22, 42);
     --clr-bg-light:       rgb(1, 33, 61);

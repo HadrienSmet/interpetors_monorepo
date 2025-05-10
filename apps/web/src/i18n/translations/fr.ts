@@ -33,6 +33,18 @@ export const fr = {
                         rename: "Renommer le dossier",
                     },
                 },
+                fileEditor: {
+                    settings: {
+                        brush: "Pinceau",
+                        close: "Fermer la palette d'outils",
+                        drag: "Déplacer la palette d'outils",
+                        highlight: "Surligner",
+                        horizontal: "Afficher horizontalement",
+                        open: "Ouvrir la palette d'outils",
+                        underline: "Souligner",
+                        vertical: "Afficher verticalement",
+                    }
+                },
                 inputs: {
                     "meeting-documents": "Fournissez les documents relatifs à la réunion à laquelle vous souhaitez vous préparer.",
                     title: "Définissez un titre à votre préparation.",

@@ -6,6 +6,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { Loader } from "@/components";
 import "@/workers/pdfConfig";
 
+import { PdfTools } from "./pdfTools";
 import "./pdfEditor.scss";
 
 const options = {
@@ -23,35 +24,29 @@ export const PdfEditor = (props: { file: PDFFile; }) => {
     };
 
     return (
-
-        <Document
-            file={props.file}
-            loading={(
-                <div
-                    style={{
-                        alignItems: "center",
-                        display: "flex",
-                        height: "100%",
-                        justifyContent: "center",
-                        width: "100%",
-                    }}
-                >
-                    <Loader size="fullScreen" />
-                </div>
-            )}
-            onLoadSuccess={onDocumentLoadSuccess}
-            options={options}
-        >
-            {Array.from(new Array(numPages), (_, index) => (
-                <div
-                    className="page-container"
-                    key={`page_${index + 1}`}
-                >
-                    <Page
-                        pageNumber={index + 1}
-                    />
-                </div>
-            ))}
-        </Document>
+        <div className="pdf-editor">
+            <PdfTools />
+            <Document
+                file={props.file}
+                loading={(
+                    <div className="loader-container">
+                        <Loader size="fullScreen" />
+                    </div>
+                )}
+                onLoadSuccess={onDocumentLoadSuccess}
+                options={options}
+            >
+                {Array.from(new Array(numPages), (_, index) => (
+                    <div
+                        className="page-container"
+                        key={`page_${index + 1}`}
+                    >
+                        <Page
+                            pageNumber={index + 1}
+                        />
+                    </div>
+                ))}
+            </Document>
+        </div>
     );
 };
