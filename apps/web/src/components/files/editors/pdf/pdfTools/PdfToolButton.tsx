@@ -1,3 +1,4 @@
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
     MdBorderColor,
@@ -14,11 +15,11 @@ export enum PDF_TOOLS {
     UNDERLINE = "underline",
     VOCABULARY = "vocabulary",
 }
-type ToolButtonProps = {
-    readonly icon: JSX.Element;
+type ToolButtonItem = {
+    readonly icon: React.JSX.Element;
     readonly id: PDF_TOOLS;
 };
-export const TOOLS_BUTTONS: Array<ToolButtonProps> = [
+export const TOOLS_BUTTONS: Array<ToolButtonItem> = [
     {
         icon: <MdBorderColor />,
         id: PDF_TOOLS.UNDERLINE,
@@ -40,7 +41,13 @@ export const TOOLS_BUTTONS: Array<ToolButtonProps> = [
         id: PDF_TOOLS.VOCABULARY,
     },
 ];
-export const ToolButton = (props: ToolButtonProps & { tool: PDF_TOOLS | null; setTool: (tool: PDF_TOOLS) => void; }) => {
+type ToolButtonProps =
+    & ToolButtonItem
+    & {
+        readonly tool: PDF_TOOLS | null;
+        readonly setTool: (tool: PDF_TOOLS) => void;
+    };
+export const ToolButton = (props: ToolButtonProps) => {
     const { t } = useTranslation();
 
     return (

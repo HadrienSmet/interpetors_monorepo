@@ -23,6 +23,12 @@ export const en = {
         views: {
             new: {
                 "context-menu": {
+                    editor: {
+                        highlight: "Highlight the selection",
+                        note: "Create a note from selection",
+                        underline: "Underline the selection",
+                        vocabulary: "Add to vocabulary",
+                    },
                     file: {
                         delete: "Delete the file",
                         rename: "Rename the file",

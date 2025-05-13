@@ -23,6 +23,12 @@ export const fr = {
         views: {
             new: {
                 "context-menu": {
+                    editor: {
+                        highlight: "Surligner la sélection",
+                        note: "Créer une note à partir de la sélection",
+                        underline: "Souligner la sélection",
+                        vocabulary: "Ajouter au vocabulaire",
+                    },
                     file: {
                         delete: "Supprimer le fichier",
                         rename: "Renommer le fichier",
