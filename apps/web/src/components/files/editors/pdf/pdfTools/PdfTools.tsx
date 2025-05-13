@@ -1,25 +1,38 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    MdBorderColor,
-    MdBrush,
-    MdComment,
     MdDragIndicator,
     MdExpandLess,
     MdExpandMore,
-    MdFormatColorFill,
-    MdOutlineMenuBook,
     MdOutlineMoreHoriz,
     MdOutlineMoreVert,
 } from "react-icons/md";
 
+import { ColorPicker, RgbColor } from "@/components";
+
+import { PDF_TOOLS, ToolButton, TOOLS_BUTTONS } from "./PdfToolButton";
 import "./pdfTools.scss";
 
-export const PdfTools = () => {
+export type PdfEditorToolsState = {
+    readonly tool: PDF_TOOLS | null;
+    readonly color: RgbColor;
+};
+type PdfToolsProps =
+    & PdfEditorToolsState
+    & {
+        readonly setColor: (color: RgbColor) => void;
+        readonly setTool: (tool: PDF_TOOLS) => void;
+    };
+
+const PANEL_PADDING = 8 as const;
+const PANEL_SIZE = 305 as const;
+const COLOR_PICKER_DIMENSION = PANEL_SIZE - (PANEL_PADDING * 2);
+export const PdfTools = (props: PdfToolsProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const [isLandscape, setIsLandscape] = useState(false);
     const [isLeftSide, setIsLeftSide] = useState(true);
     const [isOpen, setIsOpen] = useState(true);
+    const [isPickingColor, setIsPickingColor] = useState(false);
     const [isTopSide, setIsTopSide] = useState(true);
     const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -28,12 +41,16 @@ export const PdfTools = () => {
 
     const { t } = useTranslation();
 
+    const colorPickerBg = useMemo(() => (
+        `rgb(${props.color.r * 255}, ${props.color.g * 255}, ${props.color.b * 255})`
+    ), [props.color]);
     const dynamicClass = useMemo(() => (
         isLandscape ? "row" : "column"
     ), [isLandscape]);
 
     const toggleDirection = () => setIsLandscape(state => !state);
     const toggleOpen = () => setIsOpen(state => !state);
+    const togglePickingColor = () => setIsPickingColor(state => !state);
 
     const onMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
         setIsDragging(true);
@@ -43,7 +60,6 @@ export const PdfTools = () => {
             y: e.clientY - position.y,
         };
     };
-
     const onMouseMove = (e: MouseEvent | React.MouseEvent<HTMLButtonElement>) => {
         if (!isDragging || !containerRef.current) return;
 
@@ -71,7 +87,6 @@ export const PdfTools = () => {
 
         setIsTopSide(e.clientY < (window.innerHeight/2));
     };
-
     const onMouseUp = () => setIsDragging(false);
 
     useEffect(() => {
@@ -88,6 +103,12 @@ export const PdfTools = () => {
             window.removeEventListener("mouseup", onMouseUp);
         };
     }, [isDragging]);
+    // Cleaning the state on closing panel tools
+    useEffect(() => {
+        if (!isOpen) {
+            setIsPickingColor(false);
+        }
+    }, [isOpen]);
 
     return (
         <div
@@ -97,72 +118,83 @@ export const PdfTools = () => {
                 transform: `translate(${position.x}px, ${position.y}px)`,
             }}
         >
-            {/* Tools settings */}
-            <div className={`settings ${dynamicClass}`}>
-                <button
-                    onMouseDown={onMouseDown}
-                    onMouseMove={onMouseMove}
-                    onMouseUp={onMouseUp}
-                    style={{ cursor: isDragging ? "grabbing" : "grab", }}
-                    title={t("views.new.fileEditor.settings.drag")}
-                >
-                    <MdDragIndicator />
-                </button>
-                {isLandscape
-                    ? (
-                        <button title={t("views.new.fileEditor.settings.vertical")}>
-                            <MdOutlineMoreVert onClick={toggleDirection} />
-                        </button>
-                    )
-                    : (
-                        <button title={t("views.new.fileEditor.settings.horizontal")}>
-                            <MdOutlineMoreHoriz onClick={toggleDirection} />
-                        </button>
-                    )
-                }
-                {isOpen
-                    ? (
-                        <button
-                            className={isLandscape ? "expansion-row" : ""}
-                            title={t("views.new.fileEditor.settings.close")}
-                        >
-                            <MdExpandLess onClick={toggleOpen} />
-                        </button>
-                    )
-                    : (
-                        <button
-                            className={isLandscape ? "expansion-row" : ""}
-                            title={t("views.new.fileEditor.settings.open")}
-                        >
-                            <MdExpandMore onClick={toggleOpen} />
-                        </button>
-                    )
-                }
-            </div>
-            {/* File tools */}
-            {isOpen && (
-                <>
-                    <div className={`divider ${dynamicClass}`} />
-                    <div
-                        className={`tools-container ${dynamicClass} ${isLeftSide ? "left" : "right"} ${isTopSide ? "top" : "bot"}`}
+            <div className={`pdf-tools-buttons ${dynamicClass}`}>
+                {/* Tools settings */}
+                <div className={`settings ${dynamicClass}`}>
+                    <button
+                        onMouseDown={onMouseDown}
+                        onMouseMove={onMouseMove}
+                        onMouseUp={onMouseUp}
+                        style={{ cursor: isDragging ? "grabbing" : "grab", }}
+                        title={t("views.new.fileEditor.settings.drag")}
                     >
-                        <button title={t("views.new.fileEditor.settings.underline")}>
-                            <MdBorderColor />
-                        </button>
-                        <button title={t("views.new.fileEditor.settings.highlight")}>
-                            <MdFormatColorFill />
-                        </button>
-                        <button title={t("views.new.fileEditor.settings.brush")}>
-                            <MdBrush />
-                        </button>
-                        <button title={t("views.new.fileEditor.settings.note")}>
-                            <MdComment />
-                        </button>
-                        <button title={t("views.new.fileEditor.settings.vocabulary")}>
-                            <MdOutlineMenuBook />
-                        </button>
-                    </div>
-                </>
+                        <MdDragIndicator />
+                    </button>
+                    {isLandscape
+                        ? (
+                            <button title={t("views.new.fileEditor.settings.vertical")}>
+                                <MdOutlineMoreVert onClick={toggleDirection} />
+                            </button>
+                        )
+                        : (
+                            <button title={t("views.new.fileEditor.settings.horizontal")}>
+                                <MdOutlineMoreHoriz onClick={toggleDirection} />
+                            </button>
+                        )
+                    }
+                    {isOpen
+                        ? (
+                            <button
+                                className={isLandscape ? "expansion-row" : ""}
+                                title={t("views.new.fileEditor.settings.close")}
+                            >
+                                <MdExpandLess onClick={toggleOpen} />
+                            </button>
+                        )
+                        : (
+                            <button
+                                className={isLandscape ? "expansion-row" : ""}
+                                title={t("views.new.fileEditor.settings.open")}
+                            >
+                                <MdExpandMore onClick={toggleOpen} />
+                            </button>
+                        )
+                    }
+                </div>
+                {/* File tools */}
+                {isOpen && (
+                    <>
+                        <div className={`divider ${dynamicClass}`} />
+                        <div
+                            className={`tools-container ${dynamicClass} ${isLeftSide ? "left" : "right"} ${isTopSide ? "top" : "bot"}`}
+                        >
+                            {TOOLS_BUTTONS.map(item => (
+                                <ToolButton
+                                    key={item.id}
+                                    {...item}
+                                    {...props}
+                                />
+                            ))}
+                            <button>
+                                <div
+                                    className="color-picker-trigger"
+                                    onClick={togglePickingColor}
+                                    style={{ backgroundColor: colorPickerBg }}
+                                />
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {isPickingColor && (
+                <div className="color-picker-container">
+                    <ColorPicker
+                        {...props}
+                        height={COLOR_PICKER_DIMENSION}
+                        width={COLOR_PICKER_DIMENSION}
+                    />
+                </div>
             )}
         </div>
     );

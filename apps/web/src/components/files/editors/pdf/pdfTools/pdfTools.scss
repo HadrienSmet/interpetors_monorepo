@@ -4,103 +4,124 @@
     -webkit-backdrop-filter: blur(4px);
     box-shadow: 0 2px 8px var(--clr-txt-01);
     display: flex;
-    gap: var(--space-s);
     left: 0;
-    padding: var(--space-m);
     position: absolute;
     top: 0;
     z-index: 5;
 
     &.column {
-        flex-direction: column;
-    }
-    &.row {
         flex-direction: row;
     }
-
-    .divider {
-        background-color: var(--clr-txt-02);
-
-        &.column {
-            height: 1px;
-            width: 100%;
-        }
-        &.row {
-            min-height: 100%;
-            width: 1px;
-        }
+    &.row {
+        flex-direction: column;
     }
-    .settings {
-        display: flex;
-        justify-content: space-between;
-
-        &.column {
-            flex-direction: row;
-            width: 50px
-        }
-        &.row {
-            flex-direction: column;
-            height: 50px;
-        }
-
-        button {
-            height: 16px;
-            width: 16px;
-        }
-        .expansion-row {
-            transform: rotate(-90deg);
-        }
-    }
-
-    .tools-container {
-        align-items: center;
+    &-buttons {
         display: flex;
         gap: var(--space-s);
+        padding: var(--space-m);
 
         &.column {
             flex-direction: column;
+        }
+        &.row {
+            flex-direction: row;
+        }
 
-            &.left {
-                button:hover {
+        .color-picker-trigger {
+            border: var(--border-m) solid var(--clr-bg-light);
+            border-radius: var(--radius-round);
+            height: 100%;
+            width: 100%;
+
+            &:hover {
+                border-color: var(--clr-txt-02);
+            }
+        }
+        .divider {
+            background-color: var(--clr-txt-02);
+
+            &.column {
+                height: 1px;
+                width: 100%;
+            }
+            &.row {
+                min-height: 100%;
+                width: 1px;
+            }
+        }
+        .settings {
+            display: flex;
+            justify-content: space-between;
+
+            &.column {
+                flex-direction: row;
+                padding-bottom: var(--space-s);
+                width: 50px;
+            }
+            &.row {
+                flex-direction: column;
+                padding-right: var(--space-s);
+                height: 50px;
+            }
+
+            button {
+                height: 16px;
+                width: 16px;
+            }
+            .expansion-row {
+                transform: rotate(-90deg);
+            }
+        }
+
+        .tools-container {
+            align-items: center;
+            display: flex;
+            gap: var(--space-s);
+
+            &.column {
+                flex-direction: column;
+                padding-top: var(--space-m);
+
+                &.left button:hover {
                     transform: translateX(10%) scale(1.05);
                 }
-            }
-            &.right {
-                button:hover {
+                &.right button:hover {
                     transform: translateX(-10%) scale(1.05);
                 }
             }
-        }
-        &.row {
-            &.bot {
-                button:hover {
+            &.row {
+                padding-left: var(--space-m);
+
+                &.bot button:hover {
                     transform: translateY(-10%) scale(1.05);
                 }
-            }
-            &.top {
-                button:hover {
+                &.top button:hover {
                     transform: translateY(10%) scale(1.05);
                 }
             }
-    }
 
+            button {
+                align-items: center;
+                background-color: var(--clr-bg-light);
+                border-radius: var(--radius-round);
+                display: flex;
+                height: 40px;
+                justify-content: center;
+                // padding: var(--space-m);
+                position: relative;
+                transition: var(--transition-hover);
+                width: 40px;
 
-        button {
-            align-items: center;
-            background-color: var(--clr-bg-light);
-            border-radius: var(--radius-round);
-            display: flex;
-            height: 40px;
-            justify-content: center;
-            padding: var(--space-m);
-            position: relative;
-            transition: var(--transition-hover);
-            width: 40px;
-
-            &:hover {
-                background-color: var(--clr-txt-04);
-                color: var(--clr-bg-light);
+                &.selected,
+                &:hover {
+                    background-color: var(--clr-txt-04);
+                    color: var(--clr-bg-light);
+                }
             }
         }
+    }
+
+    .color-picker-container {
+        padding: var(--space-m);
     }
 }

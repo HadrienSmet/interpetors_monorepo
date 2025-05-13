@@ -1,0 +1,36 @@
+.color-picker {
+    background:
+        linear-gradient(
+            to top,
+            black,
+            rgba(0,0,0,0.4),
+            transparent,
+            rgba(255,255,255,0.4),
+            white
+        ),
+        linear-gradient(
+            to right,
+            hsl(0, 100%, 50%),
+            hsl(60, 100%, 50%),
+            hsl(120, 100%, 50%),
+            hsl(180, 100%, 50%),
+            hsl(240, 100%, 50%),
+            hsl(300, 100%, 50%),
+            hsl(360, 100%, 50%)
+        );
+    border-radius: var(--radius-m);
+    box-shadow: 0 2px 8px var(--clr-txt-04);
+    cursor: crosshair;
+    position: relative;
+}
+
+.color-picker-cursor {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: var(--radius-round);
+    border: var(--border-m) solid #fff;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 8px var(--clr-txt-04);
+    pointer-events: none;
+}
