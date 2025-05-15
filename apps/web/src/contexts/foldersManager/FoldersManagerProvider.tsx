@@ -91,6 +91,15 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             })
         ));
     };
+    const deleteFile = (target: File) => {
+        const visitor: FileVisitor = (key, value) => {
+            if (value === target) return (null);
+
+            return ([key, value]);
+        };
+
+        setFoldersStructures(state => state.map(s => browseStructureToActionOnFile(s, visitor)));
+    };
     const renameFile = (target: File, newName: string) => {
         const visitor: FileVisitor = (key, value) => {
             if (value === target) {
@@ -107,9 +116,13 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
 
         setFoldersStructures(state => state.map(s => browseStructureToActionOnFile(s, visitor)));
     };
-    const deleteFile = (target: File) => {
+    const updateFile = (oldFile: File, newFile: File) => {
         const visitor: FileVisitor = (key, value) => {
-            if (value === target) return (null);
+            if (value === oldFile) {
+                const updatedFile = new File([newFile], oldFile.name, { type: oldFile.type });
+
+                return [key, updatedFile];
+            }
 
             return ([key, value]);
         };
@@ -284,6 +297,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             changeDirectory: changeFileDirectory,
             delete: deleteFile,
             rename: renameFile,
+            update: updateFile,
         },
         folders: {
             changeDirectory: changeFolderDirectory,

@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 
 import { RgbColor } from "@/components";
-import { useContextMenu } from "@/contexts";
+import { useContextMenu, useFoldersManager } from "@/contexts";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { ActionItem, getContextMenuItem, getRange, getRgbColor, PageRefs, updatePdfPage } from "./pdfEditor.utils";
 import { PDF_TOOLS, PdfEditorToolsState, PdfTool, TOOLS_ON_SELECTION } from "./pdfTools";
 
-type PDFFile = string | File | null;
+type PDFFile = File;
 export type UsePdfEditorProps = {
     readonly file: PDFFile;
 };
@@ -53,6 +53,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { setContextMenu } = useContextMenu();
+    const { files } = useFoldersManager();
     const { t } = useTranslation();
 
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => {
@@ -80,7 +81,9 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         const updatedBytes = await pdfDoc.save();
 
         const updatedBlob = new Blob([updatedBytes], { type: "application/pdf" });
-        const updatedFile = new File([updatedBlob], "modified.pdf", { type: "application/pdf" });
+        const updatedFile = new File([updatedBlob], pdfFile.name, { type: "application/pdf" });
+
+        files.update(pdfFile, updatedFile);
 
         setPdfFile(updatedFile);
         setCurrentRange(undefined);
