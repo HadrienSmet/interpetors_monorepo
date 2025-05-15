@@ -1,12 +1,8 @@
 import { createContext, ReactNode, useContext } from "react";
 
 import { getContextError } from "../utils";
+import { Position } from "@/types";
 
-// Should be located somewhere like packages/client/types
-export type Position = {
-    readonly x: number;
-    readonly y: number;
-};
 export type ContextMenuItemParams =  {
     readonly children: ReactNode;
     readonly onClick: () => void;

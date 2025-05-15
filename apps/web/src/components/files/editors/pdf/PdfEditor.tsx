@@ -14,6 +14,8 @@ const options = {
 
 export const PdfEditor = (props: UsePdfEditorProps) => {
     const {
+        containerRef,
+        customCursor,
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,
@@ -27,6 +29,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
     return (
         <div
             className="pdf-editor"
+            ref={containerRef}
         >
             <PdfTools
                 {...pdfTools}
@@ -62,6 +65,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                     );
                 })}
             </Document>
+            {customCursor && (customCursor)}
         </div>
     );
 };

@@ -10,18 +10,19 @@ import {
 
 import { ColorPicker, RgbColor } from "@/components";
 
-import { PDF_TOOLS, ToolButton, TOOLS_BUTTONS } from "./PdfToolButton";
+import { PdfTool, ToolButton, TOOLS_BUTTONS } from "./PdfToolButton";
 import "./pdfTools.scss";
+import { getRgbColor } from "../pdfEditor.utils";
 
 export type PdfEditorToolsState = {
-    readonly tool: PDF_TOOLS | null;
     readonly color: RgbColor;
+    readonly tool: PdfTool | null;
 };
 type PdfToolsProps =
     & PdfEditorToolsState
     & {
+        readonly onToolSelection: (tool: PdfTool | null) => void;
         readonly setColor: (color: RgbColor) => void;
-        readonly onToolSelection: (tool: PDF_TOOLS) => void;
     };
 
 const PANEL_PADDING = 8 as const;
@@ -41,12 +42,8 @@ export const PdfTools = (props: PdfToolsProps) => {
 
     const { t } = useTranslation();
 
-    const colorPickerBg = useMemo(() => (
-        `rgb(${props.color.r * 255}, ${props.color.g * 255}, ${props.color.b * 255})`
-    ), [props.color]);
-    const dynamicClass = useMemo(() => (
-        isLandscape ? "row" : "column"
-    ), [isLandscape]);
+    const colorPickerBg = useMemo(() => getRgbColor(props.color), [props.color]);
+    const dynamicClass = useMemo(() => (isLandscape ? "row" : "column"), [isLandscape]);
 
     const toggleDirection = () => setIsLandscape(state => !state);
     const toggleOpen = () => setIsOpen(state => !state);

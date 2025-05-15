@@ -1,6 +1,8 @@
 import { PropsWithChildren, useState } from "react";
 
-import { ContextMenuContext, ContextMenuContextState, ContextMenuItemParams, Position } from "./ContextMenuContext";
+import { Position } from "@/types";
+
+import { ContextMenuContext, ContextMenuContextState, ContextMenuItemParams } from "./ContextMenuContext";
 
 const INITIAL_STATE = {
     items: [],
