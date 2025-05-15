@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
@@ -11,6 +11,7 @@ import { PDFDocument } from "@/workers/pdfConfig";
 
 import { PDF_TOOLS, PdfEditorToolsState } from "./pdfTools";
 
+type PageRefs = Array<HTMLCanvasElement | undefined>;
 type PDFFile = string | File | null;
 
 export type UsePdfEditorProps = {
@@ -30,6 +31,44 @@ const getRange = () => {
     }
 
     return (range);
+};
+type UpdatePdfPageParams = {
+    readonly pageRefs: RefObject<PageRefs>;
+    readonly pdfDoc: PDFDocument;
+    readonly pdfTools: PdfEditorToolsState;
+    readonly rect: DOMRect;
+};
+const updatePdfPage = ({ pageRefs, pdfDoc, pdfTools, rect }: UpdatePdfPageParams) => {
+    const pageRef = pageRefs.current.find(ref => {
+        if (!ref) return (false);
+
+        const { top, bottom } = ref.getBoundingClientRect();
+
+        return (
+            rect.top >= top &&
+            rect.bottom <= bottom
+        );
+    });
+
+    if (!pageRef) return;
+
+    const pageIndex = pageRefs.current.indexOf(pageRef);
+    const page = pdfDoc.getPage(pageIndex);
+    const { width: pdfWidth, height: pdfHeight } = page.getSize();
+
+    // Getting the scale of the page
+    const scaleFactor = pageRef.clientWidth / pdfWidth;
+
+    const x = (rect.left - pageRef.getBoundingClientRect().left) / scaleFactor;
+    const y = pdfHeight - ((rect.bottom - pageRef.getBoundingClientRect().top) / scaleFactor);
+
+    page.drawRectangle({
+        x,
+        y,
+        width: rect.width / scaleFactor,
+        height: 2,
+        color: rgb(pdfTools.color.r, pdfTools.color.g, pdfTools.color.b),
+    });
 };
 export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Text selection range */
@@ -54,7 +93,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
      * Refs of each page used to display the pdf file
      * Used to know the positions of the interactions
      * */
-    const pageRefs = useRef<(HTMLCanvasElement | undefined)[]>([]);
+    const pageRefs = useRef<PageRefs>([]);
 
     const { setContextMenu } = useContextMenu();
     const { t } = useTranslation();
@@ -66,7 +105,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     const setTool = (tool: PDF_TOOLS | null) => setPdfTools(state => ({ ...state, tool }));
 
     const handleUnderline = async () => {
-        if (!pdfDoc || pdfTools.tool !== PDF_TOOLS.UNDERLINE) {
+        if (!pdfDoc) {
             return;
         }
 
@@ -77,43 +116,15 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         const rects = range.getClientRects();
 
-        Array.from(rects).forEach(rect => {
-            const pageRef = pageRefs.current.find(ref => {
-                if (!ref) return false;
-                const { top, bottom } = ref.getBoundingClientRect();
-
-                return (
-                    rect.top >= top &&
-                    rect.bottom <= bottom
-                );
-            });
-
-            if (!pageRef) return;
-
-            const pageIndex = pageRefs.current.indexOf(pageRef);
-            const page = pdfDoc.getPage(pageIndex);
-            const { width: pdfWidth, height: pdfHeight } = page.getSize();
-
-            // Getting the scale of the page
-            const scaleFactor = pageRef.clientWidth / pdfWidth;
-
-            const x = (rect.left - pageRef.getBoundingClientRect().left) / scaleFactor;
-            const y = pdfHeight - ((rect.bottom - pageRef.getBoundingClientRect().top) / scaleFactor);
-
-            page.drawRectangle({
-                x,
-                y,
-                width: rect.width / scaleFactor,
-                height: 2,
-                color: rgb(pdfTools.color.r, pdfTools.color.g, pdfTools.color.b),
-            });
-        });
+        Array.from(rects).forEach(rect => updatePdfPage({ pageRefs, pdfDoc, pdfTools, rect }));
 
         const updatedBytes = await pdfDoc.save();
+
         const updatedBlob = new Blob([updatedBytes], { type: "application/pdf" });
         const updatedFile = new File([updatedBlob], "modified.pdf", { type: "application/pdf" });
 
         setPdfFile(updatedFile);
+        setCurrentRange(undefined);
         setTool(null);
     };
 
@@ -154,15 +165,6 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         };
     }, []);
 
-    /** Handles the interactions when a text is already selected and the user picked a tool */
-    useEffect(() => {
-        if (
-            pdfTools.tool === PDF_TOOLS.UNDERLINE &&
-            currentRange
-        ) {
-            handleUnderline();
-        }
-    }, [pdfDoc, pdfTools, currentRange]);
     // Handles the pdf tools on mouse up (when the user stop selecting text)
     useEffect(() => {
         const handleMouseUp = () => {
@@ -176,7 +178,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         return () => {
             document.removeEventListener("mouseup", handleMouseUp);
         };
-    }, [pdfTools, pdfDoc]);
+    }, [currentRange, pdfTools, pdfDoc]);
 
     const items = [
         {
@@ -187,7 +189,6 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
                 </>
             ),
             onClick: () => {
-                setTool(PDF_TOOLS.UNDERLINE);
                 handleUnderline();
             },
         },
@@ -243,15 +244,22 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         setContextMenu({ x: e.clientX, y: e.clientY }, items);
     };
+    const onToolSelection = (tool: PDF_TOOLS | null) => {
+        if (tool === PDF_TOOLS.UNDERLINE) {
+            handleUnderline();
+        }
+
+        setTool(tool);
+    };
 
     return ({
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,
+        onToolSelection,
         pageRefs,
         pdfFile,
         pdfTools,
         setColor,
-        setTool,
     });
 };

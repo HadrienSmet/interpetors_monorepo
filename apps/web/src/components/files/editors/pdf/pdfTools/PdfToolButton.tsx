@@ -45,7 +45,7 @@ type ToolButtonProps =
     & ToolButtonItem
     & {
         readonly tool: PDF_TOOLS | null;
-        readonly setTool: (tool: PDF_TOOLS) => void;
+        readonly onToolSelection: (tool: PDF_TOOLS) => void;
     };
 export const ToolButton = (props: ToolButtonProps) => {
     const { t } = useTranslation();
@@ -53,7 +53,7 @@ export const ToolButton = (props: ToolButtonProps) => {
     return (
         <button
             className={props.id === props.tool ? "selected" : ""}
-            onClick={() => props.setTool(props.id)}
+            onClick={() => props.onToolSelection(props.id)}
             title={t(`views.new.fileEditor.settings.${props.id}`)}
         >
             {props.icon}

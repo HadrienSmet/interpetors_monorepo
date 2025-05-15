@@ -17,11 +17,11 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,
+        onToolSelection,
         pageRefs,
         pdfFile,
         pdfTools,
         setColor,
-        setTool,
     } = usePdfEditor(props);
 
     return (
@@ -30,8 +30,8 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
         >
             <PdfTools
                 {...pdfTools}
+                onToolSelection={onToolSelection}
                 setColor={setColor}
-                setTool={setTool}
             />
             <Document
                 file={pdfFile}

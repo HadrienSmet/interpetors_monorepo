@@ -21,7 +21,7 @@ type PdfToolsProps =
     & PdfEditorToolsState
     & {
         readonly setColor: (color: RgbColor) => void;
-        readonly setTool: (tool: PDF_TOOLS) => void;
+        readonly onToolSelection: (tool: PDF_TOOLS) => void;
     };
 
 const PANEL_PADDING = 8 as const;
