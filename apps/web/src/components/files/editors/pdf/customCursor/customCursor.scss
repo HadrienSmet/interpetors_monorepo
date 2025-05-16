@@ -1,0 +1,12 @@
+.custom-cursor {
+    align-items: center;
+    display: flex;
+    gap: var(--space-m);
+    position: absolute;
+
+    &-indicator {
+        border-radius: var(--radius-round);
+        height: 6px;
+        width: 6px;
+    }
+}

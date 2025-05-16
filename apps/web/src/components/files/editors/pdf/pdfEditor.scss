@@ -15,3 +15,7 @@
         width: 597px;
     }
 }
+
+.textLayer :is(span, br) {
+    cursor: inherit;
+}

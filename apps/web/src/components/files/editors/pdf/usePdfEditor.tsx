@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MdBorderColor, MdBrush, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
+import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
@@ -8,23 +8,13 @@ import { RgbColor } from "@/components";
 import { useContextMenu, useFoldersManager } from "@/contexts";
 import { PDFDocument } from "@/workers/pdfConfig";
 
-import { ActionItem, getContextMenuItem, getRange, getRgbColor, PageRefs, updatePdfPage } from "./pdfEditor.utils";
+import { CustomCursor } from "./customCursor";
+import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, getRgbColor, PageRefs, updatePdfDocumentOnSelection } from "./pdfEditor.utils";
 import { PDF_TOOLS, PdfEditorToolsState, PdfTool, TOOLS_ON_SELECTION } from "./pdfTools";
 
-type PDFFile = File;
 export type UsePdfEditorProps = {
-    readonly file: PDFFile;
+    readonly file: File;
 };
-
-const CURSOR_SIZE = 24 as const;
-const TOOLS_ICONS = {
-    [PDF_TOOLS.BRUSH]: (color: string, style: React.CSSProperties) => <MdBrush color={color} style={style} />,
-    [PDF_TOOLS.HIGHLIGHT]: (color: string, style: React.CSSProperties) => <MdFormatColorFill color={color} style={style} />,
-    [PDF_TOOLS.NOTE]: (color: string, style: React.CSSProperties) => <MdComment color={color} style={style} />,
-    [PDF_TOOLS.UNDERLINE]: (color: string, style: React.CSSProperties) => <MdBorderColor color={color} style={style} />,
-    [PDF_TOOLS.VOCABULARY]: (color: string, style: React.CSSProperties) => <MdOutlineMenuBook color={color} style={style} />,
-};
-
 export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Text selection range */
     const [currentRange, setCurrentRange] = useState<Range | undefined>(undefined);
@@ -34,7 +24,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Pdf document - Used to interact with the binary */
     const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
     /** Pdf file - Used to display the pdf file */
-    const [pdfFile, setPdfFile] = useState<PDFFile>(props.file);
+    const [pdfFile, setPdfFile] = useState<File>(props.file);
     /** State to interact with the pdf file */
     const [pdfTools, setPdfTools] = useState<PdfEditorToolsState>({
         tool: null,
@@ -64,7 +54,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
     // ------ HANDLERS ------
     /** Updates the pdf file and clean the tools */
-    const handleUnderline = async () => {
+    const handleSelection = async (tool: PdfTool) => {
         if (!pdfDoc) {
             return;
         }
@@ -76,12 +66,17 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         const rects = range.getClientRects();
 
-        Array.from(rects).forEach(rect => updatePdfPage({ pageRefs, pdfDoc, pdfTools, rect }));
+        Array.from(rects).forEach(rect => updatePdfDocumentOnSelection({
+            pageRefs,
+            pdfDoc,
+            pdfTools: {
+                color: pdfTools.color,
+                tool,
+            },
+            rect,
+        }));
 
-        const updatedBytes = await pdfDoc.save();
-
-        const updatedBlob = new Blob([updatedBytes], { type: "application/pdf" });
-        const updatedFile = new File([updatedBlob], pdfFile.name, { type: "application/pdf" });
+        const updatedFile = await getFileFromPdfDocument(pdfDoc, pdfFile);
 
         files.update(pdfFile, updatedFile);
 
@@ -93,11 +88,11 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
         [TOOLS_ON_SELECTION.UNDERLINE]: {
             icon: <MdBorderColor />,
-            onClick: () => handleUnderline(),
+            onClick: () => handleSelection(PDF_TOOLS.UNDERLINE),
         },
         [TOOLS_ON_SELECTION.HIGHLIGHT]: {
             icon: <MdFormatColorFill />,
-            onClick: () => console.log("highlight"),
+            onClick: () => handleSelection(PDF_TOOLS.HIGHLIGHT),
         },
         [TOOLS_ON_SELECTION.NOTE]: {
             icon: <MdComment />,
@@ -129,7 +124,6 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         loadPdf();
     }, [pdfFile]);
-
     // Responsible to store the text selection
     useEffect(() => {
         document.addEventListener("selectionchange", () => {
@@ -153,8 +147,11 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     // Handles the pdf tools on mouse up (when the user stop selecting text)
     useEffect(() => {
         const handleMouseUp = () => {
-            if (pdfTools.tool === PDF_TOOLS.UNDERLINE) {
-                handleUnderline();
+            if (
+                pdfTools.tool === PDF_TOOLS.UNDERLINE ||
+                pdfTools.tool === PDF_TOOLS.HIGHLIGHT
+            ) {
+                handleSelection(pdfTools.tool);
             }
         };
 
@@ -171,19 +168,12 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         const handleMouseMove = (e: MouseEvent) => {
             const { top: containerTop, left: containerLeft } = container.getBoundingClientRect();
-            const toolIcon = TOOLS_ICONS[pdfTools.tool!];
-            setCustomCursor(
-                toolIcon(
-                    getRgbColor(pdfTools.color),
-                    {
-                        height: CURSOR_SIZE,
-                        left: e.clientX - containerLeft,
-                        position: "absolute",
-                        top: e.clientY - containerTop - CURSOR_SIZE,
-                        width: CURSOR_SIZE,
-                    }
-                )
-            );
+
+            setCustomCursor(CustomCursor({
+                color: getRgbColor(pdfTools.color),
+                position: { x: e.clientX - containerLeft, y: e.clientY - containerTop },
+                tool: pdfTools.tool!,
+            }))
         };
 
         if (pdfTools.tool) {
@@ -203,7 +193,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
     const items = Object.entries(actionsRecord).map(([key, value]) => ({
         children: getContextMenuItem(key as TOOLS_ON_SELECTION, value, t),
-        onClick: value.onClick
+        onClick: value.onClick,
     }));
 
     // Handles the pdf tools on contextMenu + selectedText
@@ -230,11 +220,14 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         setContextMenu({ x: e.clientX, y: e.clientY }, Object.values(items));
     };
     const onToolSelection = (tool: PdfTool | null) => {
-        if (tool === PDF_TOOLS.UNDERLINE) {
-            handleUnderline();
-        }
-
         setTool(tool);
+
+        if (
+            tool === PDF_TOOLS.HIGHLIGHT ||
+            tool === PDF_TOOLS.UNDERLINE
+        ) {
+            handleSelection(tool);
+        }
     };
 
     return ({
