@@ -1,8 +1,10 @@
 import { RefObject } from "react";
+
 import { TFunction } from "i18next";
 import { rgb } from "pdf-lib";
 
 import { RgbColor } from "@/components/ui";
+import { Position } from "@/types";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { PDF_TOOLS, PdfEditorToolsState, TOOLS_ON_SELECTION } from "./pdfTools";
@@ -16,7 +18,7 @@ export type PageRefs = Array<HTMLCanvasElement | undefined>;
 const HIGLIGHT_OPACITY = 0.25 as const;
 const PDF_TYPE = { type: "application/pdf" } as const;
 const REGULAR_OPACITY = 1 as const;
-const UNDERLINE_HEIGHT = 2 as const;
+const STROKE_SIZE = 2 as const;
 
 export const getContextMenuItem = (tool: TOOLS_ON_SELECTION, actionItem: ActionItem, t: TFunction<"translation", undefined>) => (
     <>
@@ -51,9 +53,69 @@ type UpdatePdfDocumentParams = {
     readonly pageRefs: RefObject<PageRefs>;
     readonly pdfDoc: PDFDocument;
     readonly pdfTools: PdfEditorToolsState;
-    readonly rect: DOMRect;
 };
-export const updatePdfDocumentOnSelection = ({ pageRefs, pdfDoc, pdfTools, rect }: UpdatePdfDocumentParams) => {
+type UpdatePdfDocumentOnStrokeParams =
+    & UpdatePdfDocumentParams
+    & { readonly points: Array<Position>; };
+export const updatePdfDocumentOnStroke = ({
+    pageRefs,
+    pdfDoc,
+    pdfTools,
+    points,
+}: UpdatePdfDocumentOnStrokeParams) => {
+    const pageRef = pageRefs.current.find(ref => {
+        if (!ref) return (false);
+
+        const { top, bottom } = ref.getBoundingClientRect();
+        const firstPoint = points[0];
+
+        return (
+            firstPoint.y >= top &&
+            firstPoint.y <= bottom
+        );
+    });
+
+    if (!pageRef) return;
+
+    const pageIndex = pageRefs.current.indexOf(pageRef);
+    const page = pdfDoc.getPage(pageIndex);
+    const { height: pdfHeight, width: pdfWidth } = page.getSize();
+
+    const scaleFactor = pageRef.clientWidth / pdfWidth;
+
+    const { left: pageLeft, top: pageTop } = pageRef.getBoundingClientRect();
+
+    const minX = Math.min(...points.map(p => (p.x - pageLeft) / scaleFactor));
+    const minY = Math.min(...points.map(p => (p.y - pageTop) / scaleFactor));
+
+    const path = points
+        .map((point, index) => {
+            const x = (point.x - pageLeft) / scaleFactor - minX;
+            const y = (point.y - pageTop) / scaleFactor - minY;
+
+            return (
+                index === 0
+                    ? `M ${x},${y}`
+                    : `L ${x},${y}`
+            );
+        })
+        .join(" ");
+
+    page.drawSvgPath(
+        path,
+        {
+            borderColor: rgb(pdfTools.color.r, pdfTools.color.g, pdfTools.color.b),
+            borderWidth: STROKE_SIZE,
+            opacity: REGULAR_OPACITY,
+            x: minX,
+            y: pdfHeight - minY,
+        }
+    );
+};
+type UpdatePdfDocumentOnSelectionParams =
+    & UpdatePdfDocumentParams
+    & { readonly rect: DOMRect; };
+export const updatePdfDocumentOnSelection = ({ pageRefs, pdfDoc, pdfTools, rect }: UpdatePdfDocumentOnSelectionParams) => {
     const pageRef = pageRefs.current.find(ref => {
         if (!ref) return (false);
 
@@ -81,7 +143,7 @@ export const updatePdfDocumentOnSelection = ({ pageRefs, pdfDoc, pdfTools, rect 
     const color = rgb(pdfTools.color.r, pdfTools.color.g, pdfTools.color.b);
     const height = pdfTools.tool === PDF_TOOLS.HIGHLIGHT
         ? getFactoredValue(rect.height)
-        : getFactoredValue(UNDERLINE_HEIGHT);
+        : getFactoredValue(STROKE_SIZE);
     const opacity = pdfTools.tool === PDF_TOOLS.HIGHLIGHT
         ? HIGLIGHT_OPACITY
         : REGULAR_OPACITY;

@@ -6,10 +6,11 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 
 import { RgbColor } from "@/components";
 import { useContextMenu, useFoldersManager } from "@/contexts";
+import { Position } from "@/types";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { CustomCursor } from "./customCursor";
-import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, getRgbColor, PageRefs, updatePdfDocumentOnSelection } from "./pdfEditor.utils";
+import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, getRgbColor, PageRefs, updatePdfDocumentOnSelection, updatePdfDocumentOnStroke } from "./pdfEditor.utils";
 import { PDF_TOOLS, PdfEditorToolsState, PdfTool, TOOLS_ON_SELECTION } from "./pdfTools";
 
 export type UsePdfEditorProps = {
@@ -46,9 +47,6 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     const { files } = useFoldersManager();
     const { t } = useTranslation();
 
-    const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => {
-        setNumPages(nextNumPages);
-    };
     const setColor = (color: RgbColor) => setPdfTools(state => ({ ...state, color }));
     const setTool = (tool: PdfTool | null) => setPdfTools(state => ({ ...state, tool }));
 
@@ -83,25 +81,6 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         setPdfFile(updatedFile);
         setCurrentRange(undefined);
         setTool(null);
-    };
-
-    const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
-        [TOOLS_ON_SELECTION.UNDERLINE]: {
-            icon: <MdBorderColor />,
-            onClick: () => handleSelection(PDF_TOOLS.UNDERLINE),
-        },
-        [TOOLS_ON_SELECTION.HIGHLIGHT]: {
-            icon: <MdFormatColorFill />,
-            onClick: () => handleSelection(PDF_TOOLS.HIGHLIGHT),
-        },
-        [TOOLS_ON_SELECTION.NOTE]: {
-            icon: <MdComment />,
-            onClick: () => console.log("note"),
-        },
-        [TOOLS_ON_SELECTION.VOCABULARY]: {
-            icon: <MdOutlineMenuBook />,
-            onClick: () => console.log("vocabulary"),
-        },
     };
 
     // ------ USE EFFECTS ------
@@ -144,7 +123,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             });
         };
     }, []);
-    // Handles the pdf tools on mouse up (when the user stop selecting text)
+    // Handles the pdf tools when currentRange + on mouse up (when the user stop selecting text)
     useEffect(() => {
         const handleMouseUp = () => {
             if (
@@ -161,6 +140,53 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             document.removeEventListener("mouseup", handleMouseUp);
         };
     }, [currentRange, pdfTools, pdfDoc]);
+    // Handles the brush
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container || pdfTools.tool !== PDF_TOOLS.BRUSH) return;
+
+        let points: Array<Position> = [];
+        let isDrawing = false;
+
+        const handleMouseDown = (e: MouseEvent) => {
+            isDrawing = true;
+            points.push({ x: e.clientX, y: e.clientY });
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isDrawing) return;
+
+            points.push({ x: e.clientX, y: e.clientY });
+        };
+
+        const handleMouseUp = async () => {
+            if (!pdfDoc || points.length < 2) return;
+
+            updatePdfDocumentOnStroke({
+                pageRefs,
+                pdfDoc,
+                pdfTools,
+                points,
+            });
+
+            const updatedFile = await getFileFromPdfDocument(pdfDoc, pdfFile);
+            files.update(pdfFile, updatedFile);
+            setPdfFile(updatedFile);
+
+            points = [];
+            isDrawing = false;
+        };
+
+        container.addEventListener("mousedown", handleMouseDown);
+        container.addEventListener("mousemove", handleMouseMove);
+        container.addEventListener("mouseup", handleMouseUp);
+
+        return () => {
+            container.removeEventListener("mousedown", handleMouseDown);
+            container.removeEventListener("mousemove", handleMouseMove);
+            container.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [pdfDoc, pdfTools, pdfFile]);
     // Handles the custom cursor
     useEffect(() => {
         const container = containerRef.current;
@@ -191,11 +217,28 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         };
     }, [pdfTools.tool, pdfTools.color]);
 
+    const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
+        [TOOLS_ON_SELECTION.UNDERLINE]: {
+            icon: <MdBorderColor />,
+            onClick: () => handleSelection(PDF_TOOLS.UNDERLINE),
+        },
+        [TOOLS_ON_SELECTION.HIGHLIGHT]: {
+            icon: <MdFormatColorFill />,
+            onClick: () => handleSelection(PDF_TOOLS.HIGHLIGHT),
+        },
+        [TOOLS_ON_SELECTION.NOTE]: {
+            icon: <MdComment />,
+            onClick: () => console.log("note"),
+        },
+        [TOOLS_ON_SELECTION.VOCABULARY]: {
+            icon: <MdOutlineMenuBook />,
+            onClick: () => console.log("vocabulary"),
+        },
+    };
     const items = Object.entries(actionsRecord).map(([key, value]) => ({
         children: getContextMenuItem(key as TOOLS_ON_SELECTION, value, t),
         onClick: value.onClick,
     }));
-
     // Handles the pdf tools on contextMenu + selectedText
     const onContextMenu = (e: MouseEvent) => {
         if (!currentRange) return;
@@ -218,6 +261,9 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         e.preventDefault();
 
         setContextMenu({ x: e.clientX, y: e.clientY }, Object.values(items));
+    };
+    const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => {
+        setNumPages(nextNumPages);
     };
     const onToolSelection = (tool: PdfTool | null) => {
         setTool(tool);
