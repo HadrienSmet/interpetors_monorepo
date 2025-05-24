@@ -1,6 +1,14 @@
 .pdf-editor {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
     position: relative;
 
+    .on-real-time-displayer {
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+    }
     .loader-container {
         align-items: center;
         display: flex;
@@ -13,6 +21,10 @@
         margin: auto;
         // pdf min-width + (2*border)
         width: 597px;
+
+        &.brushing * {
+            user-select: none;
+        }
     }
 }
 

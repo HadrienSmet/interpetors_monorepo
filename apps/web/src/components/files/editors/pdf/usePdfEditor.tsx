@@ -10,7 +10,7 @@ import { Position } from "@/types";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { CustomCursor } from "./customCursor";
-import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, getRgbColor, PageRefs, updatePdfDocumentOnSelection, updatePdfDocumentOnStroke } from "./pdfEditor.utils";
+import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, getRgbColor, PageRefs, STROKE_SIZE, updatePdfDocumentOnSelection, updatePdfDocumentOnStroke } from "./pdfEditor.utils";
 import { PDF_TOOLS, PdfEditorToolsState, PdfTool, TOOLS_ON_SELECTION } from "./pdfTools";
 
 export type UsePdfEditorProps = {
@@ -20,6 +20,8 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Text selection range */
     const [currentRange, setCurrentRange] = useState<Range | undefined>(undefined);
     const [customCursor, setCustomCursor] = useState<React.JSX.Element | null>(null);
+    /** Used to define the size of the canvas */
+    const [isPdfRendered, setIsPdfRendered] = useState(false);
     /** Number of pages of the pdf file */
     const [numPages, setNumPages] = useState<number>();
     /** Pdf document - Used to interact with the binary */
@@ -36,12 +38,14 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         },
     });
 
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     /**
      * Refs of each page used to display the pdf file
      * Used to know the positions of the interactions
-     * */
+     */
     const pageRefs = useRef<PageRefs>([]);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const renderedPages = useRef(0);
 
     const { setContextMenu } = useContextMenu();
     const { files } = useFoldersManager();
@@ -84,6 +88,11 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     };
 
     // ------ USE EFFECTS ------
+    // Resets all the indicators used to know if the pdf is rendered when pdf file changes
+    useEffect(() => {
+        renderedPages.current = 0;
+        setIsPdfRendered(false);
+    }, [pdfFile]);
     /** Display another file when the props changes */
     useEffect(() => {
         setPdfFile(props.file);
@@ -142,19 +151,56 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     }, [currentRange, pdfTools, pdfDoc]);
     // Handles the brush
     useEffect(() => {
+        if (!isPdfRendered) return;
+
         const container = containerRef.current;
-        if (!container || pdfTools.tool !== PDF_TOOLS.BRUSH) return;
+        const canvas = canvasRef.current;
+        if (!canvas || !container || pdfTools.tool !== PDF_TOOLS.BRUSH) return;
+
+        const pageContainer = container
+            .children[1]
+            .children[0]
+            // Should be targetted page index
+            .children[0];
+
+        if (!pageContainer) {
+            console.error("Could not reach the page container")
+            return;
+        }
+
+        const {
+            height: pageContainerHeight,
+            left: pageContainerLeft,
+            top: pageContainerTop,
+            width: pageContainerWidth,
+        } = pageContainer.getBoundingClientRect();
+
+        canvas.width = pageContainerWidth;
+        canvas.height = pageContainerHeight;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
         let points: Array<Position> = [];
         let isDrawing = false;
 
+        ctx.lineWidth = STROKE_SIZE;
+        ctx.strokeStyle = getRgbColor(pdfTools.color);
+
         const handleMouseDown = (e: MouseEvent) => {
             isDrawing = true;
+
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - pageContainerLeft, e.clientY - pageContainerTop);
+
             points.push({ x: e.clientX, y: e.clientY });
         };
 
         const handleMouseMove = (e: MouseEvent) => {
             if (!isDrawing) return;
+
+            ctx.lineTo(e.clientX - pageContainerLeft, e.clientY - pageContainerTop);
+            ctx.stroke();
 
             points.push({ x: e.clientX, y: e.clientY });
         };
@@ -175,6 +221,8 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
             points = [];
             isDrawing = false;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         };
 
         container.addEventListener("mousedown", handleMouseDown);
@@ -186,7 +234,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             container.removeEventListener("mousemove", handleMouseMove);
             container.removeEventListener("mouseup", handleMouseUp);
         };
-    }, [pdfDoc, pdfTools, pdfFile]);
+    }, [isPdfRendered, pdfDoc, pdfTools, pdfFile]);
     // Handles the custom cursor
     useEffect(() => {
         const container = containerRef.current;
@@ -277,6 +325,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     };
 
     return ({
+        canvasRef,
         containerRef,
         customCursor,
         numPages,
@@ -286,6 +335,8 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         pageRefs,
         pdfFile,
         pdfTools,
+        renderedPages,
         setColor,
+        setIsPdfRendered,
     });
 };

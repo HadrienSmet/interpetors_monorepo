@@ -18,7 +18,7 @@ export type PageRefs = Array<HTMLCanvasElement | undefined>;
 const HIGLIGHT_OPACITY = 0.25 as const;
 const PDF_TYPE = { type: "application/pdf" } as const;
 const REGULAR_OPACITY = 1 as const;
-const STROKE_SIZE = 2 as const;
+export const STROKE_SIZE = 2 as const;
 
 export const getContextMenuItem = (tool: TOOLS_ON_SELECTION, actionItem: ActionItem, t: TFunction<"translation", undefined>) => (
     <>
