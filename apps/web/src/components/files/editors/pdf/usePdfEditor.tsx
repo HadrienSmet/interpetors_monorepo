@@ -88,17 +88,16 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     };
 
     // ------ USE EFFECTS ------
-    // Resets all the indicators used to know if the pdf is rendered when pdf file changes
-    useEffect(() => {
-        renderedPages.current = 0;
-        setIsPdfRendered(false);
-    }, [pdfFile]);
-    /** Display another file when the props changes */
+    // Display another file when the props changes
     useEffect(() => {
         setPdfFile(props.file);
     }, [props.file]);
     // Stores the pdf file as a PDFDocument that we will be able to edit
+    // And resets all the indicators used to know if the pdf is rendered when pdf file changes
     useEffect(() => {
+        renderedPages.current = 0;
+        setIsPdfRendered(false);
+
         const loadPdf = async () => {
             if (!pdfFile) return;
 
@@ -132,7 +131,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             });
         };
     }, []);
-    // Handles the pdf tools when currentRange + on mouse up (when the user stop selecting text)
+    // Handles the stop text selection
     useEffect(() => {
         const handleMouseUp = () => {
             if (
@@ -164,7 +163,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             .children[0];
 
         if (!pageContainer) {
-            console.error("Could not reach the page container")
+            console.error("Could not reach the page container");
             return;
         }
 
@@ -195,7 +194,6 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
             points.push({ x: e.clientX, y: e.clientY });
         };
-
         const handleMouseMove = (e: MouseEvent) => {
             if (!isDrawing) return;
 
@@ -204,7 +202,6 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
             points.push({ x: e.clientX, y: e.clientY });
         };
-
         const handleMouseUp = async () => {
             if (!pdfDoc || points.length < 2) return;
 

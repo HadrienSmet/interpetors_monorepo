@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Document, Page } from "react-pdf";
 
 import { Loader } from "@/components";
@@ -6,7 +7,6 @@ import "@/workers/pdfConfig";
 import { PDF_TOOLS, PdfTools } from "./pdfTools";
 import { usePdfEditor, UsePdfEditorProps } from "./usePdfEditor";
 import "./pdfEditor.scss";
-import { useMemo } from "react";
 
 const PdfEditorLoader = () => (
     <div className="loader-container">
