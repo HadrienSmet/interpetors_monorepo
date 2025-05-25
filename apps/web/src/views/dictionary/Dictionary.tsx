@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 
-export const Vocabulary = () => {
+export const Dictionary = () => {
     const { t } = useTranslation();
 
     return (
         <main>
-            <h1>{t("views.voc.title")}</h1>
+            <h1>{t("views.dic.title")}</h1>
         </main>
     );
 };

@@ -13,12 +13,16 @@
         font-size: var(--size-m);
         gap: var(--space-m);
         padding: var(--space-l) var(--space-m);
+        transition: var(--transition-theme);
+        width: 100%;
         &.selected {
+            background-color: var(--clr-bg-light);
             color: var(--clr-txt);
         }
 
-        &:hover {
-            background-color: var(--clr-bg-light);
+        &:not(.selected):hover {
+            background-color: var(--clr-bg-light-05);
+            color: var(--clr-txt-06);
         }
     }
     select {

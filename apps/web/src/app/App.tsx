@@ -11,7 +11,7 @@ import "./global.tags.scss";
 
 import "./app.scss";
 
-const DEFAULT_TABS = NAVIGATION.NEW.id;
+const DEFAULT_TABS: NavigationState = [NAVIGATION.NEW.id, NAVIGATION.NEW.nestedNav.FILES.id];
 
 const AppChild = () => {
     const [navigation, setNavigation] = useState<NavigationState>(DEFAULT_TABS);

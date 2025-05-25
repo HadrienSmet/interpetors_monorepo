@@ -15,9 +15,12 @@ export const fr = {
         },
         navigation: {
             buttons: {
+                dic: "Dictionnaire",
+                files: "Dossiers sources",
                 new: "Nouvelle préparation",
+                notes: "Notes",
                 old: "Anciennes préparations",
-                voc: "Vocabulaire généré",
+                vocabulary: "Vocabulaire",
             },
         },
         views: {
@@ -66,8 +69,8 @@ export const fr = {
             old: {
                 title: "Mes préparations",
             },
-            voc: {
-                title: "Vocabulaire généré",
+            dic: {
+                title: "Dictionnaire généré",
             },
             workspace: {
                 title: "Crées ton environnement de travail personnalisé.",

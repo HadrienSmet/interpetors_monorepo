@@ -77,8 +77,7 @@ export const Navigation = (props: NavigationProps) => {
                         return (
                             <NavigationButton
                                 {...props}
-                                buttonId={current.id}
-                                icon={current.icon}
+                                {...current}
                                 key={current.id}
                             />
                         );

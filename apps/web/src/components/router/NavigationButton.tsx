@@ -1,35 +1,73 @@
-import { ReactNode, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import { NavigationProps, NavigationState } from "./navigation.types";
+import { NavigationItem, NavigationProps, NavigationState } from "./navigation.types";
 
 type NavigationButtonProps =
-    & {
-        readonly buttonId: NavigationState;
-        readonly icon: ReactNode;
-    }
-    & NavigationProps;
+    & NavigationItem
+    & NavigationProps
+    & { readonly depth?: number; };
 
 const SELECTED_CLASS = "selected";
-export const NavigationButton = (props: NavigationButtonProps) => {
+
+export const NavigationButton = ({
+    depth = 0,
+    icon,
+    id,
+    navigation,
+    nestedNav,
+    setNavigation,
+}: NavigationButtonProps) => {
+    const { t } = useTranslation();
     const buttonRef = useRef<HTMLButtonElement>(null);
 
-    const { t } = useTranslation();
+    const buttonStyle = useMemo(() => ({
+        fontSize: `${16 - (2 * depth)}px`,
+        paddingLeft: `${8 + (depth * 16)}px`,
+    }), [depth]);
+    const isSelected = useMemo(
+        () => (navigation[depth] === id),
+        [navigation, depth, id]
+    );
 
     useEffect(() => {
-        if (props.navigation === props.buttonId) {
+        if (isSelected) {
             buttonRef.current?.classList.add(SELECTED_CLASS);
-        } else {
-            buttonRef.current?.classList.remove(SELECTED_CLASS);
+            return;
         }
-    }, [props.navigation]);
+
+        buttonRef.current?.classList.remove(SELECTED_CLASS);
+    }, [isSelected]);
+
+    const handleClick = () => {
+        const newPath = navigation.slice(0, depth);
+
+        setNavigation([...newPath, id] as NavigationState);
+    };
 
     return (
-        <button
-            ref={buttonRef}
-            onClick={() => props.setNavigation(props.buttonId)}
-        >
-            {props.icon} {t(`navigation.buttons.${props.buttonId}`)}
-        </button>
+        <div className="navigation-button">
+            <button
+                onClick={handleClick}
+                ref={buttonRef}
+                style={buttonStyle}
+            >
+                {icon} {t(`navigation.buttons.${id}`)}
+            </button>
+
+            {isSelected && nestedNav && (
+                <div className="nested-navigation">
+                    {Object.values(nestedNav).map(item => (
+                        <NavigationButton
+                            {...item}
+                            key={item.id}
+                            navigation={navigation}
+                            setNavigation={setNavigation}
+                            depth={depth + 1}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
     );
 };

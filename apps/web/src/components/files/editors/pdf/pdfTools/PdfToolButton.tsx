@@ -5,7 +5,7 @@ import {
     MdBrush,
     MdComment,
     MdFormatColorFill,
-    MdOutlineMenuBook,
+    MdTranslate,
 } from "react-icons/md";
 
 export enum TOOLS_ON_SELECTION {
@@ -41,7 +41,7 @@ export const TOOLS_BUTTONS: Array<ToolButtonItem> = [
         id: PDF_TOOLS.NOTE,
     },
     {
-        icon: <MdOutlineMenuBook />,
+        icon: <MdTranslate />,
         id: PDF_TOOLS.VOCABULARY,
     },
 ];

@@ -1,31 +1,34 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { FolderDropzone, InputStyleLess } from "@/components";
+import { FolderDropzone, InputStyleLess, NavigationState } from "@/components";
 import { useCssVariable } from "@/hooks";
 
 import "./prepare.scss";
 
-type PrepareState = {
-    readonly folders: undefined;
-    readonly title: string;
+const SCREEN_NAVIGATION_LEVEL = 1 as const;
+type PrepareProps = {
+    readonly navigationState: NavigationState;
 };
-export const Prepare = () => {
-    const [prepareState, setPrepareState] = useState<PrepareState>({
-        folders: undefined,
-        title: "",
-    });
+const PrepareMain = (props: PrepareProps) => {
+    if (props.navigationState[SCREEN_NAVIGATION_LEVEL] === "files") {
+        return (<FolderDropzone />);
+    }
+    if (props.navigationState[SCREEN_NAVIGATION_LEVEL] === "notes") {
+        return (<p>Notes</p>);
+    }
+    if (props.navigationState[SCREEN_NAVIGATION_LEVEL] === "vocabulary") {
+        return (<p>Vocabulaire</p>);
+    }
+    return (<p>Error</p>)
+}
+
+export const Prepare = (props: PrepareProps) => {
+    const [preparationTitle, setPreparationTitle] = useState("");
 
     const { t } = useTranslation();
 
-    const handleTitle = (e: ChangeEvent<HTMLInputElement>) => setPrepareState(state => ({
-        ...state,
-        title: e.target.value,
-    }));
-
-    useEffect(() => {
-        console.log({ prepareState })
-    }, [prepareState])
+    const handleTitle = (e: ChangeEvent<HTMLInputElement>) => setPreparationTitle(e.target.value);
 
     return (
         <main className="prepare">
@@ -39,8 +42,9 @@ export const Prepare = () => {
                     fontWeight: 600,
                     width: "100%",
                 }}
+                value={preparationTitle}
             />
-            <FolderDropzone />
+            <PrepareMain {...props} />
         </main>
     );
 };
