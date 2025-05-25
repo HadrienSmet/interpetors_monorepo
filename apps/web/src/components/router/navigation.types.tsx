@@ -5,7 +5,7 @@ export type NavigationItem = {
     readonly id: string;
     readonly icon: ReactNode;
     readonly nestedNav?: NavigationRecord;
-}
+};
 type NavigationRecord = Record<string, NavigationItem>;
 export const NAVIGATION = {
     NEW: {
