@@ -16,7 +16,7 @@ export const NotFound = () => {
             <Error404 />
             <h1>{t("views.notFound.title")}</h1>
             <Button
-                label={t("views.notFound.title")}
+                label={t("views.notFound.buttonLabel")}
                 onClick={() => navigate("/prepare/files")}
             />
         </div>
