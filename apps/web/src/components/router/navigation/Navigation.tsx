@@ -5,7 +5,7 @@ import { ResizableSection, Select } from "@/components";
 import { useWorkSpaces } from "@/contexts";
 
 import { NavigationButton } from "./NavigationButton";
-import { NAVIGATION, NavigationProps } from "./navigation.types";
+import { NAVIGATION } from "./navigation.types";
 import "./navigation.scss";
 
 const WorkSpacesSelect = () => {
@@ -49,7 +49,7 @@ const UnexpandedNavigation = (props: { setIsExpanded: Dispatch<SetStateAction<bo
         </div>
     );
 };
-export const Navigation = (props: NavigationProps) => {
+export const Navigation = () => {
     const [isExpanded, setIsExpanded] = useState(true);
 
     if (!isExpanded) {
@@ -76,7 +76,7 @@ export const Navigation = (props: NavigationProps) => {
 
                         return (
                             <NavigationButton
-                                {...props}
+                                // {...props}
                                 {...current}
                                 key={current.id}
                             />

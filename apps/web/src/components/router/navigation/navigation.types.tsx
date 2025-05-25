@@ -8,8 +8,8 @@ export type NavigationItem = {
 };
 type NavigationRecord = Record<string, NavigationItem>;
 export const NAVIGATION = {
-    NEW: {
-        id: "new",
+    PREPARE: {
+        id: "prepare",
         icon: <MdAdd />,
         nestedNav: {
             FILES: {
@@ -26,12 +26,12 @@ export const NAVIGATION = {
             },
         },
     },
-    OLD: {
-        id: "old",
+    PREPARATIONS: {
+        id: "preparations",
         icon: <MdHistory />,
     },
-    DIC: {
-        id: "dic",
+    DICTIONARY: {
+        id: "dictionary",
         icon: <MdMenuBook />,
     },
 } as const;

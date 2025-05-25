@@ -1,5 +1,6 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 
 import { FolderDropzone, InputStyleLess, NavigationState } from "@/components";
 import { useCssVariable } from "@/hooks";
@@ -7,23 +8,30 @@ import { useCssVariable } from "@/hooks";
 import "./prepare.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
-type PrepareProps = {
-    readonly navigationState: NavigationState;
-};
-const PrepareMain = (props: PrepareProps) => {
-    if (props.navigationState[SCREEN_NAVIGATION_LEVEL] === "files") {
+
+const PrepareMain = () => {
+    const location = useLocation();
+
+    const currentView = useMemo(() => (
+        (location.pathname
+            .split("/")
+            .filter(Boolean) as NavigationState
+        )[SCREEN_NAVIGATION_LEVEL]
+    ), [location.pathname]);
+
+    if (currentView === "files") {
         return (<FolderDropzone />);
     }
-    if (props.navigationState[SCREEN_NAVIGATION_LEVEL] === "notes") {
+    if (currentView === "notes") {
         return (<p>Notes</p>);
     }
-    if (props.navigationState[SCREEN_NAVIGATION_LEVEL] === "vocabulary") {
+    if (currentView === "vocabulary") {
         return (<p>Vocabulaire</p>);
     }
     return (<p>Error</p>)
 }
 
-export const Prepare = (props: PrepareProps) => {
+export const Prepare = () => {
     const [preparationTitle, setPreparationTitle] = useState("");
 
     const { t } = useTranslation();
@@ -44,7 +52,7 @@ export const Prepare = (props: PrepareProps) => {
                 }}
                 value={preparationTitle}
             />
-            <PrepareMain {...props} />
+            <PrepareMain />
         </main>
     );
 };

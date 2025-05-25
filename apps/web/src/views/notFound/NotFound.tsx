@@ -1,14 +1,14 @@
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import { Error404 } from "@/assets";
 import { Button } from "@/components";
 
 import "./notFound.scss";
 
-type NotFoundProps = {
-    readonly onError404: () => void;
-};
-export const NotFound = ({ onError404 }: NotFoundProps) => {
+
+export const NotFound = () => {
+    const navigate = useNavigate();
     const { t } = useTranslation();
 
     return (
@@ -17,7 +17,7 @@ export const NotFound = ({ onError404 }: NotFoundProps) => {
             <h1>{t("views.notFound.title")}</h1>
             <Button
                 label={t("views.notFound.title")}
-                onClick={onError404}
+                onClick={() => navigate("/prepare/files")}
             />
         </div>
     );

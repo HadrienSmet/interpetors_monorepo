@@ -15,11 +15,11 @@ export const en = {
         },
         navigation: {
             buttons: {
-                dic: "Dictionary",
+                dictionary: "Dictionary",
                 files: "Source folders",
-                new: "New preparation",
+                preparations: "Old preparations",
+                prepare: "New preparation",
                 notes: "Notes",
-                old: "Old preparations",
                 vocabulary: "Vocabulary",
             },
         },
