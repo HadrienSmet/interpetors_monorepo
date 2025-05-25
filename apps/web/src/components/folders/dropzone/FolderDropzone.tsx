@@ -1,7 +1,7 @@
 import { DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { FoldersManagerProvider, FolderStructure, useFoldersManager } from "@/contexts";
+import { FolderStructure, useFoldersManager } from "@/contexts";
 
 import { FoldersDisplayer } from "../displayer";
 
@@ -56,7 +56,8 @@ const readDirectory = async (
             });
     }
 };
-const FolderDropzoneChild = () => {
+
+export const FolderDropzone = () => {
     const [isDragged, setIsDragged] = useState(false);
 
     const foldersManager = useFoldersManager();
@@ -115,9 +116,3 @@ const FolderDropzoneChild = () => {
         </div>
     );
 };
-
-export const FolderDropzone = () => (
-    <FoldersManagerProvider>
-        <FolderDropzoneChild />
-    </FoldersManagerProvider>
-);

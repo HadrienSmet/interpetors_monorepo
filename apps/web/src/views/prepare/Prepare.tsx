@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
 import { FolderDropzone, InputStyleLess, NavigationState } from "@/components";
+import { FoldersManagerProvider, NotesProvider } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 
 import "./prepare.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
 
-const PrepareMain = () => {
+const PrepareView = () => {
     const location = useLocation();
 
     const currentView = useMemo(() => (
@@ -28,10 +29,10 @@ const PrepareMain = () => {
     if (currentView === "vocabulary") {
         return (<p>Vocabulaire</p>);
     }
-    return (<p>Error</p>)
-}
+    return (<p>Error</p>);
+};
 
-export const Prepare = () => {
+const PrepareContent = () => {
     const [preparationTitle, setPreparationTitle] = useState("");
 
     const { t } = useTranslation();
@@ -52,7 +53,15 @@ export const Prepare = () => {
                 }}
                 value={preparationTitle}
             />
-            <PrepareMain />
+            <PrepareView />
         </main>
     );
 };
+
+export const Prepare = () => (
+    <FoldersManagerProvider>
+        <NotesProvider>
+            <PrepareContent />
+        </NotesProvider>
+    </FoldersManagerProvider>
+);
