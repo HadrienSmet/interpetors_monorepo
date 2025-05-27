@@ -1,4 +1,3 @@
-export * from "./accordion";
 export * from "./buttons";
 export * from "./contextMenu";
 export * from "./gradientBackground";
