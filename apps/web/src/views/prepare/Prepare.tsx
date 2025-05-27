@@ -2,10 +2,12 @@ import { ChangeEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
-import { FolderDropzone, InputStyleLess, NavigationState } from "@/components";
+import { InputStyleLess, NavigationState } from "@/components";
 import { FoldersManagerProvider, NotesProvider } from "@/contexts";
 import { useCssVariable } from "@/hooks";
+import { NotFound } from "@/views";
 
+import { Files, Notes, Vocabulary } from "./views";
 import "./prepare.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
@@ -21,15 +23,16 @@ const PrepareView = () => {
     ), [location.pathname]);
 
     if (currentView === "files") {
-        return (<FolderDropzone />);
+        return (<Files />);
     }
     if (currentView === "notes") {
-        return (<p>Notes</p>);
+        return (<Notes />);
     }
     if (currentView === "vocabulary") {
-        return (<p>Vocabulaire</p>);
+        return (<Vocabulary />);
     }
-    return (<p>Error</p>);
+
+    return (<NotFound />);
 };
 
 const PrepareContent = () => {

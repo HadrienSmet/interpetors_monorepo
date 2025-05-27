@@ -4,28 +4,38 @@ import { NoteData, NotesContext, NotesRecord } from "./NotesContext";
 export const NotesProvider = ({ children }: PropsWithChildren) => {
     const [notes, setNotes] = useState<NotesRecord>({});
 
-    const createNote = (note: NoteData) => setNotes(state => ({
-        ...state,
-        [note.id]: note,
-    }));
-    const deleteNote = (id: string) => setNotes(state => {
+    const createNote = (note: NoteData) => setNotes(state => {
         const copy = { ...state };
 
-        delete copy[id];
+        if (!(note.color in copy)) {
+            copy[note.color] = {};
+        }
+
+        copy[note.color][note.id] = note;
 
         return (copy);
     });
-    const updateNote = (id: string, note: string) => setNotes(state => {
+    const deleteNote = (color: string, id: string) => setNotes(state => {
+        const copy = { ...state };
+
+        delete copy[color][id];
+
+        return (copy);
+    });
+    const updateNote = (color: string, id: string, note: string) => setNotes(state => {
         const copy = { ...state };
 
         const updated = {
-            ...copy[id],
+            ...copy[color][id],
             note,
         };
 
         return ({
             ...copy,
-            [id]: updated,
+            [color]: {
+                ...copy[color],
+                [id]: updated,
+            },
         });
     });
 

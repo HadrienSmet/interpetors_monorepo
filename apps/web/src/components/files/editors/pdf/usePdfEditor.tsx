@@ -1,20 +1,48 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
+import { v4 as uuidv4 } from "uuid";
 
-import { RgbColor } from "@/components";
-import { useContextMenu, useFoldersManager } from "@/contexts";
+import { NoteData, useContextMenu, useFoldersManager, useNotes } from "@/contexts";
 import { Position } from "@/types";
+import { getRgbColor, RgbColor } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { CustomCursor } from "./customCursor";
-import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, getRgbColor, PageRefs, STROKE_SIZE, updatePdfDocumentOnSelection, updatePdfDocumentOnStroke } from "./pdfEditor.utils";
+import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, PageRefs, STROKE_SIZE, updatePdfDocumentOnSelection, updatePdfDocumentOnStroke } from "./pdfEditor.utils";
 import { PDF_TOOLS, PdfEditorToolsState, PdfTool, TOOLS_ON_SELECTION } from "./pdfTools";
+
+type CreateNoteFromRangeParams = {
+    readonly color: string;
+    readonly file: File;
+    readonly filePath: string;
+    readonly range: Range;
+};
+const getNoteFromRange = ({ color, file, filePath, range }: CreateNoteFromRangeParams) => {
+    const text = range.toString().trim();
+    if (!text) return;
+
+    const noteData: NoteData = {
+        color,
+        createdAt: Date.now(),
+        id: uuidv4(),
+        note: "",
+        reference: {
+            file,
+            filePath,
+            text,
+        },
+    };
+
+    return (noteData);
+};
 
 export type UsePdfEditorProps = {
     readonly file: File;
+    readonly path: string;
 };
 export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Text selection range */
@@ -49,6 +77,8 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
     const { setContextMenu } = useContextMenu();
     const { files } = useFoldersManager();
+    const navigate = useNavigate();
+    const { createNote } = useNotes();
     const { t } = useTranslation();
 
     const setColor = (color: RgbColor) => setPdfTools(state => ({ ...state, color }));
@@ -86,6 +116,29 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         setCurrentRange(undefined);
         setTool(null);
     };
+    const handleTextReference = (tool: PdfTool) => {
+        if (!currentRange || tool !== PDF_TOOLS.NOTE) {
+            return;
+        }
+
+        const note = getNoteFromRange({
+            color: getRgbColor(pdfTools.color),
+            file: pdfFile,
+            filePath: props.path,
+            range: currentRange,
+        });
+        if (!note) {
+            console.error("An error occured during note creation");
+            return;
+        }
+
+        createNote(note);
+
+        setCurrentRange(undefined);
+        setTool(null);
+
+        navigate("/prepare/notes");
+    }
 
     // ------ USE EFFECTS ------
     // Display another file when the props changes
@@ -139,6 +192,10 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
                 pdfTools.tool === PDF_TOOLS.HIGHLIGHT
             ) {
                 handleSelection(pdfTools.tool);
+                return;
+            }
+            if (pdfTools.tool === PDF_TOOLS.NOTE) {
+                handleTextReference(pdfTools.tool);
             }
         };
 

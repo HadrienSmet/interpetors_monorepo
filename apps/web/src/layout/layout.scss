@@ -22,8 +22,4 @@ main {
     display: flex;
     flex-direction: column;
     overflow: scroll;
-    section {
-        max-width: 800px;
-        width: 75%
-    }
 }

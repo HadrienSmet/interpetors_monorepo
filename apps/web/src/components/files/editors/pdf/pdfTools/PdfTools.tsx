@@ -8,11 +8,11 @@ import {
     MdOutlineMoreVert,
 } from "react-icons/md";
 
-import { ColorPicker, RgbColor } from "@/components";
+import { ColorPicker } from "@/components";
+import { getRgbColor, RgbColor } from "@/utils";
 
 import { PdfTool, ToolButton, TOOLS_BUTTONS } from "./PdfToolButton";
 import "./pdfTools.scss";
-import { getRgbColor } from "../pdfEditor.utils";
 
 export type PdfEditorToolsState = {
     readonly color: RgbColor;

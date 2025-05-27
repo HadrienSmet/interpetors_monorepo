@@ -11,9 +11,9 @@ import { TreeNodeProps } from "./nodes.types";
 import { getPaddingLeft } from "./nodes.utils";
 
 type FileNodeProps =
-    & Omit<TreeNodeProps, "node" | "path">
+    & Omit<TreeNodeProps, "node">
     & { readonly node: File; };
-export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileNodeProps) => {
+export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }: FileNodeProps) => {
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
 
@@ -50,7 +50,7 @@ export const FileNode = ({ depth, name, node, onFileClick, selectedFile }: FileN
     };
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setNewFileName(e.target.value);
-    const onClick = () => onFileClick(node);
+    const onClick = () => onFileClick(node, path);
     const onContextMenu = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();

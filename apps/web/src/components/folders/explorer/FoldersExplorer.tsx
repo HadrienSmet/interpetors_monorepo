@@ -13,7 +13,7 @@ import "./foldersExplorer.scss";
 const INITIAL_WIDTH = 200 as const;
 type FoldersExplorerProps = {
     readonly foldersStructures: Array<FolderStructure>;
-    readonly handleFileClick: (file: File) => void;
+    readonly handleFileClick: (file: File, path: string) => void;
     readonly selectedFile: File | null;
 };
 export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFile }: FoldersExplorerProps) => {

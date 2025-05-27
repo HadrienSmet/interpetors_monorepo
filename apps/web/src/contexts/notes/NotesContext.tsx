@@ -8,18 +8,21 @@ export type NoteReference = {
     readonly text: string;
 };
 export type NoteData = {
+    readonly color: string;
+    readonly createdAt: number;
     readonly id: string;
     readonly note: string;
     readonly reference?: NoteReference;
 };
-export type NotesRecord = Record<string, NoteData>;
+/** Color indexed then id indexed */
+export type NotesRecord = Record<string, Record<string, NoteData>>;
 type NotesContextType = {
-    /** Id indexed record */
+    /** Color indexed then id indexed  */
     readonly notes: NotesRecord;
 
     readonly createNote: (note: NoteData) => void;
-    readonly deleteNote: (id: string) => void;
-    readonly updateNote: (id: string, note: string) => void;
+    readonly deleteNote: (color: string, id: string) => void;
+    readonly updateNote: (color: string, id: string, note: string) => void;
 };
 
 export const NotesContext = createContext<NotesContextType | null>(null);

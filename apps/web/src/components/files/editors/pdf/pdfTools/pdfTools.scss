@@ -1,7 +1,7 @@
 .pdf-tools {
     background-color: var(--clr-bg-06);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(var(--blur-modal));
+    -webkit-backdrop-filter: blur(var(--blur-modal));
     box-shadow: 0 2px 8px var(--clr-txt-01);
     display: flex;
     left: 0;

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 
-import { hslToRgb, RgbColor, rgbToHsl } from "./utils";
+import { hslToRgb, rgbToHsl, RgbColor } from "@/utils";
+
 import "./colorPicker.scss";
 
 type ColorPickerProps = {

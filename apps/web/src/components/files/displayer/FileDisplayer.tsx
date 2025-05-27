@@ -7,12 +7,14 @@ import "./fileDisplayer.scss";
 
 type FileToRenderProps = {
     readonly file: File;
+    readonly path: string;
 };
-const FileToRender = ({ file }: FileToRenderProps) => {
+const FileToRender = (props: FileToRenderProps) => {
     const { t } = useTranslation();
+    const { file } = props;
 
     if (file.type.startsWith(SUPPORTED_TYPES.PDF)) {
-        return (<PdfEditor file={file} />);
+        return (<PdfEditor {...props} />);
     }
     if (file.type.startsWith(SUPPORTED_TYPES.WORD)) {
         return (<p>Word will be supported soon</p>);
@@ -32,15 +34,19 @@ const FileToRender = ({ file }: FileToRenderProps) => {
 
 export const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
 type FileDisplayerProps = {
-    readonly selectedFile: File | null;
+    readonly selectedFile: {
+        readonly file: File | null;
+        readonly path: string;
+    };
 };
 export const FileDisplayer = (props: FileDisplayerProps) => {
     const { t } = useTranslation();
 
     return (
         <div className="file-displayer" style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}>
-            {props.selectedFile
-                ? (<FileToRender file={props.selectedFile} />)
+            {props.selectedFile.file
+                // @ts-expect-error
+                ? (<FileToRender {...props.selectedFile} />)
                 : (
                     <div className="unselected-file">
                         <p>{t("inputs.folders.unselected")}</p>

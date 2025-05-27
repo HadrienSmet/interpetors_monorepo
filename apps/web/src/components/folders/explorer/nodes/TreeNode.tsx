@@ -189,6 +189,7 @@ export const TreeNode = ({
                 name={name}
                 node={node}
                 onFileClick={onFileClick}
+                path={fullPath}
                 selectedFile={selectedFile}
             />
         );

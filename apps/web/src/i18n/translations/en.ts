@@ -61,6 +61,15 @@ export const en = {
                     title: "Define a title for this preparation",
                 },
                 title: "Prepare a speech",
+                views: {
+                    notes: {
+                        add: "Add a note",
+                        empty: "No notes have been created for this preparation",
+                    },
+                    vocabulary: {
+                        title: "Generated vocabulary",
+                    },
+                },
             },
             notFound: {
                 title: "Oops, someone got lost?",

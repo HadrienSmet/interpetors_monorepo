@@ -23,6 +23,10 @@ export const fr = {
                 vocabulary: "Vocabulaire",
             },
         },
+        notes: {
+            add: "Ajouter une note",
+            empty: "Aucunes notes n'a encore été créé pour cette préparation",
+        },
         views: {
             new: {
                 "context-menu": {
@@ -61,6 +65,11 @@ export const fr = {
                     title: "Définissez un titre à votre préparation.",
                 },
                 title: "Préparer un discours",
+                views: {
+                    vocabulary: {
+                        title: "Vocabulaire généré",
+                    },
+                },
             },
             notFound: {
                title: "Oops, on s'est perdu ?",

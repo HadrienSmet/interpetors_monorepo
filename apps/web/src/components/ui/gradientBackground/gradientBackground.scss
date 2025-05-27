@@ -1,0 +1,23 @@
+.gradient {
+    position: absolute;
+
+    &-background {
+        display: flex;
+        height: 100%;
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+        z-index: -1;
+    }
+    &-container {
+        flex: 1;
+    }
+    &-filter {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        background-color: var(--clr-bg-06);
+        height: 100%;
+        position: absolute;
+        width: 100%;
+    }
+}

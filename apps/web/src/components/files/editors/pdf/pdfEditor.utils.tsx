@@ -3,7 +3,6 @@ import { RefObject } from "react";
 import { TFunction } from "i18next";
 import { rgb } from "pdf-lib";
 
-import { RgbColor } from "@/components/ui";
 import { Position } from "@/types";
 import { PDFDocument } from "@/workers/pdfConfig";
 
@@ -48,7 +47,6 @@ export const getRange = () => {
 
     return (range);
 };
-export const getRgbColor = (color: RgbColor) => `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`;
 type UpdatePdfDocumentParams = {
     readonly pageRefs: RefObject<PageRefs>;
     readonly pdfDoc: PDFDocument;

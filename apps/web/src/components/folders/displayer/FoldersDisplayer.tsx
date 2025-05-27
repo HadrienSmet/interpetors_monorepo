@@ -24,16 +24,16 @@ export const FoldersDisplayer = ({
     onDragOver,
     onDrop
 }: FoldersDisplayerProps) => {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFile, setSelectedFile] = useState<{file: File | null; path: string;}>({ file: null, path: "" });
 
-    const handleFileClick = (file: File) => setSelectedFile(file);
+    const handleFileClick = (file: File, path: string) => setSelectedFile({ file, path});
 
     return (
         <div className="folders-displayer">
             <FoldersExplorer
                 foldersStructures={foldersStructures}
                 handleFileClick={handleFileClick}
-                selectedFile={selectedFile}
+                selectedFile={selectedFile.file}
             />
             <div
                 className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
