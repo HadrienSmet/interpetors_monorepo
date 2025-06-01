@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { MdClear, MdEdit, MdExpandLess, MdExpandMore, MdLink } from "react-icons/md";
+import { ChangeEvent, useMemo, useState } from "react";
+import { MdClear, MdEdit, MdLink } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
-import { Button, GradientBackground } from "@/components";
+import { Accordion, Button } from "@/components";
 import { NoteData, useNotes } from "@/contexts";
 
 import "./notes.scss";
@@ -15,8 +15,16 @@ const Note = ({ note }: NoteProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [inputValue, setInputValue] = useState(note.note);
 
-    const { updateNote } = useNotes();
+    const { deleteNote, updateNote } = useNotes();
     const { t } = useTranslation();
+
+    const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)
+    const onClick = () => {
+        updateNote(note.color, note.id, inputValue);
+        setIsEditing(false);
+    };
+    const onDelete = () => deleteNote(note.color, note.id);
+    const toggleEditing = () => setIsEditing(state => !state);
 
     return (
         <div className="note">
@@ -27,8 +35,8 @@ const Note = ({ note }: NoteProps) => {
                         {note.reference.filePath}
                     </Link>
                     <div className="note-header-buttons">
-                        <MdEdit onClick={() => setIsEditing(state => !state)} />
-                        <MdClear />
+                        <MdEdit onClick={toggleEditing} />
+                        <MdClear onClick={onDelete} />
                     </div>
                 </div>
             )}
@@ -42,10 +50,10 @@ const Note = ({ note }: NoteProps) => {
                             autoFocus
                             name="note"
                             defaultValue={note.note}
-                            onChange={(e) => setInputValue(e.target.value)}
+                            onChange={onChange}
                         />
                         <Button
-                            onClick={() => updateNote(note.color, note.id, inputValue)}
+                            onClick={onClick}
                             label={t("actions.confirm")}
                         />
                     </div>
@@ -56,58 +64,61 @@ const Note = ({ note }: NoteProps) => {
     );
 };
 type NoteGroupProps = {
-    readonly color: string;
     readonly group: Record<string, NoteData>;
-    readonly index: number;
 };
-const NoteGroup = ({ color, group, index }: NoteGroupProps) => {
-    const [isExpanded, setIsExpanded] = useState(true);
-
-    const toggleExpansion = () => setIsExpanded(state => !state);
-
-    return (
-        <div
-            className="note-group"
-            style={{ borderLeftColor: color }}
-        >
-            <GradientBackground color={color} />
-            <div className="note-group-header">
-                <h2>Group {index + 1}</h2>
-                <button
-                    onClick={toggleExpansion}
-                >
-                    {isExpanded
-                        ? <MdExpandLess size={24} />
-                        : <MdExpandMore size={24} />
-                    }
-                </button>
-            </div>
-            {isExpanded && (
-                <div className="note-group-notes">
-                    {Object.values(group).map(noteData => (
-                        <Note key={`note-${noteData.color}-${noteData.id}`} note={noteData} />
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
+const NoteGroup = ({ group }: NoteGroupProps) => (
+    <div className="note-group__content">
+        {Object.values(group).map(noteData => (
+            <Note key={`note-${noteData.color}-${noteData.id}`} note={noteData} />
+        ))}
+    </div>
+);
 
 export const Notes = () => {
     const { notes } = useNotes();
     const { t } = useTranslation();
 
+    const accordionItems = useMemo(() => {
+        const keys = Object.keys(notes);
+
+        if (keys.length < 1) {
+            return (null);
+        }
+
+        const output = [];
+        let index = 0;
+        for (const key of keys) {
+            const content = (
+                <NoteGroup
+                    group={notes[key]}
+                    key={`group-${key}`}
+                />
+            );
+            const title = (
+                <div
+                    className="note-group__title"
+                    key={`group-${key}-title`}
+                >
+                    <div
+                        className="note-group__color"
+                        style={{ backgroundColor: key }}
+                    />
+                    <h2>Group {index + 1}</h2>
+                </div>
+            );
+
+            output.push({ title, content })
+
+            index++;
+        }
+
+        return (output);
+    }, [notes]);
+
     return (
         <section className="notes">
-            {Object.keys(notes).length > 0
-                ? (Object.keys(notes).map((key, index) => (
-                    <NoteGroup
-                        color={key}
-                        group={notes[key]}
-                        index={index}
-                        key={`group-${key}`}
-                    />
-                )))
+            {accordionItems
+                ? (<Accordion items={accordionItems} />)
                 : (
                     <div className="message-container">
                         <p>{t("notes.empty")}</p>

@@ -3,7 +3,7 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     border-radius: var(--radius-m);
-    box-shadow: 0 2px 8px var(--clr-txt-01);
+    box-shadow: var(--shadow-default) var(--clr-txt-01);
     overflow: hidden;
     position: absolute;
     z-index: 10;
