@@ -13,6 +13,7 @@ export type Vocabulary = {
     readonly translations: Record<string, Array<string>>;
 };
 export type WorkSpace = {
+    readonly colorPanel: string | null;
     readonly id: number;
     readonly languages: {
         readonly work: Array<string>;
@@ -29,8 +30,8 @@ export type WorkSpacesState = {
 };
 export type WorkSpacesContextType = {
     readonly addNewWorkSpace: (workSpace: WorkSpace) => void;
-    readonly currentWorkSpace: WorkSpace | null;
     readonly changeWorkSpace: (id: number) => void;
+    readonly currentWorkSpace: WorkSpace | null;
     readonly editWorkSpace: (workSpace: WorkSpace) => void;
     readonly removeWorkSpace: (id: number) => void;
     readonly workSpaces: Record<number, WorkSpace>;

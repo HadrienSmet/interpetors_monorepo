@@ -1,0 +1,22 @@
+.modal {
+    background-color: var(--clr-bg-light);
+    border-radius: var(--radius-m);
+    box-shadow: 0 4px 12px var(--clr-txt-04);
+    max-width: 1200px;
+    min-width: 670px;
+    padding: var(--space-xl) var(--space-xh);
+
+    &-overlay {
+        align-items: center;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 100;
+    }
+}

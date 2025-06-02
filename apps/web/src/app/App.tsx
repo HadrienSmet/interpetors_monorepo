@@ -1,5 +1,5 @@
 import { Router } from "@/components";
-import { ContextMenuProvider, ThemeProvider } from "@/contexts";
+import { ColorPanelsProvider, ContextMenuProvider, ThemeProvider } from "@/contexts";
 import { WorkSpaceWrapper } from "@/wrappers";
 
 import "./global.classes.scss";
@@ -12,9 +12,11 @@ export const App = () => {
     return (
         <ThemeProvider>
             <ContextMenuProvider>
-                <WorkSpaceWrapper>
-                    <Router />
-                </WorkSpaceWrapper>
+                <ColorPanelsProvider>
+                    <WorkSpaceWrapper>
+                        <Router />
+                    </WorkSpaceWrapper>
+                </ColorPanelsProvider>
             </ContextMenuProvider>
         </ThemeProvider>
     );

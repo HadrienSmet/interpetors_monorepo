@@ -1,10 +1,30 @@
 export const en = {
     translation: {
         actions: {
+            add: "Add",
             confirm: "Confirm",
             workspace: {
                 create: "Create work space",
             },
+        },
+        colorPanel: {
+            creation: {
+                action: "Create a color panel",
+                title: "Color panel creation"
+            },
+            colors: {
+                label: "Define the colors",
+                placeholder: "Sources",
+            },
+            displayer: {
+                color: "COLOR",
+                name: "NAME",
+            },
+            title: {
+                label: "Define a title",
+                placeholder: "Default color panel",
+            },
+            missing: "No color panel found"
         },
         inputs: {
             folders: {
@@ -12,11 +32,13 @@ export const en = {
                 unselected: "Select a file to see his content",
                 unsupported: "Type of file not supported. Supported type of files: ",
             },
+            notRequired: "Not required",
         },
         navigation: {
             buttons: {
                 dictionary: "Dictionary",
                 files: "Source folders",
+                home: "My work space",
                 preparations: "Old preparations",
                 prepare: "New preparation",
                 notes: "Notes",
@@ -24,6 +46,13 @@ export const en = {
             },
         },
         views: {
+            home: {
+                title: "My work space",
+                sections: {
+                    languages: "Languages",
+                    colorPanel: "Color panel",
+                },
+            },
             new: {
                 "context-menu": {
                     editor: {

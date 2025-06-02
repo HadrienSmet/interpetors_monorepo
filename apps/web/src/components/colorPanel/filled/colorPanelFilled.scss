@@ -1,0 +1,21 @@
+.color-panel-filled {
+    display: flex;
+
+    .buttons-column {
+        display: flex;
+        flex-direction: column;
+        font-size: var(--size-l);
+        gap: var(--space-m);
+        padding: var(--space-m);
+
+        button {
+            align-items: center;
+            border-radius: var(--radius-round);
+            box-shadow: var(--shadow-default) var(--clr-txt-02);
+            display: flex;
+            height: 40px;
+            justify-content: center;
+            width: 40px
+        }
+    }
+}

@@ -1,10 +1,30 @@
 export const fr = {
     translation: {
         actions: {
+            add: "Ajouter",
             confirm: "Confirmer",
             workspace: {
                 create: "Créer mon espace de travail",
             },
+        },
+        colorPanel: {
+            creation: {
+                action: "Créer une palette de couleur",
+                title: "Création d'une palette de couleur"
+            },
+            colors: {
+                label: "Définis tes couleurs",
+                placeholder: "Sources",
+            },
+            displayer: {
+                color: "COULEUR",
+                name: "NOM",
+            },
+            title: {
+                label: "Défini un titre",
+                placeholder: "Palette par défaut",
+            },
+            missing: "Aucune palette de couleur n'a été trouvée"
         },
         inputs: {
             folders: {
@@ -12,11 +32,13 @@ export const fr = {
                 unselected: "Sélectionnez un fichier pour afficher son contenu",
                 unsupported: "Type de fichier non supporté. Types de fichier supportés: ",
             },
+            notRequired: "Facultatif",
         },
         navigation: {
             buttons: {
                 dictionary: "Dictionnaire",
                 files: "Dossiers sources",
+                home: "Mon espace de travail",
                 preparations: "Anciennes préparations",
                 prepare: "Nouvelle préparation",
                 notes: "Notes",
@@ -28,6 +50,13 @@ export const fr = {
             empty: "Aucunes notes n'a encore été créé pour cette préparation",
         },
         views: {
+            home: {
+                title: "Mon espace de travail",
+                sections: {
+                    languages: "Langages",
+                    colorPanel: "Palette de couleur",
+                },
+            },
             new: {
                 "context-menu": {
                     editor: {

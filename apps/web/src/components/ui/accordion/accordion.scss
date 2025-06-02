@@ -21,7 +21,7 @@
             &-wrapper {
                 display: grid;
                 grid-template-rows: 0fr;
-                transition: grid-template-rows 0.5s ease-out;
+                transition: grid-template-rows var(--transition-onClick) ease-out;
 
                 &.expanded {
                     grid-template-rows: 1fr;
@@ -57,7 +57,7 @@
             }
 
             svg {
-                transition: var(--transition-hover);
+                transition: var(--transition-onClick);
             }
         }
     }

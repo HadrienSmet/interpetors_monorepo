@@ -1,3 +1,4 @@
+export * from "./colorPanels";
 export * from "./contextMenu";
 export * from "./foldersManager";
 export * from "./notes";

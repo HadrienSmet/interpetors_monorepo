@@ -21,6 +21,7 @@
     --clr-bg-dark:           rgb(208, 208, 208);
     --clr-bg-light:            rgb(255,255,255);
     --clr-bg-light-05: rgba(255, 255, 255, 0.5);
+    --clr-bg-light-08: rgba(255, 255, 255, 0.8);
     --clr-txt:                       rgb(0,0,0);
     --clr-txt-06:              rgba(0,0,0, 0.6);
     --clr-txt-04:               rgba(0,0,0,0.4);
@@ -67,19 +68,22 @@
     // =================
     // =  TRANSITIONS  =
     // =================
-    --transition-hover: 0.2s;
-    --transition-theme: 0.4s;
-    --transition-appear: 0.6s;
+    --transition-hover:   0.2s;
+    --transition-onClick: 0.3s;
+    --transition-theme:   0.4s;
+    --transition-appear:  0.6s;
 }
 
 [data-theme="dark"] {
     --clr-bg:                rgb(0, 28, 52);
     --clr-bg-01:        rgba(0, 28, 52,0.1);
+    --clr-bg-04:        rgba(0, 28, 52,0.4);
     --clr-bg-06:        rgba(0, 28, 52,0.6);
 
     --clr-bg-dark:           rgb(1, 22, 42);
     --clr-bg-light:          rgb(1, 33, 61);
     --clr-bg-light-05: rgba(1, 33, 61, 0.5);
+    --clr-bg-light-08: rgba(1, 33, 61, 0.8);
 
     --clr-txt:             rgb(238,240,242);
     --clr-txt-06:    rgba(255,255,255, 0.6);

@@ -3,6 +3,7 @@ import { ChangeEvent, useState } from "react";
 import { useWorkSpaces, WorkSpace } from "@/contexts";
 
 const EMPTY_WORKSPACE: WorkSpace = {
+    colorPanel: null,
     id: -1,
     name: "Default",
     languages: {
@@ -84,11 +85,11 @@ export const useWorkSpaceCreator = () => {
     }));
 
     return ({
-        workspaceCreatorState,
         handleNativeLanguage,
         handleTitle,
+        nextStep,
         pushWorkLanguage,
         removeWorkLanguage,
-        nextStep,
+        workspaceCreatorState,
     });
 };

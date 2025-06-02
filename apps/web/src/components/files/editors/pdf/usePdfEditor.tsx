@@ -28,6 +28,7 @@ const getNoteFromRange = ({ color, file, filePath, range }: CreateNoteFromRangeP
     const noteData: NoteData = {
         color,
         createdAt: Date.now(),
+        // TODO: Id should be defined in back-end
         id: uuidv4(),
         note: "",
         reference: {
