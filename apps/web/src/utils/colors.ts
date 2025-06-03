@@ -91,10 +91,3 @@ export const rgbToHsl = ({ r, g, b }: RgbColor) => {
 
     return ({ h, s: s * 100, l: l * 100 });
 };
-export const rgbToRgba = (color: string, opacity: number): string => {
-  const { r, g, b } = getRgbFromString(color);
-
-  return (
-    `rgba(${r}, ${g}, ${b}, ${opacity})`
-    );
-};
