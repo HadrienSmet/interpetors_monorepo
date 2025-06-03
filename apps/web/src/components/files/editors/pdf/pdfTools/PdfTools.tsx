@@ -26,7 +26,7 @@ type PdfToolsProps =
     };
 
 const PANEL_PADDING = 8 as const;
-const PANEL_SIZE = 305 as const;
+const PANEL_SIZE = 313 as const;
 const COLOR_PICKER_DIMENSION = PANEL_SIZE - (PANEL_PADDING * 2);
 export const PdfTools = (props: PdfToolsProps) => {
     const [isDragging, setIsDragging] = useState(false);
@@ -123,18 +123,18 @@ export const PdfTools = (props: PdfToolsProps) => {
                         onMouseMove={onMouseMove}
                         onMouseUp={onMouseUp}
                         style={{ cursor: isDragging ? "grabbing" : "grab", }}
-                        title={t("views.new.fileEditor.settings.drag")}
+                        title={t("files.editor.tools.drag")}
                     >
                         <MdDragIndicator />
                     </button>
                     {isLandscape
                         ? (
-                            <button title={t("views.new.fileEditor.settings.vertical")}>
+                            <button title={t("files.editor.tools.vertical")}>
                                 <MdOutlineMoreVert onClick={toggleDirection} />
                             </button>
                         )
                         : (
-                            <button title={t("views.new.fileEditor.settings.horizontal")}>
+                            <button title={t("files.editor.tools.horizontal")}>
                                 <MdOutlineMoreHoriz onClick={toggleDirection} />
                             </button>
                         )
@@ -143,7 +143,7 @@ export const PdfTools = (props: PdfToolsProps) => {
                         ? (
                             <button
                                 className={isLandscape ? "expansion-row" : ""}
-                                title={t("views.new.fileEditor.settings.close")}
+                                title={t("files.editor.tools.close")}
                             >
                                 <MdExpandLess onClick={toggleOpen} />
                             </button>
@@ -151,7 +151,7 @@ export const PdfTools = (props: PdfToolsProps) => {
                         : (
                             <button
                                 className={isLandscape ? "expansion-row" : ""}
-                                title={t("views.new.fileEditor.settings.open")}
+                                title={t("files.editor.tools.open")}
                             >
                                 <MdExpandMore onClick={toggleOpen} />
                             </button>
@@ -172,7 +172,7 @@ export const PdfTools = (props: PdfToolsProps) => {
                                     {...props}
                                 />
                             ))}
-                            <button>
+                            <button title={t("files.editor.tools.color")}>
                                 <div
                                     className="color-picker-trigger"
                                     onClick={togglePickingColor}
@@ -189,6 +189,7 @@ export const PdfTools = (props: PdfToolsProps) => {
                     <ColorPicker
                         {...props}
                         height={COLOR_PICKER_DIMENSION}
+                        isLandscape={isLandscape}
                         width={COLOR_PICKER_DIMENSION}
                     />
                 </div>

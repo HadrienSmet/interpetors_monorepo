@@ -22,15 +22,19 @@
     box-shadow: var(--shadow-default) var(--clr-txt-04);
     cursor: crosshair;
     position: relative;
-}
 
-.color-picker-cursor {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: var(--radius-round);
-    border: var(--border-m) solid #fff;
-    transform: translate(-50%, -50%);
-    box-shadow: var(--shadow-default) var(--clr-txt-04);
-    pointer-events: none;
+    &-cursor {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: var(--radius-round);
+        border: var(--border-m) solid #fff;
+        transform: translate(-50%, -50%);
+        box-shadow: var(--shadow-default) var(--clr-txt-04);
+        pointer-events: none;
+    }
+    &-division {
+        display: flex;
+        gap: var(--space-m);
+    }
 }

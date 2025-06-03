@@ -26,6 +26,33 @@ export const en = {
             },
             missing: "No color panel found"
         },
+        files: {
+            "context-menu": {
+                delete: "Delete the file",
+                rename: "Rename the file",
+            },
+            editor: {
+                "context-menu": {
+                    highlight: "Highlight the selection",
+                    note: "Create a note from selection",
+                    underline: "Underline the selection",
+                    vocabulary: "Add to vocabulary",
+                },
+                tools: {
+                    brush: "Brush",
+                    close: "Close",
+                    color: "Change color",
+                    drag: "Drag",
+                    highlight: "Highlight",
+                    horizontal: "Horizontal display",
+                    note: "Add a note",
+                    open: "Open",
+                    underline: "Underline",
+                    vertical: "Vertical display",
+                    vocabulary: "Add to vocabulary",
+                }
+            }
+        },
         inputs: {
             folders: {
                 empty: "Drag and drop you folder here",
@@ -55,35 +82,11 @@ export const en = {
             },
             new: {
                 "context-menu": {
-                    editor: {
-                        highlight: "Highlight the selection",
-                        note: "Create a note from selection",
-                        underline: "Underline the selection",
-                        vocabulary: "Add to vocabulary",
-                    },
-                    file: {
-                        delete: "Delete the file",
-                        rename: "Rename the file",
-                    },
                     folder: {
                         create: "Create new folder",
                         delete: "Delete the folder",
                         rename: "Rename the folder",
                     },
-                },
-                fileEditor: {
-                    settings: {
-                        brush: "Brush",
-                        close: "Close",
-                        drag: "Drag",
-                        highlight: "Highlight",
-                        horizontal: "Horizontal display",
-                        note: "Add a note",
-                        open: "Open",
-                        underline: "Underline",
-                        vertical: "Vertical display",
-                        vocabulary: "Add to vocabulary",
-                    }
                 },
                 inputs: {
                     "meeting-documents": "Provide the documents related to the reunion that you are preparing.",

@@ -26,7 +26,7 @@ export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }:
             children: (
                 <>
                     <MdDriveFileRenameOutline />
-                    <p>{t("views.new.context-menu.file.rename")}</p>
+                    <p>{t("files.context-menu.rename")}</p>
                 </>
             ),
             onClick: () => setIsEditingFile(true),
@@ -35,7 +35,7 @@ export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }:
             children: (
                 <>
                     <MdDelete />
-                    <p>{t("views.new.context-menu.file.delete")}</p>
+                    <p>{t("files.context-menu.delete")}</p>
                 </>
             ),
             onClick: () => files.delete(node),

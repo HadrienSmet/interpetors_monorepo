@@ -1,6 +1,8 @@
 .folder-dropzone {
+    display: flex;
     height: 100%;
     width: 100%;
+
     &.dragged {
         background-color: var(--clr-txt-04);
         color: var(--clr-bg-light);

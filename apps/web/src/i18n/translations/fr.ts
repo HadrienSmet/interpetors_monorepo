@@ -26,6 +26,33 @@ export const fr = {
             },
             missing: "Aucune palette de couleur n'a été trouvée"
         },
+        files: {
+            "context-menu": {
+                delete: "Supprimer le fichier",
+                rename: "Renommer le fichier",
+            },
+            editor: {
+                "context-menu": {
+                    highlight: "Surligner la sélection",
+                    note: "Créer une note à partir de la sélection",
+                    underline: "Souligner la sélection",
+                    vocabulary: "Ajouter au vocabulaire",
+                },
+                tools: {
+                    brush: "Pinceau",
+                    close: "Fermer la palette d'outils",
+                    color: "Changer la couleur",
+                    drag: "Déplacer la palette d'outils",
+                    highlight: "Surligner",
+                    horizontal: "Afficher horizontalement",
+                    note: "Ajouter une note",
+                    open: "Ouvrir la palette d'outils",
+                    underline: "Souligner",
+                    vertical: "Afficher verticalement",
+                    vocabulary: "Ajouter au vocabulaire"
+                }
+            }
+        },
         inputs: {
             folders: {
                 empty: "Glissez-déposez un dossier ici",
@@ -59,35 +86,11 @@ export const fr = {
             },
             new: {
                 "context-menu": {
-                    editor: {
-                        highlight: "Surligner la sélection",
-                        note: "Créer une note à partir de la sélection",
-                        underline: "Souligner la sélection",
-                        vocabulary: "Ajouter au vocabulaire",
-                    },
-                    file: {
-                        delete: "Supprimer le fichier",
-                        rename: "Renommer le fichier",
-                    },
                     folder: {
                         create: "Nouveau dossier",
                         delete: "Supprimer le dossier",
                         rename: "Renommer le dossier",
                     },
-                },
-                fileEditor: {
-                    settings: {
-                        brush: "Pinceau",
-                        close: "Fermer la palette d'outils",
-                        drag: "Déplacer la palette d'outils",
-                        highlight: "Surligner",
-                        horizontal: "Afficher horizontalement",
-                        note: "Ajouter une note",
-                        open: "Ouvrir la palette d'outils",
-                        underline: "Souligner",
-                        vertical: "Afficher verticalement",
-                        vocabulary: "Ajouter au vocabulaire"
-                    }
                 },
                 inputs: {
                     "meeting-documents": "Fournissez les documents relatifs à la réunion à laquelle vous souhaitez vous préparer.",

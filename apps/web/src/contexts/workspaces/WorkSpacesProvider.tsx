@@ -1,5 +1,7 @@
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
+import { useColorPanels } from "@/contexts";
+
 import { WorkSpace, WorkSpacesState } from "./workspaces.types";
 import { WorkSpacesContext } from "./WorkSpacesContext";
 
@@ -10,6 +12,7 @@ export const WorkSpacesProvider = (props: PropsWithChildren) => {
         currentWorkSpaceId: 0,
         workSpaces: {},
     });
+    const { colorPanels } = useColorPanels();
 
     const currentWorkSpace = useMemo(() => (
         workSpacesState.workSpaces[workSpacesState.currentWorkSpaceId] ?? null
@@ -50,6 +53,16 @@ export const WorkSpacesProvider = (props: PropsWithChildren) => {
         return (copy);
     });
 
+    useEffect(() => {
+        if (currentWorkSpace && currentWorkSpace.colorPanel && !(currentWorkSpace.colorPanel in colorPanels)) {
+            // Color panel has been deleted
+            editWorkSpace({ ...currentWorkSpace, colorPanel: null });
+        }
+    }, [
+        colorPanels,
+        workSpacesState.currentWorkSpaceId,
+        workSpacesState.workSpaces,
+    ]);
     // Retrieves the value stored locaclly to set it as current workspace
     useEffect(() => {
         const storedItem = localStorage.getItem(STORAGE_KEY);

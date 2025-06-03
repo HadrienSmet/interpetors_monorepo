@@ -3,14 +3,16 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { hslToRgb, rgbToHsl, RgbColor } from "@/utils";
 
 import "./colorPicker.scss";
+import { ColorPropositions } from "./colorPropositions";
 
 type ColorPickerProps = {
     readonly color: RgbColor;
     readonly height: number;
+    readonly isLandscape?: boolean
     readonly setColor: (color: RgbColor) => void;
     readonly width: number;
 };
-export const ColorPicker = ({ color, height, setColor, width }: ColorPickerProps) => {
+export const ColorPicker = ({ color, height, isLandscape = false, setColor, width }: ColorPickerProps) => {
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
     const pickerRef = useRef<HTMLDivElement | null>(null);
@@ -64,18 +66,31 @@ export const ColorPicker = ({ color, height, setColor, width }: ColorPickerProps
 
     return (
         <div
-            className="color-picker"
-            ref={pickerRef}
-            onMouseDown={onMouseDown}
-            style={{ height, width }}
+            className="color-picker-division"
+            style={{
+                flexDirection: isLandscape
+                    ? "column"
+                    : "row"
+            }}
         >
             <div
-                className="color-picker-cursor"
-                style={{
-                    backgroundColor: cursorBg,
-                    left: cursorPosition.x,
-                    top: cursorPosition.y,
-                }}
+                className="color-picker"
+                ref={pickerRef}
+                onMouseDown={onMouseDown}
+                style={{ height, width }}
+            >
+                <div
+                    className="color-picker-cursor"
+                    style={{
+                        backgroundColor: cursorBg,
+                        left: cursorPosition.x,
+                        top: cursorPosition.y,
+                    }}
+                />
+            </div>
+            <ColorPropositions
+                isLandscape={isLandscape}
+                setColor={setColor}
             />
         </div>
     );

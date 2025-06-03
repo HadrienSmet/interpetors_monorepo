@@ -58,7 +58,7 @@ export const ToolButton = (props: ToolButtonProps) => {
         <button
             className={props.id === props.tool ? "selected" : ""}
             onClick={() => props.onToolSelection(props.id === props.tool ? null : props.id)}
-            title={t(`views.new.fileEditor.settings.${props.id}`)}
+            title={t(`files.editor.tools.${props.id}`)}
         >
             {props.icon}
         </button>

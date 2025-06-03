@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { Accordion, Button } from "@/components";
 import { NoteData, useNotes } from "@/contexts";
+import { useColorPanel } from "@/hooks";
 
 import "./notes.scss";
 
@@ -75,6 +76,7 @@ const NoteGroup = ({ group }: NoteGroupProps) => (
 );
 
 export const Notes = () => {
+    const { colorPanel } = useColorPanel();
     const { notes } = useNotes();
     const { t } = useTranslation();
 
@@ -94,6 +96,7 @@ export const Notes = () => {
                     key={`group-${key}`}
                 />
             );
+
             const title = (
                 <div
                     className="note-group__title"
@@ -103,11 +106,11 @@ export const Notes = () => {
                         className="note-group__color"
                         style={{ backgroundColor: key }}
                     />
-                    <h2>Group {index + 1}</h2>
+                    <h2>{colorPanel?.colors[key] ?? `Group ${index + 1}`}</h2>
                 </div>
             );
 
-            output.push({ title, content })
+            output.push({ title, content });
 
             index++;
         }

@@ -1,13 +1,45 @@
+const getRoundedValue = (num: string) => Math.max(Math.floor(Number(num)), 0);
+
+/** Each value is included in 0-1 range */
 export type RgbColor = {
     readonly r: number;
     readonly g: number;
     readonly b: number;
 };
+/** Each value is included in 0-255 range */
+type SplittedRgb = {
+    readonly r: number;
+    readonly g: number;
+    readonly b: number;
+};
+const getRgbFromString = (color: string): SplittedRgb => {
+    const [r, g, b] = color
+        .split("(")[1]
+        .split(")")[0]
+        .split(",");
 
+    return ({
+        r: getRoundedValue(r),
+        g: getRoundedValue(g),
+        b: getRoundedValue(b),
+    })
+}
 /** From PdfEditor rgb color (0 - 1) to regular rgb (0 - 255) */
 export const getRgbColor = (color: RgbColor) => (
     `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`
 );
+export const getRoundedRgbColor = (color: RgbColor) => (
+    `rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)})`
+)
+export const getPdfRgbColor = (color: string) => {
+    const { r, g, b } = getRgbFromString(color);
+
+    return ({
+        r: r/255,
+        g: g/255,
+        b: b/255,
+    })
+};
 export const hslToRgb = (h: number, s: number, l: number): RgbColor => {
     s /= 100;
     l /= 100;
@@ -60,12 +92,9 @@ export const rgbToHsl = ({ r, g, b }: RgbColor) => {
     return ({ h, s: s * 100, l: l * 100 });
 };
 export const rgbToRgba = (color: string, opacity: number): string => {
-  const [r, g, b] = color
-    .split("(")[1]
-    .split(")")[0]
-    .split(",");
+  const { r, g, b } = getRgbFromString(color);
 
   return (
-    `rgba(${Math.ceil(Number(r))}, ${Math.ceil(Number(g))}, ${Math.ceil(Number(b))}, ${opacity})`
+    `rgba(${r}, ${g}, ${b}, ${opacity})`
     );
 };

@@ -22,7 +22,7 @@ export const STROKE_SIZE = 2 as const;
 export const getContextMenuItem = (tool: TOOLS_ON_SELECTION, actionItem: ActionItem, t: TFunction<"translation", undefined>) => (
     <>
         {actionItem.icon}
-        <p>{t(`views.new.context-menu.editor.${tool}`)}</p>
+        <p>{t(`files.editor.context-menu.${tool}`)}</p>
     </>
 );
 export const getFileFromPdfDocument = async (pdfDoc: PDFDocument, pdfFile: File): Promise<File> => {

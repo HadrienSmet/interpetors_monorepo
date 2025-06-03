@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { ColorPanel } from "@/contexts";
 import { useCssVariable } from "@/hooks";
-import { getRgbColor, RgbColor, rgbToRgba } from "@/utils";
+import { getRgbColor, getRoundedRgbColor, RgbColor } from "@/utils";
 
 import { Button, ColorPicker, InputStyleLess } from "../../ui";
 
@@ -78,7 +78,7 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
             ...state,
             colors: {
                 ...state.colors,
-                [rgbToRgba(getRgbColor(color), 1)]: colorName
+                [getRoundedRgbColor(color)]: colorName,
             }
         }));
 
