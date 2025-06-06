@@ -1,0 +1,29 @@
+
+.loader {
+    animation: loader 2s infinite;
+    aspect-ratio: 1;
+    background:
+        radial-gradient(farthest-side, var(--clr-txt) 98%,transparent) 0 0/20px 20px no-repeat,
+        conic-gradient(from 90deg at 10px 10px,transparent 90deg, var(--clr-txt) 0) content-box,
+        conic-gradient(from -90deg at 40px 40px, transparent 90deg, var(--clr-txt) 0) content-box,
+        var(--clr-bg);
+    border: 10px solid transparent;
+    box-sizing: border-box;
+    filter: blur(4px) contrast(10);
+    padding: 5px;
+    width: 80px;
+
+    &-container {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        justify-content: center;
+    }
+}
+@keyframes loader {
+    0%   { background-position:0 0 }
+    25%  { background-position:100% 0 }
+    50%  { background-position:100% 100% }
+    75%  { background-position:0% 100% }
+    100% { background-position:0% 0 }
+}

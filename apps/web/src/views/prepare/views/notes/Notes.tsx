@@ -4,9 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Accordion, Button } from "@/components";
-import { NoteData, useNotes } from "@/contexts";
+import { getNoteId, NoteData, useNotes } from "@/contexts";
 import { useColorPanel } from "@/hooks";
-import { getRgbFromString } from "@/utils";
 
 import "./notes.scss";
 
@@ -32,7 +31,8 @@ const Note = ({ note, index }: NoteProps) => {
     return (
         <div
             className="note"
-            id={`${Object.values(getRgbFromString(note.color)).join("-")}-${index + 1}`}
+            key={getNoteId(note.color, index+ 1)}
+            id={getNoteId(note.color, index + 1)}
         >
             {note.reference && (
                 <div className="note-header">
@@ -112,10 +112,7 @@ export const Notes = () => {
         let index = 0;
         for (const key of keys) {
             const content = (
-                <NoteGroup
-                    group={notes[key]}
-                    key={`group-${key}`}
-                />
+                <NoteGroup group={notes[key]} />
             );
 
             const title = (

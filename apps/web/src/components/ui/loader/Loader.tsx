@@ -1,4 +1,6 @@
-import { Loading, AnimationProps } from "@/assets";
+import { AnimationProps } from "@/assets";
+
+import "./loader.scss";
 
 export const LoaderSizes = {
     fullScreen: 200,
@@ -9,5 +11,9 @@ export const Loader = (props: AnimationProps & { size?: keyof typeof LoaderSizes
         ? { maxWidth: LoaderSizes[props.size], ...props.style }
         : props.style;
 
-    return (<Loading {...props} style={style} />);
+    return (
+        <div className="loader-container">
+            <div style={style} className="loader" />
+        </div>
+    );
 };

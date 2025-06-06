@@ -1,6 +1,12 @@
 import { PropsWithChildren, useState } from "react";
 
+import { getRgbFromString } from "@/utils";
+
 import { NoteData, NotesContext, NotesRecord } from "./NotesContext";
+
+export const getNoteId = (color: string, index: number | string) => (
+    `${Object.values(getRgbFromString(color)).join("-")}-${index}`
+);
 
 export const NotesProvider = ({ children }: PropsWithChildren) => {
     const [notes, setNotes] = useState<NotesRecord>({});

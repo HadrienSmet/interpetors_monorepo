@@ -11,9 +11,13 @@
     }
     .loader-container {
         align-items: center;
+        background-color: var(--clr-bg-light);
         display: flex;
-        height: 100%;
+        flex: 1;
+        // Space of the component on top
+        height: calc(100vh - 128px);
         justify-content: center;
+        position: absolute;
         width: 100%;
     }
     .note-ref-overlay {

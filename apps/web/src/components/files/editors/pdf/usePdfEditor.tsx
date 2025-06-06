@@ -7,6 +7,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 
 import {
     FileInStructure,
+    getNoteId,
     NoteInStructure,
     PathToDraw,
     RectangleToDraw,
@@ -16,7 +17,7 @@ import {
     useNotes,
 } from "@/contexts";
 import { Position } from "@/types";
-import { getRgbColor, getRgbFromString, RgbColor } from "@/utils";
+import { getRgbColor, RgbColor } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { ActionItem, ContextMenuItem } from "./contextMenuItem";
@@ -47,6 +48,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Text selection range */
     const [currentRange, setCurrentRange] = useState<Range | undefined>(undefined);
     const [customCursor, setCustomCursor] = useState<React.JSX.Element | null>(null);
+    const [displayLoader, setDisplayLoader] = useState(true);
     /** Used to define the size of the canvas */
     const [isPdfRendered, setIsPdfRendered] = useState(false);
     /** Number of pages of the pdf file */
@@ -100,6 +102,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             rectanglesToDraw: newRectanglesToDraw,
             textsToDraw: newTextsToDraw,
         });
+
         setPdfFile(file);
         setCurrentRange(undefined);
         setTool(null);
@@ -115,6 +118,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         if (!range) {
             return;
         };
+        setDisplayLoader(true);
 
         const rects = range.getClientRects();
 
@@ -140,6 +144,8 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             return;
         }
 
+        setDisplayLoader(true);
+
         const noteKey = getRgbColor(pdfTools.color);
         const note = getNoteFromRange({
             color: noteKey,
@@ -150,6 +156,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         if (!note) {
             console.error("An error occured during the note creation");
+            setDisplayLoader(false);
             return;
         }
 
@@ -164,20 +171,22 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         const newRectanglesToDraw: Array<RectangleToDraw> = [];
         const newTextsToDraw: Array<TextToDraw> = [];
         let index = 0;
-        const rectsArr = Array.from(rects)
+        const rectsArr = Array.from(rects);
+
         for (const rect of rectsArr) {
             const output = updatePdfDocumentOnSelection({
+                noteId: getNoteId(noteKey, noteIndex),
                 pageRefs,
                 pdfDoc,
-                pdfTools,
+                pdfTools: { ...pdfTools, tool },
                 rect,
                 refToAdd: index === rectsArr.length - 1
                     ? noteIndex
                     : undefined,
-                noteId: `${Object.values(getRgbFromString(noteKey)).join("-")}-${noteIndex}`,
             });
 
             if (!output) {
+                index++;
                 continue;
             }
 
@@ -202,8 +211,8 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         });
 
         setTimeout(() => {
-            navigate("/prepare/notes")
-        }, 800);
+            navigate("/prepare/notes");
+        }, 700);
     };
 
     // ------ USE EFFECTS ------
@@ -211,6 +220,14 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     useEffect(() => {
         setPdfFile(props.fileInStructure);
     }, [props.fileInStructure]);
+    // Removes the loader when the pdf is displayed
+    useEffect(() => {
+        if (isPdfRendered) {
+            setTimeout(() => {
+                setDisplayLoader(false);
+            }, 500);
+        }
+    }, [isPdfRendered]);
     // Stores the pdf file as a PDFDocument that we will be able to edit
     // And resets all the indicators used to know if the pdf is rendered when pdf file changes
     useEffect(() => {
@@ -328,6 +345,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         };
         const handleMouseUp = async () => {
             if (!pdfDoc || points.length < 2) return;
+            setDisplayLoader(true);
 
             const pathToDraw = updatePdfDocumentOnStroke({
                 pageRefs,
@@ -336,7 +354,10 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
                 points,
             });
 
-            if (!pathToDraw) return;
+            if (!pathToDraw) {
+                setDisplayLoader(false);
+                return;
+            };
 
             const updatedFile = await getFileFromPdfDocument(pdfDoc, pdfFile);
             files.update({
@@ -403,7 +424,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         },
         [TOOLS_ON_SELECTION.NOTE]: {
             icon: <MdComment />,
-            onClick: () => console.log("note"),
+            onClick: () => handleTextReference(PDF_TOOLS.NOTE),
         },
         [TOOLS_ON_SELECTION.VOCABULARY]: {
             icon: <MdOutlineMenuBook />,
@@ -455,12 +476,17 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         ) {
             handleSelection(tool);
         }
+
+        if (tool === PDF_TOOLS.NOTE) {
+            handleTextReference(tool);
+        }
     };
 
     return ({
         canvasRef,
         containerRef,
         customCursor,
+        displayLoader,
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,

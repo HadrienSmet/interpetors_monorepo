@@ -3,6 +3,7 @@ import { Document, Page } from "react-pdf";
 import { useNavigate } from "react-router-dom";
 
 import { Loader } from "@/components";
+import { NoteInStructure } from "@/contexts";
 import "@/workers/pdfConfig";
 
 import { PDF_TOOLS, PdfTools } from "./pdfTools";
@@ -14,6 +15,40 @@ const PdfEditorLoader = () => (
         <Loader size="fullScreen" />
     </div>
 );
+const TextInteractive = ({ note, index, i }: { note: NoteInStructure; index: number, i: number; }) => {
+    const navigate = useNavigate();
+
+    const onClick = () => {
+        navigate(`/prepare/notes?note=${note.noteId}`);
+    };
+    const onMouseEnter = () => {
+        document
+            .querySelectorAll(`.note-group-${note.noteId}`)
+            .forEach(el => el.classList.add("hovered"));
+    };
+    const onMouseLeave = () => {
+        document
+            .querySelectorAll(`.note-group-${note.noteId}`)
+            .forEach(el => el.classList.remove("hovered"));
+    };
+
+    return (
+        <button
+            className={`note-ref-overlay note-group-${note.noteId}`}
+            key={`noteRef-${index}-${i}`}
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            style={{
+                height: `${note.height}px`,
+                left: `${note.x}px`,
+                top: `${note.y}px`,
+                width: `${note.width}px`,
+            }}
+            title="Navigate to note"
+        />
+    );
+};
 
 const OPTIONS = {
     cMapUrl: "/cmaps/",
@@ -26,6 +61,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
         canvasRef,
         containerRef,
         customCursor,
+        displayLoader,
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,
@@ -38,12 +74,10 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
         setIsPdfRendered,
     } = usePdfEditor(props);
 
-    const navigate = useNavigate();
-
     const canvasStyle = useMemo(() => (
         containerRef.current
             ? {
-                left: (containerRef.current.getBoundingClientRect().width - PDF_EDITOR_WIDTH)/2,
+                left: (containerRef.current.getBoundingClientRect().width - PDF_EDITOR_WIDTH) / 2,
             }
             : {}
     ), []);
@@ -60,7 +94,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
             />
             <Document
                 file={pdfFile.file}
-                loading={<PdfEditorLoader />}
+                loading={null}
                 onLoadSuccess={onDocumentLoadSuccess}
                 onContextMenu={onContextMenu}
                 options={OPTIONS}
@@ -90,29 +124,11 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                             {pdfFile.noteReferences
                                 .filter(ref => ref.pageIndex === index)
                                 .map((ref, i) => (
-                                    <button
+                                    <TextInteractive
                                         key={`noteRef-${index}-${i}`}
-                                        className={`note-ref-overlay note-group-${ref.noteId}`}
-                                        title="Navigate to note"
-                                        style={{
-                                            left: `${ref.x}px`,
-                                            top: `${ref.y}px`,
-                                            width: `${ref.width}px`,
-                                            height: `${ref.height}px`,
-                                        }}
-                                        onClick={() => {
-                                            navigate(`/prepare/notes?note=${ref.noteId}`);
-                                        }}
-                                        onMouseEnter={() => {
-                                            document
-                                            .querySelectorAll(`.note-group-${ref.noteId}`)
-                                            .forEach(el => el.classList.add("hovered"));
-                                        }}
-                                        onMouseLeave={() => {
-                                            document
-                                            .querySelectorAll(`.note-group-${ref.noteId}`)
-                                            .forEach(el => el.classList.remove("hovered"));
-                                        }}
+                                        note={ref}
+                                        i={i}
+                                        index={index}
                                     />
                                 ))
                             }
@@ -120,6 +136,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                     );
                 })}
             </Document>
+            {displayLoader && (<PdfEditorLoader />)}
 
             <canvas
                 className="on-real-time-displayer"

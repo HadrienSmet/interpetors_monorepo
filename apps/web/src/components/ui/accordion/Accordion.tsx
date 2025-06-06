@@ -35,5 +35,5 @@ type AccordionProps = {
     readonly items: Array<AccordionItemProps>;
 };
 export const Accordion = ({ items }: AccordionProps) => (
-    items.map(item => (<AccordionItem {...item} />))
+    items.map((item, index) => (<AccordionItem {...item} key={`accordion-item-${index}`} />))
 );
