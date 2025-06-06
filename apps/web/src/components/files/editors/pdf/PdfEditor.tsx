@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Document, Page } from "react-pdf";
+import { useNavigate } from "react-router-dom";
 
 import { Loader } from "@/components";
 import "@/workers/pdfConfig";
@@ -37,6 +38,8 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
         setIsPdfRendered,
     } = usePdfEditor(props);
 
+    const navigate = useNavigate();
+
     const canvasStyle = useMemo(() => (
         containerRef.current
             ? {
@@ -56,7 +59,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                 setColor={setColor}
             />
             <Document
-                file={pdfFile}
+                file={pdfFile.file}
                 loading={<PdfEditorLoader />}
                 onLoadSuccess={onDocumentLoadSuccess}
                 onContextMenu={onContextMenu}
@@ -84,6 +87,24 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                                 onRenderSuccess={onRenderSuccess}
                                 pageNumber={pageNumber}
                             />
+                            {pdfFile.noteReferences
+                                .filter(ref => ref.pageIndex === index)
+                                .map((ref, i) => (
+                                    <div
+                                        key={`noteRef-${index}-${i}`}
+                                        className="note-ref-overlay"
+                                        style={{
+                                            left: `${ref.x}px`,
+                                            top: `${ref.y}px`,
+                                            width: `${ref.width}px`,
+                                            height: `${ref.height}px`,
+                                        }}
+                                        onClick={() => {
+                                            navigate(`/prepare/notes?note=${ref.noteId}`);
+                                        }}
+                                    />
+                                ))
+                            }
                         </div>
                     );
                 })}

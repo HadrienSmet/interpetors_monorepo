@@ -2,7 +2,7 @@ import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from "react";
 import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import { useContextMenu, useFoldersManager } from "@/contexts";
+import { FileInStructure, useContextMenu, useFoldersManager } from "@/contexts";
 
 import { FileIcon } from "../../../files";
 import { InputStyleLess } from "../../../ui";
@@ -12,7 +12,7 @@ import { getPaddingLeft } from "./nodes.utils";
 
 type FileNodeProps =
     & Omit<TreeNodeProps, "node">
-    & { readonly node: File; };
+    & { readonly node: FileInStructure; };
 export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }: FileNodeProps) => {
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
@@ -81,7 +81,7 @@ export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }:
             onDragStart={onDragStart}
             style={{ paddingLeft: getPaddingLeft(depth) }}
         >
-            <FileIcon node={node} />
+            <FileIcon node={node.file} />
             {isEditingFile
                 ? (
                     <InputStyleLess

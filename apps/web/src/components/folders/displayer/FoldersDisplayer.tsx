@@ -1,7 +1,7 @@
 import { DragEventHandler, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { FolderStructure, getFileInStructure } from "@/contexts";
+import { FileInStructure, FolderStructure, getFileInStructure } from "@/contexts";
 
 import { FileDisplayer } from "../../files";
 
@@ -17,6 +17,10 @@ type FoldersDisplayerProps = {
     readonly onDragOver: DragEventHandler<HTMLDivElement>;
     readonly onDrop: DragEventHandler<HTMLDivElement>;
 };
+type SelectedFile = {
+    readonly fileInStructure: FileInStructure | null;
+    readonly path: string;
+};
 export const FoldersDisplayer = ({
     foldersStructures,
     isDragged,
@@ -25,21 +29,21 @@ export const FoldersDisplayer = ({
     onDragOver,
     onDrop
 }: FoldersDisplayerProps) => {
-    const [selectedFile, setSelectedFile] = useState<{file: File | null; path: string;}>({ file: null, path: "" });
+    const [selectedFile, setSelectedFile] = useState<SelectedFile>({ fileInStructure: null, path: "" });
 
     const [searchParams] = useSearchParams();
 
-    const handleFileClick = (file: File, path: string) => setSelectedFile({ file, path});
+    const handleFileClick = (fileInStructure: FileInStructure, path: string) => setSelectedFile({ fileInStructure, path});
 
     useEffect(() => {
         const path = searchParams.get("filepath");
         if (!path) return;
 
         for (const folder of foldersStructures) {
-            const file = getFileInStructure(folder, `/${path}`);
+            const fileInStructure = getFileInStructure(folder, `/${path}`);
 
-            if (file) {
-                setSelectedFile({ file, path });
+            if (fileInStructure) {
+                setSelectedFile({ fileInStructure, path });
                 break;
             }
         }
@@ -50,7 +54,7 @@ export const FoldersDisplayer = ({
             <FoldersExplorer
                 foldersStructures={foldersStructures}
                 handleFileClick={handleFileClick}
-                selectedFile={selectedFile.file}
+                selectedFile={selectedFile.fileInStructure}
             />
             <div
                 className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
@@ -59,7 +63,7 @@ export const FoldersDisplayer = ({
                 onDragOver={onDragOver}
                 onDrop={onDrop}
             >
-                <FileDisplayer selectedFile={selectedFile} />
+                <FileDisplayer selectedFileInStructure={selectedFile} />
             </div>
         </div>
     );

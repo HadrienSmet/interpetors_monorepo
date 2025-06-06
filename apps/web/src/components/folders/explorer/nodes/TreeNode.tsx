@@ -4,7 +4,7 @@ import { VscFolder, VscFolderOpened } from "react-icons/vsc";
 import { useTranslation } from "react-i18next";
 
 import { InputStyleLess } from "@/components";
-import { useContextMenu, useFoldersManager } from "@/contexts";
+import { isFileInStructure, useContextMenu, useFoldersManager } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 
 import { FileNode } from "./FileNode";
@@ -182,7 +182,7 @@ export const TreeNode = ({
         if (e.key === "Enter") handleRename();
     };
 
-    if (node instanceof File) {
+    if (isFileInStructure(node)) {
         return (
             <FileNode
                 depth={depth}

@@ -4,46 +4,44 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import { v4 as uuidv4 } from "uuid";
 
-import { NoteData, useContextMenu, useFoldersManager, useNotes } from "@/contexts";
+import {
+    FileInStructure,
+    NoteInStructure,
+    PathToDraw,
+    RectangleToDraw,
+    TextToDraw,
+    useContextMenu,
+    useFoldersManager,
+    useNotes,
+} from "@/contexts";
 import { Position } from "@/types";
-import { getRgbColor, RgbColor } from "@/utils";
+import { getRgbColor, getRgbFromString, RgbColor } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
+import { ActionItem, ContextMenuItem } from "./contextMenuItem";
 import { CustomCursor } from "./customCursor";
-import { ActionItem, getContextMenuItem, getFileFromPdfDocument, getRange, PageRefs, STROKE_SIZE, updatePdfDocumentOnSelection, updatePdfDocumentOnStroke } from "./pdfEditor.utils";
 import { PDF_TOOLS, PdfEditorToolsState, PdfTool, TOOLS_ON_SELECTION } from "./pdfTools";
-
-type CreateNoteFromRangeParams = {
-    readonly color: string;
-    readonly file: File;
-    readonly filePath: string;
-    readonly range: Range;
-};
-const getNoteFromRange = ({ color, file, filePath, range }: CreateNoteFromRangeParams) => {
-    const text = range.toString().trim();
-    if (!text) return;
-
-    const noteData: NoteData = {
-        color,
-        createdAt: Date.now(),
-        // TODO: Id should be defined in back-end
-        id: uuidv4(),
-        note: "",
-        reference: {
-            file,
-            filePath,
-            text,
-        },
-    };
-
-    return (noteData);
-};
+import {
+    getFileFromPdfDocument,
+    getNoteFromRange,
+    getRange,
+    PageRefs,
+    STROKE_SIZE,
+    updatePdfDocumentOnSelection,
+    updatePdfDocumentOnStroke,
+} from "./utils";
 
 export type UsePdfEditorProps = {
-    readonly file: File;
+    readonly fileInStructure: FileInStructure;
     readonly path: string;
+};
+type HandleFileUpdateParams = {
+    file: FileInStructure;
+    newNoteReferences?: Array<NoteInStructure>;
+    newRectanglesToDraw?: Array<RectangleToDraw>;
+    newTextsToDraw?: Array<TextToDraw>;
+    newPathsToDraw?: Array<PathToDraw>;
 };
 export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Text selection range */
@@ -56,7 +54,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Pdf document - Used to interact with the binary */
     const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
     /** Pdf file - Used to display the pdf file */
-    const [pdfFile, setPdfFile] = useState<File>(props.file);
+    const [pdfFile, setPdfFile] = useState<FileInStructure>(props.fileInStructure);
     /** State to interact with the pdf file */
     const [pdfTools, setPdfTools] = useState<PdfEditorToolsState>({
         tool: null,
@@ -79,12 +77,33 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     const { setContextMenu } = useContextMenu();
     const { files } = useFoldersManager();
     const navigate = useNavigate();
-    const { createNote } = useNotes();
+    const { createNote, notes } = useNotes();
     const { t } = useTranslation();
 
     const setColor = (color: RgbColor) => setPdfTools(state => ({ ...state, color }));
     const setTool = (tool: PdfTool | null) => setPdfTools(state => ({ ...state, tool }));
 
+    const handleFileUpdate = (params: HandleFileUpdateParams) => {
+        const {
+            file,
+            newNoteReferences,
+            newRectanglesToDraw,
+            newPathsToDraw,
+            newTextsToDraw,
+        } = params;
+
+        files.update({
+            old: pdfFile,
+            newFile: file,
+            noteReferences: newNoteReferences,
+            pathsToDraw: newPathsToDraw,
+            rectanglesToDraw: newRectanglesToDraw,
+            textsToDraw: newTextsToDraw,
+        });
+        setPdfFile(file);
+        setCurrentRange(undefined);
+        setTool(null);
+    };
     // ------ HANDLERS ------
     /** Updates the pdf file and clean the tools */
     const handleSelection = async (tool: PdfTool) => {
@@ -99,7 +118,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         const rects = range.getClientRects();
 
-        Array.from(rects).forEach(rect => updatePdfDocumentOnSelection({
+        const updateouput = Array.from(rects).map(rect => updatePdfDocumentOnSelection({
             pageRefs,
             pdfDoc,
             pdfTools: {
@@ -107,45 +126,91 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
                 tool,
             },
             rect,
-        }));
+        })).filter(el => el !== undefined);
 
         const updatedFile = await getFileFromPdfDocument(pdfDoc, pdfFile);
 
-        files.update(pdfFile, updatedFile);
-
-        setPdfFile(updatedFile);
-        setCurrentRange(undefined);
-        setTool(null);
+        handleFileUpdate({
+            file: updatedFile,
+            newRectanglesToDraw: updateouput.map((el) => el?.rectangleToDraw )
+        });
     };
-    const handleTextReference = (tool: PdfTool) => {
-        if (!currentRange || tool !== PDF_TOOLS.NOTE) {
+    const handleTextReference = async (tool: PdfTool) => {
+        if (!currentRange || tool !== PDF_TOOLS.NOTE || !pdfDoc) {
             return;
         }
 
+        const noteKey = getRgbColor(pdfTools.color);
         const note = getNoteFromRange({
-            color: getRgbColor(pdfTools.color),
-            file: pdfFile,
+            color: noteKey,
+            file: pdfFile.file,
             filePath: props.path,
             range: currentRange,
         });
+
         if (!note) {
-            console.error("An error occured during note creation");
+            console.error("An error occured during the note creation");
             return;
         }
 
         createNote(note);
 
-        setCurrentRange(undefined);
-        setTool(null);
+        const noteIndex = noteKey in notes
+            ? `${Object.keys(notes[noteKey]).length + 1}`
+            : "1";
 
-        navigate("/prepare/notes");
-    }
+        const rects = currentRange.getClientRects();
+        const newNoteReferences: Array<NoteInStructure> = [];
+        const newRectanglesToDraw: Array<RectangleToDraw> = [];
+        const newTextsToDraw: Array<TextToDraw> = [];
+        let index = 0;
+        const rectsArr = Array.from(rects)
+        for (const rect of rectsArr) {
+            const output = updatePdfDocumentOnSelection({
+                pageRefs,
+                pdfDoc,
+                pdfTools,
+                rect,
+                refToAdd: index === rectsArr.length - 1
+                    ? noteIndex
+                    : undefined,
+                noteId: `${Object.values(getRgbFromString(noteKey)).join("-")}-${noteIndex}`,
+            });
+
+            if (!output) {
+                continue;
+            }
+
+            if (output.noteReference) {
+                newNoteReferences.push(output.noteReference);
+            }
+            if (output.textToDraw) {
+                newTextsToDraw.push(output.textToDraw);
+            }
+
+            newRectanglesToDraw.push(output.rectangleToDraw);
+
+            index++;
+        }
+
+        const updatedFile = await getFileFromPdfDocument(pdfDoc, pdfFile);
+        handleFileUpdate({
+            file: updatedFile,
+            newNoteReferences,
+            newRectanglesToDraw,
+            newTextsToDraw,
+        });
+
+        setTimeout(() => {
+            navigate("/prepare/notes")
+        }, 800);
+    };
 
     // ------ USE EFFECTS ------
     // Display another file when the props changes
     useEffect(() => {
-        setPdfFile(props.file);
-    }, [props.file]);
+        setPdfFile(props.fileInStructure);
+    }, [props.fileInStructure]);
     // Stores the pdf file as a PDFDocument that we will be able to edit
     // And resets all the indicators used to know if the pdf is rendered when pdf file changes
     useEffect(() => {
@@ -157,7 +222,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
             const arrayBuffer = typeof pdfFile === "string"
                 ? await fetch(pdfFile).then(res => res.arrayBuffer())
-                : await pdfFile.arrayBuffer();
+                : await pdfFile.file.arrayBuffer();
 
             const pdfDoc = await PDFDocument.load(arrayBuffer);
             setPdfDoc(pdfDoc);
@@ -195,6 +260,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
                 handleSelection(pdfTools.tool);
                 return;
             }
+
             if (pdfTools.tool === PDF_TOOLS.NOTE) {
                 handleTextReference(pdfTools.tool);
             }
@@ -263,15 +329,21 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         const handleMouseUp = async () => {
             if (!pdfDoc || points.length < 2) return;
 
-            updatePdfDocumentOnStroke({
+            const pathToDraw = updatePdfDocumentOnStroke({
                 pageRefs,
                 pdfDoc,
                 pdfTools,
                 points,
             });
 
+            if (!pathToDraw) return;
+
             const updatedFile = await getFileFromPdfDocument(pdfDoc, pdfFile);
-            files.update(pdfFile, updatedFile);
+            files.update({
+                old: pdfFile,
+                newFile: updatedFile,
+                pathsToDraw: [pathToDraw]
+            })
             setPdfFile(updatedFile);
 
             points = [];
@@ -339,7 +411,13 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         },
     };
     const items = Object.entries(actionsRecord).map(([key, value]) => ({
-        children: getContextMenuItem(key as TOOLS_ON_SELECTION, value, t),
+        children: (
+            <ContextMenuItem
+                actionItem={value}
+                tool={key as TOOLS_ON_SELECTION}
+                t={t}
+            />
+        ) ,
         onClick: value.onClick,
     }));
     // Handles the pdf tools on contextMenu + selectedText

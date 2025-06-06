@@ -6,13 +6,15 @@ import { Link } from "react-router-dom";
 import { Accordion, Button } from "@/components";
 import { NoteData, useNotes } from "@/contexts";
 import { useColorPanel } from "@/hooks";
+import { getRgbFromString } from "@/utils";
 
 import "./notes.scss";
 
 type NoteProps = {
+    readonly index: number;
     readonly note: NoteData;
 };
-const Note = ({ note }: NoteProps) => {
+const Note = ({ note, index }: NoteProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [inputValue, setInputValue] = useState(note.note);
 
@@ -28,7 +30,10 @@ const Note = ({ note }: NoteProps) => {
     const toggleEditing = () => setIsEditing(state => !state);
 
     return (
-        <div className="note">
+        <div
+            className="note"
+            id={`${Object.values(getRgbFromString(note.color)).join("-")}-${index + 1}`}
+        >
             {note.reference && (
                 <div className="note-header">
                     <Link to={`/prepare/files?filepath=${note.reference.filePath}`}>
@@ -69,8 +74,8 @@ type NoteGroupProps = {
 };
 const NoteGroup = ({ group }: NoteGroupProps) => (
     <div className="note-group__content">
-        {Object.values(group).map(noteData => (
-            <Note key={`note-${noteData.color}-${noteData.id}`} note={noteData} />
+        {Object.values(group).map((noteData, index) => (
+            <Note key={`note-${noteData.color}-${noteData.id}`} note={noteData} index={index} />
         ))}
     </div>
 );

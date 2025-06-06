@@ -72,6 +72,10 @@ export const en = {
                 vocabulary: "Vocabulary",
             },
         },
+        notes: {
+            add: "Add a note",
+            empty: "There are no notes generated for this preparation",
+        },
         views: {
             home: {
                 title: "My work space",

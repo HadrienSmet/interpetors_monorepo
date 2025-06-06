@@ -2,15 +2,24 @@ import { createContext, useContext } from "react";
 
 import { getContextError } from "../utils";
 
-export type FolderStructure = {
-    [key: string]: File | FolderStructure;
-};
+import {
+    FileInStructure,
+    FileInteractions,
+    FolderStructure,
+} from "./foldersManager.types";
+
+export type UpdateFileParams =
+    & {
+        readonly newFile: FileInStructure;
+        readonly old: FileInStructure;
+    }
+    & FileInteractions;
 export type FoldersManagerContextType = {
     readonly files: {
         readonly changeDirectory: (fileName: string, targetPath: string) => void;
-        readonly delete: (file: File) => void;
-        readonly rename: (file: File, name: string) => void;
-        readonly update: (old: File, newFile: File) => void;
+        readonly delete: (file: FileInStructure) => void;
+        readonly rename: (file: FileInStructure, name: string) => void;
+        readonly update: (params: UpdateFileParams) => void;
     };
     readonly folders: {
         readonly changeDirectory: (source: string, destination: string) => void;
@@ -21,7 +30,6 @@ export type FoldersManagerContextType = {
     };
     readonly foldersStructures: Array<FolderStructure>;
 };
-
 export const FoldersManagerContext = createContext<FoldersManagerContextType | null>(null);
 
 export const useFoldersManager = () => {

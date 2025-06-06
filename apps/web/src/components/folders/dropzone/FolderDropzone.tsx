@@ -1,17 +1,26 @@
 import { DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { FolderStructure, useFoldersManager } from "@/contexts";
+import { FileInStructure, FolderStructure, useFoldersManager } from "@/contexts";
 
 import { FoldersDisplayer } from "../displayer";
 
 import "./folderDropzone.scss";
 
+const getNewFileInStructure = (file: File): FileInStructure => ({
+    file,
+    originalFile: file,
+    name: file.name,
+    noteReferences: [],
+    pathsToDraw: [],
+    rectanglesToDraw: [],
+    textsToDraw: [],
+});
 const preventDefault = (e: DragEvent<HTMLDivElement>) => e.preventDefault();
 const setNestedFile = (
     root: FolderStructure,
     path: string[],
-    file: File
+    file: FileInStructure
 ): void => {
     const [head, ...rest] = path;
 
@@ -50,7 +59,11 @@ const readDirectory = async (
                 (entry as FileSystemFileEntry).file((file) => {
                     const pathArray = fullPath.split("/");
 
-                    setNestedFile(root, pathArray, file);
+                    setNestedFile(
+                        root,
+                        pathArray,
+                        getNewFileInStructure(file)
+                    );
                     resolve();
                 });
             });
@@ -78,8 +91,9 @@ export const FolderDropzone = () => {
                 else if (entry?.isFile) {
                     const file = item.getAsFile();
 
-                    if (file)
-                        setNestedFile(newFileTree, [file.name], file);
+                    if (file) {
+                        setNestedFile(newFileTree, [file.name], getNewFileInStructure(file));
+                    }
                 }
             }
         }

@@ -12,7 +12,7 @@ type SplittedRgb = {
     readonly g: number;
     readonly b: number;
 };
-const getRgbFromString = (color: string): SplittedRgb => {
+export const getRgbFromString = (color: string): SplittedRgb => {
     const [r, g, b] = color
         .split("(")[1]
         .split(")")[0]

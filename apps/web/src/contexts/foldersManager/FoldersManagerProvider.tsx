@@ -1,22 +1,37 @@
 import { PropsWithChildren, useState } from "react";
 
-import { FoldersManagerContext, FoldersManagerContextType, FolderStructure } from "./FoldersManagerContext";
-import { browseStructureToActionOnFile, FileVisitor, getTargetKeys } from "./foldersManager.utils";
+import { FoldersManagerContext, FoldersManagerContextType, UpdateFileParams } from "./FoldersManagerContext";
+import { FileInStructure, FileInteractions, FolderStructure } from "./foldersManager.types";
+import { assignUpdate, browseStructureToActionOnFile, FileVisitor, getTargetKeys } from "./foldersManager.utils";
+
+export const isFileInStructure = (value: FileInStructure | FolderStructure): value is FileInStructure => {
+    return (
+        typeof value === "object" &&
+        value !== null &&
+        "file" in value &&
+        value.file instanceof File &&
+        Array.isArray(value.noteReferences) &&
+        Array.isArray(value.pathsToDraw) &&
+        Array.isArray(value.rectanglesToDraw) &&
+        Array.isArray(value.textsToDraw)
+    );
+};
+
 
 export const FoldersManagerProvider = (props: PropsWithChildren) => {
     const [foldersStructures, setFoldersStructures] = useState<Array<FolderStructure>>([]);
 
     // ---------- Files methods ----------
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {
-        const moveFile = (structure: FolderStructure): [FolderStructure, File | null] => {
+        const moveFile = (structure: FolderStructure): [FolderStructure, FileInStructure | null] => {
             const result: FolderStructure = {};
-            let fileToMove: File | null = null;
+            let fileToMove: FileInStructure | null = null;
 
             for (const [key, value] of Object.entries(structure)) {
-                if (value instanceof File && key === fileName) {
+                if (isFileInStructure(value) && key === fileName) {
                     fileToMove = value;
                     continue; // Remove it
-                } else if (value instanceof File) {
+                } else if (isFileInStructure(value)) {
                     result[key] = value;
                 } else {
                     const [newSubStructure, moved] = moveFile(value);
@@ -29,7 +44,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             return ([result, fileToMove]);
         };
 
-        const insertFile = (structure: FolderStructure, pathParts: Array<string>, file: File): void => {
+        const insertFile = (structure: FolderStructure, pathParts: Array<string>, fileInStructure: FileInStructure): void => {
             const [head, ...rest] = pathParts;
 
             if (!head) return;
@@ -39,9 +54,9 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             }
 
             if (rest.length === 0) {
-                (structure[head] as FolderStructure)[file.name] = file;
+                (structure[head] as FolderStructure)[fileInStructure.file.name] = fileInStructure;
             } else {
-                insertFile(structure[head] as FolderStructure, rest, file);
+                insertFile(structure[head] as FolderStructure, rest, fileInStructure);
             }
         };
 
@@ -58,7 +73,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             })
         ));
     };
-    const deleteFile = (target: File) => {
+    const deleteFile = (target: FileInStructure) => {
         const visitor: FileVisitor = (key, value) => {
             if (value === target) return (null);
 
@@ -67,15 +82,15 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
 
         setFoldersStructures(state => state.map(s => browseStructureToActionOnFile(s, visitor)));
     };
-    const renameFile = (target: File, newName: string) => {
+    const renameFile = (target: FileInStructure, newName: string) => {
         const visitor: FileVisitor = (key, value) => {
             if (value === target) {
-                const updated = new File([value], newName, {
-                    type: value.type,
-                    lastModified: value.lastModified
+                const updatedFile = new File([value.file], newName, {
+                    type: value.file.type,
+                    lastModified: value.file.lastModified
                 });
 
-                return ([newName, updated]);
+                return ([newName, { ...value, file: updatedFile }]);
             }
 
             return ([key, value]);
@@ -83,15 +98,37 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
 
         setFoldersStructures(state => state.map(s => browseStructureToActionOnFile(s, visitor)));
     };
-    const updateFile = (oldFile: File, newFile: File) => {
+    const updateFile = (params: UpdateFileParams) => {
         const visitor: FileVisitor = (key, value) => {
-            if (value === oldFile) {
-                const updatedFile = new File([newFile], oldFile.name, { type: oldFile.type });
-
-                return [key, updatedFile];
+            if (value.file !== params.old.file) {
+                return ([key, value]);
             }
 
-            return ([key, value]);
+            const updatedFile = new File(
+                [params.newFile.file],
+                params.old.name,
+                { type: params.old.file.type }
+            );
+            const keysToUpdate: Array<keyof FileInteractions> = [
+                "noteReferences",
+                "pathsToDraw",
+                "rectanglesToDraw",
+                "textsToDraw",
+            ];
+
+            let fileInteractions: FileInteractions = {};
+            for (const key of keysToUpdate) {
+                assignUpdate(fileInteractions, key, params, value);
+            }
+
+            const updatedValue = {
+                ...value,
+                ...fileInteractions,
+                file: updatedFile,
+            };
+
+            return ([key, updatedValue]);
+
         };
 
         setFoldersStructures(state => state.map(s => browseStructureToActionOnFile(s, visitor)));
@@ -107,7 +144,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
             let folderToMove: FolderStructure | null = null;
 
             for (const [key, value] of Object.entries(structure)) {
-                if (!(value instanceof File)) {
+                if (!isFileInStructure(value)) {
                     if (sourceParts[0] === key) {
                         if (sourceParts.length === 1) {
                             // This is the folder we want to remove.
@@ -179,7 +216,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
                         (result[key] as FolderStructure)[folderName] = {};
                     }
 
-                    if (!(value instanceof File)) {
+                    if (!isFileInStructure(value)) {
                         result[key] = create(value, rest);
                     } else {
                         result[key] = value;
@@ -210,7 +247,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
                         continue;
                     }
 
-                    if (!(value instanceof File)) {
+                    if (!isFileInStructure(value)) {
                         result[key] = removeFolder(value, rest);
                     } else {
                         result[key] = value;
@@ -241,7 +278,7 @@ export const FoldersManagerProvider = (props: PropsWithChildren) => {
                         continue;
                     }
 
-                    if (!(value instanceof File)) {
+                    if (!isFileInStructure(value)) {
                         result[key] = changeName(value, rest);
                     } else {
                         result[key] = value;

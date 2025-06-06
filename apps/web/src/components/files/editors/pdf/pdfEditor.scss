@@ -16,9 +16,15 @@
         justify-content: center;
         width: 100%;
     }
+    .note-ref-overlay {
+        position: absolute;
+        cursor: pointer;
+        z-index: 10;
+    }
     .page-container {
         border: var(--border-s) solid var(--clr-txt-01);
         margin: auto;
+        position: relative;
         // pdf min-width + (2*border)
         width: 597px;
 

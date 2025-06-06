@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { FolderStructure } from "@/contexts";
+import { FileInStructure, FolderStructure } from "@/contexts";
 
 import { FILE_DISPLAYER_MIN_WIDTH } from "../../files";
 import { ResizableSection } from "../../ui";
@@ -13,8 +13,8 @@ import "./foldersExplorer.scss";
 const INITIAL_WIDTH = 200 as const;
 type FoldersExplorerProps = {
     readonly foldersStructures: Array<FolderStructure>;
-    readonly handleFileClick: (file: File, path: string) => void;
-    readonly selectedFile: File | null;
+    readonly handleFileClick: (file: FileInStructure, path: string) => void;
+    readonly selectedFile: FileInStructure | null;
 };
 export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFile }: FoldersExplorerProps) => {
     const [highlightedFolderPath, setHighlightedFolderPath] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFi
                     node={node}
                     onFileClick={handleFileClick}
                     path=""
-                    selectedFile={selectedFile}
+                    selectedFile={selectedFile?.file ?? null}
                     setHighlightedFolderPath={setHighlightedFolderPath}
                 />
             ))
