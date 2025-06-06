@@ -156,7 +156,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         createNote(note);
 
         const noteIndex = noteKey in notes
-            ? `${Object.keys(notes[noteKey]).length + 1}`
+            ? `${Object.keys(notes[noteKey]).length}`
             : "1";
 
         const rects = currentRange.getClientRects();

@@ -1,7 +1,7 @@
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { MdClear, MdEdit, MdLink } from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { Accordion, Button } from "@/components";
 import { NoteData, useNotes } from "@/contexts";
@@ -83,7 +83,23 @@ const NoteGroup = ({ group }: NoteGroupProps) => (
 export const Notes = () => {
     const { colorPanel } = useColorPanel();
     const { notes } = useNotes();
+    const [searchParams] = useSearchParams();
     const { t } = useTranslation();
+
+    const noteId = searchParams.get("note");
+
+    useEffect(() => {
+        if (!noteId) return;
+
+        const timeout = setTimeout(() => {
+            const el = document.getElementById(noteId);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }, 100);
+
+        return () => clearTimeout(timeout);
+    }, [noteId]);
 
     const accordionItems = useMemo(() => {
         const keys = Object.keys(notes);

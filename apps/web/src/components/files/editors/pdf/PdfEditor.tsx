@@ -90,9 +90,10 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                             {pdfFile.noteReferences
                                 .filter(ref => ref.pageIndex === index)
                                 .map((ref, i) => (
-                                    <div
+                                    <button
                                         key={`noteRef-${index}-${i}`}
-                                        className="note-ref-overlay"
+                                        className={`note-ref-overlay note-group-${ref.noteId}`}
+                                        title="Navigate to note"
                                         style={{
                                             left: `${ref.x}px`,
                                             top: `${ref.y}px`,
@@ -101,6 +102,16 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                                         }}
                                         onClick={() => {
                                             navigate(`/prepare/notes?note=${ref.noteId}`);
+                                        }}
+                                        onMouseEnter={() => {
+                                            document
+                                            .querySelectorAll(`.note-group-${ref.noteId}`)
+                                            .forEach(el => el.classList.add("hovered"));
+                                        }}
+                                        onMouseLeave={() => {
+                                            document
+                                            .querySelectorAll(`.note-group-${ref.noteId}`)
+                                            .forEach(el => el.classList.remove("hovered"));
                                         }}
                                     />
                                 ))

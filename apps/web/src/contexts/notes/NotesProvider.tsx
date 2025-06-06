@@ -1,4 +1,5 @@
 import { PropsWithChildren, useState } from "react";
+
 import { NoteData, NotesContext, NotesRecord } from "./NotesContext";
 
 export const NotesProvider = ({ children }: PropsWithChildren) => {

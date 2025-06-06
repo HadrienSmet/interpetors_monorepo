@@ -75,6 +75,7 @@ export const fr = {
         notes: {
             add: "Ajouter une note",
             empty: "Aucunes notes n'a encore été créé pour cette préparation",
+            navigate: "Nabiguer vers la note",
         },
         views: {
             home: {
