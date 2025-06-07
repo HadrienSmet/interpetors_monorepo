@@ -62,7 +62,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
         canvasRef,
         containerRef,
         customCursor,
-        // displayLoader,
+        displayLoader,
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,
@@ -121,6 +121,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                                 }}
                                 onRenderSuccess={onRenderSuccess}
                                 pageNumber={pageNumber}
+                                renderAnnotationLayer={false}
                             />
                             {pdfFile.noteReferences
                                 .filter(ref => ref.pageIndex === index)
@@ -137,7 +138,8 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                     );
                 })}
             </Document>
-            {/* {displayLoader && (<PdfEditorLoader />)} */}
+
+            {displayLoader && (<PdfEditorLoader />)}
 
             <canvas
                 className="on-real-time-displayer"
