@@ -48,7 +48,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
     /** Text selection range */
     const [currentRange, setCurrentRange] = useState<Range | undefined>(undefined);
     const [customCursor, setCustomCursor] = useState<React.JSX.Element | null>(null);
-    const [displayLoader, setDisplayLoader] = useState(true);
+    // const [displayLoader, setDisplayLoader] = useState(true);
     /** Used to define the size of the canvas */
     const [isPdfRendered, setIsPdfRendered] = useState(false);
     /** Number of pages of the pdf file */
@@ -118,7 +118,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         if (!range) {
             return;
         };
-        setDisplayLoader(true);
+        // setDisplayLoader(true);
 
         const rects = range.getClientRects();
 
@@ -144,7 +144,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             return;
         }
 
-        setDisplayLoader(true);
+        // setDisplayLoader(true);
 
         const noteKey = getRgbColor(pdfTools.color);
         const note = getNoteFromRange({
@@ -156,7 +156,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
 
         if (!note) {
             console.error("An error occured during the note creation");
-            setDisplayLoader(false);
+            // setDisplayLoader(false);
             return;
         }
 
@@ -210,9 +210,9 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             newTextsToDraw,
         });
 
-        setTimeout(() => {
-            navigate("/prepare/notes");
-        }, 700);
+        // setTimeout(() => {
+        // }, 1400);
+        navigate("/prepare/notes");
     };
 
     // ------ USE EFFECTS ------
@@ -221,13 +221,15 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         setPdfFile(props.fileInStructure);
     }, [props.fileInStructure]);
     // Removes the loader when the pdf is displayed
-    useEffect(() => {
-        if (isPdfRendered) {
-            setTimeout(() => {
-                setDisplayLoader(false);
-            }, 500);
-        }
-    }, [isPdfRendered]);
+    // useEffect(() => {
+    //     if (isPdfRendered) {
+    //         // Between 200 and 500 ms
+    //         // const randomTimeout = Math.ceil((Math.random() * 300)) + 200;
+    //         // setTimeout(() => {
+    //         // }, randomTimeout);
+    //         setDisplayLoader(false);
+    //     }
+    // }, [isPdfRendered]);
     // Stores the pdf file as a PDFDocument that we will be able to edit
     // And resets all the indicators used to know if the pdf is rendered when pdf file changes
     useEffect(() => {
@@ -345,7 +347,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         };
         const handleMouseUp = async () => {
             if (!pdfDoc || points.length < 2) return;
-            setDisplayLoader(true);
+            // setDisplayLoader(true);
 
             const pathToDraw = updatePdfDocumentOnStroke({
                 pageRefs,
@@ -355,7 +357,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
             });
 
             if (!pathToDraw) {
-                setDisplayLoader(false);
+                // setDisplayLoader(false);
                 return;
             };
 
@@ -486,7 +488,7 @@ export const usePdfEditor = (props: UsePdfEditorProps) => {
         canvasRef,
         containerRef,
         customCursor,
-        displayLoader,
+        // displayLoader,
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,

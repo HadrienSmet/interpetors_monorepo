@@ -39,6 +39,7 @@ export const updatePdfDocumentOnSelection = ({
     );
 
     const pageIndex = pageRefs.current.indexOf(pageRef);
+    console.log({ pageIndex })
     const page = pdfDoc.getPage(pageIndex);
 
     const { width: pdfWidth, height: pdfHeight } = page.getSize();
@@ -122,6 +123,7 @@ export const updatePdfDocumentOnStroke = ({
     if (!pageRef) return;
 
     const pageIndex = pageRefs.current.indexOf(pageRef);
+    console.log({pageIndex })
     const page = pdfDoc.getPage(pageIndex);
     const { height: pdfHeight, width: pdfWidth } = page.getSize();
 

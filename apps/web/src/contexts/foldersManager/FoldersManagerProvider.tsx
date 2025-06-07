@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 
 import { FoldersManagerContext, FoldersManagerContextType, UpdateFileParams } from "./FoldersManagerContext";
 import { FileInStructure, FileInteractions, FolderStructure } from "./foldersManager.types";
@@ -20,6 +20,10 @@ export const isFileInStructure = (value: FileInStructure | FolderStructure): val
 
 export const FoldersManagerProvider = (props: PropsWithChildren) => {
     const [foldersStructures, setFoldersStructures] = useState<Array<FolderStructure>>([]);
+
+    useEffect(() => {
+        console.log({ foldersStructures })
+    }, [foldersStructures]);
 
     // ---------- Files methods ----------
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {

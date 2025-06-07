@@ -51,6 +51,7 @@ const TextInteractive = ({ note, index, i }: { note: NoteInStructure; index: num
 };
 
 const OPTIONS = {
+    cMapPacked: true,
     cMapUrl: "/cmaps/",
     standardFontDataUrl: "/standard_fonts/",
 };
@@ -61,7 +62,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
         canvasRef,
         containerRef,
         customCursor,
-        displayLoader,
+        // displayLoader,
         numPages,
         onContextMenu,
         onDocumentLoadSuccess,
@@ -136,7 +137,7 @@ export const PdfEditor = (props: UsePdfEditorProps) => {
                     );
                 })}
             </Document>
-            {displayLoader && (<PdfEditorLoader />)}
+            {/* {displayLoader && (<PdfEditorLoader />)} */}
 
             <canvas
                 className="on-real-time-displayer"
