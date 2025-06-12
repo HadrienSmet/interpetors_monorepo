@@ -30,7 +30,7 @@ export const getRgbColor = (color: RgbColor) => (
 );
 export const getRoundedRgbColor = (color: RgbColor) => (
     `rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)})`
-)
+);
 export const getPdfRgbColor = (color: string) => {
     const { r, g, b } = getRgbFromString(color);
 
@@ -91,3 +91,6 @@ export const rgbToHsl = ({ r, g, b }: RgbColor) => {
 
     return ({ h, s: s * 100, l: l * 100 });
 };
+export const rgbToRgba = (color: RgbColor, opacity: number) => (
+    `rgba(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}, ${opacity})`
+);

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 
-import { hslToRgb, rgbToHsl, RgbColor } from "@/utils";
+import { hslToRgb, rgbToHsl, RgbColor, getRgbColor } from "@/utils";
 
 import "./colorPicker.scss";
 import { ColorPropositions } from "./colorPropositions";
@@ -17,7 +17,7 @@ export const ColorPicker = ({ color, height, isLandscape = false, setColor, widt
 
     const pickerRef = useRef<HTMLDivElement | null>(null);
 
-    const cursorBg = useMemo(() => `rgb(${color.r, color.g, color.b})`, [color]);
+    const cursorBg = useMemo(() => getRgbColor(color), [color]);
 
     const handleMouseMove = (event: MouseEvent | React.MouseEvent<HTMLDivElement>) => {
         if (!pickerRef.current) {

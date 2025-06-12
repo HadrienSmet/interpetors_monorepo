@@ -3,8 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
 import { InputStyleLess, NavigationState } from "@/components";
-import { FoldersManagerProvider, NotesProvider } from "@/contexts";
+import { NotesProvider } from "@/contexts";
 import { useCssVariable } from "@/hooks";
+import { FoldersManagerProvider } from "@/modules";
 import { NotFound } from "@/views";
 
 import { Files, Notes, Vocabulary } from "./views";

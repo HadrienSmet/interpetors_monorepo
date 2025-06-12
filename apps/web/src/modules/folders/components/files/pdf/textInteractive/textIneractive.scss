@@ -1,0 +1,8 @@
+.text-interactive {
+    position: absolute;
+    cursor: pointer;
+    z-index: 10;
+    &.hovered {
+        background-color: var(--clr-txt-interactive);
+    }
+}
