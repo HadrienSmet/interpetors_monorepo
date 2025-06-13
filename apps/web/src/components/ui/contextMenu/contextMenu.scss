@@ -6,6 +6,7 @@
     box-shadow: var(--shadow-default) var(--clr-txt-01);
     overflow: hidden;
     position: absolute;
+    transition: background-color var(--transition-theme);
     z-index: 10;
 
     &__item {

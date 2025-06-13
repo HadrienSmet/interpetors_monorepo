@@ -7,6 +7,7 @@
     left: 0;
     position: absolute;
     top: 0;
+    transition: background-color var(--transition-theme);
     z-index: 5;
 
     &.column {
@@ -39,6 +40,7 @@
         }
         .divider {
             background-color: var(--clr-txt-02);
+            transition: background-color var(--transition-theme);
 
             &.column {
                 height: 1px;

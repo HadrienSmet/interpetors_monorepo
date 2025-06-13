@@ -8,6 +8,7 @@
     margin-inline: auto;
     max-width: var(--size-section);
     padding: var(--space-m) var(--space-l);
+    transition: background-color var(--transition-theme);
     width: 100%;
 
     &-group {

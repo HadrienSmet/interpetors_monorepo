@@ -62,7 +62,8 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             },
         };
 
-        pushAction({ elements: [userAction] })
+        pushAction({ elements: [userAction] });
+        setDisplayLoader(false);
     };
     const handleTextReference = async (tool: PdfTool, filePath: string) => {
         if (
@@ -136,6 +137,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         };
 
         pushAction(historyAction);
+        setDisplayLoader(false);
     };
 
     // Responsible to store the text selection

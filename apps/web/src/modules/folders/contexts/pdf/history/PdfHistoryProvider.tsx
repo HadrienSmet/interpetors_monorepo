@@ -1,4 +1,4 @@
-import { PropsWithChildren, useMemo, useState } from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { HistoryAction, PdfHistoryContext, SortedActions } from "./PdfHistoryContext";
 
@@ -6,10 +6,12 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const [userActions, setUserActions] = useState<Array<HistoryAction>>([]);
     const [historyIndex, setHistoryIndex] = useState(0);
 
+    useEffect(() => { console.log({ userActions }) }, [userActions]);
+
     const backward = () => setHistoryIndex(state => Math.max(0, state-1));
     const forward = () => setHistoryIndex(state => Math.min(userActions.length-1, state));
     const pushAction = (action: HistoryAction) => {
-        const copy = { ...userActions };
+        const copy = [...userActions];
 
         copy.splice(historyIndex, Infinity, action);
 

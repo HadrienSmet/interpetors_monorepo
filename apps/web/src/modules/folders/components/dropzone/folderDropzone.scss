@@ -2,6 +2,7 @@
     display: flex;
     flex: 1;
     height: 100%;
+    transition: background-color var(--transition-theme);
 
     &.dragged {
         background-color: var(--clr-txt-04);

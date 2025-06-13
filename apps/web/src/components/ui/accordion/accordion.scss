@@ -46,6 +46,7 @@
                     height: var(--border-s);
                     left: 0;
                     position: absolute;
+                    transition: background-color var(--transition-theme);
                     width: 100%;
                 }
             &.closed {

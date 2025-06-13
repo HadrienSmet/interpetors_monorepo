@@ -39,6 +39,7 @@
 	padding: var(--space-m);
 	position: absolute;
 	right: 0;
+    transition: background-color var(--transition-theme);
 	width: calc(100% - (2 * var(--space-m)));
 
 	.cell {
@@ -65,8 +66,9 @@
 		box-shadow: var(--shadow-default) var(--clr-txt-02);
 		color: var(--clr-bg-light);
 		display: flex;
-		justify-content: center;
 		gap: var(--space-s);
+		justify-content: center;
 		padding-block: var(--space-s);
+        transition: background-color var(--transition-theme);
 	}
 }

@@ -5,6 +5,7 @@
     max-width: 1200px;
     min-width: 670px;
     padding: var(--space-xl) var(--space-xh);
+    transition: background-color var(--transition-theme);
 
     &-overlay {
         align-items: center;
