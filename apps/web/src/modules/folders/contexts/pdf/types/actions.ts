@@ -20,33 +20,35 @@ export enum REFERENCE_TYPES {
     VOCABULARY = "vocabulary",
 }
 
+type BaseElementAction = {
+    readonly color: RgbColor;
+    readonly pageRefs: RefObject<PageRefs>;
+    readonly pdfDoc: PDFDocument;
+    readonly pdfFile: PdfFileInStructure;
+};
 export type RectangleElementAction = {
     readonly type: DRAWING_TYPES.RECTANGLE;
-    readonly element: {
-        readonly color: RgbColor;
-        readonly pageRefs: RefObject<PageRefs>;
-        readonly pdfDoc: PDFDocument;
-        readonly pdfFile: PdfFileInStructure;
-        readonly rectsArray: Array<DOMRect>;
-        readonly tool: PdfTool;
-    };
+    readonly element:
+        & {
+            readonly rectsArray: Array<DOMRect>;
+            readonly tool: PdfTool;
+        }
+        & BaseElementAction;
 };
 export type TextElementAction = {
     readonly type: DRAWING_TYPES.TEXT;
-    readonly element: {
-        readonly color: RgbColor;
-        readonly pageRefs: RefObject<PageRefs>;
-        readonly pdfDoc: PDFDocument;
-        readonly pdfFile: PdfFileInStructure;
-        readonly rect: DOMRect;
-        readonly text: string;
-    };
+    readonly element:
+        & {
+            readonly rect: DOMRect;
+            readonly text: string;
+        }
+        & BaseElementAction;
 };
 export type ElementAction =
     | RectangleElementAction
     | TextElementAction;
 
-    type WithPageIndex = { readonly pageIndex: number; };
+type WithPageIndex = { readonly pageIndex: number; };
 export type NoteInStructure =
     & {
         readonly height: number;

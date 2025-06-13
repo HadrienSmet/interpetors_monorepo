@@ -6,7 +6,6 @@ import { PDFDocument } from "@/workers/pdfConfig";
 import { FileInStructure } from "../../manager/foldersManager.types";
 
 import { PageRefs, PdfFileContext } from "./PdfFileContext";
-// import { usePdfHistory } from "../history";
 
 type PdfFileProviderProps =
     & {
@@ -31,8 +30,6 @@ export const PdfFileProvider = ({ children, fileInStructure, filePath }: PdfFile
      */
     const pageRefs = useRef<PageRefs>([]);
     const renderedPages = useRef(0);
-
-    // const { elements, references } = usePdfHistory();
 
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => (
         setNumPages(nextNumPages)

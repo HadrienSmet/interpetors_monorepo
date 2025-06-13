@@ -14,6 +14,7 @@ import {
 } from "react-icons/md";
 
 import { ColorPicker } from "@/components";
+import { Position } from "@/types";
 import { getRgbColor } from "@/utils";
 
 import { usePdfTools } from "../../../../contexts";
@@ -26,6 +27,7 @@ const PANEL_PADDING = 8 as const;
 const PANEL_SIZE = 313 as const;
 const COLOR_PICKER_DIMENSION = PANEL_SIZE - (PANEL_PADDING * 2);
 
+// TODO: Need to have one source of truth for tools icons
 const TOOLS_BUTTONS: Array<ToolButtonItem> = [
     {
         icon: <MdBorderColor />,
@@ -59,7 +61,7 @@ export const PdfTools = () => {
     const [position, setPosition] = useState({ x: 0, y: 0 });
 
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const dragStartPos = useRef<{ x: number, y: number; }>({ x: 0, y: 0 });
+    const dragStartPos = useRef<Position>({ x: 0, y: 0 });
 
     const { color, setColor } = usePdfTools();
     const { t } = useTranslation();

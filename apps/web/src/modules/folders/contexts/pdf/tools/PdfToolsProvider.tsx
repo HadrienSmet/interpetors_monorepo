@@ -180,11 +180,6 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             document.removeEventListener("mouseup", handleMouseUp);
         };
     }, [color, currentRange, filePath, pdfDoc, pdfFile, tool]);
-    // Handles the brush
-    // TODO when PdfCanvasProvider will be created
-    // useEffect(() => {
-
-    // }, [color, tool]);
     // Handles the custom cursor
     useEffect(() => {
         const container = containerRef.current;

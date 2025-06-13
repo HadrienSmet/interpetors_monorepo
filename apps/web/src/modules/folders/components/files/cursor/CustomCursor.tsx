@@ -19,15 +19,16 @@ type CustomCursorProps = {
     readonly color: string;
     readonly position: Position;
     readonly tool: PdfTool;
-};;
+};
+// TODO: Need to have one source of truth for tools icons
+const TOOLS_ICONS = {
+    [PDF_TOOLS.BRUSH]: (params: ToolIconParams) => <MdBrush {...params} />,
+    [PDF_TOOLS.HIGHLIGHT]: (params: ToolIconParams) => <MdFormatColorFill {...params} />,
+    [PDF_TOOLS.NOTE]: (params: ToolIconParams) => <MdComment {...params} />,
+    [PDF_TOOLS.UNDERLINE]: (params: ToolIconParams) => <MdBorderColor {...params} />,
+    [PDF_TOOLS.VOCABULARY]: (params: ToolIconParams) => <MdOutlineMenuBook {...params} />,
+};
 const getCursrorIcon = ({ color, tool }: Omit<CustomCursorProps, "position">) => {
-    const TOOLS_ICONS = {
-        [PDF_TOOLS.BRUSH]: (params: ToolIconParams) => <MdBrush {...params} />,
-        [PDF_TOOLS.HIGHLIGHT]: (params: ToolIconParams) => <MdFormatColorFill {...params} />,
-        [PDF_TOOLS.NOTE]: (params: ToolIconParams) => <MdComment {...params} />,
-        [PDF_TOOLS.UNDERLINE]: (params: ToolIconParams) => <MdBorderColor {...params} />,
-        [PDF_TOOLS.VOCABULARY]: (params: ToolIconParams) => <MdOutlineMenuBook {...params} />,
-    };
     const toolIcon = TOOLS_ICONS[tool];
 
     const style: React.CSSProperties = {

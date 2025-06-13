@@ -1,10 +1,15 @@
 import { useNavigate } from "react-router-dom";
 
-import { NoteInStructure } from "@/contexts";
+import { NoteInStructure } from "../../../../contexts";
 
 import "./textIneractive.scss";
 
-export const TextInteractive = ({ note, index, i }: { note: NoteInStructure; index: number, i: number; }) => {
+type TextInteractiveProps = {
+    readonly i: number;
+    readonly index: number;
+    readonly note: NoteInStructure;
+};
+export const TextInteractive = ({ note, index, i }: TextInteractiveProps) => {
     const navigate = useNavigate();
 
     const onClick = () => {

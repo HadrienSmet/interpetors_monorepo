@@ -1,4 +1,4 @@
-export const findPointPage = (ref: HTMLCanvasElement | undefined, points: Array<{ y: number }>) => {
+export const findPointPage = (ref: HTMLCanvasElement | undefined, points: Array<{ readonly y: number; }>) => {
     if (!ref) return (false);
 
     const { top, bottom } = ref.getBoundingClientRect();
@@ -8,7 +8,7 @@ export const findPointPage = (ref: HTMLCanvasElement | undefined, points: Array<
         firstPoint.y >= top &&
         firstPoint.y <= bottom
     );
-}
+};
 export const findRectPage = (ref: HTMLCanvasElement | undefined, rect: DOMRect) => {
     if (!ref) return (false);
 

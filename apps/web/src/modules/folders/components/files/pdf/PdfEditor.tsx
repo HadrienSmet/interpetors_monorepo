@@ -15,7 +15,7 @@ type PdfEditorProps = {
     readonly fileInStructure: PdfFileInStructure;
     readonly filePath: string;
 };
-const PdfEditorChildren = () => {
+const PdfEditorChild = () => {
     const { canvasRef } = usePdfCanvas();
     const { containerRef, displayLoader } = usePdfFile();
     const { customCursor } = usePdfTools();
@@ -51,6 +51,6 @@ const PdfEditorChildren = () => {
 
 export const PdfEditor = (props: PdfEditorProps) => (
     <PdfWrapper {...props}>
-        <PdfEditorChildren />
+        <PdfEditorChild />
     </PdfWrapper>
 );

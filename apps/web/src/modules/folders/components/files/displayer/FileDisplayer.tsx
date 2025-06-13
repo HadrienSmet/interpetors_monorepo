@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 
 import { FileInStructure } from "../../../contexts";
 
-import { PdfEditor } from "../pdf";
 import { SUPPORTED_TYPES } from "../icon";
+import { PdfEditor } from "../pdf";
 
 import "./fileDisplayer.scss";
 

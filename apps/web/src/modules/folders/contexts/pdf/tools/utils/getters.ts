@@ -10,6 +10,7 @@ type CreateNoteFromRangeParams = {
 };
 export const getNoteFromRange = ({ color, file, filePath, range }: CreateNoteFromRangeParams) => {
     const text = range.toString().trim();
+
     if (!text) return;
 
     const noteData: NoteData = {

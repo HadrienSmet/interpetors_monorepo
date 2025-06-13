@@ -16,6 +16,7 @@ type PdfFileContextType = {
     readonly numPages: number | undefined;
     readonly onDocumentLoadSuccess: (proxy: PDFDocumentProxy) => void;
     readonly pageRefs: RefObject<PageRefs>;
+    /** Might not needed */
     readonly pdfDoc: PDFDocument | undefined;
     readonly pdfFile: FileInStructure;
     readonly renderedPages: RefObject<number>;
