@@ -39,10 +39,12 @@ export const en = {
                     vocabulary: "Add to vocabulary",
                 },
                 tools: {
+                    backward: "Backward",
                     brush: "Brush",
                     close: "Close",
                     color: "Change color",
                     drag: "Drag",
+                    forward: "Forward",
                     highlight: "Highlight",
                     horizontal: "Horizontal display",
                     note: "Add a note",

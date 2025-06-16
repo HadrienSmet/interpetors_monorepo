@@ -2,10 +2,11 @@ import { PropsWithChildren, useEffect, useState } from "react";
 
 import { browseStructureToActionOnFile, FileVisitor, getTargetKeys, isFileInStructure } from "./foldersManager.utils";
 import { FileInStructure, FolderStructure } from "./foldersManager.types";
-import { FoldersManagerContext, FoldersManagerContextType } from "./FoldersManagerContext";
+import { FileData, FoldersManagerContext, FoldersManagerContextType } from "./FoldersManagerContext";
 
 export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
     const [foldersStructures, setFoldersStructures] = useState<Array<FolderStructure>>([]);
+    const [selectedFile, setSelectedFile] = useState<FileData>({ fileInStructure: null, path: "" });
 
     useEffect(() => {
         console.log({ foldersStructures });
@@ -109,6 +110,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
             ]);
         };
 
+        setSelectedFile(state => ({ ...state, fileInStructure: file }));
         setFoldersStructures(state => state.map(folderStructure => browseStructureToActionOnFile(folderStructure, visitor)));
     };
 
@@ -289,6 +291,8 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
             rename: renameFolder,
         },
         foldersStructures,
+        selectedFile,
+        setSelectedFile,
     };
 
     return (

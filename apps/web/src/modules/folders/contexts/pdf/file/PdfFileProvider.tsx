@@ -3,25 +3,18 @@ import { PDFDocumentProxy } from "pdfjs-dist";
 
 import { PDFDocument } from "@/workers/pdfConfig";
 
-import { FileInStructure } from "../../manager/foldersManager.types";
+import { useFoldersManager } from "../../manager";
 
 import { PageRefs, PdfFileContext } from "./PdfFileContext";
 
-type PdfFileProviderProps =
-    & {
-        readonly fileInStructure: FileInStructure;
-        readonly filePath: string;
-    }
-    & PropsWithChildren;
-export const PdfFileProvider = ({ children, fileInStructure, filePath }: PdfFileProviderProps) => {
+export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const [displayLoader, setDisplayLoader] = useState(true);
     const [isPdfRendered, setIsPdfRendered] = useState(false);
     /** Number of pages of the pdf file */
     const [numPages, setNumPages] = useState<number>();
+    const [pageIndex, setPageIndex] = useState(1);
     /** Pdf document - Used to interact with the binary */
     const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
-    /** Displayed File in Structure */
-    const [pdfFile, setPdfFile] = useState(fileInStructure);
 
     const containerRef = useRef<HTMLDivElement>(null);
     /**
@@ -29,17 +22,19 @@ export const PdfFileProvider = ({ children, fileInStructure, filePath }: PdfFile
      * Used to know the positions of the interactions
      */
     const pageRefs = useRef<PageRefs>([]);
+    const pageRef = useRef<HTMLDivElement | null>(null);
     const renderedPages = useRef(0);
+
+    const { selectedFile } = useFoldersManager();
+
+    const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
+    const previousPage = () => setPageIndex(state => Math.max(state - 1, 1));
 
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => (
         setNumPages(nextNumPages)
     );
 
     // ------ USE EFFECTS ------
-    // Display another file when the props changes
-    useEffect(() => {
-        setPdfFile(fileInStructure);
-    }, [fileInStructure]);
     // Removes the loader when the pdf is displayed
     useEffect(() => {
         if (isPdfRendered) {
@@ -58,7 +53,9 @@ export const PdfFileProvider = ({ children, fileInStructure, filePath }: PdfFile
         setNumPages(0);
 
         const loadPdf = async () => {
-            if (!pdfFile) return;
+            if (!selectedFile.fileInStructure) return;
+
+            const pdfFile = selectedFile.fileInStructure
 
             const arrayBuffer = typeof pdfFile === "string"
                 ? await fetch(pdfFile).then(res => res.arrayBuffer())
@@ -69,22 +66,20 @@ export const PdfFileProvider = ({ children, fileInStructure, filePath }: PdfFile
         };
 
         loadPdf();
-    }, [pdfFile]);
-
-    // TODO Needs to add the useEffect Responsible to watch the userActions
-    // And to convert them into canvasElements and pdfElements
-    // And to call files.update
+    }, [selectedFile.fileInStructure]);
 
     const value = {
         containerRef,
         displayLoader,
-        filePath,
         isPdfRendered,
+        nextPage,
         numPages,
         onDocumentLoadSuccess,
+        pageIndex,
+        pageRef,
         pageRefs,
         pdfDoc,
-        pdfFile,
+        previousPage,
         renderedPages,
         setDisplayLoader,
         setIsPdfRendered,

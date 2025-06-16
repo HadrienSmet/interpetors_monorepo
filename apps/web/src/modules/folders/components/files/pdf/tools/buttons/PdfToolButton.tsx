@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { usePdfTools } from "../../../../contexts";
-import { PDF_TOOLS } from "../../../../types";
+import { usePdfTools } from "../../../../../contexts";
+import { PDF_TOOLS } from "../../../../../types";
 
 export type PdfTool = typeof PDF_TOOLS[keyof typeof PDF_TOOLS];
 export type ToolButtonItem = {

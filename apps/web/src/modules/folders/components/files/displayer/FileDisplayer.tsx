@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { FileInStructure } from "../../../contexts";
+import { FileInStructure, useFoldersManager } from "../../../contexts";
 
 import { SUPPORTED_TYPES } from "../icon";
 import { PdfEditor } from "../pdf";
@@ -17,12 +17,7 @@ const FileToRender = (props: FileToRenderProps) => {
     const { file } = fileInStructure;
 
     if (file.type.startsWith(SUPPORTED_TYPES.PDF)) {
-        return (
-            <PdfEditor
-                fileInStructure={props.fileInStructure}
-                filePath={props.path}
-            />
-        );
+        return (<PdfEditor />);
     }
     if (file.type.startsWith(SUPPORTED_TYPES.WORD)) {
         return (<p>Word will be supported soon</p>);
@@ -41,20 +36,16 @@ const FileToRender = (props: FileToRenderProps) => {
 };
 
 export const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
-type FileDisplayerProps = {
-    readonly selectedFileInStructure: {
-        readonly fileInStructure: FileInStructure | null;
-        readonly path: string;
-    };
-};
-export const FileDisplayer = (props: FileDisplayerProps) => {
+
+export const FileDisplayer = () => {
+    const { selectedFile } = useFoldersManager();
     const { t } = useTranslation();
 
     return (
         <div className="file-displayer" style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}>
-            {props.selectedFileInStructure.fileInStructure != null
+            {selectedFile.fileInStructure != null
                 // @ts-expect-error
-                ? (<FileToRender {...props.selectedFileInStructure} />)
+                ? (<FileToRender {...selectedFile} />)
                 : (
                     <div className="unselected-file">
                         <p>{t("inputs.folders.unselected")}</p>

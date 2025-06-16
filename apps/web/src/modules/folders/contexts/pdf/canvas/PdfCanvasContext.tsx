@@ -4,6 +4,7 @@ import { getContextError } from "@/contexts/utils";
 
 export type PdfCanvasContextType = {
     readonly canvasRef: RefObject<HTMLCanvasElement | null>;
+    readonly drawerRef: RefObject<HTMLCanvasElement | null>;
     readonly clear: () => void;
 };
 export const PdfCanvasContext = createContext<PdfCanvasContextType | null>(null);

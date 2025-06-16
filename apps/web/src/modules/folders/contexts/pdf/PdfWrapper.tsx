@@ -4,22 +4,15 @@ import { PdfCanvasProvider } from "./canvas";
 import { PdfFileProvider } from "./file";
 import { PdfHistoryProvider } from "./history";
 import { PdfToolsProvider } from "./tools";
-import { PdfFileInStructure } from "./types";
 
-type PdfWrapperProps =
-    & {
-        readonly fileInStructure: PdfFileInStructure;
-        readonly filePath: string;
-    }
-    & PropsWithChildren;
-export const PdfWrapper = ({ children, ...props }: PdfWrapperProps) => (
-    <PdfHistoryProvider>
-        <PdfFileProvider {...props}>
+export const PdfWrapper = ({ children }: PropsWithChildren) => (
+    <PdfFileProvider>
+        <PdfHistoryProvider>
             <PdfToolsProvider>
                 <PdfCanvasProvider>
                     {children}
                 </PdfCanvasProvider>
             </PdfToolsProvider>
-        </PdfFileProvider>
-    </PdfHistoryProvider>
+        </PdfHistoryProvider>
+    </PdfFileProvider>
 );

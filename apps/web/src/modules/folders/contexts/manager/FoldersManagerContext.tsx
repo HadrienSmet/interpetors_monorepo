@@ -1,9 +1,13 @@
-import { createContext, useContext } from "react";
+import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
 import { FileInStructure, FolderStructure } from "./foldersManager.types";
 
+export type FileData = {
+    readonly fileInStructure: FileInStructure | null;
+    readonly path: string;
+};
 export type FoldersManagerContextType = {
     readonly files: {
         readonly changeDirectory: (fileName: string, targetPath: string) => void;
@@ -19,6 +23,8 @@ export type FoldersManagerContextType = {
         readonly rename: (targetPath: string, newName: string) => void;
     };
     readonly foldersStructures: Array<FolderStructure>;
+    readonly selectedFile: FileData;
+    readonly setSelectedFile: Dispatch<SetStateAction<FileData>>
 };
 
 export const FoldersManagerContext = createContext<FoldersManagerContextType | null>(null)

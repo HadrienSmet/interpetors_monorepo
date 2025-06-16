@@ -8,6 +8,8 @@ import { getRgbColor, RgbColor } from "@/utils";
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "../../../components";
 import { PDF_TOOLS, TOOLS_ON_SELECTION } from "../../../types";
 
+import { useFoldersManager } from "../../manager";
+
 import { usePdfFile } from "../file";
 import { HistoryAction, usePdfHistory } from "../history";
 import { DRAWING_TYPES, ElementAction, REFERENCE_TYPES, ReferenceAction } from "../types";
@@ -28,15 +30,19 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const [tool, setTool] = useState<PdfTool | null>(null);
 
     const { setContextMenu } = useContextMenu();
+    const { selectedFile } = useFoldersManager();
     const { createNote, notes } = useNotes();
-    const { containerRef, filePath, pageRefs, pdfDoc, pdfFile, setDisplayLoader } = usePdfFile();
+    const { containerRef, pageIndex, pageRef, pageRefs, pdfDoc, setDisplayLoader } = usePdfFile();
     const { pushAction } = usePdfHistory();
     const { t } = useTranslation();
+
+    const { fileInStructure, path: filePath } = selectedFile;
+    const pdfFile = fileInStructure!;
 
     // ------ HANDLERS ------
     /** Updates the pdf file and clean the tools */
     const handleSelection = async (tool: PdfTool) => {
-        if (!pdfDoc) {
+        if (!pdfDoc || !pageRef.current) {
             return;
         }
 
@@ -44,6 +50,8 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         if (!range) {
             return;
         };
+
+        const pageDimensions = pageRef.current.getBoundingClientRect();
 
         setDisplayLoader(true);
 
@@ -53,8 +61,8 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             type: DRAWING_TYPES.RECTANGLE,
             element: {
                 color,
-                pageRefs,
-                // Probably not needed
+                pageDimensions,
+                pageIndex,
                 pdfDoc,
                 pdfFile,
                 rectsArray,
@@ -69,8 +77,8 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         if (
             !currentRange ||
             tool !== PDF_TOOLS.NOTE ||
-            // Probably not needed
-            !pdfDoc
+            !pdfDoc ||
+            !pageRef.current
         ) {
             return;
         }
@@ -95,14 +103,15 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         const noteIndex = noteKey in notes
             ? `${Object.keys(notes[noteKey]).length}`
             : "1";
-
+        const pageDimensions = pageRef.current.getBoundingClientRect();
         const rects = currentRange.getClientRects();
         const rectsArray = Array.from(rects);
         const elementAction: ElementAction = {
             type: DRAWING_TYPES.RECTANGLE,
             element: {
                 color,
-                pageRefs,
+                pageDimensions,
+                pageIndex,
                 pdfDoc,
                 pdfFile,
                 rectsArray,
@@ -113,7 +122,8 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             type: DRAWING_TYPES.TEXT,
             element: {
                 color,
-                pageRefs,
+                pageDimensions,
+                pageIndex,
                 pdfDoc,
                 pdfFile,
                 rect: rectsArray[rectsArray.length - 1],
@@ -145,18 +155,14 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         document.addEventListener("selectionchange", () => {
             const range = getRange();
 
-            if (range) {
-                setCurrentRange(range);
-            }
+            setCurrentRange(range);
         });
 
         return () => {
             document.removeEventListener("selectionchange", () => {
                 const range = getRange();
 
-                if (range) {
-                    setCurrentRange(range);
-                }
+                setCurrentRange(range);
             });
         };
     }, []);

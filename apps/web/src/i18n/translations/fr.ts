@@ -39,10 +39,12 @@ export const fr = {
                     vocabulary: "Ajouter au vocabulaire",
                 },
                 tools: {
+                    backward: "Retour en arrière",
                     brush: "Pinceau",
                     close: "Fermer la palette d'outils",
                     color: "Changer la couleur",
                     drag: "Déplacer la palette d'outils",
+                    forward: "Avancer",
                     highlight: "Surligner",
                     horizontal: "Afficher horizontalement",
                     note: "Ajouter une note",

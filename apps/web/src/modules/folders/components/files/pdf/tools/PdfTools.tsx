@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+    MdArrowBack,
+    MdArrowForward,
     MdBorderColor,
     MdBrush,
     MdComment,
@@ -20,13 +22,23 @@ import { getRgbColor } from "@/utils";
 import { usePdfTools } from "../../../../contexts";
 import { PDF_TOOLS } from "../../../../types";
 
-import { ToolButton, ToolButtonItem } from "./PdfToolButton";
+import { HistoryButton, HistoryButtonItem, ToolButton, ToolButtonItem } from "./buttons";
 import "./pdfTools.scss";
 
 const PANEL_PADDING = 8 as const;
 const PANEL_SIZE = 313 as const;
 const COLOR_PICKER_DIMENSION = PANEL_SIZE - (PANEL_PADDING * 2);
 
+const HISTORY_BUTTONS: Array<HistoryButtonItem> = [
+    {
+        icon: <MdArrowBack />,
+        id: "backward",
+    },
+    {
+        icon: <MdArrowForward />,
+        id: "forward",
+    },
+];
 // TODO: Need to have one source of truth for tools icons
 const TOOLS_BUTTONS: Array<ToolButtonItem> = [
     {
@@ -189,6 +201,12 @@ export const PdfTools = () => {
                         <div
                             className={`tools-container ${dynamicClass} ${isLeftSide ? "left" : "right"} ${isTopSide ? "top" : "bot"}`}
                         >
+                            {HISTORY_BUTTONS.map(item => (
+                                <HistoryButton
+                                    key={item.id}
+                                    {...item}
+                                />
+                            ))}
                             {TOOLS_BUTTONS.map(item => (
                                 <ToolButton
                                     key={item.id}
@@ -212,7 +230,7 @@ export const PdfTools = () => {
                     <ColorPicker
                         color={color}
                         height={COLOR_PICKER_DIMENSION}
-                        isLandscape={isLandscape}
+                        isLandscape={!isLandscape}
                         setColor={setColor}
                         width={COLOR_PICKER_DIMENSION}
                     />

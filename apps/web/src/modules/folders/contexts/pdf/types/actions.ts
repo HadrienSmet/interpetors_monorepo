@@ -22,7 +22,8 @@ export enum REFERENCE_TYPES {
 
 type BaseElementAction = {
     readonly color: RgbColor;
-    readonly pageRefs: RefObject<PageRefs>;
+    readonly pageDimensions: DOMRect;
+    readonly pageIndex: number;
     readonly pdfDoc: PDFDocument;
     readonly pdfFile: PdfFileInStructure;
 };
@@ -85,7 +86,6 @@ export type PathPdfElement =
 type RectangleCanvasElementBase = {
     readonly color: string;
     readonly height: number;
-    readonly opacity: number;
     readonly width: number;
 };
 export type RectangleCanvasElement =
@@ -126,7 +126,7 @@ export type CanvasElement =
 export type PdfElement =
     | { type: DRAWING_TYPES.PATH; element: PathPdfElement; }
     | { type: DRAWING_TYPES.RECTANGLE; element: RectanglePdfElement; }
-    | { type: DRAWING_TYPES.TEXT; element: RectanglePdfElement; };
+    | { type: DRAWING_TYPES.TEXT; element: TextPdfElement; };
 
 type NoteAction = {
     readonly type: REFERENCE_TYPES.NOTE;

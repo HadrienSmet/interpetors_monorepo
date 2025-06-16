@@ -5,22 +5,24 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { getContextError } from "@/contexts/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
-import { FileInStructure } from "../../manager";
-
 export type PageRefs = Array<HTMLCanvasElement | undefined>;
 type PdfFileContextType = {
     readonly containerRef: RefObject<HTMLDivElement | null>;
     readonly displayLoader: boolean;
-    readonly filePath: string;
     readonly isPdfRendered: boolean;
+    readonly nextPage: () => void;
     readonly numPages: number | undefined;
     readonly onDocumentLoadSuccess: (proxy: PDFDocumentProxy) => void;
+    readonly pageIndex: number;
+    // TODO Probably not needed anymore should be pageRef
+    readonly pageRef: RefObject<HTMLDivElement | null>;
     readonly pageRefs: RefObject<PageRefs>;
     /** Might not needed */
     readonly pdfDoc: PDFDocument | undefined;
-    readonly pdfFile: FileInStructure;
+    readonly previousPage: () => void;
     readonly renderedPages: RefObject<number>;
     readonly setDisplayLoader: Dispatch<SetStateAction<boolean>>;
+    // TODO - Logic should be changed since single page
     readonly setIsPdfRendered: Dispatch<SetStateAction<boolean>>;
 };
 
