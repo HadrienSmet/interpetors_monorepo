@@ -1,4 +1,4 @@
-import { PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
 import { rgbToRgba } from "@/utils";
 
@@ -14,15 +14,13 @@ import { useCanvasResizeObserver } from "./useCanvasResizeObserver";
 import { PdfCanvasContext } from "./PdfCanvasContext";
 
 export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
-    const [containerDimensions, setContainerDimensions] = useState<DOMRect | null>(null);
-
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const drawerRef = useRef<HTMLCanvasElement>(null);
     const canvasContextRef = useRef<CanvasRenderingContext2D>(null);
     const drawerContextRef = useRef<CanvasRenderingContext2D>(null);
 
     const { selectedFile } = useFoldersManager();
-    const { containerRef, isPdfRendered, pageRef } = usePdfFile();
+    const { isPdfRendered, pageRef } = usePdfFile();
     const { color, currentRange, tool } = usePdfTools();
 
     useCanvasResizeObserver(
@@ -39,6 +37,8 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const clear = () => console.log("Clearing");
     const drawLine = useCallback((rects: Array<DOMRect>) => {
         const ctx = drawerContextRef.current;
+        const containerDimensions = pageRef.current?.getBoundingClientRect();
+
         if (!ctx || !containerDimensions) return;
 
         ctx.save();
@@ -56,9 +56,11 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         }
 
         ctx.restore();
-    }, [color, containerDimensions]);
+    }, [color]);
     const drawRect = useCallback((rects: Array<DOMRect>) => {
         const ctx = drawerContextRef.current;
+        const containerDimensions = pageRef.current?.getBoundingClientRect();
+
         if (!ctx || !containerDimensions) return;
 
         ctx.save();
@@ -75,42 +77,36 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         }
 
         ctx.restore();
-    }, [color, containerDimensions]);
+    }, [color]);
 
     const drawRectOnMount = (rectangleElement: RectangleCanvasElement) => {
         const ctx = canvasContextRef.current;
+        const containerDimensions = pageRef.current?.getBoundingClientRect();
+
         if (!ctx || !containerDimensions) return;
 
-        ctx.save();
-        ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
-
         ctx.fillStyle = rectangleElement.color;
-
         ctx.fillRect(rectangleElement.x, rectangleElement.y, rectangleElement.width, rectangleElement.height);
     };
     const drawTextOnMount = (textElement: TextCanvasElement) => {
         const ctx = canvasContextRef.current;
+        const containerDimensions = pageRef.current?.getBoundingClientRect();
+
         if (!ctx || !containerDimensions) return;
 
-        ctx.save();
-        ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
-
         ctx.fillStyle = textElement.options.color;
-
         ctx.fillText(textElement.text, textElement.options.x, textElement.options.y);
     };
 
     useEffect(() => {
         if (
             !canvasRef.current ||
-            !containerRef.current ||
             !drawerRef.current ||
             !isPdfRendered
         ) {
             return;
         }
 
-        // TODO: Add the target page in the state of PdfFile
         const targetPage = pageRef.current;
         if (!targetPage) {
             return
@@ -129,8 +125,6 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         };
 
         canvasContextRef.current = canvasCtx;
-
-        setContainerDimensions(targetPage.getBoundingClientRect());
     }, [isPdfRendered]);
 
     // Responsible to draw on user action
@@ -162,6 +156,14 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     useEffect(() => {
         if (!selectedFile.fileInStructure) {
             return;
+        }
+
+        const canvasCtx = canvasContextRef.current;
+        const drawerCtx = drawerContextRef.current;
+
+        if (canvasCtx && drawerCtx) {
+            canvasCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+            drawerCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
         }
 
         for (const canvasElement of selectedFile.fileInStructure.canvasElements) {

@@ -9,11 +9,8 @@ import {
 } from "../../../../contexts";
 import { PDF_TOOLS } from "../../../../types";
 
-export const convertRectangleAction = (
-    action: RectangleElementAction,
-    containerDimensions: DOMRect
-): Array<RectangleCanvasElement> => {
-    const { rectsArray, color, pageIndex, tool } = action.element;
+export const convertRectangleAction = (action: RectangleElementAction): Array<RectangleCanvasElement> => {
+    const { color, pageDimensions, pageIndex, rectsArray, tool } = action.element;
 
     const isHighlight = (
         tool === PDF_TOOLS.HIGHLIGHT ||
@@ -28,10 +25,10 @@ export const convertRectangleAction = (
             const opacity = isHighlight
                 ? HIGLIGHT_OPACITY
                 : REGULAR_OPACITY;
-            const x = rect.left - containerDimensions.left;
+            const x = rect.left - pageDimensions.left;
             const y = isHighlight
-                ? rect.top - containerDimensions.top
-                : rect.top + rect.height - height - containerDimensions.top;
+                ? rect.top - pageDimensions.top
+                : rect.top + rect.height - height - pageDimensions.top;
             const width = rect.width;
 
             return ({

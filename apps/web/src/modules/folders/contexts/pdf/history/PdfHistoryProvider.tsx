@@ -5,20 +5,9 @@ import { getCanvasElements, getPdfElements } from "../../../utils";
 import { useFoldersManager } from "../../manager";
 
 import { usePdfFile } from "../file";
+import { CanvasElement, PdfElement } from "../types";
 
 import { HistoryAction, PdfHistoryContext, PdfHistoryContextType } from "./PdfHistoryContext";
-
-/**
- * Process
- *
- * User actions gets updated
- * -> Turns the actions into canvas elements and pdf elements
- * -> Updates the folders structure
- *
- * Need
- * -> 2 hooks useCanvasElement & usePdfElement
- *      Should return respective element from user actions
- */
 
 export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const [userActions, setUserActions] = useState<Array<HistoryAction>>([]);
@@ -27,8 +16,8 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const { files, selectedFile } = useFoldersManager();
     const { containerRef } = usePdfFile();
 
-    const backward = () => setHistoryIndex(state => Math.max(-1, state));
-    const forward = () => setHistoryIndex(state => Math.min(userActions.length-1, state!));
+    const backward = () => setHistoryIndex(state => Math.max(-1, state - 1));
+    const forward  = () => setHistoryIndex(state => Math.min(userActions.length, state++));
     const pushAction = (action: HistoryAction) => {
         let copy = [...userActions];
 
@@ -48,21 +37,25 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         if (!selectedFile.fileInStructure) {
             return;
         }
-        for (const userAction of userActions) {
+
+        const canvasElements: Array<CanvasElement> = [];
+        const pdfElements: Array<PdfElement> = [];
+
+        for (let i = 0; i < historyIndex + 1; i++) {
+            const userAction = userActions[i];
             for (const element of userAction.elements) {
-                const canvasElements = getCanvasElements({ ...element, containerRef });
-                const pdfElements = getPdfElements(element);
-
-                const updatedFile = {
-                    ...selectedFile.fileInStructure,
-                    canvasElements,
-                    pdfElements,
-                };
-
-                files.update(updatedFile);
+                canvasElements.push(...getCanvasElements({ ...element, containerRef }));
+                pdfElements.push(...getPdfElements(element));
             }
         }
-    }, [userActions]);
+        const updatedFile = {
+            ...selectedFile.fileInStructure,
+            canvasElements,
+            pdfElements,
+        };
+
+        files.update(updatedFile);
+    }, [historyIndex, userActions]);
 
     const isUpToDate = useMemo(() => (
         historyIndex === userActions.length - 1

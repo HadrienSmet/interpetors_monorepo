@@ -1,0 +1,33 @@
+.page-manager {
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    box-shadow: var(--shadow-default) var(--clr-txt-04);
+    color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    gap: var(--space-l);
+    left: -3px;
+    opacity: 0;
+    padding: var(--space-s);
+    pointer-events: all;
+    position: absolute;
+    top: 0;
+    transform: translateY(-20%);
+    transition: .6s ease-out;
+    width: calc(100% + 6px);
+    z-index: 20;
+    &.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    button {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+    }
+    p {
+        font-size: var(--size-s);
+    }
+}

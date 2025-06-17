@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import { usePdfHistory } from "../../../../../contexts";
+import { usePdfHistory, usePdfTools } from "../../../../../contexts";
 
 export type HistoryButtonItem = {
     readonly icon: React.JSX.Element;
@@ -9,13 +9,26 @@ export type HistoryButtonItem = {
 };
 export const HistoryButton = (props: HistoryButtonItem) => {
     const { backward, forward, historyIndex, isUpToDate } = usePdfHistory();
+    const { setTool } = usePdfTools();
     const { t } = useTranslation();
 
     const isBackward = useMemo(() => (props.id === "backward"), [props.id]);
+    const disabled = isBackward
+        ? historyIndex < 0
+        : isUpToDate
+    const onClick = disabled
+        ? undefined
+        : isBackward
+            ? () => backward()
+            : () => forward();
 
     return (
         <button
-            onClick={isBackward ? backward : forward}
+            onClick={() => {
+                setTool(null);
+
+                if (onClick) onClick();
+            }}
             disabled={isBackward
                 ? historyIndex < 0
                 : isUpToDate

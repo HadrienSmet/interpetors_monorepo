@@ -1,9 +1,8 @@
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Document, Page } from "react-pdf";
 
 import { useFoldersManager, usePdfFile, usePdfTools } from "../../../../contexts";
-import { PDF_TOOLS } from "../../../../types";
 
+import { PageManager } from "./pageManager";
 import "./pdfDocument.scss";
 
 
@@ -15,27 +14,24 @@ const OPTIONS = {
 export const PdfDocument = () => {
     const { selectedFile } = useFoldersManager();
     const {
-        nextPage,
+        numPages,
         onDocumentLoadSuccess,
         pageRef,
         pageIndex,
-        previousPage,
         setIsPdfRendered,
     } = usePdfFile();
     const { onContextMenu, tool } = usePdfTools();
 
     const pdfFile = selectedFile.fileInStructure!;
 
+    const displayPageManager: boolean = (numPages !== undefined && numPages > 1)
+
     return (
-        <div className="pdf-document-container" ref={pageRef}>
-            <div className="page-manager">
-                <button onClick={previousPage}>
-                    <MdArrowBack />
-                </button>
-                <button onClick={nextPage}>
-                    <MdArrowForward />
-                </button>
-            </div>
+        <div className="pdf-document" ref={pageRef}>
+            {displayPageManager && (
+                <PageManager />
+            )}
+
             <Document
                 file={pdfFile.file}
                 loading={null}
@@ -44,14 +40,13 @@ export const PdfDocument = () => {
                 options={OPTIONS}
             >
                 <Page
-                    className={`pdf-page-container ${tool === PDF_TOOLS.BRUSH ? "brushing" : ""}`}
+                    className={`pdf-page ${tool !== null ? "tooling" : ""}`}
                     key={`page_${pageIndex}`}
                     onRenderSuccess={() => setIsPdfRendered(true)}
                     pageNumber={pageIndex}
                     renderAnnotationLayer={false}
                 />
             </Document>
-
         </div>
     );
 };

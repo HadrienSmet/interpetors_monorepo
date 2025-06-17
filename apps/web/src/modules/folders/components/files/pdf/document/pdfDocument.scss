@@ -1,15 +1,13 @@
-.page-manager {
-    position: absolute;
-    z-index: 5;
-}
-.pdf-page-container {
-    border: var(--border-s) solid var(--clr-txt-01);
-    margin: auto;
-    position: relative;
-    // pdf min-width + (2*border)
-    width: 597px;
-
-    &.brushing * {
-        user-select: none;
+.pdf {
+    &-document {
+        border: var(--border-s) solid var(--clr-txt-01);
+        box-shadow: var(--shadow-default) var(--clr-txt-04);
+        margin: auto;
+        position: relative;
+        // pdf min-width + (2*border)
+        width: 597px;
+    }
+    &-page.tooling *::selection {
+        background-color: transparent;
     }
 }

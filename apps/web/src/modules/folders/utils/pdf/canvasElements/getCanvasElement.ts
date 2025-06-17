@@ -13,18 +13,16 @@ export const getCanvasElements = ({ containerRef, element, type }: GetCanvasElem
         return (canvasElements);
     }
 
-    const containerDimensions = containerRef.current.getBoundingClientRect();
-
     switch (type) {
         case DRAWING_TYPES.RECTANGLE:
-            const rectangles: Array<RectangleCanvasElement> = convertRectangleAction({ element, type }, containerDimensions);
+            const rectangles: Array<RectangleCanvasElement> = convertRectangleAction({ element, type });
             canvasElements = rectangles.map(element => ({
                 type,
                 element,
             }));
             break;
         case DRAWING_TYPES.TEXT:
-            const text = convertTextAction({ element, type }, containerDimensions);
+            const text = convertTextAction({ element, type });
             canvasElements.push({ type, element: text });
             break;
     }

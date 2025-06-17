@@ -71,6 +71,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         };
 
         pushAction({ elements: [userAction] });
+        setCurrentRange(undefined);
         setDisplayLoader(false);
     };
     const handleTextReference = async (tool: PdfTool, filePath: string) => {
@@ -223,11 +224,11 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
         [TOOLS_ON_SELECTION.UNDERLINE]: {
             icon: <MdBorderColor />,
-            onClick: () => handleSelection(PDF_TOOLS.UNDERLINE),
+            onClick: () => {console.log("actionsRecord");handleSelection(PDF_TOOLS.UNDERLINE)},
         },
         [TOOLS_ON_SELECTION.HIGHLIGHT]: {
             icon: <MdFormatColorFill />,
-            onClick: () => handleSelection(PDF_TOOLS.HIGHLIGHT),
+            onClick: () => {console.log("actionsRecord");handleSelection(PDF_TOOLS.HIGHLIGHT)},
         },
         [TOOLS_ON_SELECTION.NOTE]: {
             icon: <MdComment />,
