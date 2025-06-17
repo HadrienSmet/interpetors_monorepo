@@ -17,7 +17,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const { containerRef } = usePdfFile();
 
     const backward = () => setHistoryIndex(state => Math.max(-1, state - 1));
-    const forward  = () => setHistoryIndex(state => Math.min(userActions.length, state++));
+    const forward  = () => setHistoryIndex(state => Math.min(userActions.length, state + 1));
     const pushAction = (action: HistoryAction) => {
         let copy = [...userActions];
 
