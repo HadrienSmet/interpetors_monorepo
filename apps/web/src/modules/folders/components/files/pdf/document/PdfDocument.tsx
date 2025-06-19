@@ -37,6 +37,8 @@ export const PdfDocument = () => {
     );
 
     const onLoadError = (error: Error) => console.error("An error occured while loading document", error);
+    const onRenderError = (error: Error) => console.error("An error occured while loading page", error);
+    const onRenderSucces = () => setIsPdfRendered(true);
 
     return (
         <div className="pdf-document" ref={pageRef}>
@@ -53,7 +55,8 @@ export const PdfDocument = () => {
                 <Page
                     className={`pdf-page ${tool !== null ? "tooling" : ""}`}
                     key={`page_${pageIndex}`}
-                    onRenderSuccess={() => setIsPdfRendered(true)}
+                    onRenderError={onRenderError}
+                    onRenderSuccess={onRenderSucces}
                     pageNumber={pageIndex}
                     renderAnnotationLayer={false}
                 />
