@@ -1,7 +1,8 @@
 import { getRgbColor } from "@/utils";
 
-import { ANNOTATION_SCALE } from "../../../../contexts";
 import { TextCanvasElement, TextAction } from "../../../../types";
+
+import { ANNOTATION_SCALE } from "../../constants";
 
 export const convertTextAction = (action: TextAction): TextCanvasElement => {
     const { color, pageDimensions, pageIndex, rect, text } = action.element;

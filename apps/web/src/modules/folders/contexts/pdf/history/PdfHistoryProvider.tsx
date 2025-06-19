@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
 
 import { CanvasElement, FileInStructure, PdfElement, PdfFileElements, ReferenceElement } from "../../../types";
-import { getCanvasElements, getPdfElements, getReferenceElement } from "../../../utils";
+import { FILE_ELEMENTS, FIRST_PAGE, getCanvasElements, getPdfElements, getReferenceElement } from "../../../utils";
 
 import { useFoldersManager } from "../../manager";
 
@@ -12,11 +12,7 @@ import { HistoryAction, PdfHistoryContext, PdfHistoryContextType } from "./PdfHi
 const DEFAULT_INDEX = -1;
 export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const [historyIndex, setHistoryIndex] = useState(DEFAULT_INDEX);
-    const [savedElements, setSavedElements] = useState<PdfFileElements>({
-        canvasElements: [],
-        pdfElements: [],
-        references: [],
-    });
+    const [savedElements, setSavedElements] = useState<PdfFileElements>({ ...FILE_ELEMENTS });
     const [userActions, setUserActions] = useState<Array<HistoryAction>>([]);
 
     const { files, selectedFile } = useFoldersManager();
@@ -89,7 +85,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             ...file,
             elements: {
                 ...file.elements,
-                [Math.max(pageIndex, 1)]: {
+                [Math.max(pageIndex, FIRST_PAGE)]: {
                     canvasElements,
                     pdfElements,
                     references,

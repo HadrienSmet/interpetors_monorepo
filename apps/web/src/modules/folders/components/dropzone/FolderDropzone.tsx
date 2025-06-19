@@ -2,20 +2,15 @@ import { DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useFoldersManager } from "../../contexts";
-import { FileInStructure, FolderStructure, PdfFileElements } from "../../types";
+import { FileInStructure, FolderStructure } from "../../types";
+import { FILE_ELEMENTS, FIRST_PAGE } from "../../utils";
 
 import { FoldersDisplayer } from "../displayer";
 
 import "./folderDropzone.scss";
 
-// TODO: Need to add the new pdf file elements on page change
-const emptyFileElements: PdfFileElements = {
-    canvasElements: [],
-    pdfElements : [],
-    references: [],
-};
 const getNewFileInStructure = (file: File): FileInStructure => ({
-    elements: { 1: { ...emptyFileElements } },
+    elements: { [FIRST_PAGE]: { ...FILE_ELEMENTS } },
     file,
     name: file.name,
 });

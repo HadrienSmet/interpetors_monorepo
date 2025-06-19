@@ -1,5 +1,5 @@
-import { STROKE_SIZE } from "../../../../contexts";
 import { PDF_TOOLS, RectangleAction } from "../../../../types";
+import { STROKE_SIZE } from "../../../../utils";
 
 import { getPdfRgbColor } from "./tools";
 

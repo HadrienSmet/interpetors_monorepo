@@ -2,12 +2,13 @@ import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
 import { rgbToRgba } from "@/utils";
 
+import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "../../../utils";
 import { DRAWING_TYPES, PDF_TOOLS, RectangleCanvasElement, TextCanvasElement } from "../../../types";
 
 import { useFoldersManager } from "../../manager";
 
 import { usePdfFile } from "../file";
-import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE, usePdfTools } from "../tools";
+import { usePdfTools } from "../tools";
 
 import { useCanvasResizeObserver } from "./useCanvasResizeObserver";
 import { PdfCanvasContext } from "./PdfCanvasContext";

@@ -1,8 +1,10 @@
-import { ANNOTATION_SCALE, TextElementAction, TextPdfElement } from "../../../../contexts";
+import { TextAction, TextPdfElement } from "../../../../types";
+
+import { ANNOTATION_SCALE } from "../../constants";
 
 import { getPdfRgbColor } from "./tools";
 
-export const convertTextAction = (action: TextElementAction): TextPdfElement => {
+export const convertTextAction = (action: TextAction): TextPdfElement => {
     const { color, pageDimensions, pageIndex, pdfDoc, rect, text } = action.element;
 
     const page = pdfDoc.getPage(pageIndex - 1);
