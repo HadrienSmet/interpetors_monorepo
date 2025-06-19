@@ -11,11 +11,6 @@ import { HistoryAction, PdfHistoryContext, PdfHistoryContextType } from "./PdfHi
 
 const DEFAULT_INDEX = -1;
 export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
-    const [currentElements, setCurrentElements] = useState<PdfFileElements>({
-        canvasElements: [],
-        pdfElements: [],
-        references: [],
-    });
     const [historyIndex, setHistoryIndex] = useState(DEFAULT_INDEX);
     const [savedElements, setSavedElements] = useState<PdfFileElements>({
         canvasElements: [],
@@ -52,6 +47,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         setUserActions(copy);
     };
 
+    // Reseting the history state and saving the elements coming from the folders structure
     useEffect(() => {
         setHistoryIndex(DEFAULT_INDEX);
         setUserActions([]);
@@ -61,10 +57,10 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 
         setSavedElements(file.elements[pageIndex]);
     }, [selectedFile.path, pageIndex]);
-    // Responsible to update the elements on user actions + history index + saved elements
+    // Responsible to update the folders structure on history actions
     useEffect(() => {
         const file = selectedFile.fileInStructure;
-        if (!file) {
+        if (!file || !shouldUpdateRef.current) {
             return;
         }
 
@@ -89,28 +85,21 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             }
         }
 
-        setCurrentElements({
-            canvasElements,
-            pdfElements,
-            references,
-        })
-    }, [historyIndex, savedElements, userActions]);
-    // Responsible to update the folders structure on history action
-    useEffect(() => {
-        const file = selectedFile.fileInStructure;
-        if (!file || !shouldUpdateRef.current) return;
-
         const updatedFile: FileInStructure = {
             ...file,
             elements: {
                 ...file.elements,
-                [Math.max(pageIndex, 1)]: currentElements,
+                [Math.max(pageIndex, 1)]: {
+                    canvasElements,
+                    pdfElements,
+                    references,
+                },
             },
         };
 
         files.update(updatedFile);
         shouldUpdateRef.current = false;
-    }, [currentElements]);
+    }, [historyIndex, savedElements, userActions]);
 
     const isUpToDate = useMemo(() => (
         historyIndex === userActions.length - 1
