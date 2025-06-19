@@ -4,8 +4,6 @@ import "@/workers/pdfConfig";
 
 import {
     PdfWrapper,
-    REFERENCE_TYPES,
-    useFoldersManager,
     usePdfCanvas,
     usePdfFile,
     usePdfTools,
@@ -13,7 +11,6 @@ import {
 
 import { PdfDocument } from "./document";
 import { PdfEditorLoader } from "./loader";
-import { TextInteractive } from "./textInteractive";
 import { PdfTools } from "./tools";
 
 import "./pdfEditor.scss";
@@ -21,12 +18,9 @@ import "./pdfEditor.scss";
 const PDF_EDITOR_WIDTH = 597 as const;
 
 const PdfEditorChild = () => {
-    const { selectedFile } = useFoldersManager();
     const { canvasRef, drawerRef } = usePdfCanvas();
-    const { containerRef, displayLoader, pageIndex } = usePdfFile();
+    const { containerRef, displayLoader } = usePdfFile();
     const { customCursor } = usePdfTools();
-
-    const pdfFile = selectedFile.fileInStructure!;
 
     const canvasStyle = useMemo(() => (
         containerRef.current
@@ -49,27 +43,17 @@ const PdfEditorChild = () => {
             {/** Used to draw on mount */}
             <canvas
                 className="on-real-time-displayer"
+                key="canvas"
                 ref={canvasRef}
                 style={canvasStyle}
             />
             {/** Used to draw on user action */}
             <canvas
                 className="on-real-time-displayer"
+                key="drawer"
                 ref={drawerRef}
                 style={canvasStyle}
             />
-
-            {pdfFile.references
-                .filter(ref => ref.element.pageIndex === pageIndex && ref.type === REFERENCE_TYPES.NOTE)
-                .map((ref, i) => (
-                    <TextInteractive
-                        key={`noteRef-${pageIndex}-${i}`}
-                        note={ref.element}
-                        i={i}
-                        index={pageIndex}
-                    />
-                ))
-            }
 
             {customCursor && (customCursor)}
         </div>

@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 
 import { ResizableSection } from "@/components";
-import { FileInStructure, FolderStructure } from "../../contexts";
+
+import { FileInStructure, FolderStructure } from "../../types";
 
 import { FILE_DISPLAYER_MIN_WIDTH } from "../files";
 
 import { TreeNode } from "./nodes";
 import "./foldersExplorer.scss";
-
 
 const INITIAL_WIDTH = 200 as const;
 type FoldersExplorerProps = {

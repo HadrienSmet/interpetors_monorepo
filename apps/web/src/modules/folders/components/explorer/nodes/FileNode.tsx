@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 
-import { FileInStructure, useFoldersManager } from "../../../contexts";
+import { useFoldersManager } from "../../../contexts";
+import { FileInStructure } from "../../../types";
 
 import { FileIcon } from "../../files";
 

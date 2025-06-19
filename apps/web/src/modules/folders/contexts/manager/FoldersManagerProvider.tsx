@@ -1,7 +1,8 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
+import { FileInStructure, FolderStructure } from "../../types";
+
 import { browseStructureToActionOnFile, FileVisitor, getTargetKeys, isFileInStructure } from "./foldersManager.utils";
-import { FileInStructure, FolderStructure } from "./foldersManager.types";
 import { FileData, FoldersManagerContext, FoldersManagerContextType } from "./FoldersManagerContext";
 
 export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {

@@ -1,15 +1,16 @@
 import { getRgbColor } from "@/utils";
 
-import { ANNOTATION_SCALE, TextCanvasElement, TextElementAction } from "../../../../contexts";
+import { ANNOTATION_SCALE } from "../../../../contexts";
+import { TextCanvasElement, TextAction } from "../../../../types";
 
-export const convertTextAction = (action: TextElementAction): TextCanvasElement => {
+export const convertTextAction = (action: TextAction): TextCanvasElement => {
     const { color, pageDimensions, pageIndex, rect, text } = action.element;
 
     const options = {
-        size: rect.height * ANNOTATION_SCALE,
         color: getRgbColor(color),
-        x: rect.left - pageDimensions.left,
-        y: rect.top - pageDimensions.top - 3,
+        size: rect.height * ANNOTATION_SCALE,
+        x: rect.left + rect.width - pageDimensions.left - 1,
+        y: rect.top - pageDimensions.top + (rect.height * .3),
     };
 
     return ({

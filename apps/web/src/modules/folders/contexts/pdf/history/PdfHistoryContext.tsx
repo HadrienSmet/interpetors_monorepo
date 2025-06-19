@@ -2,16 +2,16 @@ import { createContext, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
-import { ElementAction, ReferenceAction } from "../types";
+import { ElementAction, ReferenceAction } from "../../../types";
 
 export type HistoryAction = {
     readonly elements: Array<ElementAction>;
     readonly reference?: ReferenceAction;
 };
-export type SortedActions = {
-    readonly elements: Array<ElementAction>;
-    readonly references: Array<ReferenceAction>;
-};
+// export type SortedActions = {
+//     readonly elements: Array<ElementAction>;
+//     readonly references: Array<ReferenceAction>;
+// };
 export type PdfHistoryContextType = {
     /** Decrease history index */
     readonly backward: () => void;

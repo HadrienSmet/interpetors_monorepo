@@ -6,13 +6,12 @@ import { getNoteId, useContextMenu, useNotes } from "@/contexts";
 import { getRgbColor, RgbColor } from "@/utils";
 
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "../../../components";
-import { PDF_TOOLS, TOOLS_ON_SELECTION } from "../../../types";
+import { DRAWING_TYPES, PDF_TOOLS, REFERENCE_TYPES, TOOLS_ON_SELECTION, ElementAction, ReferenceAction } from "../../../types";
 
 import { useFoldersManager } from "../../manager";
 
 import { usePdfFile } from "../file";
 import { HistoryAction, usePdfHistory } from "../history";
-import { DRAWING_TYPES, ElementAction, REFERENCE_TYPES, ReferenceAction } from "../types";
 
 import { PdfTool, PdfToolsContext, PdfToolsContextType } from "./PdfToolsContext";
 import { getNoteFromRange, getRange } from "./utils";
@@ -73,6 +72,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         pushAction({ elements: [userAction] });
         setCurrentRange(undefined);
         setDisplayLoader(false);
+        window.getSelection()?.removeAllRanges();
     };
     const handleTextReference = async (tool: PdfTool, filePath: string) => {
         if (
@@ -136,7 +136,8 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             element: {
                 color,
                 noteId: getNoteId(noteKey, noteIndex),
-                pageRefs,
+                pageDimensions,
+                pageIndex,
                 pdfDoc,
                 pdfFile,
                 rectsArray,
@@ -147,7 +148,10 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             reference: actionReference,
         };
 
+        window.getSelection()?.removeAllRanges();
         pushAction(historyAction);
+        setCurrentRange(undefined);
+        setTool(null);
         setDisplayLoader(false);
     };
 

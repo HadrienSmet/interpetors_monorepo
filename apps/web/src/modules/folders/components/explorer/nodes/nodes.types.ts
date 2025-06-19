@@ -1,4 +1,4 @@
-import { FileInStructure, FolderStructure } from "../../../contexts";
+import { FileInStructure, FolderStructure } from "../../../types";
 
 export type TreeNodeProps = {
     readonly depth: number;

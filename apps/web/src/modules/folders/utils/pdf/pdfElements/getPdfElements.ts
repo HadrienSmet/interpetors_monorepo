@@ -1,4 +1,4 @@
-import { DRAWING_TYPES, ElementAction, PdfElement } from "../../../contexts";
+import { DRAWING_TYPES, ElementAction, PdfElement } from "../../../types";
 
 import { convertRectangleAction, convertTextAction } from "./converters";
 

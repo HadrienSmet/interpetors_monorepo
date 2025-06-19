@@ -35,6 +35,9 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     );
 
     // ------ USE EFFECTS ------
+    useEffect(() => {
+        setIsPdfRendered(false);
+    }, [selectedFile.path, pageIndex]);
     // Removes the loader when the pdf is displayed
     useEffect(() => {
         if (isPdfRendered) {
@@ -49,6 +52,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     // And resets all the indicators used to know if the pdf is rendered when pdf file changes
     useEffect(() => {
         renderedPages.current = 0;
+
         setIsPdfRendered(false);
         setNumPages(0);
 
@@ -57,8 +61,8 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
 
             const pdfFile = selectedFile.fileInStructure
 
-            const arrayBuffer = typeof pdfFile === "string"
-                ? await fetch(pdfFile).then(res => res.arrayBuffer())
+            const arrayBuffer = typeof pdfFile.file === "string"
+                ? await fetch(pdfFile.file).then(res => res.arrayBuffer())
                 : await pdfFile.file.arrayBuffer();
 
             const pdfDoc = await PDFDocument.load(arrayBuffer);
@@ -66,7 +70,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         };
 
         loadPdf();
-    }, [selectedFile.fileInStructure]);
+    }, [selectedFile.fileInStructure?.file]);
 
     const value = {
         containerRef,

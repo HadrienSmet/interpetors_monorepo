@@ -1,18 +1,23 @@
 import { DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { FileInStructure, FolderStructure, useFoldersManager } from "../../contexts";
+import { useFoldersManager } from "../../contexts";
+import { FileInStructure, FolderStructure, PdfFileElements } from "../../types";
 
 import { FoldersDisplayer } from "../displayer";
 
 import "./folderDropzone.scss";
 
-const getNewFileInStructure = (file: File): FileInStructure => ({
+// TODO: Need to add the new pdf file elements on page change
+const emptyFileElements: PdfFileElements = {
     canvasElements: [],
+    pdfElements : [],
+    references: [],
+};
+const getNewFileInStructure = (file: File): FileInStructure => ({
+    elements: { 1: { ...emptyFileElements } },
     file,
     name: file.name,
-    pdfElements: [],
-    references: [],
 });
 const preventDefault = (e: DragEvent<HTMLDivElement>) => e.preventDefault();
 const setNestedFile = (

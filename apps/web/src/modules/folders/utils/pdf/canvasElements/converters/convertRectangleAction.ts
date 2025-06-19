@@ -2,14 +2,12 @@ import { rgbToRgba } from "@/utils/colors";
 
 import {
     HIGLIGHT_OPACITY,
-    RectangleCanvasElement,
-    RectangleElementAction,
     REGULAR_OPACITY,
     STROKE_SIZE,
 } from "../../../../contexts";
-import { PDF_TOOLS } from "../../../../types";
+import { PDF_TOOLS, RectangleCanvasElement, RectangleAction, } from "../../../../types";
 
-export const convertRectangleAction = (action: RectangleElementAction): Array<RectangleCanvasElement> => {
+export const convertRectangleAction = (action: RectangleAction): Array<RectangleCanvasElement> => {
     const { color, pageDimensions, pageIndex, rectsArray, tool } = action.element;
 
     const isHighlight = (

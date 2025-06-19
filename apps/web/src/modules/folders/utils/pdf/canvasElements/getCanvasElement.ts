@@ -1,17 +1,9 @@
-import { RefObject } from "react";
-
-import { CanvasElement, DRAWING_TYPES, ElementAction, RectangleCanvasElement } from "../../../contexts";
+import { CanvasElement, DRAWING_TYPES, ElementAction, RectangleCanvasElement } from "../../../types";
 
 import { convertRectangleAction, convertTextAction } from "./converters";
 
-type GetCanvasElementsParams =
-    & ElementAction
-    & { readonly containerRef: RefObject<HTMLDivElement | null>; };
-export const getCanvasElements = ({ containerRef, element, type }: GetCanvasElementsParams) => {
+export const getCanvasElements = ({ element, type }: ElementAction) => {
     let canvasElements: Array<CanvasElement> = [];
-    if (!containerRef.current) {
-        return (canvasElements);
-    }
 
     switch (type) {
         case DRAWING_TYPES.RECTANGLE:

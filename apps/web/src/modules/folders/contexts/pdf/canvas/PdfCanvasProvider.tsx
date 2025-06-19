@@ -2,13 +2,12 @@ import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
 import { rgbToRgba } from "@/utils";
 
-import { PDF_TOOLS } from "../../../types";
+import { DRAWING_TYPES, PDF_TOOLS, RectangleCanvasElement, TextCanvasElement } from "../../../types";
 
 import { useFoldersManager } from "../../manager";
 
 import { usePdfFile } from "../file";
 import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE, usePdfTools } from "../tools";
-import { DRAWING_TYPES, RectangleCanvasElement, TextCanvasElement } from "../types";
 
 import { useCanvasResizeObserver } from "./useCanvasResizeObserver";
 import { PdfCanvasContext } from "./PdfCanvasContext";
@@ -20,21 +19,28 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const drawerContextRef = useRef<CanvasRenderingContext2D>(null);
 
     const { selectedFile } = useFoldersManager();
-    const { isPdfRendered, pageRef } = usePdfFile();
+    const { displayLoader, isPdfRendered, pageIndex, pageRef } = usePdfFile();
     const { color, currentRange, tool } = usePdfTools();
 
-    useCanvasResizeObserver(
-        pageRef,
-        drawerRef,
-        drawerContextRef
-    );
     useCanvasResizeObserver(
         pageRef,
         canvasRef,
         canvasContextRef
     );
+    useCanvasResizeObserver(
+        pageRef,
+        drawerRef,
+        drawerContextRef
+    );
 
-    const clear = () => console.log("Clearing");
+    const clear = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvasContextRef.current;
+        if (!ctx || !canvas) return;
+
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
     const drawLine = useCallback((rects: Array<DOMRect>) => {
         const ctx = drawerContextRef.current;
         const containerDimensions = pageRef.current?.getBoundingClientRect();
@@ -81,9 +87,8 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
     const drawRectOnMount = (rectangleElement: RectangleCanvasElement) => {
         const ctx = canvasContextRef.current;
-        const containerDimensions = pageRef.current?.getBoundingClientRect();
 
-        if (!ctx || !containerDimensions) return;
+        if (!ctx) return;
 
         ctx.fillStyle = rectangleElement.color;
         ctx.fillRect(rectangleElement.x, rectangleElement.y, rectangleElement.width, rectangleElement.height);
@@ -95,6 +100,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         if (!ctx || !containerDimensions) return;
 
         ctx.fillStyle = textElement.options.color;
+        ctx.font = "8px serif";
         ctx.fillText(textElement.text, textElement.options.x, textElement.options.y);
     };
 
@@ -109,21 +115,19 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
         const targetPage = pageRef.current;
         if (!targetPage) {
-            return
+            return;
         };
 
         const drawerCtx = drawerRef.current.getContext("2d");
         if (!drawerCtx) {
-            return
+            return;
         };
-
         drawerContextRef.current = drawerCtx;
 
         const canvasCtx = canvasRef.current.getContext("2d");
         if (!canvasCtx) {
-            return
+            return;
         };
-
         canvasContextRef.current = canvasCtx;
     }, [isPdfRendered]);
 
@@ -132,7 +136,6 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         if (!currentRange || !tool) return;
 
         if (tool === PDF_TOOLS.BRUSH) {
-            // drawPath(points)
             return;
         }
 
@@ -152,9 +155,9 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
                 break;
         }
     }, [currentRange, tool]);
-    // Responsible to draw the canvas elements from the folders structure
+    // Responsible to draw the canvas elements from file update / page change
     useEffect(() => {
-        if (!selectedFile.fileInStructure) {
+        if (!selectedFile.fileInStructure || !isPdfRendered || displayLoader) {
             return;
         }
 
@@ -166,7 +169,14 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             drawerCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
         }
 
-        for (const canvasElement of selectedFile.fileInStructure.canvasElements) {
+        if (
+            !selectedFile.fileInStructure.elements[pageIndex] ||
+            selectedFile.fileInStructure.elements[pageIndex].canvasElements.length < 1
+        ) {
+            return;
+        }
+
+        for (const canvasElement of selectedFile.fileInStructure.elements[pageIndex].canvasElements) {
             switch (canvasElement.type) {
                 case DRAWING_TYPES.RECTANGLE:
                     drawRectOnMount(canvasElement.element);
@@ -176,7 +186,12 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
                     break;
             }
         }
-    }, [selectedFile.fileInStructure?.canvasElements]);
+    }, [
+        displayLoader,
+        isPdfRendered,
+        selectedFile.fileInStructure?.elements[pageIndex].canvasElements,
+        pageIndex
+    ]);
 
     return (
         <PdfCanvasContext value={{ canvasRef, drawerRef, clear }}>

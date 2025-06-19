@@ -1,4 +1,4 @@
-import { FileInStructure, FolderStructure } from "./foldersManager.types";
+import { FileInStructure, FolderStructure } from "../../types";
 
 export const isFileInStructure = (value: FileInStructure | FolderStructure): value is FileInStructure => {
     return (
@@ -8,9 +8,7 @@ export const isFileInStructure = (value: FileInStructure | FolderStructure): val
         "name" in value &&
         typeof value.name === "string" &&
         value.file instanceof File &&
-        Array.isArray(value.canvasElements) &&
-        Array.isArray(value.pdfElements) &&
-        Array.isArray(value.references)
+        typeof value.elements === "object"
     );
 };
 export type FileVisitor = (key: string, value: FileInStructure, path: Array<string>) => [string, FileInStructure] | null;

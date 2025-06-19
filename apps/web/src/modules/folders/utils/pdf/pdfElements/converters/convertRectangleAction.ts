@@ -1,9 +1,9 @@
-import { RectangleElementAction, STROKE_SIZE } from "../../../../contexts";
-import { PDF_TOOLS } from "../../../../types";
+import { STROKE_SIZE } from "../../../../contexts";
+import { PDF_TOOLS, RectangleAction } from "../../../../types";
 
 import { getPdfRgbColor } from "./tools";
 
-export const convertRectangleAction = (action: RectangleElementAction) => {
+export const convertRectangleAction = (action: RectangleAction) => {
     const { color, pageDimensions, pageIndex, pdfDoc, rectsArray, tool } = action.element;
 
     const isHighlight = (

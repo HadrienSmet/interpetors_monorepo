@@ -1,4 +1,4 @@
-import { PdfFileInStructure } from "../pdf";
+import { PdfFileInStructure } from "./pdf";
 
 export type FileInStructure = PdfFileInStructure;
 export type FolderStructure = {

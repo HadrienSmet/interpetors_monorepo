@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 
-import { NoteInStructure } from "../../../../contexts";
+import { NoteElement } from "../../../../types";
 
 import "./textIneractive.scss";
 
 type TextInteractiveProps = {
     readonly i: number;
     readonly index: number;
-    readonly note: NoteInStructure;
+    readonly note: NoteElement;
 };
 export const TextInteractive = ({ note, index, i }: TextInteractiveProps) => {
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ export const TextInteractive = ({ note, index, i }: TextInteractiveProps) => {
 
     return (
         <button
-            className={`note-ref-overlay note-group-${note.noteId}`}
+            className={`text-interactive note-group-${note.noteId}`}
             key={`noteRef-${index}-${i}`}
             onClick={onClick}
             onMouseEnter={onMouseEnter}

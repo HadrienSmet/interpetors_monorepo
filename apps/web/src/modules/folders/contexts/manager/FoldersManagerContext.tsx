@@ -2,7 +2,7 @@ import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
-import { FileInStructure, FolderStructure } from "./foldersManager.types";
+import { FileInStructure, FolderStructure } from "../../types";
 
 export type FileData = {
     readonly fileInStructure: FileInStructure | null;

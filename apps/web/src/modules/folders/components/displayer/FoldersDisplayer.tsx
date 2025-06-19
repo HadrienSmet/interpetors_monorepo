@@ -1,7 +1,8 @@
 import { DragEventHandler, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { FileInStructure, FolderStructure, getFileInStructure, useFoldersManager } from "../../contexts";
+import { getFileInStructure, useFoldersManager } from "../../contexts";
+import { FileInStructure, FolderStructure } from "../../types";
 
 import { FoldersExplorer } from "../explorer";
 import { FileDisplayer } from "../files";
@@ -25,7 +26,7 @@ export const FoldersDisplayer = ({
     onDrop
 }: FoldersDisplayerProps) => {
     const { selectedFile, setSelectedFile } = useFoldersManager();
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const handleFileClick = (fileInStructure: FileInStructure, path: string) => setSelectedFile({ fileInStructure, path});
 
@@ -41,6 +42,9 @@ export const FoldersDisplayer = ({
                 break;
             }
         }
+
+        searchParams.delete("filepath");
+        setSearchParams(searchParams);
     }, [foldersStructures, searchParams]);
 
     return (
