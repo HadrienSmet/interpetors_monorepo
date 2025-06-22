@@ -3,14 +3,18 @@ html {
     color: var(--clr-txt);
     height: 100%;
     scroll-behavior: smooth;
-    transition: background-color var(--transition-theme);
+    transition:
+        background-color var(--transition-theme)
+        color var(--transition-theme);
 }
 body {
     display: flex;
     height: 100%;
     flex-direction: column;
     font-family: --font-default;
-    transition: background-color var(--transition-theme);
+    transition:
+        background-color var(--transition-theme)
+        color var(--transition-theme);
     &::-webkit-scrollbar {
         background-color: transparent;
         transition: display var(--transition-hover) ease-in-out;

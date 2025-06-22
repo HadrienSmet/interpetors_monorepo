@@ -32,6 +32,7 @@
         cursor: pointer;
         min-width: 190px;
         width: 100%;
+        transition: var(--transition-theme);
     }
 
     &-buttons {
@@ -54,6 +55,7 @@
             cursor: pointer;
             min-height: 24px;
             min-width: 24px;
+            transition: var(--transition-theme);
         }
         .input-container {
             flex: 1;
