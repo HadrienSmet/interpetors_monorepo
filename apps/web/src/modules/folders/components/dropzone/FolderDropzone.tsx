@@ -46,13 +46,13 @@ const readDirectory = async (
     for (const entry of entries) {
         const fullPath = `${pathPrefix}/${entry.name}`;
 
-        if (entry.isDirectory)
+        if (entry.isDirectory) {
             await readDirectory(
                 entry as FileSystemDirectoryEntry,
                 root,
                 fullPath
             );
-        else
+        } else {
             await new Promise<void>((resolve) => {
                 (entry as FileSystemFileEntry).file((file) => {
                     const pathArray = fullPath.split("/");
@@ -65,6 +65,7 @@ const readDirectory = async (
                     resolve();
                 });
             });
+        }
     }
 };
 

@@ -1,5 +1,7 @@
 import { Color } from "pdf-lib";
 
+import { Position } from "@/types";
+
 export enum DRAWING_TYPES {
     PATH = "path",
     RECTANGLE = "rectangle",
@@ -10,23 +12,18 @@ export enum REFERENCE_TYPES {
     VOCABULARY = "vocabulary",
 }
 
-type PathOptions = {
+export type PathCanvasElement = {
+    readonly color: string;
+    readonly pageIndex: number;
+    readonly points: Array<Position>;
+};
+type PathPdfOptions = {
+    readonly borderColor: Color;
     readonly borderWidth: number;
     readonly opacity: number;
     readonly x: number;
     readonly y: number;
 };
-type PathCanvasOptions =
-    & PathOptions
-    & { readonly borderColor: string; };
-export type PathCanvasElement = {
-    readonly options: PathCanvasOptions;
-    readonly pageIndex: number;
-    readonly path: string;
-};
-type PathPdfOptions =
-    & PathOptions
-    & { readonly borderColor: Color; };
 export type PathPdfElement = {
     readonly options: PathPdfOptions;
     readonly pageIndex: number;

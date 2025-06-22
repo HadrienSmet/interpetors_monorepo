@@ -1,17 +1,19 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
-import { rgbToRgba } from "@/utils";
+import { Position } from "@/types";
+import { getRgbColor, rgbToRgba } from "@/utils";
 
+import { DRAWING_TYPES, PathCanvasElement, PathElementAction, PDF_TOOLS, RectangleCanvasElement, TextCanvasElement } from "../../../types";
 import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "../../../utils";
-import { DRAWING_TYPES, PDF_TOOLS, RectangleCanvasElement, TextCanvasElement } from "../../../types";
 
 import { useFoldersManager } from "../../manager";
 
 import { usePdfFile } from "../file";
+import { HistoryAction, usePdfHistory } from "../history";
 import { usePdfTools } from "../tools";
 
-import { useCanvasResizeObserver } from "./useCanvasResizeObserver";
 import { PdfCanvasContext } from "./PdfCanvasContext";
+import { useCanvasResizeObserver } from "./useCanvasResizeObserver";
 
 export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -20,7 +22,8 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const drawerContextRef = useRef<CanvasRenderingContext2D>(null);
 
     const { selectedFile } = useFoldersManager();
-    const { displayLoader, isPdfRendered, pageIndex, pageRef } = usePdfFile();
+    const { displayLoader, isPdfRendered, pageIndex, pageRef, pdfDoc } = usePdfFile();
+    const { pushAction } = usePdfHistory();
     const { color, currentRange, tool } = usePdfTools();
 
     useCanvasResizeObserver(
@@ -86,6 +89,27 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         ctx.restore();
     }, [color]);
 
+    const drawPathOnMount = (pathElement: PathCanvasElement) => {
+        const ctx = canvasContextRef.current;
+
+        if (!ctx) return;
+
+        ctx.lineWidth = STROKE_SIZE;
+        ctx.strokeStyle = pathElement.color;
+
+        ctx.beginPath();
+
+        const { x: startX, y: startY } = pathElement.points[0];
+
+        ctx.moveTo(startX, startY);
+
+        for (let i = 1; i < pathElement.points.length; i++) {
+            const { x, y } = pathElement.points[i];
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+    }
     const drawRectOnMount = (rectangleElement: RectangleCanvasElement) => {
         const ctx = canvasContextRef.current;
 
@@ -104,7 +128,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         ctx.font = "8px serif";
         ctx.fillText(textElement.text, textElement.options.x, textElement.options.y);
     };
-
+    // Stores the canvas refs once the pdf is rendered
     useEffect(() => {
         if (
             !canvasRef.current ||
@@ -131,7 +155,6 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         };
         canvasContextRef.current = canvasCtx;
     }, [isPdfRendered]);
-
     // Responsible to draw on user action
     useEffect(() => {
         if (!currentRange || !tool) return;
@@ -156,6 +179,78 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
                 break;
         }
     }, [currentRange, tool]);
+    // Handles the brush
+    useEffect(() => {
+        const pdfFile = selectedFile.fileInStructure;
+        if (!isPdfRendered || !pageRef.current || !pdfFile) return;
+
+        const canvas = drawerRef.current;
+        if (!canvas || tool !== PDF_TOOLS.BRUSH) return;
+
+
+        const pageDimensions = pageRef.current.getBoundingClientRect();
+
+        canvas.width = pageDimensions.width;
+        canvas.height = pageDimensions.height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        let points: Array<Position> = [];
+        let isDrawing = false;
+
+        ctx.lineWidth = STROKE_SIZE;
+        ctx.strokeStyle = getRgbColor(color);
+
+        const handleMouseDown = (e: MouseEvent) => {
+            isDrawing = true;
+
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - pageDimensions.left, e.clientY - pageDimensions.top);
+
+            points.push({ x: e.clientX, y: e.clientY });
+        };
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isDrawing) return;
+
+            ctx.lineTo(e.clientX - pageDimensions.left, e.clientY - pageDimensions.top);
+            ctx.stroke();
+
+            points.push({ x: e.clientX, y: e.clientY });
+        };
+        const handleMouseUp = async () => {
+            if (points.length < 2 || !pdfDoc) return;
+
+            const element: PathElementAction = {
+                color,
+                pageDimensions,
+                pageIndex,
+                pdfDoc,
+                pdfFile,
+                points,
+            };
+            const historyAction: HistoryAction = {
+                elements: [{ type: DRAWING_TYPES.PATH, element }],
+            };
+
+            pushAction(historyAction);
+
+            points = [];
+            isDrawing = false;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
+        pageRef.current.addEventListener("mousedown", handleMouseDown);
+        pageRef.current.addEventListener("mousemove", handleMouseMove);
+        pageRef.current.addEventListener("mouseup", handleMouseUp);
+
+        return () => {
+            pageRef.current?.removeEventListener("mousedown", handleMouseDown);
+            pageRef.current?.removeEventListener("mousemove", handleMouseMove);
+            pageRef.current?.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [color, isPdfRendered, pdfDoc, selectedFile.fileInStructure, tool]);
     // Responsible to draw the canvas elements from file update / page change
     useEffect(() => {
         if (!selectedFile.fileInStructure || !isPdfRendered || displayLoader) {
@@ -179,6 +274,9 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
         for (const canvasElement of selectedFile.fileInStructure.elements[pageIndex].canvasElements) {
             switch (canvasElement.type) {
+                case DRAWING_TYPES.PATH:
+                    drawPathOnMount(canvasElement.element);
+                    break;
                 case DRAWING_TYPES.RECTANGLE:
                     drawRectOnMount(canvasElement.element);
                     break;

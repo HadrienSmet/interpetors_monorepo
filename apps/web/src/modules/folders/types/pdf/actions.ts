@@ -1,3 +1,4 @@
+import { Position } from "@/types";
 import { RgbColor } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
@@ -12,16 +13,23 @@ type ActionElement = {
     readonly pdfDoc: PDFDocument;
     readonly pdfFile: PdfFileInStructure;
 };
-type NoteElement =
+type NoteElementAction =
     & ActionElement
     & {
         readonly noteId: string;
         readonly rectsArray: Array<DOMRect>;
     };
+export type PathElementAction =
+    & ActionElement
+    & { readonly points: Array<Position>; };
+export type PathAction = {
+    readonly element: PathElementAction;
+    readonly type: DRAWING_TYPES.PATH;
+};
 export type ReferenceAction =
     | NoteAction;
 export type NoteAction = {
-    readonly element: NoteElement;
+    readonly element: NoteElementAction;
     readonly type: REFERENCE_TYPES.NOTE;
 };
 export type RectangleActionElement =
@@ -46,5 +54,6 @@ export type TextAction = {
     readonly type: DRAWING_TYPES.TEXT;
 };
 export type ElementAction =
+    | PathAction
     | RectangleAction
     | TextAction;
