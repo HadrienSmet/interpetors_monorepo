@@ -82,9 +82,22 @@ export type NoteElement = {
     readonly y: number;
     readonly width: number;
 };
+export type VocabularyElement = {
+    readonly height: number;
+    readonly id: string;
+    readonly pageIndex: number;
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+};
 export type NoteReferenceElement = {
     type: REFERENCE_TYPES.NOTE;
     element: NoteElement;
 };
+export type VocabularyReferenceElement = {
+    readonly element: VocabularyElement;
+    readonly type: REFERENCE_TYPES.VOCABULARY;
+};
 export type ReferenceElement =
-    | NoteReferenceElement;
+    | NoteReferenceElement
+    | VocabularyReferenceElement;

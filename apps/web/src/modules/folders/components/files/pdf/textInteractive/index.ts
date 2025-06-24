@@ -1,1 +1,2 @@
-export * from "./TextInteractive";
+export * from "./note";
+export * from "./vocabulary";

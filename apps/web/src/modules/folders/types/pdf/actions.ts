@@ -26,12 +26,24 @@ export type PathAction = {
     readonly element: PathElementAction;
     readonly type: DRAWING_TYPES.PATH;
 };
-export type ReferenceAction =
-    | NoteAction;
 export type NoteAction = {
     readonly element: NoteElementAction;
     readonly type: REFERENCE_TYPES.NOTE;
 };
+export type VocabularyElementAction =
+    & ActionElement
+    & {
+        readonly rectsArray: Array<DOMRect>;
+        readonly id: string;
+    };
+
+export type VocabularyAction = {
+    readonly element: VocabularyElementAction;
+    readonly type: REFERENCE_TYPES.VOCABULARY;
+};
+export type ReferenceAction =
+    | NoteAction
+    | VocabularyAction;
 export type RectangleActionElement =
     & ActionElement
     & {

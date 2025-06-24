@@ -40,15 +40,15 @@
             z-index: 1;
 
             &.expanded::after {
-                    background-color: var(--clr-txt-04);
-                    bottom: 0;
-                    content: "";
-                    height: var(--border-s);
-                    left: 0;
-                    position: absolute;
-                    transition: background-color var(--transition-theme);
-                    width: 100%;
-                }
+                background-color: var(--clr-txt-04);
+                bottom: 0;
+                content: "";
+                height: var(--border-s);
+                left: 0;
+                position: absolute;
+                transition: background-color var(--transition-theme);
+                width: 100%;
+            }
             &.closed {
                 box-shadow: none;
 

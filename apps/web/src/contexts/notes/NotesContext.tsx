@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 
 import { getContextError } from "../utils";
 
-export type NoteReference = {
+export type TextReference = {
     readonly file: File;
     readonly filePath: string;
     readonly text: string;
@@ -12,7 +12,7 @@ export type NoteData = {
     readonly createdAt: number;
     readonly id: string;
     readonly note: string;
-    readonly reference?: NoteReference;
+    readonly reference?: TextReference;
 };
 /** Color indexed then id indexed */
 export type NotesRecord = Record<string, Record<string, NoteData>>;

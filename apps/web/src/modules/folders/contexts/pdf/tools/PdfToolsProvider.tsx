@@ -3,6 +3,7 @@ import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "
 import { useTranslation } from "react-i18next";
 
 import { getNoteId, useContextMenu, useNotes } from "@/contexts";
+import { usePreparationVocabulary } from "@/modules/vocabulary";
 import { getRgbColor, RgbColor } from "@/utils";
 
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "../../../components";
@@ -33,6 +34,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const { createNote, notes } = useNotes();
     const { containerRef, pageIndex, pageRef, pageRefs, pdfDoc, setDisplayLoader } = usePdfFile();
     const { pushAction } = usePdfHistory();
+    const { addToVocabulary } = usePreparationVocabulary()
     const { t } = useTranslation();
 
     const { fileInStructure, path: filePath } = selectedFile;
@@ -74,7 +76,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         setDisplayLoader(false);
         window.getSelection()?.removeAllRanges();
     };
-    const handleTextReference = async (tool: PdfTool, filePath: string) => {
+    const handleNoteReference = async (tool: PdfTool, filePath: string) => {
         if (
             !currentRange ||
             tool !== PDF_TOOLS.NOTE ||
@@ -154,6 +156,77 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         setTool(null);
         setDisplayLoader(false);
     };
+    const handleVocabularyReference = async (tool: PdfTool, filePath: string) => {
+        if (
+            !currentRange ||
+            tool !== PDF_TOOLS.VOCABULARY ||
+            !pdfDoc ||
+            !pageRef.current
+        ) {
+            return;
+        }
+
+        setDisplayLoader(true);
+
+        const vocKey = getRgbColor(color);
+        const wordToAdd = currentRange.toString().trim();
+
+        addToVocabulary({
+            color: vocKey,
+            text: wordToAdd,
+            filePath,
+        });
+
+        const pageDimensions = pageRef.current.getBoundingClientRect();
+        const rects = currentRange.getClientRects();
+        const rectsArray = Array.from(rects);
+        const elementAction: ElementAction = {
+            type: DRAWING_TYPES.RECTANGLE,
+            element: {
+                color,
+                pageDimensions,
+                pageIndex,
+                pdfDoc,
+                pdfFile,
+                rectsArray,
+                tool,
+            },
+        };
+        const textAction: ElementAction = {
+            type: DRAWING_TYPES.TEXT,
+            element: {
+                color,
+                pageDimensions,
+                pageIndex,
+                pdfDoc,
+                pdfFile,
+                rect: rectsArray[rectsArray.length - 1],
+                text: "*",
+            },
+        };
+        const actionReference: ReferenceAction = {
+            type: REFERENCE_TYPES.VOCABULARY,
+            element: {
+                color,
+                id: wordToAdd.split(" ").join("-"),
+                pageDimensions,
+                pageIndex,
+                pdfDoc,
+                pdfFile,
+                rectsArray,
+            },
+        };
+        const historyAction: HistoryAction = {
+            elements: [elementAction, textAction],
+            reference: actionReference,
+        };
+
+        window.getSelection()?.removeAllRanges();
+        pushAction(historyAction);
+        setCurrentRange(undefined);
+        setTool(null);
+        setDisplayLoader(false);
+    };
 
     // Responsible to store the text selection
     useEffect(() => {
@@ -183,7 +256,10 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             }
 
             if (tool === PDF_TOOLS.NOTE) {
-                handleTextReference(tool, filePath);
+                handleNoteReference(tool, filePath);
+            }
+            if (tool === PDF_TOOLS.VOCABULARY) {
+                handleVocabularyReference(tool, filePath);
             }
         };
 
@@ -228,15 +304,15 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
         [TOOLS_ON_SELECTION.UNDERLINE]: {
             icon: <MdBorderColor />,
-            onClick: () => {console.log("actionsRecord");handleSelection(PDF_TOOLS.UNDERLINE)},
+            onClick: () => handleSelection(PDF_TOOLS.UNDERLINE),
         },
         [TOOLS_ON_SELECTION.HIGHLIGHT]: {
             icon: <MdFormatColorFill />,
-            onClick: () => {console.log("actionsRecord");handleSelection(PDF_TOOLS.HIGHLIGHT)},
+            onClick: () => handleSelection(PDF_TOOLS.HIGHLIGHT),
         },
         [TOOLS_ON_SELECTION.NOTE]: {
             icon: <MdComment />,
-            onClick: () => handleTextReference(PDF_TOOLS.NOTE, filePath),
+            onClick: () => handleNoteReference(PDF_TOOLS.NOTE, filePath),
         },
         [TOOLS_ON_SELECTION.VOCABULARY]: {
             icon: <MdOutlineMenuBook />,
@@ -287,7 +363,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         }
 
         if (tool === PDF_TOOLS.NOTE) {
-            handleTextReference(tool, filePath);
+            handleNoteReference(tool, filePath);
         }
     };
 

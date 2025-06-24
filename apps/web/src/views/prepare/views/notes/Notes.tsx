@@ -124,7 +124,7 @@ export const Notes = () => {
                         className="note-group__color"
                         style={{ backgroundColor: key }}
                     />
-                    <h2>{colorPanel?.colors[key] ?? `Group ${index + 1}`}</h2>
+                    <p>{colorPanel?.colors[key] ?? `Group ${index + 1}`}</p>
                 </div>
             );
 

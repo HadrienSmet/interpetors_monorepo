@@ -3,7 +3,7 @@ import { Document, Page } from "react-pdf";
 import { useFoldersManager, usePdfFile, usePdfTools } from "../../../../contexts";
 import { REFERENCE_TYPES } from "../../../../types";
 
-import { TextInteractive } from "../textInteractive";
+import { InteractiveNote, InteractiveVocabulary } from "../textInteractive";
 
 import { PageManager } from "./pageManager";
 import "./pdfDocument.scss";
@@ -65,9 +65,20 @@ export const PdfDocument = () => {
             {displayNoteReferences && pdfFile.elements[pageIndex].references
                 .filter(ref => ref.type === REFERENCE_TYPES.NOTE)
                 .map((ref, i) => (
-                    <TextInteractive
+                    <InteractiveNote
                         key={`noteRef-${pageIndex}-${i}`}
                         note={ref.element}
+                        i={i}
+                        index={pageIndex}
+                    />
+                ))
+            }
+            {displayNoteReferences && pdfFile.elements[pageIndex].references
+                .filter(ref => ref.type === REFERENCE_TYPES.VOCABULARY)
+                .map((ref, i) => (
+                    <InteractiveVocabulary
+                        key={`noteRef-${pageIndex}-${i}`}
+                        vocabulary={ref.element}
                         i={i}
                         index={pageIndex}
                     />

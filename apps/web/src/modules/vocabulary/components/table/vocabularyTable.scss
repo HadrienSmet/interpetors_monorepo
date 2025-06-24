@@ -1,0 +1,23 @@
+.vocabulary-table {
+    &-cell {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: var(--space-s);
+        justify-content: center;
+        padding: var(--space-m);
+
+        a {
+            align-items: center;
+            display: flex;
+            gap: var(--space-s);
+        }
+    }
+    &-header {
+        display: flex;
+    }
+    &-row {
+        display: flex;
+    }
+}

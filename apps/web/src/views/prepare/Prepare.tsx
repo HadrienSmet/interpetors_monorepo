@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import { InputStyleLess, NavigationState } from "@/components";
 import { NotesProvider } from "@/contexts";
 import { useCssVariable } from "@/hooks";
-import { FoldersManagerProvider } from "@/modules";
+import { FoldersManagerProvider, PreparationVocabularyProvider } from "@/modules";
 import { NotFound } from "@/views";
 
 import { Files, Notes, Vocabulary } from "./views";
@@ -65,7 +65,9 @@ const PrepareContent = () => {
 export const Prepare = () => (
     <FoldersManagerProvider>
         <NotesProvider>
-            <PrepareContent />
+            <PreparationVocabularyProvider>
+                <PrepareContent />
+            </PreparationVocabularyProvider>
         </NotesProvider>
     </FoldersManagerProvider>
 );
