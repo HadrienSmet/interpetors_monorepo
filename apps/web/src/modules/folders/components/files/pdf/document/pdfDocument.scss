@@ -1,8 +1,8 @@
 .pdf {
+
     &-document {
         border: var(--border-s) solid var(--clr-txt-01);
         box-shadow: var(--shadow-default) var(--clr-txt-04);
-        margin: auto;
         position: relative;
         // pdf min-width + (2*border)
         width: 597px;

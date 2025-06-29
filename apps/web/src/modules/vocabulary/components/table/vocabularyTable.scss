@@ -1,4 +1,6 @@
 .vocabulary-table {
+    height: 100%;
+    position: relative;
     &-cell {
         align-items: center;
         display: flex;
@@ -6,18 +8,48 @@
         flex-direction: column;
         gap: var(--space-s);
         justify-content: center;
-        padding: var(--space-m);
+        padding: var(--space-xl) var(--space-m);
+
+        &.head-cell {
+            align-items: flex-end;
+            padding: 0;
+            p {
+                margin: auto;
+                padding: var(--space-m);
+            }
+        }
 
         a {
             align-items: center;
             display: flex;
             gap: var(--space-s);
         }
+        input {
+            padding: var(--space-s) var(--space-m);
+            width: 100%;
+        }
     }
     &-header {
         display: flex;
+        &::after {
+            background-color: var(--clr-txt-02);
+            content: "";
+            height: var(--border-s);
+            position: absolute;
+            top: 38px;
+            width: 100%;
+        }
     }
     &-row {
         display: flex;
+    }
+
+    th:not(:last-child)::after {
+        background-color: var(--clr-txt-02);
+        content: "";
+        height: 100%;
+        position: absolute;
+        top: 0;
+        width: var(--border-s);
     }
 }

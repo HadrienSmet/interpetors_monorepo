@@ -1,5 +1,5 @@
 import { Dispatch, ReactNode, SetStateAction } from "react";
-import { MdAdd, MdComment, MdFilePresent, MdHistory, MdHome, MdMenuBook, MdTranslate } from "react-icons/md";
+import { MdAdd, MdFilePresent, MdHistory, MdHome, MdMenuBook, MdTranslate } from "react-icons/md";
 
 export type NavigationItem = {
     readonly id: string;
@@ -19,10 +19,6 @@ export const NAVIGATION = {
             FILES: {
                 id: "files",
                 icon: <MdFilePresent />,
-            },
-            NOTES: {
-                id: "notes",
-                icon: <MdComment />,
             },
             VOCABULARY: {
                 id: "vocabulary",

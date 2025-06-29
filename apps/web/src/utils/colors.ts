@@ -22,8 +22,8 @@ export const getRgbFromString = (color: string): SplittedRgb => {
         r: getRoundedValue(r),
         g: getRoundedValue(g),
         b: getRoundedValue(b),
-    })
-}
+    });
+};
 /** From PdfEditor rgb color (0 - 1) to regular rgb (0 - 255) */
 export const getRgbColor = (color: RgbColor) => (
     `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`
@@ -38,7 +38,7 @@ export const getPdfRgbColor = (color: string) => {
         r: r/255,
         g: g/255,
         b: b/255,
-    })
+    });
 };
 export const hslToRgb = (h: number, s: number, l: number): RgbColor => {
     s /= 100;
@@ -94,3 +94,8 @@ export const rgbToHsl = ({ r, g, b }: RgbColor) => {
 export const rgbToRgba = (color: RgbColor, opacity: number) => (
     `rgba(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}, ${opacity})`
 );
+export const stringToRgba = (color: string, opacity: number) => {
+    const pdfColor = getPdfRgbColor(color);
+
+    return (rgbToRgba(pdfColor, opacity));
+};

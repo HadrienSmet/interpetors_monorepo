@@ -2,12 +2,11 @@ import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
 import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import { getNoteId, useContextMenu, useNotes } from "@/contexts";
-import { usePreparationVocabulary } from "@/modules/vocabulary";
-import { getRgbColor, RgbColor } from "@/utils";
+import { useContextMenu } from "@/contexts";
+import { getRgbColor, getRgbFromString, RgbColor } from "@/utils";
 
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "../../../components";
-import { DRAWING_TYPES, PDF_TOOLS, REFERENCE_TYPES, TOOLS_ON_SELECTION, ElementAction, ReferenceAction } from "../../../types";
+import { DRAWING_TYPES, PDF_TOOLS, REFERENCE_TYPES, TOOLS_ON_SELECTION, ElementAction, InterractiveReferenceAction, PdfNote, GenerateElementAction, GENRATED_ELEMENTS } from "../../../types";
 
 import { useFoldersManager } from "../../manager";
 
@@ -15,13 +14,17 @@ import { usePdfFile } from "../file";
 import { HistoryAction, usePdfHistory } from "../history";
 
 import { PdfTool, PdfToolsContext, PdfToolsContextType } from "./PdfToolsContext";
-import { getNoteFromRange, getRange } from "./utils";
+import { getRange } from "./utils";
 
 const DEFAULT_COLOR: RgbColor = {
     r: .2,
     g: 1,
     b: 0,
 };
+export const getNoteId = (color: string, index: number | string) => (
+    `${Object.values(getRgbFromString(color)).join("-")}-${index}`
+);
+
 export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const [color, setColor] = useState<RgbColor>(DEFAULT_COLOR);
     /** Text selection range */
@@ -31,15 +34,14 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
     const { setContextMenu } = useContextMenu();
     const { selectedFile } = useFoldersManager();
-    const { createNote, notes } = useNotes();
     const { containerRef, pageIndex, pageRef, pageRefs, pdfDoc, setDisplayLoader } = usePdfFile();
     const { pushAction } = usePdfHistory();
-    const { addToVocabulary } = usePreparationVocabulary()
     const { t } = useTranslation();
 
     const { fileInStructure, path: filePath } = selectedFile;
     const pdfFile = fileInStructure!;
 
+    const removeSelection = () => window.getSelection()?.removeAllRanges();
     // ------ HANDLERS ------
     /** Updates the pdf file and clean the tools */
     const handleSelection = async (tool: PdfTool) => {
@@ -74,9 +76,9 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         pushAction({ elements: [userAction] });
         setCurrentRange(undefined);
         setDisplayLoader(false);
-        window.getSelection()?.removeAllRanges();
+        removeSelection();
     };
-    const handleNoteReference = async (tool: PdfTool, filePath: string) => {
+    const handleNoteReference = async (tool: PdfTool) => {
         if (
             !currentRange ||
             tool !== PDF_TOOLS.NOTE ||
@@ -89,26 +91,40 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         setDisplayLoader(true);
 
         const noteKey = getRgbColor(color);
-        const note = getNoteFromRange({
+        const noteGroup = pdfFile.elements[pageIndex].notes.filter(elem => elem.color === noteKey);
+        const noteIndex = noteGroup.length > 0
+            ? `${noteGroup.length + 1}`
+            : "1";
+
+        const text = currentRange.toString().trim();
+
+        const rects = currentRange.getClientRects();
+        const rectsArray = Array.from(rects);
+
+        const { y } = rectsArray[0];
+
+        if (!text) return;
+
+        const noteId = getNoteId(noteKey, noteIndex);
+        const pageDimensions = pageRef.current.getBoundingClientRect();
+
+        const pdfNote: PdfNote = {
             color: noteKey,
-            file: pdfFile.file,
-            filePath,
-            range: currentRange,
-        });
-        if(!note) {
+            note: "",
+            id: noteId,
+            occurence: {
+                filePath,
+                pageIndex,
+                text,
+            },
+            y: y - pageDimensions.top,
+        };
+        if (!pdfNote) {
             console.error("An error occured during the note creation");
             setDisplayLoader(false);
             return;
         }
 
-        createNote(note);
-
-        const noteIndex = noteKey in notes
-            ? `${Object.keys(notes[noteKey]).length}`
-            : "1";
-        const pageDimensions = pageRef.current.getBoundingClientRect();
-        const rects = currentRange.getClientRects();
-        const rectsArray = Array.from(rects);
         const elementAction: ElementAction = {
             type: DRAWING_TYPES.RECTANGLE,
             element: {
@@ -133,11 +149,11 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 text: noteIndex,
             },
         };
-        const actionReference: ReferenceAction = {
+        const actionReference: InterractiveReferenceAction = {
             type: REFERENCE_TYPES.NOTE,
             element: {
                 color,
-                noteId: getNoteId(noteKey, noteIndex),
+                noteId,
                 pageDimensions,
                 pageIndex,
                 pdfDoc,
@@ -145,18 +161,23 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 rectsArray,
             },
         };
+        const generateNoteAction: GenerateElementAction = {
+            element: pdfNote,
+            type: GENRATED_ELEMENTS.NOTE,
+        };
         const historyAction: HistoryAction = {
             elements: [elementAction, textAction],
-            reference: actionReference,
+            interractiveText: actionReference,
+            elementToGenerate: generateNoteAction,
         };
 
-        window.getSelection()?.removeAllRanges();
+        removeSelection();
         pushAction(historyAction);
         setCurrentRange(undefined);
         setTool(null);
         setDisplayLoader(false);
     };
-    const handleVocabularyReference = async (tool: PdfTool, filePath: string) => {
+    const handleVocabularyReference = async (tool: PdfTool) => {
         if (
             !currentRange ||
             tool !== PDF_TOOLS.VOCABULARY ||
@@ -168,14 +189,9 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
         setDisplayLoader(true);
 
-        const vocKey = getRgbColor(color);
         const wordToAdd = currentRange.toString().trim();
-
-        addToVocabulary({
-            color: vocKey,
-            text: wordToAdd,
-            filePath,
-        });
+        const vocId = wordToAdd.split(" ").join("-");
+        const vocKey = getRgbColor(color);
 
         const pageDimensions = pageRef.current.getBoundingClientRect();
         const rects = currentRange.getClientRects();
@@ -204,11 +220,11 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 text: "*",
             },
         };
-        const actionReference: ReferenceAction = {
+        const interractiveText: InterractiveReferenceAction = {
             type: REFERENCE_TYPES.VOCABULARY,
             element: {
                 color,
-                id: wordToAdd.split(" ").join("-"),
+                id: vocId,
                 pageDimensions,
                 pageIndex,
                 pdfDoc,
@@ -216,12 +232,26 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 rectsArray,
             },
         };
+        const generateVocabularyAction: GenerateElementAction = {
+            type: GENRATED_ELEMENTS.VOCABULARY,
+            element: {
+                color: vocKey,
+                id: vocId,
+                occurence: {
+                    filePath,
+                    pageIndex,
+                    text: wordToAdd,
+                },
+                translations: {},
+            },
+        };
         const historyAction: HistoryAction = {
             elements: [elementAction, textAction],
-            reference: actionReference,
+            interractiveText,
+            elementToGenerate: generateVocabularyAction,
         };
 
-        window.getSelection()?.removeAllRanges();
+        removeSelection();
         pushAction(historyAction);
         setCurrentRange(undefined);
         setTool(null);
@@ -256,10 +286,10 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             }
 
             if (tool === PDF_TOOLS.NOTE) {
-                handleNoteReference(tool, filePath);
+                handleNoteReference(tool);
             }
             if (tool === PDF_TOOLS.VOCABULARY) {
-                handleVocabularyReference(tool, filePath);
+                handleVocabularyReference(tool);
             }
         };
 
@@ -312,11 +342,11 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         },
         [TOOLS_ON_SELECTION.NOTE]: {
             icon: <MdComment />,
-            onClick: () => handleNoteReference(PDF_TOOLS.NOTE, filePath),
+            onClick: () => handleNoteReference(PDF_TOOLS.NOTE),
         },
         [TOOLS_ON_SELECTION.VOCABULARY]: {
             icon: <MdOutlineMenuBook />,
-            onClick: () => console.log("vocabulary"),
+            onClick: () => handleVocabularyReference(PDF_TOOLS.VOCABULARY),
         },
     };
     const items = Object.entries(actionsRecord).map(([key, value]) => ({
@@ -326,7 +356,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 tool={key as TOOLS_ON_SELECTION}
                 t={t}
             />
-        ) ,
+        ),
         onClick: value.onClick,
     }));
     // Handles the pdf tools on contextMenu + selectedText
@@ -363,7 +393,10 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         }
 
         if (tool === PDF_TOOLS.NOTE) {
-            handleNoteReference(tool, filePath);
+            handleNoteReference(tool);
+        }
+        if (tool === PDF_TOOLS.VOCABULARY) {
+            handleVocabularyReference(tool);
         }
     };
 

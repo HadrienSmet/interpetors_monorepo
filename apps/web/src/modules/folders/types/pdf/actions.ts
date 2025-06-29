@@ -13,12 +13,36 @@ type ActionElement = {
     readonly pdfDoc: PDFDocument;
     readonly pdfFile: PdfFileInStructure;
 };
-type NoteElementAction =
+//==========================
+//=   INTERRACTIVE TEXTS   =
+//==========================
+type InterractiveNoteElement =
     & ActionElement
     & {
-        readonly noteId: string;
         readonly rectsArray: Array<DOMRect>;
+        readonly noteId: string;
     };
+export type InterractiveNoteAction = {
+    readonly element: InterractiveNoteElement;
+    readonly type: REFERENCE_TYPES.NOTE;
+};
+export type InterractiveVocabularyElement =
+    & ActionElement
+    & {
+        readonly rectsArray: Array<DOMRect>;
+        readonly id: string;
+    };
+export type InterractiveVocabularyAction = {
+    readonly element: InterractiveVocabularyElement;
+    readonly type: REFERENCE_TYPES.VOCABULARY;
+};
+export type InterractiveReferenceAction =
+    | InterractiveNoteAction
+    | InterractiveVocabularyAction;
+
+//========================
+//=   ELEMENTS TO DRAW   =
+//========================
 export type PathElementAction =
     & ActionElement
     & { readonly points: Array<Position>; };
@@ -26,24 +50,7 @@ export type PathAction = {
     readonly element: PathElementAction;
     readonly type: DRAWING_TYPES.PATH;
 };
-export type NoteAction = {
-    readonly element: NoteElementAction;
-    readonly type: REFERENCE_TYPES.NOTE;
-};
-export type VocabularyElementAction =
-    & ActionElement
-    & {
-        readonly rectsArray: Array<DOMRect>;
-        readonly id: string;
-    };
 
-export type VocabularyAction = {
-    readonly element: VocabularyElementAction;
-    readonly type: REFERENCE_TYPES.VOCABULARY;
-};
-export type ReferenceAction =
-    | NoteAction
-    | VocabularyAction;
 export type RectangleActionElement =
     & ActionElement
     & {

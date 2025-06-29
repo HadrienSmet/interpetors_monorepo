@@ -11,6 +11,7 @@ import {
 
 import { PdfDocument } from "./document";
 import { PdfEditorLoader } from "./loader";
+import { NotesDisplayer } from "./notes";
 import { PdfTools } from "./tools";
 
 import "./pdfEditor.scss";
@@ -36,24 +37,29 @@ const PdfEditorChild = () => {
             ref={containerRef}
         >
             <PdfTools />
-            <PdfDocument />
 
-            {displayLoader && (<PdfEditorLoader />)}
+            <div className="document-drawer">
+                <PdfDocument />
 
-            {/** Used to draw on mount */}
-            <canvas
-                className="on-real-time-displayer"
-                key="canvas"
-                ref={canvasRef}
-                style={canvasStyle}
-            />
-            {/** Used to draw on user action */}
-            <canvas
-                className="on-real-time-displayer"
-                key="drawer"
-                ref={drawerRef}
-                style={canvasStyle}
-            />
+                {displayLoader && (<PdfEditorLoader />)}
+
+                {/** Used to draw on mount */}
+                <canvas
+                    className="on-real-time-displayer"
+                    key="canvas"
+                    ref={canvasRef}
+                    style={canvasStyle}
+                />
+                {/** Used to draw on user action */}
+                <canvas
+                    className="on-real-time-displayer"
+                    key="drawer"
+                    ref={drawerRef}
+                    style={canvasStyle}
+                />
+            </div>
+
+            <NotesDisplayer />
 
             {customCursor && (customCursor)}
         </div>

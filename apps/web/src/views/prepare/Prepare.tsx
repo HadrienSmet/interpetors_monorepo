@@ -3,12 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
 import { InputStyleLess, NavigationState } from "@/components";
-import { NotesProvider } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 import { FoldersManagerProvider, PreparationVocabularyProvider } from "@/modules";
 import { NotFound } from "@/views";
 
-import { Files, Notes, Vocabulary } from "./views";
+import { Files, Vocabulary } from "./views";
 import "./prepare.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
@@ -25,9 +24,6 @@ const PrepareView = () => {
 
     if (currentView === "files") {
         return (<Files />);
-    }
-    if (currentView === "notes") {
-        return (<Notes />);
     }
     if (currentView === "vocabulary") {
         return (<Vocabulary />);
@@ -64,10 +60,8 @@ const PrepareContent = () => {
 
 export const Prepare = () => (
     <FoldersManagerProvider>
-        <NotesProvider>
-            <PreparationVocabularyProvider>
-                <PrepareContent />
-            </PreparationVocabularyProvider>
-        </NotesProvider>
+        <PreparationVocabularyProvider>
+            <PrepareContent />
+        </PreparationVocabularyProvider>
     </FoldersManagerProvider>
 );

@@ -2,6 +2,15 @@
     gap: var(--space-h);
     padding: var(--space-l) var(--space-xh);
 
+    &-subtitle {
+        font-size: 18px;
+        font-weight: 500;
+    }
+    &-title {
+        font-size: var(--size-l);
+        font-weight: 500;
+    }
+
     .color-panel {
         border: var(--border-s) solid var(--clr-txt-01);
         padding: var(--space-l);

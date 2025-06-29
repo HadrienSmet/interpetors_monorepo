@@ -1,10 +1,10 @@
-import { REFERENCE_TYPES, VocabularyAction, VocabularyReferenceElement } from "../../../../types";
+import { REFERENCE_TYPES, InterractiveVocabularyAction, VocabularyReferenceElement } from "../../../../types";
 
-export const convertVocabularyAction = (vocAction: VocabularyAction): Array<VocabularyReferenceElement> | null => {
+export const convertVocabularyAction = (vocAction: InterractiveVocabularyAction): Array<VocabularyReferenceElement> | null => {
     const { element } = vocAction;
     const { rectsArray, pageIndex, pageDimensions, id } = element;
 
-    if (rectsArray.length < 0) return null;
+    if (rectsArray.length < 0) return (null);
 
     return (rectsArray.map(targetRect => ({
         type: REFERENCE_TYPES.VOCABULARY,

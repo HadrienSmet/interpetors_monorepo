@@ -1,6 +1,8 @@
 import { PropsWithChildren, useState } from "react";
 
-import { VocabularyInPreparation, PreparationVocabulary, WordToAdd } from "../../types";
+import { PdfVocabulary } from "@/modules/folders";
+
+import { PreparationVocabulary, WordToAdd } from "../../types";
 
 import { AddTranslationParams, PreparationVocabularyContext } from "./VocabularyContext";
 
@@ -8,10 +10,10 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
     const [vocabulary, setVocabulary] = useState<PreparationVocabulary>({});
 
     const addToVocabulary = (word: WordToAdd) => {
+        // TODO two methods vocToId & idToVoc
         const wordAsId = word.text.split(" ").join("-");
 
         if (word.color in vocabulary && wordAsId in vocabulary[word.color]) {
-            console.error("This word already exists in the vocabulary list");
             return;
         }
 
@@ -24,9 +26,8 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
 
             copy[word.color][wordAsId] = {
                 color: word.color,
-                filePath: word.filePath,
                 id: wordAsId,
-                text: word.text,
+                occurence: { ...word },
                 translations: {},
             };
 
@@ -52,7 +53,7 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
 
         return (copy);
     });
-    const update = (color: string, id: string, item: VocabularyInPreparation) => setVocabulary(state => {
+    const update = (color: string, id: string, item: PdfVocabulary) => setVocabulary(state => {
         const copy = { ...state };
 
         const updated = {

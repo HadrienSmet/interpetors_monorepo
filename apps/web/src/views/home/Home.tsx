@@ -15,9 +15,9 @@ export const Home = () => {
 
     return (
         <main className="home">
-            <h1>{t("views.home.title")}</h1>
+            <p className="home-title">{t("views.home.title")}</p>
             <section>
-                <h2>{t("views.home.sections.languages")}</h2>
+                <p className="home-subtitle">{t("views.home.sections.languages")}</p>
                 <div className="languages">
                     {currentWorkSpace.languages.work.map(language => (
                         <div
@@ -33,7 +33,7 @@ export const Home = () => {
                 </div>
             </section>
             <section>
-                <h2>{t("views.home.sections.colorPanel")}</h2>
+                <p className="home-subtitle">{t("views.home.sections.colorPanel")}</p>
                 <ColorPanel workspace={currentWorkSpace} />
             </section>
         </main>

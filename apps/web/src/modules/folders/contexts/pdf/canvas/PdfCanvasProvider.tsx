@@ -239,6 +239,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             isDrawing = false;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            window.getSelection()?.removeAllRanges();
         };
 
         pageRef.current.addEventListener("mousedown", handleMouseDown);

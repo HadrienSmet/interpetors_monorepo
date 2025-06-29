@@ -2,25 +2,26 @@ import { createContext, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
-import { ElementAction, ReferenceAction } from "../../../types";
+import { ElementAction, GenerateElementAction, InterractiveReferenceAction } from "../../../types";
 
 export type HistoryAction = {
+    /** Used to get the pdf and the canvas elemnts */
     readonly elements: Array<ElementAction>;
-    readonly reference?: ReferenceAction;
+    readonly elementToGenerate?: GenerateElementAction;
+    /** Text highlighted on hover */
+    readonly interractiveText?: InterractiveReferenceAction;
 };
-// export type SortedActions = {
-//     readonly elements: Array<ElementAction>;
-//     readonly references: Array<ReferenceAction>;
-// };
+
 export type PdfHistoryContextType = {
     /** Decrease history index */
     readonly backward: () => void;
     /** Increase history index */
     readonly forward: () => void;
-    readonly isUpToDate: boolean;
     readonly historyIndex: number;
+    readonly isUpToDate: boolean;
     /** Adds the last user action at the right history index */
     readonly pushAction: (action: HistoryAction) => void;
+    readonly updateNoteInHistory: (color: string, id: string, text: string) => void;
 };
 
 export const PdfHistoryContext = createContext<PdfHistoryContextType | null>(null);

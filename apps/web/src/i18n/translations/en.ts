@@ -70,14 +70,13 @@ export const en = {
                 home: "My work space",
                 preparations: "Old preparations",
                 prepare: "New preparation",
-                notes: "Notes",
                 vocabulary: "Vocabulary",
             },
         },
         notes: {
             add: "Add a note",
-            empty: "There are no notes generated for this preparation",
             navigate: "Navigate to note",
+            placeholder: "Fill the note",
         },
         views: {
             home: {
@@ -100,15 +99,6 @@ export const en = {
                     title: "Define a title for this preparation",
                 },
                 title: "Prepare a speech",
-                views: {
-                    notes: {
-                        add: "Add a note",
-                        empty: "No notes have been created for this preparation",
-                    },
-                    vocabulary: {
-                        title: "Generated vocabulary",
-                    },
-                },
             },
             notFound: {
                 title: "Oops, someone got lost?",
@@ -140,6 +130,11 @@ export const en = {
                     },
                 },
             },
+        },
+        vocabulary: {
+            empty: "No vocabulary generated yet",
+            placeholder: "Translate {{ word }} ({{ language }})",
+            sources: "Sources",
         },
     },
 };

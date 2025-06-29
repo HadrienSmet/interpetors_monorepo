@@ -70,14 +70,13 @@ export const fr = {
                 home: "Mon espace de travail",
                 preparations: "Anciennes préparations",
                 prepare: "Nouvelle préparation",
-                notes: "Notes",
                 vocabulary: "Vocabulaire",
             },
         },
         notes: {
             add: "Ajouter une note",
-            empty: "Aucunes notes n'a encore été créé pour cette préparation",
-            navigate: "Nabiguer vers la note",
+            navigate: "Naviguer vers la note",
+            placeholder: "Ecris ta note",
         },
         views: {
             home: {
@@ -100,11 +99,6 @@ export const fr = {
                     title: "Définissez un titre à votre préparation.",
                 },
                 title: "Préparer un discours",
-                views: {
-                    vocabulary: {
-                        title: "Vocabulaire généré",
-                    },
-                },
             },
             notFound: {
                title: "Oops, on s'est perdu ?",
@@ -136,6 +130,11 @@ export const fr = {
                     },
                 },
             },
+        },
+        vocabulary: {
+            empty: "Pas de vocabulaire génré pour le moment",
+            placeholder: "Traduis {{ word }} ({{ language }})",
+            sources: "Sources",
         },
     },
 };

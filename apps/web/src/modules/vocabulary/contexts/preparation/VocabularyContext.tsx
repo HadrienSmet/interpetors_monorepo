@@ -1,8 +1,9 @@
 import { createContext, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
+import { PdfVocabulary } from "@/modules/folders";
 
-import { VocabularyInPreparation, PreparationVocabulary, WordToAdd } from "../../types";
+import { PreparationVocabulary, WordToAdd } from "../../types";
 
 export type AddTranslationParams = {
     readonly color: string;
@@ -16,7 +17,7 @@ type PreparationVocabularyContextType = {
     readonly addToVocabulary: (word: WordToAdd) => void;
     readonly addTranslation: (params: AddTranslationParams) => void;
     readonly remove: (color: string, id: string) => void;
-    readonly update: (color: string, id: string, item: VocabularyInPreparation) => void;
+    readonly update: (color: string, id: string, item: PdfVocabulary) => void;
 };
 
 export const PreparationVocabularyContext = createContext<PreparationVocabularyContextType | null>(null);
