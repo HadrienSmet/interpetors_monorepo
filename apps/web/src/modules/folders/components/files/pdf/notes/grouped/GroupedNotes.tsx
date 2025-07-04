@@ -105,6 +105,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
         const handleClickOutside = async (event: MouseEvent) => {
             const target = event.target as HTMLElement;
             if (
+                state === COMPONENT_STATE.default ||
                 !containerRef.current ||
                 containerRef.current.contains(target) ||
                 target.closest("[data-ignore-outside-click]")
@@ -126,7 +127,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, []);
+    }, [state]);
 
     return (
         <div
