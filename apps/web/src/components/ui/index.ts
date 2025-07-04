@@ -4,6 +4,5 @@ export * from "./contextMenu";
 export * from "./inputs";
 export * from "./loader";
 export * from "./modals";
-export * from "./resizableSection";
 export * from "./selects";
 export * from "./togglers";

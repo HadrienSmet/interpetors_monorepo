@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdMenu } from "react-icons/md";
 
-import { ResizableSection, Select } from "@/components";
+import { Select } from "@/components";
 import { useWorkSpaces } from "@/contexts";
+import { ResizableSection } from "@/modules";
 
 import { NavigationButton } from "./NavigationButton";
 import { NAVIGATION } from "./navigation.types";
@@ -49,6 +50,8 @@ const UnexpandedNavigation = (props: { setIsExpanded: Dispatch<SetStateAction<bo
         </div>
     );
 };
+
+const NAVIGATION_DEFAULT_WIDTH = 275 as const;
 export const Navigation = () => {
     const [isExpanded, setIsExpanded] = useState(true);
 
@@ -59,7 +62,10 @@ export const Navigation = () => {
     }
 
     return (
-        <ResizableSection initialWidth={275}>
+        <ResizableSection
+            initialWidth={NAVIGATION_DEFAULT_WIDTH}
+            id="navigation"
+        >
             <div className="navigation navigation-padding">
                 <div className="navigation-header">
                     <div className="input-container">
@@ -76,7 +82,6 @@ export const Navigation = () => {
 
                         return (
                             <NavigationButton
-                                // {...props}
                                 {...current}
                                 key={current.id}
                             />

@@ -1,10 +1,8 @@
 import { useMemo, useState } from "react";
 
-import { ResizableSection } from "@/components";
+import { ResizableSection } from "@/modules/resizableLayout";
 
 import { useFoldersManager } from "../../contexts";
-
-import { FILE_DISPLAYER_MIN_WIDTH } from "../files";
 
 import { TreeNode } from "./nodes";
 import "./foldersExplorer.scss";
@@ -15,15 +13,6 @@ export const FoldersExplorer = () => {
     const [highlightedFolderPath, setHighlightedFolderPath] = useState<string | null>(null);
 
     const { foldersStructures } = useFoldersManager();
-
-    // Prevent from weird behavior when the rest of the app has no more space
-    const getMaxWidth = () => {
-        // very bad to do that
-        const folderDisplayer = document.querySelector(".folders-displayer") as HTMLElement;
-        const totalWidth = folderDisplayer?.offsetWidth || 0;
-
-        return (Math.max(0, totalWidth - (FILE_DISPLAYER_MIN_WIDTH)));
-    };
 
     const foldersTree = useMemo(() => (
         foldersStructures.map((structure, idx) =>
@@ -44,7 +33,7 @@ export const FoldersExplorer = () => {
     return (
         <ResizableSection
             initialWidth={INITIAL_WIDTH}
-            getMaxWidth={getMaxWidth}
+            id={"folders-explorer"}
         >
             {foldersTree}
         </ResizableSection>
