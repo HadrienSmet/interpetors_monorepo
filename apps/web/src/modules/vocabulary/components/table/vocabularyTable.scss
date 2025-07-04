@@ -24,6 +24,11 @@
             display: flex;
             gap: var(--space-s);
         }
+        button {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         input {
             padding: var(--space-s) var(--space-m);
             width: 100%;

@@ -3,6 +3,7 @@ export const en = {
         actions: {
             add: "Add",
             confirm: "Confirm",
+            editOnDoubleClick: "Double click to edit",
             workspace: {
                 create: "Create work space",
             },
@@ -75,8 +76,11 @@ export const en = {
         },
         notes: {
             add: "Add a note",
+            groupHeader_one: "<default><strong>{{count}}</strong> created note</default>",
+            groupHeader_other: "<default><strong>{{count}}</strong> created notes</default>",
             navigate: "Navigate to note",
             placeholder: "Fill the note",
+            readOnClick: "Click to see the whole note.",
         },
         views: {
             home: {

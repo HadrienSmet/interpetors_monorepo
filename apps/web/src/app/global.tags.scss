@@ -99,6 +99,10 @@ p {
     cursor: unset;
     pointer-events: none;
 }
+input,
+textarea {
+    font-family: "--font-default";
+}
 ul {
     list-style: none;
 }

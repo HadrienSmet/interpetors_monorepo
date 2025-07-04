@@ -1,0 +1,29 @@
+.document-note {
+    display: flex;
+    font-size: var(--size-s);
+    gap: var(--space-m);
+    width: 100%;
+
+    &-indicator {
+        border-radius: var(--radius-round);
+        height: 12px;
+        min-width: 12px;
+        width: 12px;
+    }
+
+    button {
+        text-align: left;
+
+        &.cropping {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+    textarea {
+        border: var(--border-s) solid var(--clr-txt-02);
+        border-radius: var(--radius-s);
+        padding: var(--space-s) var(--space-m);
+        width: 100%;
+    }
+}

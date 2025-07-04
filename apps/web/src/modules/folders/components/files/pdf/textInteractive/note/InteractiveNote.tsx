@@ -1,5 +1,4 @@
-import { useNavigate } from "react-router-dom";
-
+import { usePdfNotes } from "../../../../../contexts";
 import { NoteElement } from "../../../../../types";
 
 import "./interactiveNote.scss";
@@ -10,11 +9,9 @@ type InteractiveNoteProps = {
     readonly note: NoteElement;
 };
 export const InteractiveNote = ({ note, index, i }: InteractiveNoteProps) => {
-    const navigate = useNavigate();
+    const { setSelectedNote } = usePdfNotes();
 
-    const onClick = () => {
-        navigate(`/prepare/notes?note=${note.noteId}`);
-    };
+    const onClick = () => setSelectedNote(note.noteId);
     const onMouseEnter = () => {
         document
             .querySelectorAll(`.note-group-${note.noteId}`)
@@ -28,6 +25,7 @@ export const InteractiveNote = ({ note, index, i }: InteractiveNoteProps) => {
 
     return (
         <button
+            data-ignore-outside-click
             className={`text-interactive note-group-${note.noteId}`}
             key={`noteRef-${index}-${i}`}
             onClick={onClick}

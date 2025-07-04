@@ -1,18 +1,5 @@
-.document {
-    &-note {
-        display: flex;
-        font-size: var(--size-s);
-        gap: var(--space-m);
-        position: absolute;
-        width: 100%;
-        textarea {
-            padding: var(--space-s) var(--space-m);
-            width: 100%;
-        }
-    }
-    &-notes-displayer {
-        flex: 1;
-        margin-inline: var(--space-m);
-        position: relative;
-    }
+.document-notes-displayer {
+    flex: 1;
+    margin-left: var(--space-m);
+    position: relative;
 }

@@ -3,6 +3,7 @@ import { PropsWithChildren } from "react";
 import { PdfCanvasProvider } from "./canvas";
 import { PdfFileProvider } from "./file";
 import { PdfHistoryProvider } from "./history";
+import { PdfNotesProvider } from "./notes";
 import { PdfToolsProvider } from "./tools";
 
 export const PdfWrapper = ({ children }: PropsWithChildren) => (
@@ -10,7 +11,9 @@ export const PdfWrapper = ({ children }: PropsWithChildren) => (
         <PdfHistoryProvider>
             <PdfToolsProvider>
                 <PdfCanvasProvider>
-                    {children}
+                    <PdfNotesProvider>
+                        {children}
+                    </PdfNotesProvider>
                 </PdfCanvasProvider>
             </PdfToolsProvider>
         </PdfHistoryProvider>

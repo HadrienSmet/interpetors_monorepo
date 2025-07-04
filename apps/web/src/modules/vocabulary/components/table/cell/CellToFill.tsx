@@ -48,7 +48,10 @@ export const CellToFill = (props: CellToFillProps) => {
 
     return (
         <td className="vocabulary-table-cell">
-            <button onDoubleClick={() => setIsEditing(true)}>
+            <button
+                onDoubleClick={() => setIsEditing(true)}
+                title={t("actions.editOnDoubleClick")}
+            >
                 {props.pdfVocabulary.translations[props.locale]}
             </button>
         </td>
