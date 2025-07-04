@@ -16,12 +16,12 @@ import { getPaddingLeft } from "./nodes.utils";
 type FileNodeProps =
     & Omit<TreeNodeProps, "node">
     & { readonly node: FileInStructure; };
-export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }: FileNodeProps) => {
+export const FileNode = ({ depth, name, node, path }: FileNodeProps) => {
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
 
     const { setContextMenu } = useContextMenu();
-    const { files } = useFoldersManager();
+    const { files, selectedFile, setSelectedFile } = useFoldersManager();
     const { t } = useTranslation();
 
     const items = [
@@ -53,7 +53,7 @@ export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }:
     };
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setNewFileName(e.target.value);
-    const onClick = () => onFileClick(node, path);
+    const onClick = () => setSelectedFile({ fileInStructure: node, path });
     const onContextMenu = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -75,7 +75,7 @@ export const FileNode = ({ depth, name, node, onFileClick, path, selectedFile }:
 
     return (
         <div
-            className={`folders-explorer__item ${(selectedFile && node.name === selectedFile.name) ? "selected" : ""}`}
+            className={`folders-explorer__item ${(selectedFile && node.name === selectedFile.fileInStructure?.name) ? "selected" : ""}`}
             draggable
             onBlur={() => setIsEditingFile(false)}
             onClick={onClick}

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { ResizableSection } from "@/components";
 
-import { FileInStructure, FolderStructure } from "../../types";
+import { useFoldersManager } from "../../contexts";
 
 import { FILE_DISPLAYER_MIN_WIDTH } from "../files";
 
@@ -10,13 +10,11 @@ import { TreeNode } from "./nodes";
 import "./foldersExplorer.scss";
 
 const INITIAL_WIDTH = 200 as const;
-type FoldersExplorerProps = {
-    readonly foldersStructures: Array<FolderStructure>;
-    readonly handleFileClick: (file: FileInStructure, path: string) => void;
-    readonly selectedFile: FileInStructure | null;
-};
-export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFile }: FoldersExplorerProps) => {
+
+export const FoldersExplorer = () => {
     const [highlightedFolderPath, setHighlightedFolderPath] = useState<string | null>(null);
+
+    const { foldersStructures } = useFoldersManager();
 
     // Prevent from weird behavior when the rest of the app has no more space
     const getMaxWidth = () => {
@@ -36,9 +34,7 @@ export const FoldersExplorer = ({ foldersStructures, handleFileClick, selectedFi
                     key={`${idx}-${name}`}
                     name={name}
                     node={node}
-                    onFileClick={handleFileClick}
                     path=""
-                    selectedFile={selectedFile?.file ?? null}
                     setHighlightedFolderPath={setHighlightedFolderPath}
                 />
             ))

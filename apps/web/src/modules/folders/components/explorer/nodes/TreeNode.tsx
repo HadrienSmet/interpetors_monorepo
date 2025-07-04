@@ -24,9 +24,7 @@ export const TreeNode = ({
     highlightedFolderPath,
     name,
     node,
-    onFileClick,
     path,
-    selectedFile,
     setHighlightedFolderPath,
 }: FolderNodeProps) => {
     /** Indicates if user is creating a folder inside the TreeNode */
@@ -190,9 +188,7 @@ export const TreeNode = ({
                 depth={depth}
                 name={name}
                 node={node}
-                onFileClick={onFileClick}
                 path={fullPath}
-                selectedFile={selectedFile}
             />
         );
     }
@@ -266,9 +262,7 @@ export const TreeNode = ({
                             key={childName}
                             name={childName}
                             node={childNode}
-                            onFileClick={onFileClick}
                             path={fullPath}
-                            selectedFile={selectedFile}
                             setHighlightedFolderPath={setHighlightedFolderPath}
                         />
                     ))}

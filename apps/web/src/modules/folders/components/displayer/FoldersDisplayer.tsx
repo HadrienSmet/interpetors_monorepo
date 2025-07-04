@@ -2,7 +2,7 @@ import { DragEventHandler, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { getFileInStructure, useFoldersManager } from "../../contexts";
-import { FileInStructure, FolderStructure } from "../../types";
+import { FolderStructure } from "../../types";
 
 import { FoldersExplorer } from "../explorer";
 import { FileDisplayer } from "../files";
@@ -25,10 +25,8 @@ export const FoldersDisplayer = ({
     onDragOver,
     onDrop
 }: FoldersDisplayerProps) => {
-    const { selectedFile, setSelectedFile } = useFoldersManager();
+    const { setSelectedFile } = useFoldersManager();
     const [searchParams, setSearchParams] = useSearchParams();
-
-    const handleFileClick = (fileInStructure: FileInStructure, path: string) => setSelectedFile({ fileInStructure, path});
 
     useEffect(() => {
         const path = searchParams.get("filepath");
@@ -49,11 +47,7 @@ export const FoldersDisplayer = ({
 
     return (
         <div className="folders-displayer">
-            <FoldersExplorer
-                foldersStructures={foldersStructures}
-                handleFileClick={handleFileClick}
-                selectedFile={selectedFile.fileInStructure}
-            />
+            <FoldersExplorer />
             <div
                 className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
                 onDragEnter={onDragEnter}
