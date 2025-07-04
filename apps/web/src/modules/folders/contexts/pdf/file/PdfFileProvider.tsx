@@ -5,7 +5,7 @@ import { PDFDocument } from "@/workers/pdfConfig";
 
 import { useFoldersManager } from "../../manager";
 
-import { PageRefs, PdfFileContext } from "./PdfFileContext";
+import { PdfFileContext } from "./PdfFileContext";
 
 export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const [displayLoader, setDisplayLoader] = useState(true);
@@ -17,11 +17,6 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
 
     const containerRef = useRef<HTMLDivElement>(null);
-    /**
-     * Refs of each page used to display the pdf file
-     * Used to know the positions of the interactions
-     */
-    const pageRefs = useRef<PageRefs>([]);
     const pageRef = useRef<HTMLDivElement | null>(null);
     const renderedPages = useRef(0);
 
@@ -81,7 +76,6 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         onDocumentLoadSuccess,
         pageIndex,
         pageRef,
-        pageRefs,
         pdfDoc,
         previousPage,
         renderedPages,

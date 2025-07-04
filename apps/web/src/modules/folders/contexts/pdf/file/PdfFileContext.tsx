@@ -5,7 +5,6 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { getContextError } from "@/contexts/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
-export type PageRefs = Array<HTMLCanvasElement | undefined>;
 type PdfFileContextType = {
     readonly containerRef: RefObject<HTMLDivElement | null>;
     readonly displayLoader: boolean;
@@ -14,9 +13,7 @@ type PdfFileContextType = {
     readonly numPages: number | undefined;
     readonly onDocumentLoadSuccess: (proxy: PDFDocumentProxy) => void;
     readonly pageIndex: number;
-    // TODO Probably not needed anymore should be pageRef
     readonly pageRef: RefObject<HTMLDivElement | null>;
-    readonly pageRefs: RefObject<PageRefs>;
     /** Might not needed */
     readonly pdfDoc: PDFDocument | undefined;
     readonly previousPage: () => void;

@@ -34,7 +34,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
     const { setContextMenu } = useContextMenu();
     const { selectedFile } = useFoldersManager();
-    const { containerRef, pageIndex, pageRef, pageRefs, pdfDoc, setDisplayLoader } = usePdfFile();
+    const { containerRef, pageIndex, pageRef, pdfDoc, setDisplayLoader } = usePdfFile();
     const { pushAction } = usePdfHistory();
     const { t } = useTranslation();
 
@@ -362,21 +362,6 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     // Handles the pdf tools on contextMenu + selectedText
     const onContextMenu = (e: MouseEvent) => {
         if (!currentRange) return;
-
-        const pageRef = pageRefs.current.find(ref => {
-            if (!ref) return (false);
-
-            const { top, bottom, left, right } = ref.getBoundingClientRect();
-
-            return (
-                e.clientX >= left &&
-                e.clientX <= right &&
-                e.clientY >= top &&
-                e.clientY <= bottom
-            );
-        });
-
-        if (!pageRef) return; // Default context menu
 
         e.preventDefault();
 
