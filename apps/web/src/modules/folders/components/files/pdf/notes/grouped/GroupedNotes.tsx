@@ -89,7 +89,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
 
             containerRef.current?.classList.add("switch-shadow");
 
-            await sleep(10);
+            await sleep(50);
 
             setState("expanded");
             handleClass("expanded");

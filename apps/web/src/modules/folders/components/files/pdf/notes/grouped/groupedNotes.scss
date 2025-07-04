@@ -49,8 +49,8 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
             left: 5%;
             position: absolute;
             transform: scaleX(0);
-            transition: 0.2s ease-in-out;
-            transition-delay: 0.08s;
+            transition: 0.25s ease-in-out;
+            transition-delay: 0.1s;
             width: 90%;
         }
     }
