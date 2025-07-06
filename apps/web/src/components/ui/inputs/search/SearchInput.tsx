@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { MdSearch } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
@@ -23,6 +23,9 @@ export const SearchInput = ({
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value);
     const onClick = () => onSubmit(searchValue);
     const onFocus = () => setIsFocused(true);
+    const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") onSubmit(searchValue);
+    };
 
     return (
         <div className="search-input-container">
@@ -34,6 +37,7 @@ export const SearchInput = ({
                     onBlur={onBlur}
                     onChange={onChange}
                     onFocus={onFocus}
+                    onKeyDown={onKeyDown}
                     placeholder={placeholder}
                     value={searchValue}
                 />

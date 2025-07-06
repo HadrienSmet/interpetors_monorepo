@@ -1,6 +1,7 @@
 export * from "./accordion";
 export * from "./buttons";
 export * from "./contextMenu";
+export * from "./draggableSection";
 export * from "./inputs";
 export * from "./loader";
 export * from "./modals";

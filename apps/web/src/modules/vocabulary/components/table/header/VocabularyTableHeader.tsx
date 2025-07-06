@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FaArrowDownAZ, FaArrowDownZA } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
 
@@ -27,6 +28,7 @@ type VocabularyTableHeaderCellProps = {
     readonly label: string;
 };
 const VocabularyTableHeaderCell = ({ id, label }: VocabularyTableHeaderCellProps) => {
+    const [isHovered, setIsHovered] = useState(false);
     const { sortingColumn, sortingState, setSortingColumn, toggleSortDirection } = useVocabularyTable();
 
     const onClick = () => {
@@ -38,10 +40,17 @@ const VocabularyTableHeaderCell = ({ id, label }: VocabularyTableHeaderCellProps
     };
 
     return (
-        <th className={`vocabulary-table-cell head-cell ${(sortingColumn === id && sortingState !== "NONE") ? "focused" : ""}`}>
+        <th
+            className={`vocabulary-table-cell head-cell ${(sortingColumn === id && sortingState !== "NONE") ? "focused" : ""}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
             <button onClick={onClick}>
                 <span>{label}</span>
-                {sortingColumn === id && (<SortingIcon columnSortingState={sortingState} />)}
+                {sortingColumn === id
+                    ? (<SortingIcon columnSortingState={sortingState} />)
+                    : isHovered && <SortingIcon columnSortingState={sortingStateRecord[1]} />
+                }
             </button>
         </th>
     );

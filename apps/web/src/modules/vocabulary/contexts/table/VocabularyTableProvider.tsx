@@ -1,4 +1,4 @@
-import { PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 
 import { PdfVocabulary } from "@/modules/folders";
 
@@ -51,21 +51,27 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
     const sortedList = useMemo(() => {
         const sortDirection = sortingStateRecord[sortingStateIndex];
 
-        if (sortDirection === "NONE" || !searchingColumn) return (filteredList);
+        if (sortDirection === "NONE" || !sortingColumn) return (filteredList);
 
         return ([...filteredList].sort((a, b) => {
-            const aValue = getItemValue(a, searchingColumn)?.toLowerCase() ?? "";
-            const bValue = getItemValue(b, searchingColumn)?.toLowerCase() ?? "";
+            const aValue = getItemValue(a, sortingColumn)?.toLowerCase() ?? "";
+            const bValue = getItemValue(b, sortingColumn)?.toLowerCase() ?? "";
 
-            if (aValue < bValue) return sortDirection === "ASC" ? -1 : 1;
-            if (aValue > bValue) return sortDirection === "ASC" ? 1 : -1;
+            if (aValue < bValue) return (sortDirection === "ASC" ? -1 : 1);
+            if (aValue > bValue) return (sortDirection === "ASC" ? 1 : -1);
 
             return (0);
         }));
-    }, [filteredList, sortingStateIndex, searchingColumn]);
+    }, [filteredList, sortingStateIndex, sortingColumn]);
     const toggleSortDirection = useCallback(() => {
         setSortingStateIndex((prev) => ((prev + 1) % Object.keys(sortingStateRecord).length) as SortingIndex);
     }, []);
+
+    useEffect(() => {
+        if (sortingColumn !== null) {
+            setSortingStateIndex(1);
+        }
+    }, [sortingColumn]);
 
     const value: VocabularyTableContextValue = {
         list: sortedList,

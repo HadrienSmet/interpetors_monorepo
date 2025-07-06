@@ -3,6 +3,7 @@ import { MdLink } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 import { useWorkSpaces } from "@/contexts";
+import { useCssVariable } from "@/hooks";
 import { PdfVocabulary } from "@/modules/folders";
 import { stringToRgba } from "@/utils";
 
@@ -15,14 +16,19 @@ type VocabularyTableRowProps = {
     readonly pdfVocabulary: PdfVocabulary;
 };
 export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
-    const { sortingState } = useVocabularyTable()
+    const defaultBg = useCssVariable("--clr-txt");
+    const { sortingState } = useVocabularyTable();
     const { currentWorkSpace } = useWorkSpaces();
 
     const { native, work } = currentWorkSpace!.languages;
 
     const backgroundColor = useMemo(() => {
         if (sortingState !== "NONE") {
-            return ("transparent");
+            if (index % 2 === 0) {
+                return ("transparent");
+            }
+
+            return (stringToRgba(defaultBg, .1));
         }
 
         const opacity = index % 2 === 0
