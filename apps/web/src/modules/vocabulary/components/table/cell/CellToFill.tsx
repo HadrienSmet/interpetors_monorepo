@@ -38,7 +38,7 @@ export const CellToFill = (props: CellToFillProps) => {
                 <InputStyleLess
                     onChange={onChange}
                     onKeyDown={onKeyDown}
-                    placeholder={t("vocabulary.placeholder", { word: props.pdfVocabulary.occurence.text, language: props.locale })}
+                    placeholder={t("vocabulary.placeholders.cell", { word: props.pdfVocabulary.occurence.text, language: props.locale })}
                     style={{ width: "100%" }}
                     value={customTranslation}
                 />

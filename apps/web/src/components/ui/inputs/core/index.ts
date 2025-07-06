@@ -1,1 +1,2 @@
-export * from "./InputStyleLess";
+export * from "./Input";
+export * from "./input.types";

@@ -1,0 +1,37 @@
+.vocabulary-table {
+    &-filter {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-m);
+
+        &-column {
+            align-items: center;
+            border: var(--border-s) solid var(--clr-txt-02);
+            border-radius: var(--radius-round);
+            display: flex;
+            justify-content: center;
+            padding: var(--space-s) var(--space-m);
+            transition: var(--transition-theme);
+
+            &.selected {
+                background-color: var(--clr-txt);
+                color: var(--clr-bg-light);
+            }
+        }
+        &-columns {
+            display: flex;
+            gap: var(--space-s);
+        }
+        &-header {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+    &-tools {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        padding: var(--space-xl);
+        padding-top: var(--space-m);
+    }
+}

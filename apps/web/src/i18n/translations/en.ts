@@ -3,7 +3,9 @@ export const en = {
         actions: {
             add: "Add",
             confirm: "Confirm",
+            download: "Download",
             editOnDoubleClick: "Double click to edit",
+            search: "Search",
             workspace: {
                 create: "Create work space",
             },
@@ -137,7 +139,11 @@ export const en = {
         },
         vocabulary: {
             empty: "No vocabulary generated yet",
-            placeholder: "Translate {{ word }} ({{ language }})",
+            filterLabel: "Column on wich to apply the filter",
+            placeholders: {
+                cell: "Translate {{ word }} ({{ language }})",
+                search: "Search in the generated vocabulary",
+            },
             sources: "Sources",
         },
     },

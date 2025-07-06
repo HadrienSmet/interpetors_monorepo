@@ -4,10 +4,6 @@ import { usePreparationVocabulary, VocabularyTable } from "@/modules";
 
 import "./vocabulary.scss";
 
-/**
- * NOTE
- * HistoryProvider needs to update PreparationVocabularyProvider
- */
 export const Vocabulary = () => {
     const { vocabulary } = usePreparationVocabulary();
     const { t } = useTranslation();
@@ -15,7 +11,7 @@ export const Vocabulary = () => {
     return (
         <section className="vocabulary">
             {Object.keys(vocabulary).length > 0
-                ? (<VocabularyTable list={vocabulary} />)
+                ? (<VocabularyTable />)
                 : (
                     <div className="vocabulary-empty">
                         <p>{t("vocabulary.empty")}</p>

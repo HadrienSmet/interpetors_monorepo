@@ -1,6 +1,7 @@
 .vocabulary-table {
     height: 100%;
     position: relative;
+
     &-cell {
         align-items: center;
         display: flex;
@@ -12,7 +13,13 @@
 
         &.head-cell {
             align-items: flex-end;
+            color: var(--clr-txt-04);
             padding: 0;
+            transition: var(--transition-theme);
+            &.focused {
+                color: var(--clr-txt);
+            }
+
             p {
                 margin: auto;
                 padding: var(--space-m);
@@ -34,19 +41,25 @@
             width: 100%;
         }
     }
-    &-header {
+    &-download {
+        align-items: center;
+        background-color: var(--clr-txt);
+        border-radius: var(--radius-s);
+        color: var(--clr-bg-light);
         display: flex;
-        &::after {
-            background-color: var(--clr-txt-02);
-            content: "";
-            height: var(--border-s);
-            position: absolute;
-            top: 38px;
-            width: 100%;
+        font-size: var(--size-s);
+        font-weight: 500;
+        gap: var(--space-m);
+        letter-spacing: 1px;
+        padding: var(--space-m) var(--space-xl);
+
+        &:disabled {
+            background-color: var(--clr-txt-04);
         }
     }
     &-row {
         display: flex;
+        transition: var(--transition-theme);
     }
 
     th:not(:last-child)::after {

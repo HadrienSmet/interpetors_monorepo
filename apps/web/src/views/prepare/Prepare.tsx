@@ -1,9 +1,7 @@
-import { ChangeEvent, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
-import { InputStyleLess, NavigationState } from "@/components";
-import { useCssVariable } from "@/hooks";
+import { NavigationState } from "@/components";
 import { FoldersManagerProvider, PreparationVocabularyProvider } from "@/modules";
 import { NotFound } from "@/views";
 
@@ -32,32 +30,11 @@ const PrepareView = () => {
     return (<NotFound />);
 };
 
-const PrepareContent = () => {
-    const [preparationTitle, setPreparationTitle] = useState("");
-
-    const { t } = useTranslation();
-
-    const handleTitle = (e: ChangeEvent<HTMLInputElement>) => setPreparationTitle(e.target.value);
-
-    return (
-        <main className="prepare">
-            {/* Preparation title */}
-            <InputStyleLess
-                name="preparation-title"
-                onChange={handleTitle}
-                placeholder={t("views.new.inputs.title")}
-                style={{
-                    fontSize: useCssVariable("--size-xl"),
-                    fontWeight: 600,
-                    width: "100%",
-                }}
-                value={preparationTitle}
-            />
-            <PrepareView />
-        </main>
-    );
-};
-
+const PrepareContent = () => (
+    <main className="prepare">
+        <PrepareView />
+    </main>
+);
 export const Prepare = () => (
     <FoldersManagerProvider>
         <PreparationVocabularyProvider>

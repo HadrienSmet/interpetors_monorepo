@@ -4,9 +4,7 @@ import { useLocale } from "@/hooks";
 
 import { InputProps } from "./input.types";
 
-import "./inputStyleLess.scss";
-
-export const InputStyleLess = (props: InputProps): ReactNode => {
+export const Input = (props: InputProps): ReactNode => {
     const [placeholder, setPlaceholder] = useState(props.placeholder || "");
     const { locale } = useLocale();
 
@@ -16,7 +14,7 @@ export const InputStyleLess = (props: InputProps): ReactNode => {
     };
     const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
         setPlaceholder(props.placeholder || "");
-        if (props.onBlur) props.onBlur(e);;
+        if (props.onBlur) props.onBlur(e);
     };
 
     useEffect(() => { // Re-render with right placeholders whenever locale changes
@@ -25,8 +23,8 @@ export const InputStyleLess = (props: InputProps): ReactNode => {
 
     return (
         <input
-            className={`${props.className} style-less`}
-            {...props}
+        {...props}
+            className={`${props.className ?? ""}`}
             onBlur={handleBlur}
             onFocus={handleFocus}
             placeholder={placeholder}

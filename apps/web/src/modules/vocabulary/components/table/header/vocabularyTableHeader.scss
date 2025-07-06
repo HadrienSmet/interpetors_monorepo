@@ -1,0 +1,28 @@
+.vocabulary-table-header {
+    display: flex;
+    height: 35px;
+
+    &::after {
+        background-color: var(--clr-txt-02);
+        content: "";
+        height: var(--border-s);
+        position: absolute;
+        // TODO: Use attr
+        top: 38px;
+        width: calc(100% - var(--space-s));
+    }
+
+    button {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        position: relative;
+        width: 100%;
+
+        svg {
+            position: absolute;
+            right: var(--space-l);
+        }
+    }
+}

@@ -6,6 +6,7 @@ import { useWorkSpaces } from "@/contexts";
 import { PdfVocabulary } from "@/modules/folders";
 import { stringToRgba } from "@/utils";
 
+import { useVocabularyTable } from "../../../contexts";
 
 import { CellToFill } from "../cell";
 
@@ -14,17 +15,22 @@ type VocabularyTableRowProps = {
     readonly pdfVocabulary: PdfVocabulary;
 };
 export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
+    const { sortingState } = useVocabularyTable()
     const { currentWorkSpace } = useWorkSpaces();
 
-    const { work } = currentWorkSpace!.languages;
+    const { native, work } = currentWorkSpace!.languages;
 
     const backgroundColor = useMemo(() => {
+        if (sortingState !== "NONE") {
+            return ("transparent");
+        }
+
         const opacity = index % 2 === 0
             ? .1
             : .25;
 
         return (stringToRgba(pdfVocabulary.color, opacity));
-    }, [pdfVocabulary.color, index])
+    }, [pdfVocabulary.color, index, sortingState]);
 
     return (
         <tr
@@ -37,13 +43,20 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                     <em>{pdfVocabulary.occurence.text}</em>
                 </Link>
             </td>
-            {work.map(lng => (
-                <CellToFill
-                    key={`cell-to-fill-${lng}-${pdfVocabulary.occurence.text}`}
-                    locale={lng}
-                    pdfVocabulary={pdfVocabulary}
-                />
-            ))}
+            <CellToFill
+                locale={native}
+                pdfVocabulary={pdfVocabulary}
+            />
+            {work
+                .filter(lng => lng !== native)
+                .map(lng => (
+                    <CellToFill
+                        key={`cell-to-fill-${lng}-${pdfVocabulary.occurence.text}`}
+                        locale={lng}
+                        pdfVocabulary={pdfVocabulary}
+                    />
+                ))
+            }
         </tr>
     );
 };
