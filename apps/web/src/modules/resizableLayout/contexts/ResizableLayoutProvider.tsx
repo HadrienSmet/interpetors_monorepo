@@ -2,6 +2,7 @@ import { PropsWithChildren, useCallback, useMemo, useState } from "react";
 
 import { ResizableLayoutContext, Section, SectionId } from "./ResizableLayoutContext";
 
+const INVISIBLE_COLUMN_WIDTH = 40 as const;
 type ResizableLayoutProviderProps =
     & {
         readonly totalAvailableWidth: number;
@@ -42,7 +43,7 @@ export const ResizableLayoutProvider = ({
 
             const leftEdge = orderedSections
                 .slice(0, index)
-                .reduce((sum, sec) => sum + (sec.visible ? sec.width : 40), 0);
+                .reduce((sum, sec) => sum + (sec.visible ? sec.width : INVISIBLE_COLUMN_WIDTH), 0);
 
             let newWidth = mouseX - leftEdge;
 
