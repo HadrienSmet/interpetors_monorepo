@@ -98,17 +98,16 @@ const PdfToolsChild = () => {
                     />
                 </button>
             </div>
-            {isPickingColor && (
-                <div className="color-picker-container">
-                    <ColorPicker
-                        color={color}
-                        height={COLOR_PICKER_DIMENSION}
-                        isLandscape={!isLandscape}
-                        setColor={setColor}
-                        width={COLOR_PICKER_DIMENSION}
-                    />
-                </div>
-            )}
+            <div className={`color-picker-container ${isPickingColor ? "expanded" : ""}`}>
+                <ColorPicker
+                    color={color}
+                    height={COLOR_PICKER_DIMENSION}
+                    isLandscape={!isLandscape}
+                    setColor={setColor}
+                    onSelection={() => setIsPickingColor(false)}
+                    width={COLOR_PICKER_DIMENSION}
+                />
+            </div>
         </div>
 
     );

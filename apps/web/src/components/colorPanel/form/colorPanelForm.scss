@@ -1,7 +1,12 @@
-.color-panel__form {
+.color-panel-form {
     display: flex;
     flex-direction: column;
     gap: var(--space-xl);
+
+    &-title {
+        font-size: var(--size-l);
+        font-weight: 500;
+    }
 
 	.color-displayer-container {
 		height: auto;

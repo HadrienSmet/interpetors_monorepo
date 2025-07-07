@@ -2,17 +2,18 @@ import { useState, useRef, useEffect, useMemo } from "react";
 
 import { hslToRgb, rgbToHsl, RgbColor, getRgbColor } from "@/utils";
 
-import "./colorPicker.scss";
 import { ColorPropositions } from "./colorPropositions";
+import "./colorPicker.scss";
 
 type ColorPickerProps = {
     readonly color: RgbColor;
     readonly height: number;
-    readonly isLandscape?: boolean
+    readonly isLandscape?: boolean;
+    readonly onSelection?: () => void;
     readonly setColor: (color: RgbColor) => void;
     readonly width: number;
 };
-export const ColorPicker = ({ color, height, isLandscape = false, setColor, width }: ColorPickerProps) => {
+export const ColorPicker = ({ color, height, isLandscape = false, onSelection, setColor, width }: ColorPickerProps) => {
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
     const pickerRef = useRef<HTMLDivElement | null>(null);
@@ -24,7 +25,7 @@ export const ColorPicker = ({ color, height, isLandscape = false, setColor, widt
             return;
         }
 
-        const { left, top, width, height } = pickerRef.current.getBoundingClientRect();
+        const { left, top } = pickerRef.current.getBoundingClientRect();
         let x = event.clientX - left;
         let y = event.clientY - top;
 
@@ -53,16 +54,13 @@ export const ColorPicker = ({ color, height, isLandscape = false, setColor, widt
     };
 
     useEffect(() => {
-        if (!pickerRef.current) return;
-
-        const { width, height } = pickerRef.current.getBoundingClientRect();
         const { h, l } = rgbToHsl(color);
 
-        const x = (h / 360) * width;
+        const x = (h * width) / 360;
         const y = ((100 - l) / 100) * height;
 
         setCursorPosition({ x, y });
-    }, [color]);
+    }, [color, width, height]);
 
     return (
         <div
@@ -90,6 +88,7 @@ export const ColorPicker = ({ color, height, isLandscape = false, setColor, widt
             </div>
             <ColorPropositions
                 isLandscape={isLandscape}
+                onSelection={onSelection}
                 setColor={setColor}
             />
         </div>

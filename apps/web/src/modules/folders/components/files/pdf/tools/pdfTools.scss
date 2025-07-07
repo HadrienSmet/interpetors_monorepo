@@ -18,6 +18,15 @@
             transform: translateX(-10%) scale(1.05);
         }
 
+        .color-picker-container {
+            // padding: 0;
+            max-width: 0;
+
+            &.expanded {
+                padding-left: var(--space-m);
+                max-width: 700px;
+            }
+        }
         .pdf-tools-buttons {
             flex-direction: column;
         }
@@ -31,6 +40,14 @@
             transform: translateY(10%) scale(1.05);
         }
 
+        .color-picker-container {
+            max-height: 0;
+
+            &.expanded {
+                max-height: 700px;
+                padding-top: var(--space-m);
+            }
+        }
         .pdf-tools-buttons {
             flex-direction: row;
         }
@@ -40,7 +57,8 @@
         align-items: center;
         display: flex;
         justify-content: center;
-        padding: var(--space-m);
+        overflow: hidden;
+        transition: var(--transition-hover);
     }
     .color-picker-trigger {
         border: var(--border-m) solid var(--clr-bg-light);

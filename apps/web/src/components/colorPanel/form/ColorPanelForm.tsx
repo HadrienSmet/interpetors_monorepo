@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { MdAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
@@ -54,7 +54,7 @@ const AddColorRow = (props: AddColorRowProps) => {
     );
 };
 
-const DEFAULT_COLOR = { r: 0, g: .2, b: 1 } as const;
+const DEFAULT_COLOR = { r: .1, g: .2, b: 1 } as const;
 type ColorPanelFormProps = {
     readonly colorPanel?: ColorPanel;
     readonly isOpen: boolean;
@@ -82,8 +82,16 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
             }
         }));
 
-        setColor(DEFAULT_COLOR);
         setColorName("");
+    };
+    const onChange = (e: ChangeEvent<HTMLInputElement>) => setColorsRecord(state => ({
+        ...state,
+        title: e.target.value,
+    }));
+    const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            addColor();
+        }
     };
     const removeColor = (color: string) => setColorsRecord(state => {
         const copy = { ...state };
@@ -112,16 +120,14 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
     }, [isOpen]);
 
     return (
-        <div className="color-panel__form">
-            <h2>{t("colorPanel.creation.title")}</h2>
+        <div className="color-panel-form">
+            <p className="color-panel-form-title">{t("colorPanel.creation.title")}</p>
             <div className="form-section">
                 <label htmlFor="">{t("colorPanel.title.label")} ({t("inputs.notRequired")})</label>
                 <InputStyleLess
+                    onChange={onChange}
+                    onKeyDown={onKeyDown}
                     placeholder={t("colorPanel.title.placeholder")}
-                    onChange={(e) => setColorsRecord(state => ({
-                        ...state,
-                        title: e.target.value,
-                    }))}
                     value={colorsRecord.title}
                 />
             </div>
