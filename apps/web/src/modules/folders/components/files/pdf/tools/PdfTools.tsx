@@ -103,8 +103,8 @@ const PdfToolsChild = () => {
                     color={color}
                     height={COLOR_PICKER_DIMENSION}
                     isLandscape={!isLandscape}
-                    setColor={setColor}
                     onSelection={() => setIsPickingColor(false)}
+                    setColor={setColor}
                     width={COLOR_PICKER_DIMENSION}
                 />
             </div>
