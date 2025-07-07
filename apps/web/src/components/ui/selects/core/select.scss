@@ -9,6 +9,10 @@ select {
     display: flex;
     position: relative;
 
+    select {
+        width: 100%;
+    }
+
     svg {
         pointer-events: none;
         position: absolute;

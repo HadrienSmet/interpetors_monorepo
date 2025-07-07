@@ -1,3 +1,5 @@
+import { APP_NAME } from "@/constants";
+
 export const fr = {
     translation: {
         actions: {
@@ -6,7 +8,7 @@ export const fr = {
             download: "Télécharger",
             editOnDoubleClick: "Cliquez deux fois pour éditer",
             search: "Rechercher",
-            workspace: {
+            workspaces: {
                 create: "Créer mon espace de travail",
             },
         },
@@ -84,6 +86,10 @@ export const fr = {
             placeholder: "Ecris ta note",
             readOnClick: "Cliquer pour afficher l'entièreté.",
         },
+        onBoarding: {
+            title: `<default>Bienvenue sur <title>${APP_NAME}</title></default`,
+            subtitle: "L'outil professionnel pour travailler avec les langues",
+        },
         views: {
             home: {
                 title: "Mon espace de travail",
@@ -116,7 +122,18 @@ export const fr = {
             dic: {
                 title: "Dictionnaire généré",
             },
-            workspace: {
+        },
+        vocabulary: {
+            empty: "Pas de vocabulaire génré pour le moment",
+            filterLabel: "Colonne sur laquelle appliquer le filtre",
+            placeholders: {
+                cell: "Traduis {{ word }} ({{ language }})",
+                search: "Rechercher dans le vocabulaire généré",
+            },
+            sources: "Sources",
+        },
+        workspaces: {
+            create: {
                 title: "Crées ton environnement de travail personnalisé.",
                 inputs: {
                     title: {
@@ -136,15 +153,6 @@ export const fr = {
                     },
                 },
             },
-        },
-        vocabulary: {
-            empty: "Pas de vocabulaire génré pour le moment",
-            filterLabel: "Colonne sur laquelle appliquer le filtre",
-            placeholders: {
-                cell: "Traduis {{ word }} ({{ language }})",
-                search: "Rechercher dans le vocabulaire généré",
-            },
-            sources: "Sources",
         },
     },
 };

@@ -1,5 +1,5 @@
 import { MdClear } from "react-icons/md";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import { Button, LanguageSelect } from "@/components";
 import { useCssVariable } from "@/hooks";
@@ -41,7 +41,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
 
     return (
         <>
-            <p>{t("views.workspace.inputs.native-language.label")}</p>
+            <p>{t("workspaces.create.inputs.native-language.label")}</p>
             <div className="work-languages__list active">
                 {workspaceCreatorState.workSpace.languages.work.map(language => (
                     <div
@@ -70,40 +70,60 @@ export const WorkSpaceCreator = () => {
 
     return (
         <main className="workspace">
-            <h1>{t("views.workspace.title")}</h1>
-            <div className="field-container">
-                <div className={`step work-languages ${workspaceCreatorState.currentStep === creationSteps[0] ? "active" : ""}`}>
-                    <label htmlFor="work-languages">
-                        {t("views.workspace.inputs.work-languages.label")}
-                    </label>
-                    <LanguageSelect
-                        name="work-languages"
-                        onChange={pushWorkLanguage}
-                        style={{ backgroundColor: useCssVariable("--clr-bg") }}
+            <div className="workspace-layout">
+                <div className="workspace-header">
+                    <Trans
+                        i18nKey="onBoarding.title"
+                        components={{
+                            default: <p className="workspace-title"></p>,
+                            title: <span></span>
+                        }}
+                    />
+                    <p className="workspace-subtitle">{t("onBoarding.subtitle")}</p>
+                </div>
+                <div className="workspace-content">
+                    <p className="workspace-create-title">{t("workspaces.create.title")}</p>
+                    <div className="workspace-fields">
+                        <div className={`step work-languages ${workspaceCreatorState.currentStep === creationSteps[0] ? "active" : ""}`}>
+                            <p>
+                                1. {t("workspaces.create.inputs.work-languages.label")}
+                            </p>
+                            <LanguageSelect
+                                name="work-languages"
+                                onChange={pushWorkLanguage}
+                                style={{ backgroundColor: useCssVariable("--clr-bg") }}
+                            />
+                        </div>
+                        {workspaceCreatorState.workSpace.languages.work.length !== 0
+                            ? (
+                                <WorkLanguagesList
+                                    handleNativeLanguage={handleNativeLanguage}
+                                    removeWorkLanguage={removeWorkLanguage}
+                                    workspaceCreatorState={workspaceCreatorState}
+                                />
+                            )
+                            : <div style={{ height: 29.5 }} />
+                        }
+                    </div>
+                    <Button
+                        label={t(workspaceCreatorState.currentStep === creationSteps[0]
+                            ? "actions.confirm"
+                            : "actions.workspaces.create"
+                        )}
+                        disabled={workspaceCreatorState.currentStep === creationSteps[0]
+                            ? workspaceCreatorState.workSpace.languages.work.length < 2
+                            : (
+                                workspaceCreatorState.workSpace.languages.native === "" ||
+                                workspaceCreatorState.workSpace.languages.work.findIndex(el => el === workspaceCreatorState.workSpace.languages.native) === -1
+                            )
+                        }
+                        onClick={nextStep}
                     />
                 </div>
-                {workspaceCreatorState.workSpace.languages.work.length !== 0 && (
-                    <WorkLanguagesList
-                        handleNativeLanguage={handleNativeLanguage}
-                        removeWorkLanguage={removeWorkLanguage}
-                        workspaceCreatorState={workspaceCreatorState}
-                    />
-                )}
             </div>
-            <Button
-                label={t(workspaceCreatorState.currentStep === creationSteps[0]
-                    ? "actions.confirm"
-                    : "actions.workspace.create"
-                )}
-                disabled={workspaceCreatorState.currentStep === creationSteps[0]
-                    ? workspaceCreatorState.workSpace.languages.work.length < 2
-                    : (
-                        workspaceCreatorState.workSpace.languages.native === "" ||
-                        workspaceCreatorState.workSpace.languages.work.findIndex(el => el === workspaceCreatorState.workSpace.languages.native) === -1
-                    )
-                }
-                onClick={nextStep}
-            />
+            <div className="image-container">
+                <img src="/images/home-bg.webp" alt="translate bg" />
+            </div>
         </main>
     );
 };
