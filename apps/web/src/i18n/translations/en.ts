@@ -75,6 +75,7 @@ export const en = {
                 home: "My work space",
                 preparations: "Old preparations",
                 prepare: "New preparation",
+                manager: "Manager",
                 vocabulary: "Vocabulary",
             },
         },
@@ -99,6 +100,11 @@ export const en = {
                 },
             },
             new: {
+                buttons: {
+                    downloadFiles: "Download the files",
+                    downloadVocabulary: "Download the vocabulary",
+                    save: "Save the preparation",
+                },
                 "context-menu": {
                     folder: {
                         create: "Create new folder",

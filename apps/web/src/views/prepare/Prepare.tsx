@@ -5,7 +5,7 @@ import { NavigationState } from "@/components";
 import { FoldersManagerProvider, PreparationVocabularyProvider } from "@/modules";
 import { NotFound } from "@/views";
 
-import { Files, Vocabulary } from "./views";
+import { Files, PreparationManager, Vocabulary } from "./views";
 import "./prepare.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
@@ -22,6 +22,9 @@ const PrepareView = () => {
 
     if (currentView === "files") {
         return (<Files />);
+    }
+    if (currentView === "manager") {
+        return (<PreparationManager />);
     }
     if (currentView === "vocabulary") {
         return (<Vocabulary />);

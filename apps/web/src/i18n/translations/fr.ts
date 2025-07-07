@@ -73,6 +73,7 @@ export const fr = {
                 dictionary: "Dictionnaire",
                 files: "Dossiers sources",
                 home: "Mon espace de travail",
+                manager: "Manager",
                 preparations: "Anciennes préparations",
                 prepare: "Nouvelle préparation",
                 vocabulary: "Vocabulaire",
@@ -99,6 +100,11 @@ export const fr = {
                 },
             },
             new: {
+                buttons: {
+                    downloadFiles: "Télécharger les fichiers",
+                    downloadVocabulary: "Télécharger le vocabulaire",
+                    save: "Sauvegarder la préparation",
+                },
                 "context-menu": {
                     folder: {
                         create: "Nouveau dossier",
