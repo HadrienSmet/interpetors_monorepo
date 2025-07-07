@@ -15,10 +15,19 @@ export const ResizableLayoutProvider = ({
 }: ResizableLayoutProviderProps) => {
     const [sections, setSections] = useState<Record<SectionId, Section>>({});
 
+    const setSectionVisibility = useCallback((id: SectionId, visible: boolean) => {
+        setSections(prev => ({
+            ...prev,
+            [id]: {
+                ...prev[id],
+                visible,
+            },
+        }));
+    }, []);
     const registerSection = useCallback((id: SectionId, initialWidth: number, minWidth: number) => {
         setSections(prev => ({
             ...prev,
-            [id]: { id, width: initialWidth, minWidth },
+            [id]: { id, width: initialWidth, minWidth, visible: true },
         }));
     }, []);
 
@@ -33,7 +42,7 @@ export const ResizableLayoutProvider = ({
 
             const leftEdge = orderedSections
                 .slice(0, index)
-                .reduce((sum, sec) => sum + sec.width, 0);
+                .reduce((sum, sec) => sum + (sec.visible ? sec.width : 40), 0);
 
             let newWidth = mouseX - leftEdge;
 
@@ -77,11 +86,12 @@ export const ResizableLayoutProvider = ({
     }, [totalAvailableWidth, rightMinSpace]);
 
     const value = useMemo(() => ({
-        sections,
-        registerSection,
-        updateWidth,
-        totalAvailableWidth,
         rightMinSpace,
+        registerSection,
+        sections,
+        setSectionVisibility,
+        totalAvailableWidth,
+        updateWidth,
     }), [sections, registerSection, updateWidth, totalAvailableWidth, rightMinSpace]);
 
     return (

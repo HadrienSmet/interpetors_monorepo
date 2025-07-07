@@ -1,9 +1,9 @@
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdMenu } from "react-icons/md";
 
 import { Select } from "@/components";
 import { useWorkSpaces } from "@/contexts";
-import { ResizableSection } from "@/modules";
+import { ResizableSection, useResizableLayout } from "@/modules";
 
 import { NavigationButton } from "./NavigationButton";
 import { NAVIGATION } from "./navigation.types";
@@ -52,19 +52,24 @@ const UnexpandedNavigation = (props: { setIsExpanded: Dispatch<SetStateAction<bo
 };
 
 const NAVIGATION_DEFAULT_WIDTH = 275 as const;
+const SECTION_ID = "navigation";
 export const Navigation = () => {
     const [isExpanded, setIsExpanded] = useState(true);
 
+    const { setSectionVisibility } = useResizableLayout();
+
+    useEffect(() => {
+        setSectionVisibility(SECTION_ID, isExpanded);
+    }, [isExpanded]);
+
     if (!isExpanded) {
-        return (
-           <UnexpandedNavigation setIsExpanded={setIsExpanded} />
-        );
+        return (<UnexpandedNavigation setIsExpanded={setIsExpanded} />);
     }
 
     return (
         <ResizableSection
             initialWidth={NAVIGATION_DEFAULT_WIDTH}
-            id="navigation"
+            id={SECTION_ID}
         >
             <div className="navigation navigation-padding">
                 <div className="navigation-header">
