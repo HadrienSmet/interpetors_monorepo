@@ -13,6 +13,7 @@ import { FileNode } from "./FileNode";
 import { TreeNodeProps } from "./nodes.types";
 import { getPaddingLeft } from "./nodes.utils";
 
+const isSubPath = (originPath: string, targetPath: string): boolean => targetPath === originPath || targetPath.startsWith(`${originPath}/`);
 type FolderNodeProps =
     & TreeNodeProps
     & {
@@ -175,6 +176,10 @@ export const TreeNode = ({
         if (!originPath) {
             return;
         };
+
+        if (isSubPath(originPath, fullPath)) {
+            return;
+        }
 
         folders.changeDirectory(originPath, fullPath);
     };
