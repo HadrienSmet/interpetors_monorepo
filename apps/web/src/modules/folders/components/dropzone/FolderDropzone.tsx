@@ -1,7 +1,7 @@
 import { DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useFoldersManager } from "../../contexts";
+import { isFileInStructure, useFoldersManager } from "../../contexts";
 import { FileInStructure, FolderStructure } from "../../types";
 import { FILE_ELEMENTS, FIRST_PAGE } from "../../utils";
 
@@ -69,11 +69,25 @@ const readDirectory = async (
     }
 };
 
+const doesPathExist = (structure: FolderStructure, path: string[]): boolean => {
+    if (path.length === 0) return (false);
+    const [head, ...rest] = path;
+    const node = structure[head];
+
+    if (!node) return (false);
+    if (rest.length === 0) return (true);
+
+    if (isFileInStructure(node)) return (false);
+
+    return (doesPathExist(node as FolderStructure, rest));
+};
 export const FolderDropzone = () => {
     const [isDragged, setIsDragged] = useState(false);
 
     const foldersManager = useFoldersManager();
     const { t } = useTranslation();
+
+    const doesFolderAlreadyExist = (path: string[]): boolean => foldersManager.foldersStructures.some(structure => doesPathExist(structure, path));
 
     const handleDragEnter = () => setIsDragged(true);
     const handleDragLeave = () => setIsDragged(false);
@@ -85,8 +99,11 @@ export const FolderDropzone = () => {
         for (const item of items) {
             if (item.kind === "file") {
                 const entry = item.webkitGetAsEntry();
-                if (entry?.isDirectory)
-                    await readDirectory(entry as FileSystemDirectoryEntry, newFileTree, entry.name);
+                if (entry?.isDirectory) {
+                    if (!doesFolderAlreadyExist([entry.name])) {
+                        await readDirectory(entry as FileSystemDirectoryEntry, newFileTree, entry.name);
+                    }
+                }
                 else if (entry?.isFile) {
                     const file = item.getAsFile();
 
