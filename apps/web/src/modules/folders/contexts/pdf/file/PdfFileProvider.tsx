@@ -1,17 +1,22 @@
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { PDFDocumentProxy } from "pdfjs-dist";
 
+import { sleep } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
+
+import { PdfEditorLoader } from "../../../components/files/pdf/loader";
+import { DRAWING_TYPES } from "../../../types"
 
 import { useFoldersManager } from "../../manager";
 
 import { PdfFileContext } from "./PdfFileContext";
+import { drawPath, drawRectangle, drawText, updateFileFromPdfDocument } from "./pdfFile.updaters";
 
 export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const [displayLoader, setDisplayLoader] = useState(true);
     const [isPdfRendered, setIsPdfRendered] = useState(false);
     /** Number of pages of the pdf file */
-    const [numPages, setNumPages] = useState<number>();
+    const [numPages, setNumPages] = useState<number>(-1);
     const [pageIndex, setPageIndex] = useState(1);
     /** Pdf document - Used to interact with the binary */
     const [pdfDoc, setPdfDoc] = useState<PDFDocument>();
@@ -20,7 +25,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const pageRef = useRef<HTMLDivElement | null>(null);
     const renderedPages = useRef(0);
 
-    const { selectedFile } = useFoldersManager();
+    const { files, selectedFile } = useFoldersManager();
 
     const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
     const previousPage = () => setPageIndex(state => Math.max(state - 1, 1));
@@ -28,6 +33,44 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => (
         setNumPages(nextNumPages)
     );
+
+    const savePdfFile = async  () => {
+        setDisplayLoader(true);
+        setIsPdfRendered(false);
+
+        await sleep(700);
+
+        const pdfFile = selectedFile.fileInStructure;
+        if (!pdfFile || !pdfDoc) {
+            return;
+        }
+
+        for (let i = 0; i < numPages; i++) {
+            const { pdfElements } = pdfFile.elements[i + 1];
+            const page = pdfDoc.getPage(i);
+            if (!page) {
+                continue;
+            }
+
+            for (const pdfElement of pdfElements) {
+                switch (pdfElement.type) {
+                    case DRAWING_TYPES.PATH:
+                        drawPath(pdfElement.element, page);
+                        break;
+                    case DRAWING_TYPES.RECTANGLE:
+                        drawRectangle(pdfElement.element, page);
+                        break;
+                    case DRAWING_TYPES.TEXT:
+                        drawText(pdfElement.element, page);
+                        break;
+                }
+            }
+        }
+
+        const updatedFile = await updateFileFromPdfDocument(pdfDoc, selectedFile.fileInStructure);
+
+        files.update(updatedFile);
+    };
 
     // ------ USE EFFECTS ------
     useEffect(() => {
@@ -37,7 +80,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     useEffect(() => {
         if (isPdfRendered) {
             // Between 200 and 500 ms
-            const randomTimeout = Math.ceil((Math.random() * 300)) + 200;
+            const randomTimeout = Math.ceil((Math.random() * 300)) + 400;
             setTimeout(() => {
                 setDisplayLoader(false);
             }, randomTimeout);
@@ -79,12 +122,14 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         pdfDoc,
         previousPage,
         renderedPages,
+        savePdfFile,
         setDisplayLoader,
         setIsPdfRendered,
     };
 
     return (
         <PdfFileContext.Provider value={value}>
+            {displayLoader && (<PdfEditorLoader />)}
             {children}
         </PdfFileContext.Provider>
     );

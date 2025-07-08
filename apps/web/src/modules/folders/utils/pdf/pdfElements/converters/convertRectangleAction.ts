@@ -1,15 +1,18 @@
-import { PDF_TOOLS, RectangleAction } from "../../../../types";
-import { STROKE_SIZE } from "../../../../utils";
+import { PDF_TOOLS, RectangleAction, RectanglePdfElement } from "../../../../types";
+import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "../../../../utils";
 
 import { getPdfRgbColor } from "./tools";
 
-export const convertRectangleAction = (action: RectangleAction) => {
+export const convertRectangleAction = (action: RectangleAction): Array<RectanglePdfElement> => {
     const { color, pageDimensions, pageIndex, pdfDoc, rectsArray, tool } = action.element;
 
     const isHighlight = (
         tool === PDF_TOOLS.HIGHLIGHT ||
         tool === PDF_TOOLS.VOCABULARY
     );
+    const opacity = isHighlight
+        ? HIGLIGHT_OPACITY
+        : REGULAR_OPACITY;
     const pdfColor = getPdfRgbColor(color);
 
     return (
@@ -30,6 +33,7 @@ export const convertRectangleAction = (action: RectangleAction) => {
             return ({
                 color: pdfColor,
                 height,
+                opacity,
                 pageIndex,
                 width,
                 x,

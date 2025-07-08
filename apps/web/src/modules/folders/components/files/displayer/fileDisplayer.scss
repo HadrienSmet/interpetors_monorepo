@@ -2,6 +2,7 @@
     flex: 1;
     overflow-y: auto;
     padding: var(--space-m);
+    position: relative;
 
     .unsupported-file {
         background: var(--clr-txt-04);

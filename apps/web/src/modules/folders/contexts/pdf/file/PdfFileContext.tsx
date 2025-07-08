@@ -14,10 +14,10 @@ type PdfFileContextType = {
     readonly onDocumentLoadSuccess: (proxy: PDFDocumentProxy) => void;
     readonly pageIndex: number;
     readonly pageRef: RefObject<HTMLDivElement | null>;
-    /** Might not needed */
     readonly pdfDoc: PDFDocument | undefined;
     readonly previousPage: () => void;
     readonly renderedPages: RefObject<number>;
+    readonly savePdfFile: () => void;
     readonly setDisplayLoader: Dispatch<SetStateAction<boolean>>;
     // TODO - Logic should be changed since single page
     readonly setIsPdfRendered: Dispatch<SetStateAction<boolean>>;

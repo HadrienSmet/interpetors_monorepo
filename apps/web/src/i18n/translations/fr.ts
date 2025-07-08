@@ -7,6 +7,7 @@ export const fr = {
             confirm: "Confirmer",
             download: "Télécharger",
             editOnDoubleClick: "Cliquez deux fois pour éditer",
+            save: "Sauvegarder",
             search: "Rechercher",
             workspaces: {
                 create: "Créer mon espace de travail",

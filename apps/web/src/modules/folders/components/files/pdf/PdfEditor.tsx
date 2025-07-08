@@ -10,7 +10,6 @@ import {
 } from "../../../contexts";
 
 import { PdfDocument } from "./document";
-import { PdfEditorLoader } from "./loader";
 import { NotesDisplayer } from "./notes";
 import { PdfTools } from "./tools";
 
@@ -20,7 +19,7 @@ const PDF_EDITOR_WIDTH = 597 as const;
 
 const PdfEditorChild = () => {
     const { canvasRef, drawerRef } = usePdfCanvas();
-    const { containerRef, displayLoader } = usePdfFile();
+    const { containerRef } = usePdfFile();
     const { customCursor } = usePdfTools();
 
     const canvasStyle = useMemo(() => (
@@ -38,8 +37,6 @@ const PdfEditorChild = () => {
 
             <div className="document-drawer">
                 <PdfDocument />
-
-                {displayLoader && (<PdfEditorLoader />)}
 
                 {/** Used to draw on mount */}
                 <canvas

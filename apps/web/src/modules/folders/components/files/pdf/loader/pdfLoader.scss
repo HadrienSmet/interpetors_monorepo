@@ -2,11 +2,13 @@
     align-items: center;
     background-color: var(--clr-bg-light);
     display: flex;
-    flex: 1;
     // Space of the component on top
-    height: calc(100vh - 128px);
+    height: calc(100vh - 98px);
     justify-content: center;
+    left: calc(0px - var(--space-m));
     position: absolute;
     transition: background-color var(--transition-theme);
+    top: calc(0px - var(--space-m));
     width: 100%;
+    z-index: 100;
 }

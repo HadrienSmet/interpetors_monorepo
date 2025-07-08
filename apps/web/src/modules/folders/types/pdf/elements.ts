@@ -41,7 +41,10 @@ export type RectangleCanvasElement =
     & { readonly color: string; };
 export type RectanglePdfElement =
     & RectangleElement
-    & { readonly color: Color; };
+    & {
+        readonly color: Color;
+        readonly opacity: number;
+    };
 
 type TextOptions = {
     readonly size: number;

@@ -7,13 +7,14 @@ import {
     MdBrush,
     MdComment,
     MdFormatColorFill,
+    MdSave,
     MdTranslate,
 } from "react-icons/md";
 
 import { ColorPicker, DraggableSection, useDraggableSection } from "@/components";
 import { getRgbColor } from "@/utils";
 
-import { usePdfTools } from "../../../../contexts";
+import { usePdfFile, usePdfTools } from "../../../../contexts";
 import { PDF_TOOLS } from "../../../../types";
 
 import { HistoryButton, HistoryButtonItem, ToolButton, ToolButtonItem } from "./buttons";
@@ -61,6 +62,7 @@ const PdfToolsChild = () => {
     const [isPickingColor, setIsPickingColor] = useState(false);
 
     const { dynamicClass, isLandscape, isLeftSide, isOpen, isTopSide } = useDraggableSection();
+    const { savePdfFile } = usePdfFile();
     const { color, setColor } = usePdfTools();
     const { t } = useTranslation();
 
@@ -90,10 +92,18 @@ const PdfToolsChild = () => {
                         {...item}
                     />
                 ))}
-                <button title={t("files.editor.tools.color")}>
+                <button
+                    title={t("actions.save")}
+                    onClick={savePdfFile}
+                >
+                    <MdSave />
+                </button>
+                <button
+                    onClick={togglePickingColor}
+                    title={t("files.editor.tools.color")}
+                >
                     <div
                         className="color-picker-trigger"
-                        onClick={togglePickingColor}
                         style={{ backgroundColor: colorPickerBg }}
                     />
                 </button>

@@ -1,11 +1,16 @@
 import { DRAWING_TYPES, ElementAction, PdfElement } from "../../../types";
 
-import { convertRectangleAction, convertTextAction } from "./converters";
+import { convertPathAction, convertRectangleAction, convertTextAction } from "./converters";
 
 export const getPdfElements = ({ element, type }: ElementAction) => {
     let pdfElements: Array<PdfElement> = [];
 
     switch (type) {
+        case DRAWING_TYPES.PATH:
+            const pathElement = convertPathAction({ element, type });
+
+            pdfElements.push({ type, element: pathElement })
+            break;
         case DRAWING_TYPES.RECTANGLE:
             const rectangles = convertRectangleAction({ element, type });
 
