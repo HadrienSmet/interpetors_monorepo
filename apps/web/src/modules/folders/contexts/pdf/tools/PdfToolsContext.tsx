@@ -3,9 +3,8 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useContext } from "
 import { getContextError } from "@/contexts/utils";
 import { RgbColor } from "@/utils";
 
-import { PDF_TOOLS } from "../../../types";
+import { PdfTool } from "../../../types";
 
-export type PdfTool = typeof PDF_TOOLS[keyof typeof PDF_TOOLS];
 export type PdfToolsContextType = {
     readonly color: RgbColor;
     readonly currentRange: Range | undefined;

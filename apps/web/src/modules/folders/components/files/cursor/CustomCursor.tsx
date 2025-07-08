@@ -2,8 +2,7 @@ import { MdBorderColor, MdBrush, MdComment, MdFormatColorFill, MdOutlineMenuBook
 
 import { Position } from "@/types";
 
-import { PdfTool } from "../../../contexts";
-import { PDF_TOOLS } from "../../../types";
+import { PDF_TOOLS, PdfTool } from "../../../types";
 
 import "./customCursor.scss";
 

@@ -4,7 +4,8 @@ import { PDFDocumentProxy } from "pdfjs-dist";
 import { sleep } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
-import { PdfEditorLoader } from "../../../components/files/pdf/loader";
+import { PdfEditorLoader } from "../../../components";
+import { downloadPdf } from "../../../utils";
 import { DRAWING_TYPES } from "../../../types"
 
 import { useFoldersManager } from "../../manager";
@@ -70,6 +71,17 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         const updatedFile = await updateFileFromPdfDocument(pdfDoc, selectedFile.fileInStructure);
 
         files.update(updatedFile);
+
+        return (pdfDoc);
+    };
+    const downloadPdfFile = async () => {
+        const updatedDocument = await savePdfFile();
+
+        if (!updatedDocument || !selectedFile.fileInStructure) {
+            return;
+        }
+
+        downloadPdf(updatedDocument, selectedFile.fileInStructure?.name)
     };
 
     // ------ USE EFFECTS ------
@@ -113,6 +125,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const value = {
         containerRef,
         displayLoader,
+        downloadPdfFile,
         isPdfRendered,
         nextPage,
         numPages,
@@ -122,7 +135,6 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         pdfDoc,
         previousPage,
         renderedPages,
-        savePdfFile,
         setDisplayLoader,
         setIsPdfRendered,
     };

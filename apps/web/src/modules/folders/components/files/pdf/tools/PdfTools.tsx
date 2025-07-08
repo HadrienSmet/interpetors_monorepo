@@ -6,8 +6,8 @@ import {
     MdBorderColor,
     MdBrush,
     MdComment,
+    MdDownload,
     MdFormatColorFill,
-    MdSave,
     MdTranslate,
 } from "react-icons/md";
 
@@ -62,7 +62,7 @@ const PdfToolsChild = () => {
     const [isPickingColor, setIsPickingColor] = useState(false);
 
     const { dynamicClass, isLandscape, isLeftSide, isOpen, isTopSide } = useDraggableSection();
-    const { savePdfFile } = usePdfFile();
+    const { downloadPdfFile } = usePdfFile();
     const { color, setColor } = usePdfTools();
     const { t } = useTranslation();
 
@@ -93,10 +93,10 @@ const PdfToolsChild = () => {
                     />
                 ))}
                 <button
-                    title={t("actions.save")}
-                    onClick={savePdfFile}
+                    onClick={downloadPdfFile}
+                    title={t("actions.download")}
                 >
-                    <MdSave />
+                    <MdDownload />
                 </button>
                 <button
                     onClick={togglePickingColor}

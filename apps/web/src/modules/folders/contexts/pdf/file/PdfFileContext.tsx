@@ -8,6 +8,7 @@ import { PDFDocument } from "@/workers/pdfConfig";
 type PdfFileContextType = {
     readonly containerRef: RefObject<HTMLDivElement | null>;
     readonly displayLoader: boolean;
+    readonly downloadPdfFile: () => Promise<void>;
     readonly isPdfRendered: boolean;
     readonly nextPage: () => void;
     readonly numPages: number | undefined;
@@ -17,7 +18,6 @@ type PdfFileContextType = {
     readonly pdfDoc: PDFDocument | undefined;
     readonly previousPage: () => void;
     readonly renderedPages: RefObject<number>;
-    readonly savePdfFile: () => void;
     readonly setDisplayLoader: Dispatch<SetStateAction<boolean>>;
     // TODO - Logic should be changed since single page
     readonly setIsPdfRendered: Dispatch<SetStateAction<boolean>>;

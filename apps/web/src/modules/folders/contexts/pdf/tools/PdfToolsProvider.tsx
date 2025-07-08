@@ -6,14 +6,26 @@ import { useContextMenu } from "@/contexts";
 import { getRgbColor, getRgbFromString, RgbColor } from "@/utils";
 
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "../../../components";
-import { DRAWING_TYPES, PDF_TOOLS, REFERENCE_TYPES, TOOLS_ON_SELECTION, ElementAction, InterractiveReferenceAction, PdfNote, GenerateElementAction, GENRATED_ELEMENTS } from "../../../types";
+import {
+    DRAWING_TYPES,
+    GENRATED_ELEMENTS,
+    PDF_TOOLS,
+    REFERENCE_TYPES,
+    TOOLS_ON_SELECTION,
+
+    ElementAction,
+    GenerateElementAction,
+    InterractiveReferenceAction,
+    PdfNote,
+    PdfTool,
+} from "../../../types";
 
 import { useFoldersManager } from "../../manager";
 
 import { usePdfFile } from "../file";
 import { HistoryAction, usePdfHistory } from "../history";
 
-import { PdfTool, PdfToolsContext, PdfToolsContextType } from "./PdfToolsContext";
+import { PdfToolsContext, PdfToolsContextType } from "./PdfToolsContext";
 import { getRange } from "./utils";
 
 const DEFAULT_COLOR: RgbColor = {
