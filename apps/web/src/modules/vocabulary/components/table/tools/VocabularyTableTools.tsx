@@ -6,6 +6,7 @@ import { DraggableSection, SearchInput, useDraggableSection } from "@/components
 import { useWorkSpaces } from "@/contexts";
 
 import { useVocabularyTable } from "../../../contexts";
+import { downloadVocabulary } from "../../../utils";
 
 import "./vocabularyTableTools.scss";
 
@@ -66,9 +67,21 @@ const VocabularyTableToolsChild = () => {
     const [isSearching, setIsSearching] = useState(false);
     const { dynamicClass, isLeftSide, isOpen, isTopSide } = useDraggableSection();
 
+    const { t } = useTranslation();
+    const { list } = useVocabularyTable();
+    const { currentWorkSpace } = useWorkSpaces();
+
+    const { native, work } = currentWorkSpace!.languages;
+
+    const headerToUse = [
+        t("vocabulary.sources"),
+        native,
+        ...work.filter(lng => lng !== native)
+    ]
+
     const closeSearch = () => setIsSearching(false);
-    // TODO implement download
-    const download = () => console.log("Should download");
+    // TODO Get the name from preparation title
+    const download = () => downloadVocabulary(list, headerToUse);
     const toggleSearch = () => setIsSearching(state => !state);
 
     useEffect(() => {

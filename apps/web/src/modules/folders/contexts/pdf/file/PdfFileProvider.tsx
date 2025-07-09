@@ -39,7 +39,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         setDisplayLoader(true);
         setIsPdfRendered(false);
 
-        await sleep(700);
+        await sleep(450);
 
         const pdfFile = selectedFile.fileInStructure;
         if (!pdfFile || !pdfDoc) {

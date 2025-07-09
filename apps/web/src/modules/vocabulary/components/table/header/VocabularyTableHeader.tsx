@@ -65,6 +65,7 @@ export const VocabularyTableHeader = () => {
     return (
         <thead>
             <tr className="vocabulary-table-header">
+                {/** TODO Columns should only be defined once */}
                 <VocabularyTableHeaderCell
                     id="sources"
                     label={t("vocabulary.sources")}

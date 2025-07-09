@@ -1,6 +1,6 @@
 import { PDFDocument } from "pdf-lib";
 
-import { PDF_TYPE } from "./constants";
+import { PDF_TYPE } from "../files";
 
 /**
  * Dowloads an updated pdf file

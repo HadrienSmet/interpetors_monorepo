@@ -56,6 +56,31 @@ export const hslToRgb = (h: number, s: number, l: number): RgbColor => {
 
     return ({ r, g, b });
 };
+
+export const blendWithWhite = (rgb: string, alpha: number): string => {
+    const matches = rgb.match(/\d+/g);
+    if (!matches || matches.length < 3) return ("rgb(255, 255, 255)");
+
+    const [r, g, b] = matches.map(Number);
+
+    const blend = (channel: number) =>
+        Math.round(channel * alpha + 255 * (1 - alpha));
+
+    const newR = blend(r);
+    const newG = blend(g);
+    const newB = blend(b);
+
+    return (`rgb(${newR}, ${newG}, ${newB})`);
+};
+export const rgbStringToHex = (rgb: string) => {
+    const matches = rgb.match(/\d+/g);
+    if (!matches || matches.length < 3) return ("FFFFFFFF");
+
+    const toHex = (n: number) => n.toString(16).padStart(2, "0").toUpperCase();
+    const [r, g, b] = matches.map(Number);
+
+    return (`FF${toHex(r)}${toHex(g)}${toHex(b)}`);
+};
 export const rgbToHsl = ({ r, g, b }: RgbColor) => {
     const rNorm = r;
     const gNorm = g;
