@@ -77,7 +77,7 @@ const VocabularyTableToolsChild = () => {
         t("vocabulary.sources"),
         native,
         ...work.filter(lng => lng !== native)
-    ]
+    ];
 
     const closeSearch = () => setIsSearching(false);
     // TODO Get the name from preparation title

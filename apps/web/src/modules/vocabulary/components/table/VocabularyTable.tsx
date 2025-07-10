@@ -1,11 +1,11 @@
-import { useVocabularyTable, VocabularyTableProvider } from "../../contexts";
+import { useVocabularyTable } from "../../contexts";
 
 import { VocabularyTableHeader } from "./header";
 import { VocabularyTableRow } from "./row";
 import { VocabularyTableTools } from "./tools";
 import "./vocabularyTable.scss";
 
-const VocabularyTableChild = () => {
+export const VocabularyTable= () => {
     const { list } = useVocabularyTable();
 
     return (
@@ -26,8 +26,3 @@ const VocabularyTableChild = () => {
         </>
     );
 };
-export const VocabularyTable = () => (
-    <VocabularyTableProvider>
-        <VocabularyTableChild />
-    </VocabularyTableProvider>
-);

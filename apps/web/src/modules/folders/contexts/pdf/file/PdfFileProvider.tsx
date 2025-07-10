@@ -5,13 +5,11 @@ import { sleep } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { PdfEditorLoader } from "../../../components";
-import { downloadPdf } from "../../../utils";
-import { DRAWING_TYPES } from "../../../types"
+import { downloadPdf, handleSaveChanges } from "../../../utils";
 
 import { useFoldersManager } from "../../manager";
 
 import { PdfFileContext } from "./PdfFileContext";
-import { drawPath, drawRectangle, drawText, updateFileFromPdfDocument } from "./pdfFile.updaters";
 
 export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const [displayLoader, setDisplayLoader] = useState(true);
@@ -35,7 +33,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         setNumPages(nextNumPages)
     );
 
-    const savePdfFile = async  () => {
+    const savePdfFileChanges = async  () => {
         setDisplayLoader(true);
         setIsPdfRendered(false);
 
@@ -46,36 +44,14 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
             return;
         }
 
-        for (let i = 0; i < numPages; i++) {
-            const { pdfElements } = pdfFile.elements[i + 1];
-            const page = pdfDoc.getPage(i);
-            if (!page) {
-                continue;
-            }
-
-            for (const pdfElement of pdfElements) {
-                switch (pdfElement.type) {
-                    case DRAWING_TYPES.PATH:
-                        drawPath(pdfElement.element, page);
-                        break;
-                    case DRAWING_TYPES.RECTANGLE:
-                        drawRectangle(pdfElement.element, page);
-                        break;
-                    case DRAWING_TYPES.TEXT:
-                        drawText(pdfElement.element, page);
-                        break;
-                }
-            }
-        }
-
-        const updatedFile = await updateFileFromPdfDocument(pdfDoc, selectedFile.fileInStructure);
+        const updatedFile = await handleSaveChanges(pdfFile, pdfDoc, numPages);
 
         files.update(updatedFile);
 
         return (pdfDoc);
     };
     const downloadPdfFile = async () => {
-        const updatedDocument = await savePdfFile();
+        const updatedDocument = await savePdfFileChanges();
 
         if (!updatedDocument || !selectedFile.fileInStructure) {
             return;

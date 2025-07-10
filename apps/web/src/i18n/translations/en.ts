@@ -61,6 +61,10 @@ export const en = {
                 }
             }
         },
+        folders: {
+            download: "Download the updated files",
+            empty: "No files in this preparation",
+        },
         inputs: {
             folders: {
                 empty: "Drag and drop you folder here",

@@ -61,6 +61,10 @@ export const fr = {
                 }
             }
         },
+        folders: {
+            download: "Télécharger les fichiers modifiés",
+            empty: "Aucuns fichiers dans cette préparation",
+        },
         inputs: {
             folders: {
                 empty: "Glissez-déposez un dossier ici",
@@ -131,7 +135,7 @@ export const fr = {
             },
         },
         vocabulary: {
-            empty: "Pas de vocabulaire génré pour le moment",
+            empty: "Pas de vocabulaire généré pour le moment",
             filterLabel: "Colonne sur laquelle appliquer le filtre",
             placeholders: {
                 cell: "Traduis {{ word }} ({{ language }})",

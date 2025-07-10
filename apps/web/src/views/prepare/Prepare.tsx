@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 import { NavigationState } from "@/components";
-import { FoldersManagerProvider, PreparationVocabularyProvider } from "@/modules";
+import { FoldersManagerProvider, PreparationVocabularyProvider, VocabularyTableProvider } from "@/modules";
 import { NotFound } from "@/views";
 
 import { Files, PreparationManager, Vocabulary } from "./views";
@@ -41,7 +41,9 @@ const PrepareContent = () => (
 export const Prepare = () => (
     <FoldersManagerProvider>
         <PreparationVocabularyProvider>
-            <PrepareContent />
+            <VocabularyTableProvider>
+                <PrepareContent />
+            </VocabularyTableProvider>
         </PreparationVocabularyProvider>
     </FoldersManagerProvider>
 );
