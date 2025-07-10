@@ -3,8 +3,14 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: var(--space-xl);
+    gap: var(--space-xh);
     justify-content: center;
     padding-bottom: var(--space-xl);
     width: 100%;
+
+    > p {
+        font-size: 50px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
 }

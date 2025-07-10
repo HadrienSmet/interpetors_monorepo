@@ -1,0 +1,25 @@
+.on-construction {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+
+    .img-container {
+        position: relative;
+
+        p {
+            color: white;
+            font-size: 30px;
+            font-weight: 900;
+            left: 88px;
+            letter-spacing: 2px;
+            line-height: 1.5;
+            text-transform: uppercase;
+            position: absolute;
+            text-align: center;
+            top: 195px;
+            width: 280px;
+        }
+    }
+}
