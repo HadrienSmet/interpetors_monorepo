@@ -67,7 +67,7 @@ export const en = {
         },
         inputs: {
             folders: {
-                empty: "Drag and drop you folder here",
+                empty: "<default>Drag and drop you folder here</default><default>(files supported: pdf)</default>",
                 unselected: "Select a file to see his content",
                 unsupported: "Type of file not supported. Supported type of files: ",
             },
@@ -96,6 +96,7 @@ export const en = {
             title: `<default>Welcome on <title>${APP_NAME}</title></default`,
             subtitle: "The professional tool to work with languages",
         },
+        onConstruction: "Servers under construction",
         views: {
             home: {
                 title: "My work space",

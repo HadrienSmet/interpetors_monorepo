@@ -1,5 +1,5 @@
 import { DragEvent, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 
 import { isFileInStructure, useFoldersManager } from "../../contexts";
 import { FileInStructure, FolderStructure } from "../../types";
@@ -85,7 +85,6 @@ export const FolderDropzone = () => {
     const [isDragged, setIsDragged] = useState(false);
 
     const foldersManager = useFoldersManager();
-    const { t } = useTranslation();
 
     const doesFolderAlreadyExist = (path: string[]): boolean => foldersManager.foldersStructures.some(structure => doesPathExist(structure, path));
 
@@ -139,7 +138,10 @@ export const FolderDropzone = () => {
                         onDragOver={preventDefault}
                         onDrop={handleDrop}
                     >
-                        <p>{t("inputs.folders.empty")}</p>
+                        <Trans
+                            components={{ default: <p></p> }}
+                            i18nKey="inputs.folders.empty"
+                        />
                     </div>
                 )
             }

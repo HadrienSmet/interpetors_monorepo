@@ -67,7 +67,7 @@ export const fr = {
         },
         inputs: {
             folders: {
-                empty: "Glissez-déposez un dossier ici",
+                empty: "<default>Glissez-déposez un dossier ici</default><default>(fichiers supportés: pdf)</default>",
                 unselected: "Sélectionnez un fichier pour afficher son contenu",
                 unsupported: "Type de fichier non supporté. Types de fichier supportés: ",
             },
@@ -96,6 +96,7 @@ export const fr = {
             title: `<default>Bienvenue sur <title>${APP_NAME}</title></default`,
             subtitle: "L'outil professionnel pour travailler avec les langues",
         },
+        onConstruction: "Serveurs en construction",
         views: {
             home: {
                 title: "Mon espace de travail",
