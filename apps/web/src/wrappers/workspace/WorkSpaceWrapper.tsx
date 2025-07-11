@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-import { useWorkSpaces, WorkSpacesProvider } from "@/contexts";
+import { useWorkSpaces, WorkSpacesProvider } from "@/contexts/workspaces";
 import { WorkSpaceCreator } from "@/views";
 
 const WorkSpaceWrapperChild = (props: PropsWithChildren) => {
