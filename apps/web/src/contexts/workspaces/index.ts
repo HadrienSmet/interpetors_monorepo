@@ -1,3 +1,3 @@
 export * from "./workspaces.types";
 export * from "./WorkSpacesContext";
-export * from "./BorkspacesProvider";
+export * from "./WorkspacesProvider";

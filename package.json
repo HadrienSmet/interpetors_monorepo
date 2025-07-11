@@ -16,5 +16,10 @@
   "dependencies": {
     "@babel/runtime": "^7.26.10"
   },
-  "private": true
+  "private": true,
+  "pnpm": {
+    "overrides": {
+        "pdfjs-dist": "^5.3.93"
+    }
+  }
 }
