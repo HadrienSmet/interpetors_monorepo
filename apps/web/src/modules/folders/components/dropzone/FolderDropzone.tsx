@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 
 import { isFileInStructure, useFoldersManager } from "../../contexts";
 import { FileInStructure, FolderStructure } from "../../types";
-import { FILE_ELEMENTS, FIRST_PAGE } from "../../utils";
+import { FILE_ELEMENTS, FIRST_PAGE, PDF_TYPE } from "../../utils";
 
 import { FoldersDisplayer } from "../displayer";
 
@@ -56,12 +56,13 @@ const readDirectory = async (
             await new Promise<void>((resolve) => {
                 (entry as FileSystemFileEntry).file((file) => {
                     const pathArray = fullPath.split("/");
-
-                    setNestedFile(
-                        root,
-                        pathArray,
-                        getNewFileInStructure(file)
-                    );
+                    if (file.type === PDF_TYPE.type) {
+                        setNestedFile(
+                            root,
+                            pathArray,
+                            getNewFileInStructure(file)
+                        );
+                    }
                     resolve();
                 });
             });
@@ -106,7 +107,7 @@ export const FolderDropzone = () => {
                 else if (entry?.isFile) {
                     const file = item.getAsFile();
 
-                    if (file) {
+                    if (file && file.type === PDF_TYPE.type) {
                         setNestedFile(newFileTree, [file.name], getNewFileInStructure(file));
                     }
                 }

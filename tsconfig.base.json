@@ -3,7 +3,6 @@
         "baseUrl": ".",
         "paths": {
             "@/web/*":         ["apps/web/*"],
-            "@/app/*": ["apps/application/*"],
             "@/backend":  ["packages/server"],
             "@/commons":  ["packages/common"],
         }

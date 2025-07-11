@@ -73,7 +73,7 @@ export const PreparationManager = () => {
                 </button>
                 <button
                     disabled
-                    title="Not implemented yet"
+                    title={t("onConstruction")}
                 >
                     <MdSave />
                     <span>{t("views.new.buttons.save")}</span>
