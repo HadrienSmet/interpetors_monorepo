@@ -11,7 +11,7 @@ const useVisibilityToggleOnMouseMove = (
     containerRef: RefObject<HTMLDivElement | null>,
 ) => {
     const [isVisible, setIsVisible] = useState(false);
-    const timeoutRef = useRef<number | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const container = containerRef.current;

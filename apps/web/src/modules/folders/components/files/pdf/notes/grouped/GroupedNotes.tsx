@@ -69,7 +69,8 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
     };
 
     useEffect(() => {
-        let timeoutId: number;
+        let timeoutId: NodeJS.Timeout;
+
         if (previousState === COMPONENT_STATE.default) {
             timeoutId = setTimeout(() => {
                 containerRef.current?.classList.add("switch-shadow");
