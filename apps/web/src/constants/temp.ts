@@ -1,1 +1,1 @@
-export const APP_NAME = "InterPrep";
+export const APP_NAME = "Leonor's App";
