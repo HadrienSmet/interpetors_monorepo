@@ -11,7 +11,6 @@ type PdfFileContextType = {
     readonly isPdfRendered: boolean;
     readonly nextPage: () => void;
     readonly numPages: number | undefined;
-    // readonly onDocumentLoadSuccess: (proxy: PDFDocumentProxy) => void;
     readonly onDocumentLoadSuccess: (document: DocumentCallback) => void;
     readonly pageIndex: number;
     readonly pageRef: RefObject<HTMLDivElement | null>;

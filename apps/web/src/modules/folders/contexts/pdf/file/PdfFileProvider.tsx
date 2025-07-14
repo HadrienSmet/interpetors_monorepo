@@ -1,4 +1,5 @@
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
 import { sleep } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
@@ -9,7 +10,6 @@ import { downloadPdf, handleSaveChanges } from "../../../utils";
 import { useFoldersManager } from "../../manager";
 
 import { PdfFileContext } from "./PdfFileContext";
-import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
 export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const [displayLoader, setDisplayLoader] = useState(true);
