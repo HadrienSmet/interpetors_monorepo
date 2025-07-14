@@ -1,6 +1,5 @@
 import { createContext, Dispatch, RefObject, SetStateAction, useContext } from "react";
-
-import type { PDFDocumentProxy } from "pdfjs-dist";
+import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
 import { getContextError } from "@/contexts/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
@@ -12,7 +11,8 @@ type PdfFileContextType = {
     readonly isPdfRendered: boolean;
     readonly nextPage: () => void;
     readonly numPages: number | undefined;
-    readonly onDocumentLoadSuccess: (proxy: PDFDocumentProxy) => void;
+    // readonly onDocumentLoadSuccess: (proxy: PDFDocumentProxy) => void;
+    readonly onDocumentLoadSuccess: (document: DocumentCallback) => void;
     readonly pageIndex: number;
     readonly pageRef: RefObject<HTMLDivElement | null>;
     readonly pdfDoc: PDFDocument | undefined;

@@ -1,5 +1,4 @@
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
-import { PDFDocumentProxy } from "pdfjs-dist";
 
 import { sleep } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
@@ -10,6 +9,7 @@ import { downloadPdf, handleSaveChanges } from "../../../utils";
 import { useFoldersManager } from "../../manager";
 
 import { PdfFileContext } from "./PdfFileContext";
+import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
 export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const [displayLoader, setDisplayLoader] = useState(true);
@@ -29,7 +29,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
     const previousPage = () => setPageIndex(state => Math.max(state - 1, 1));
 
-    const onDocumentLoadSuccess = ({ numPages: nextNumPages }: PDFDocumentProxy): void => (
+    const onDocumentLoadSuccess = ({ numPages: nextNumPages }: DocumentCallback): void => (
         setNumPages(nextNumPages)
     );
 
