@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { usePdfNotes } from "../../../../../contexts";
 import { NoteElement } from "../../../../../types";
 
@@ -9,24 +10,25 @@ type InteractiveNoteProps = {
     readonly note: NoteElement;
 };
 export const InteractiveNote = ({ note, index, i }: InteractiveNoteProps) => {
+    useEffect(() => {console.log({ note })}, [note]);
     const { setSelectedNote } = usePdfNotes();
 
-    const onClick = () => setSelectedNote(note.noteId);
+    const onClick = () => setSelectedNote(note.id);
     const onMouseEnter = () => {
         document
-            .querySelectorAll(`.note-group-${note.noteId}`)
+            .querySelectorAll(`.note-group-${note.id}`)
             .forEach(el => el.classList.add("hovered"));
     };
     const onMouseLeave = () => {
         document
-            .querySelectorAll(`.note-group-${note.noteId}`)
+            .querySelectorAll(`.note-group-${note.id}`)
             .forEach(el => el.classList.remove("hovered"));
     };
 
     return (
         <button
             data-ignore-outside-click
-            className={`text-interactive note-group-${note.noteId}`}
+            className={`text-interactive note-group-${note.id}`}
             key={`noteRef-${index}-${i}`}
             onClick={onClick}
             onMouseEnter={onMouseEnter}

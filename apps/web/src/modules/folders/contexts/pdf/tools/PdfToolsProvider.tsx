@@ -18,6 +18,7 @@ import {
     InterractiveReferenceAction,
     PdfNote,
     PdfTool,
+    PdfVocabulary,
 } from "../../../types";
 
 import { useFoldersManager } from "../../manager";
@@ -90,10 +91,13 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         setDisplayLoader(false);
         removeSelection();
     };
-    const handleNoteReference = async (tool: PdfTool) => {
+    const handleInteractiveSelection = async (tool: PdfTool) => {
         if (
             !currentRange ||
-            tool !== PDF_TOOLS.NOTE ||
+            (
+                tool !== PDF_TOOLS.VOCABULARY &&
+                tool !== PDF_TOOLS.NOTE
+            ) ||
             !pdfDoc ||
             !pageRef.current
         ) {
@@ -102,165 +106,106 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
         setDisplayLoader(true);
 
-        const noteKey = getRgbColor(color);
-        const noteGroup = pdfFile.elements[pageIndex].notes.filter(elem => elem.color === noteKey);
-        const noteIndex = noteGroup.length > 0
-            ? `${noteGroup.length + 1}`
-            : "1";
-
-        const text = currentRange.toString().trim();
-
-        const rects = currentRange.getClientRects();
-        const rectsArray = Array.from(rects);
-
-        const { y } = rectsArray[0];
-
-        if (!text) return;
-
-        const noteId = getNoteId(noteKey, noteIndex);
-        const pageDimensions = pageRef.current.getBoundingClientRect();
-
-        const pdfNote: PdfNote = {
-            color: noteKey,
-            note: "",
-            id: noteId,
-            occurence: {
-                filePath,
-                pageIndex,
-                text,
-            },
-            y: y - pageDimensions.top,
-        };
-        if (!pdfNote) {
-            console.error("An error occured during the note creation");
-            setDisplayLoader(false);
-            return;
-        }
-
-        const elementAction: ElementAction = {
-            type: DRAWING_TYPES.RECTANGLE,
-            element: {
-                color,
-                pageDimensions,
-                pageIndex,
-                pdfDoc,
-                pdfFile,
-                rectsArray,
-                tool,
-            },
-        };
-        const textAction: ElementAction = {
-            type: DRAWING_TYPES.TEXT,
-            element: {
-                color,
-                pageDimensions,
-                pageIndex,
-                pdfDoc,
-                pdfFile,
-                rect: rectsArray[rectsArray.length - 1],
-                text: noteIndex,
-            },
-        };
-        const actionReference: InterractiveReferenceAction = {
-            type: REFERENCE_TYPES.NOTE,
-            element: {
-                color,
-                noteId,
-                pageDimensions,
-                pageIndex,
-                pdfDoc,
-                pdfFile,
-                rectsArray,
-            },
-        };
-        const generateNoteAction: GenerateElementAction = {
-            element: pdfNote,
-            type: GENRATED_ELEMENTS.NOTE,
-        };
-        const historyAction: HistoryAction = {
-            elements: [elementAction, textAction],
-            interractiveText: actionReference,
-            elementToGenerate: generateNoteAction,
-        };
-
-        removeSelection();
-        pushAction(historyAction);
-        setCurrentRange(undefined);
-        setTool(null);
-        setDisplayLoader(false);
-    };
-    const handleVocabularyReference = async (tool: PdfTool) => {
-        if (
-            !currentRange ||
-            tool !== PDF_TOOLS.VOCABULARY ||
-            !pdfDoc ||
-            !pageRef.current
-        ) {
-            return;
-        }
-
-        setDisplayLoader(true);
-
-        const wordToAdd = currentRange.toString().trim();
-        const vocId = wordToAdd.split(" ").join("-");
-        const vocKey = getRgbColor(color);
-
         const pageDimensions = pageRef.current.getBoundingClientRect();
         const rects = currentRange.getClientRects();
         const rectsArray = Array.from(rects);
-        const elementAction: ElementAction = {
-            type: DRAWING_TYPES.RECTANGLE,
-            element: {
-                color,
-                pageDimensions,
-                pageIndex,
-                pdfDoc,
-                pdfFile,
-                rectsArray,
-                tool,
-            },
-        };
-        const textAction: ElementAction = {
-            type: DRAWING_TYPES.TEXT,
-            element: {
-                color,
-                pageDimensions,
-                pageIndex,
-                pdfDoc,
-                pdfFile,
-                rect: rectsArray[rectsArray.length - 1],
-                text: "*",
-            },
-        };
-        const interractiveText: InterractiveReferenceAction = {
-            type: REFERENCE_TYPES.VOCABULARY,
-            element: {
-                color,
-                id: vocId,
-                pageDimensions,
-                pageIndex,
-                pdfDoc,
-                pdfFile,
-                rectsArray,
-            },
-        };
-        const generateVocabularyAction: GenerateElementAction = {
-            type: GENRATED_ELEMENTS.VOCABULARY,
-            element: {
-                color: vocKey,
-                id: vocId,
+
+        const isNote = tool === PDF_TOOLS.NOTE;
+        let colorKey = "";
+        let id = "";
+        let text = "";
+        let element: PdfNote | PdfVocabulary;
+        if (isNote) {
+            const { y } = rectsArray[0];
+            colorKey = getRgbColor(color);
+            const noteGroup = pdfFile.elements[pageIndex].notes.filter(elem => elem.color === noteKey);
+            text = noteGroup.length > 0
+                ? `${noteGroup.length + 1}`
+                : "1";
+            const occurenceText = currentRange.toString().trim();
+            id = getNoteId(colorKey, text);
+            element = {
+                color: colorKey,
+                note: "",
+                id,
+                occurence: {
+                    filePath,
+                    pageIndex,
+                    text: occurenceText,
+                },
+                y: y - pageDimensions.top,
+            };
+        } else {
+            const wordToAdd = currentRange.toString().trim();
+
+            id = wordToAdd.split(" ").join("-");
+            colorKey = getRgbColor(color);
+            text = "*";
+            element = {
+                color: colorKey,
+                id,
                 occurence: {
                     filePath,
                     pageIndex,
                     text: wordToAdd,
                 },
                 translations: {},
+            };
+        }
+
+        const actionElement = {
+            color,
+            pageDimensions,
+            pageIndex,
+            pdfDoc,
+            pdfFile,
+        };
+        const elementAction: ElementAction = {
+            type: DRAWING_TYPES.RECTANGLE,
+            element: {
+                ...actionElement,
+                rectsArray,
+                tool,
             },
         };
+        const textAction: ElementAction = {
+            type: DRAWING_TYPES.TEXT,
+            element: {
+                ...actionElement,
+                rect: rectsArray[rectsArray.length - 1],
+                text,
+            },
+        };
+        const interractiveText: InterractiveReferenceAction = isNote
+            ? {
+                type: REFERENCE_TYPES.NOTE,
+                element: {
+                    ...actionElement,
+                    id,
+                    rectsArray,
+                },
+            }
+            : {
+                type: REFERENCE_TYPES.VOCABULARY,
+                element: {
+                    ...actionElement,
+                    id,
+                    rectsArray,
+                },
+            };
+        const generatedElement: GenerateElementAction = isNote
+            ? {
+                element: element as PdfNote,
+                type: GENRATED_ELEMENTS.NOTE,
+            }
+            : {
+                element: element as PdfVocabulary,
+                type: GENRATED_ELEMENTS.VOCABULARY,
+            };
         const historyAction: HistoryAction = {
             elements: [elementAction, textAction],
             interractiveText,
-            elementToGenerate: generateVocabularyAction,
+            elementToGenerate: generatedElement,
         };
 
         removeSelection();
@@ -297,11 +242,12 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 return;
             }
 
-            if (tool === PDF_TOOLS.NOTE) {
-                handleNoteReference(tool);
-            }
-            if (tool === PDF_TOOLS.VOCABULARY) {
-                handleVocabularyReference(tool);
+            if (
+                tool === PDF_TOOLS.NOTE ||
+                tool === PDF_TOOLS.VOCABULARY
+            ) {
+                handleInteractiveSelection(tool);
+                return;
             }
         };
 
@@ -354,11 +300,11 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         },
         [TOOLS_ON_SELECTION.NOTE]: {
             icon: <MdComment />,
-            onClick: () => handleNoteReference(PDF_TOOLS.NOTE),
+            onClick: () => handleInteractiveSelection(PDF_TOOLS.NOTE),
         },
         [TOOLS_ON_SELECTION.VOCABULARY]: {
             icon: <MdOutlineMenuBook />,
-            onClick: () => handleVocabularyReference(PDF_TOOLS.VOCABULARY),
+            onClick: () => handleInteractiveSelection(PDF_TOOLS.VOCABULARY),
         },
     };
     const items = Object.entries(actionsRecord).map(([key, value]) => ({
@@ -389,11 +335,12 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             handleSelection(tool);
         }
 
-        if (tool === PDF_TOOLS.NOTE) {
-            handleNoteReference(tool);
-        }
-        if (tool === PDF_TOOLS.VOCABULARY) {
-            handleVocabularyReference(tool);
+        if (
+            tool === PDF_TOOLS.NOTE ||
+            tool === PDF_TOOLS.VOCABULARY
+        ) {
+            handleInteractiveSelection(tool);
+            return;
         }
     };
 

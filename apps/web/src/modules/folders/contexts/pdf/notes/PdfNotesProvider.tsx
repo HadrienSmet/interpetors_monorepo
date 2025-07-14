@@ -7,20 +7,20 @@ import { usePdfFile } from "../file";
 import { PdfNotesContext } from "./PdfNotesContext";
 
 export const PdfNotesProvider = ({ children }: PropsWithChildren) => {
-    const [noteId, setSelectedNote] = useState("");
+    const [id, setSelectedNote] = useState("");
 
     const { selectedFile } = useFoldersManager();
     const { pageIndex } = usePdfFile();
 
     const selectedNote = useMemo(() => {
-        if (noteId === "" || !selectedFile.fileInStructure) {
+        if (id === "" || !selectedFile.fileInStructure) {
             return (undefined);
         }
 
-        const output = selectedFile.fileInStructure.elements[pageIndex].notes.find(note => note.id === noteId);
+        const output = selectedFile.fileInStructure.elements[pageIndex].notes.find(note => note.id === id);
 
         return (output);
-    }, [noteId, selectedFile]);
+    }, [id, selectedFile]);
 
     const value = {
         selectedNote,

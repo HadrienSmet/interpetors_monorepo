@@ -2,7 +2,9 @@ import { InterractiveNoteAction, NoteReferenceElement, REFERENCE_TYPES } from ".
 
 export const convertNoteAction = (noteAction: InterractiveNoteAction): Array<NoteReferenceElement> | null => {
     const { element } = noteAction;
-    const { rectsArray, pageIndex, pageDimensions, noteId } = element;
+    const { rectsArray, pageIndex, pageDimensions, id } = element;
+
+    console.log({ noteAction })
 
     if (!rectsArray.length) return (null);
 
@@ -11,7 +13,7 @@ export const convertNoteAction = (noteAction: InterractiveNoteAction): Array<Not
         type: REFERENCE_TYPES.NOTE,
         element: {
             height: targetRect.height,
-            noteId,
+            id,
             pageIndex,
             x: targetRect.left - pageDimensions.left,
             y: targetRect.top - pageDimensions.top,

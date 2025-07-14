@@ -20,7 +20,7 @@ type InterractiveNoteElement =
     & ActionElement
     & {
         readonly rectsArray: Array<DOMRect>;
-        readonly noteId: string;
+        readonly id: string;
     };
 export type InterractiveNoteAction = {
     readonly element: InterractiveNoteElement;

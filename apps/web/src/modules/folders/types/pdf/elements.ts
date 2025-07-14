@@ -79,7 +79,7 @@ export type PdfElement =
 
 export type NoteElement = {
     readonly height: number;
-    readonly noteId: string;
+    readonly id: string;
     readonly pageIndex: number;
     readonly x: number;
     readonly y: number;
