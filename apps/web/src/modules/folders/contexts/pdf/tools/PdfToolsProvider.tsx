@@ -118,7 +118,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         if (isNote) {
             const { y } = rectsArray[0];
             colorKey = getRgbColor(color);
-            const noteGroup = pdfFile.elements[pageIndex].notes.filter(elem => elem.color === noteKey);
+            const noteGroup = pdfFile.elements[pageIndex].notes.filter(elem => elem.color === colorKey);
             text = noteGroup.length > 0
                 ? `${noteGroup.length + 1}`
                 : "1";
