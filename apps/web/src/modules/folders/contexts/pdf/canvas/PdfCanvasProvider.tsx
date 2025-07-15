@@ -109,7 +109,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             ctx.lineTo(x, y);
             ctx.stroke();
         }
-    }
+    };
     const drawRectOnMount = (rectangleElement: RectangleCanvasElement) => {
         const ctx = canvasContextRef.current;
 
@@ -238,7 +238,6 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             points = [];
             isDrawing = false;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             window.getSelection()?.removeAllRanges();
         };
 
@@ -261,9 +260,8 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         const canvasCtx = canvasContextRef.current;
         const drawerCtx = drawerContextRef.current;
 
-        if (canvasCtx && drawerCtx) {
+        if (canvasCtx) {
             canvasCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
-            drawerCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
         }
 
         if (
@@ -285,6 +283,10 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
                     drawTextOnMount(canvasElement.element);
                     break;
             }
+        }
+
+        if (drawerCtx) {
+            drawerCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
         }
     }, [
         displayLoader,

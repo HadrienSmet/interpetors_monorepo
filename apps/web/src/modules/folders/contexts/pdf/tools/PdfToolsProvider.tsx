@@ -111,6 +111,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         const rectsArray = Array.from(rects);
 
         const isNote = tool === PDF_TOOLS.NOTE;
+
         let colorKey = "";
         let id = "";
         let text = "";
