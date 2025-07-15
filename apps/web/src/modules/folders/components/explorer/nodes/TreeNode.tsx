@@ -87,7 +87,7 @@ export const TreeNode = ({
             children: (
                 <>
                     <MdCreateNewFolder />
-                    <p>{t("views.new.context-menu.folder.create")}</p>
+                    <p>{t("folders.context-menu.create")}</p>
                 </>
             ),
             onClick: () => contextMenuItemClick(() => {
@@ -99,7 +99,7 @@ export const TreeNode = ({
             children: (
                 <>
                     <MdDriveFileRenameOutline />
-                    <p>{t("views.new.context-menu.folder.rename")}</p>
+                    <p>{t("folders.context-menu.rename")}</p>
                 </>
             ),
             onClick: () => contextMenuItemClick(() => setIsRenaming(true)),
@@ -108,7 +108,7 @@ export const TreeNode = ({
             children: (
                 <>
                     <MdDelete />
-                    <p>{t("views.new.context-menu.folder.delete")}</p>
+                    <p>{t("folders.context-menu.delete")}</p>
                 </>
             ),
             onClick: () => contextMenuItemClick(() => folders.delete(fullPath)),

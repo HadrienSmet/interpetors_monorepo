@@ -62,6 +62,11 @@ export const fr = {
             }
         },
         folders: {
+            "context-menu": {
+                create: "Nouveau dossier",
+                delete: "Supprimer le dossier",
+                rename: "Renommer le dossier",
+            },
             download: "Télécharger les fichiers modifiés",
             empty: "Aucuns fichiers dans cette préparation",
         },
@@ -111,18 +116,7 @@ export const fr = {
                     downloadVocabulary: "Télécharger le vocabulaire",
                     save: "Sauvegarder la préparation",
                 },
-                "context-menu": {
-                    folder: {
-                        create: "Nouveau dossier",
-                        delete: "Supprimer le dossier",
-                        rename: "Renommer le dossier",
-                    },
-                },
-                inputs: {
-                    "meeting-documents": "Fournissez les documents relatifs à la réunion à laquelle vous souhaitez vous préparer.",
-                    title: "Définissez un titre à votre préparation.",
-                },
-                title: "Préparer un discours",
+            title: "Définissez un titre à votre préparation.",
             },
             notFound: {
                title: "Oops, on s'est perdu ?",

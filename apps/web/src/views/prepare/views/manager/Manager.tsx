@@ -40,7 +40,7 @@ export const PreparationManager = () => {
             <div className="preparation-title">
                 <InputStyleLess
                     onChange={onChange}
-                    placeholder={t("views.new.inputs.title")}
+                    placeholder={t("views.new.title")}
                     style={{
                         fontSize: inputSize,
                         fontWeight: 600,

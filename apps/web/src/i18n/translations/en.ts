@@ -62,6 +62,11 @@ export const en = {
             }
         },
         folders: {
+            "context-menu": {
+                create: "Create new folder",
+                delete: "Delete the folder",
+                rename: "Rename the folder",
+            },
             download: "Download the updated files",
             empty: "No files in this preparation",
         },
@@ -111,18 +116,7 @@ export const en = {
                     downloadVocabulary: "Download the vocabulary",
                     save: "Save the preparation",
                 },
-                "context-menu": {
-                    folder: {
-                        create: "Create new folder",
-                        delete: "Delete the folder",
-                        rename: "Rename the folder",
-                    },
-                },
-                inputs: {
-                    "meeting-documents": "Provide the documents related to the reunion that you are preparing.",
-                    title: "Define a title for this preparation",
-                },
-                title: "Prepare a speech",
+                title: "Define a title for this preparation",
             },
             notFound: {
                 title: "Oops, someone got lost?",
