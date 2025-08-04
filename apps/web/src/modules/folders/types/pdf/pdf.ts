@@ -2,6 +2,7 @@ import { CanvasElement, PdfElement, ReferenceElement } from "./elements";
 import { PdfNote, PdfVocabulary } from "./references";
 
 export type PdfFileElements = {
+    // TODO NOT TO SEND TO server
     /**
      * Used by the client to display the drawing in a canvas
      * List of user actions

@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  colorPanels ColorPanel[] // custom panels
+  email       String       @unique
+  id          String       @id @default(uuid())
+  password    String
+  role        String
+  vocabulary  Vocabulary[]
+  workspaces  Workspace[] // owns
+}
+
+model Workspace {
+  colorPanel     ColorPanel?   @relation(fields: [colorPanelId], references: [id])
+  colorPanelId   String?
+  id             String        @id @default(uuid())
+  languages      Json
+  name           String
+  nativeLanguage String
+  preparations   Preparation[]
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  vocabulary     Vocabulary[]
+}
+
+model ColorPanel {
+  colors     Json // Record<label, color>
+  id         String      @id @default(uuid())
+  name       String
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String
+  workspaces Workspace[]
+}
+
+model Preparation {
+  folders     Folder[]
+  id          String       @id @default(uuid())
+  title       String
+  vocabulary  Vocabulary[]
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+}
+
+model Folder {
+  files          File[]
+  id             String      @id @default(uuid())
+  name           String
+  parentFolder   Folder?     @relation("FolderHierarchy", fields: [parentFolderId], references: [id])
+  parentFolderId String? // for recursive folders
+  preparation    Preparation @relation(fields: [preparationId], references: [id])
+  preparationId  String
+  subFolders     Folder[]    @relation("FolderHierarchy")
+}
+
+model File {
+  id                 String          @id @default(uuid())
+  folderId           String
+  folder             Folder          @relation(fields: [folderId], references: [id])
+  name               String
+  notes              Note[]
+  path               String
+  pdfElements        PdfElement[]
+  pdfNotes           PdfNote[]
+  pdfVocabulary      PdfVocabulary[]
+  references         Reference[]
+  vocabularyAsSource Vocabulary[]    @relation("FileAsSource")
+}
+
+model PdfNote {
+  color     String
+  fileId    String
+  file      File   @relation(fields: [fileId], references: [id])
+  id        String @id @default(uuid())
+  note      String
+  occurence Json // correspond à TextOccurence
+  y         Int
+}
+
+model PdfVocabulary {
+  color        String
+  fileId       String
+  file         File        @relation(fields: [fileId], references: [id])
+  id           String      @id @default(uuid())
+  occurence    Json
+  translations Json // Record<string, string>
+  vocabulary   Vocabulary? @relation(fields: [vocabularyId], references: [id])
+  vocabularyId String?     @unique
+}
+
+model PdfElement {
+  data      Json // stores path, rect, or text shape and options
+  fileId    String
+  file      File        @relation(fields: [fileId], references: [id])
+  id        String      @id @default(uuid())
+  pageIndex Int
+  type      DrawingType
+}
+
+model Reference {
+  fileId       String
+  file         File          @relation(fields: [fileId], references: [id])
+  id           String        @id @default(uuid())
+  note         Note?         @relation(fields: [noteId], references: [id])
+  noteId       String?       @unique
+  type         ReferenceType // enum
+  vocabularyId String?       @unique
+  vocabulary   Vocabulary?   @relation(fields: [vocabularyId], references: [id])
+}
+
+model Note {
+  content   String
+  fileId    String
+  file      File       @relation(fields: [fileId], references: [id])
+  height    Int
+  id        String     @id @default(uuid())
+  pageIndex Int
+  reference Reference?
+  x         Int
+  y         Int
+  width     Int
+}
+
+model Vocabulary {
+  id            String         @id @default(uuid())
+  pdfVocabulary PdfVocabulary?
+  preparationId String?
+  preparation   Preparation?   @relation(fields: [preparationId], references: [id])
+  reference     Reference?
+  sourceFileId  String?
+  sourceFile    File?          @relation("FileAsSource", fields: [sourceFileId], references: [id])
+  translations  Json
+  user          User           @relation(fields: [userId], references: [id])
+  userId        String
+  workspaceId   String
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id])
+}
+
+enum DrawingType {
+  PATH
+  RECTANGLE
+  TEXT
+}
+
+enum ReferenceType {
+  NOTE
+  VOCABULARY
+}

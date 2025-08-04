@@ -3,9 +3,7 @@ export type Preparation = {
     readonly customColor?: string;
     readonly files: FilesRecord;
     readonly id: string;
-    // readonly notes: Array<any>;
     readonly title: string;
-    // readonly vocabulary: Vocabulary;
 };
 export type Vocabulary = {
     readonly languages: Array<string>;
