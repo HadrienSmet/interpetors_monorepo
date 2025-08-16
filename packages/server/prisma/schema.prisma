@@ -15,13 +15,14 @@ datasource db {
 }
 
 model User {
-  colorPanels ColorPanel[] // custom panels
-  email       String       @unique
-  id          String       @id @default(uuid())
-  password    String
-  role        String
-  vocabulary  Vocabulary[]
-  workspaces  Workspace[] // owns
+  colorPanels        ColorPanel[] // custom panels
+  email              String       @unique
+  hashedRefreshToken String?
+  id                 String       @id @default(uuid())
+  password           String
+  role               String
+  vocabulary         Vocabulary[]
+  workspaces         Workspace[] // owns
 }
 
 model Workspace {
