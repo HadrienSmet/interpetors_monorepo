@@ -1,0 +1,12 @@
+.secure-input {
+    align-items: center;
+    display: flex;
+    position: relative;
+
+    button {
+        align-items: center;
+        display: flex;
+        position: absolute;
+        right: var(--space-l);
+    }
+}

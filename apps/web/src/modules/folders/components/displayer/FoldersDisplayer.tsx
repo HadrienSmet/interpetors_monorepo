@@ -1,5 +1,5 @@
 import { DragEventHandler, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 import { getFileInStructure, useFoldersManager } from "../../contexts";
 import { FolderStructure } from "../../types";

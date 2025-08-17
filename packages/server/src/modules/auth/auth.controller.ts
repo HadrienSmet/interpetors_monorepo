@@ -9,7 +9,7 @@ import { SigninDto, SignupDto } from "./dto";
 export class AuthController {
     constructor(private authService: AuthService) { }
 
-    @Post('refresh')
+    @Post("refresh")
         @UseGuards(RefreshTokenGuard)
         refreshTokens(@Req() req: any) {
         const userId = req.user.sub;

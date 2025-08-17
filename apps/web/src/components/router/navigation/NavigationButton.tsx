@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router";
 
 import { NAVIGATION, NavigationItem } from "./navigation.types";
-import { useLocation, useNavigate } from "react-router-dom";
 
 type NavigationButtonProps =
     & NavigationItem
-    // & NavigationProps
     & { readonly depth?: number; };
 
 const SELECTED_CLASS = "selected";
@@ -15,9 +14,7 @@ export const NavigationButton = ({
     depth = 0,
     icon,
     id,
-    // navigation,
     nestedNav,
-    // setNavigation,
 }: NavigationButtonProps) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const { t } = useTranslation();
@@ -66,8 +63,6 @@ export const NavigationButton = ({
 
         const finalPath = descendFirst(currentItem, updatedPath);
 
-        // setNavigation(finalPath as NavigationState);
-
         const urlPath = "/" + finalPath.join("/");
         navigate(urlPath);
     };
@@ -88,8 +83,6 @@ export const NavigationButton = ({
                         <NavigationButton
                             {...item}
                             key={item.id}
-                            // navigation={navigation}
-                            // setNavigation={setNavigation}
                             depth={depth + 1}
                         />
                     ))}

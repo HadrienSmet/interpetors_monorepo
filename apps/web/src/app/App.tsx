@@ -1,7 +1,9 @@
+import { PropsWithChildren } from "react";
+
 import { Router } from "@/components";
 import { ColorPanelsProvider, ContextMenuProvider, ThemeProvider } from "@/contexts";
 import { useWindowSize } from "@/hooks";
-import { ResizableLayoutProvider } from "@/modules";
+import { AuthProvider, AuthWrapper, ResizableLayoutProvider } from "@/modules";
 import { WorkSpaceWrapper } from "@/wrappers";
 
 import "./global.classes.scss";
@@ -11,23 +13,38 @@ import "./global.tags.scss";
 import "./app.scss";
 
 const RIGHT_MIN_SPACE = 705 as const;
-export const App = () => {
+const AuthContexts = ({ children }: PropsWithChildren) => {
     const { width } = useWindowSize();
 
     return (
-        <ThemeProvider>
-            <ResizableLayoutProvider
-                totalAvailableWidth={width}
-                rightMinSpace={RIGHT_MIN_SPACE}
-            >
-                <ContextMenuProvider>
-                    <ColorPanelsProvider>
-                        <WorkSpaceWrapper>
-                            <Router />
-                        </WorkSpaceWrapper>
-                    </ColorPanelsProvider>
-                </ContextMenuProvider>
-            </ResizableLayoutProvider>
-        </ThemeProvider>
+        <ResizableLayoutProvider
+            totalAvailableWidth={width}
+            rightMinSpace={RIGHT_MIN_SPACE}
+        >
+            <ContextMenuProvider>
+                <ColorPanelsProvider>
+                    <WorkSpaceWrapper>
+                        {children}
+                    </WorkSpaceWrapper>
+                </ColorPanelsProvider>
+            </ContextMenuProvider>
+        </ResizableLayoutProvider>
     );
 };
+const UnAuthWrapper = ({ children }: PropsWithChildren) => (
+    <ThemeProvider>
+        <AuthProvider>
+            <AuthWrapper>
+                {children}
+            </AuthWrapper>
+        </AuthProvider>
+    </ThemeProvider>
+);
+
+export const App = () => (
+    <UnAuthWrapper>
+        <AuthContexts>
+            <Router />
+        </AuthContexts>
+    </UnAuthWrapper>
+);

@@ -3,6 +3,7 @@ import { FocusEvent, ReactNode, useEffect, useState } from "react";
 import { useLocale } from "@/hooks";
 
 import { InputProps } from "./input.types";
+import "./input.scss";
 
 export const Input = (props: InputProps): ReactNode => {
     const [placeholder, setPlaceholder] = useState(props.placeholder || "");
@@ -23,8 +24,8 @@ export const Input = (props: InputProps): ReactNode => {
 
     return (
         <input
-        {...props}
-            className={`${props.className ?? ""}`}
+            {...props}
+            className={`${props.className ?? ""} core-input`}
             onBlur={handleBlur}
             onFocus={handleFocus}
             placeholder={placeholder}

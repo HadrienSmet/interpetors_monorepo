@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { MdLink } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { useWorkSpaces } from "@/contexts";
 import { useCssVariable } from "@/hooks";

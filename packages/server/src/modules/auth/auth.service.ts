@@ -33,6 +33,7 @@ export class AuthService {
             data: {
                 email: dto.email,
                 password: hashedPassword,
+                role: "user",
             },
         });
 
