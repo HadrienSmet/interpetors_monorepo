@@ -1,3 +1,5 @@
+import { AUTH_STORAGE_KEY, refreshAccessToken } from "@/modules";
+
 export const HTTP_METHODS = {
     GET: "GET",
     PATCH: "PATCH",
@@ -19,15 +21,29 @@ type CallWithBodyParams = {
     readonly body: Record<string, any>;
 };
 type CallParams =
-    | GetParams
-    | CallWithBodyParams;
+    (
+        | GetParams
+        | CallWithBodyParams
+    )
+    & {
+        readonly headers?: any;
+        readonly skipRefresh?: boolean;
+    };
 
 const HEADERS = {
     "Content-Type": "application/json",
 } as const;
-export const call = async (params: CallParams) => {
+export const call = async ({ skipRefresh = false, ...params}: CallParams) => {
+    let token = localStorage.getItem(AUTH_STORAGE_KEY);
+
     let requestInit: RequestInit = {
-        headers: HEADERS,
+        headers: params.headers
+            ? {
+                ...HEADERS,
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                ...params.headers,
+            }
+            : HEADERS,
         method: params.method,
     };
 
@@ -35,10 +51,28 @@ export const call = async (params: CallParams) => {
         requestInit.body = JSON.stringify(params.body);
     }
 
-    const response = await fetch(
+    let response = await fetch(
         `${import.meta.env.VITE_API_URL}/${params.route}`,
         requestInit
     );
+
+    // Checking if can be succeeded with new token
+    if ((response.status === 401 || response.status === 403) && !skipRefresh) {
+        token = await refreshAccessToken();
+
+        if (token) {
+            response = await fetch(
+               `${import.meta.env.VITE_API_URL}/${params.route}`,
+                {
+                    ...requestInit,
+                    headers: {
+                        ...requestInit.headers,
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            )
+        }
+    }
 
     return (response);
 };

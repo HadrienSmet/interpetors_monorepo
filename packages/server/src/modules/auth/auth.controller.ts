@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 
-import { RefreshTokenGuard } from "src/common";
+import { JwtAuthGuard, RefreshTokenGuard } from "src/common";
 
 import { AuthService } from "./auth.service";
 import { SigninDto, SignupDto } from "./dto";
@@ -26,5 +26,14 @@ export class AuthController {
     @Post("signin")
     signin(@Body() dto: SigninDto) {
         return this.authService.signin(dto);
+    }
+    @Get("verify")
+    @UseGuards(JwtAuthGuard)
+    verify(@Req() req: any) {
+        // req.user est injecté par JwtStrategy → contient { sub, email }
+        return {
+            userId: req.user.sub,
+            email: req.user.email,
+        };
     }
 }

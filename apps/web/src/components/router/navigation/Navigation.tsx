@@ -1,9 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdMenu } from "react-icons/md";
+import { MdExitToApp, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdMenu } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 
 import { Select } from "@/components";
 import { useWorkSpaces } from "@/contexts";
-import { ResizableSection, useResizableLayout } from "@/modules";
+import { ResizableSection, useAuth, useResizableLayout } from "@/modules";
 
 import { NavigationButton } from "./NavigationButton";
 import { NAVIGATION } from "./navigation.types";
@@ -56,7 +57,9 @@ const SECTION_ID = "navigation";
 export const Navigation = () => {
     const [isExpanded, setIsExpanded] = useState(true);
 
+    const { signout } = useAuth();
     const { setSectionVisibility } = useResizableLayout();
+    const { t } = useTranslation();
 
     useEffect(() => {
         setSectionVisibility(SECTION_ID, isExpanded);
@@ -93,6 +96,13 @@ export const Navigation = () => {
                         );
                     })}
                 </div>
+                <button
+                    className="navigation-log-out"
+                    onClick={signout}
+                >
+                    <MdExitToApp />
+                    <span>{t("auth.signout")}</span>
+                </button>
             </div>
         </ResizableSection>
     );

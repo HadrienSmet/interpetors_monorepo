@@ -24,7 +24,7 @@ export class AuthService {
         });
 
         if (alreadyExists) {
-            throw new ForbiddenException("Email already exists");
+            throw new ForbiddenException("exists");
         }
 
         const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -42,20 +42,19 @@ export class AuthService {
 
         return tokens;
     }
-
     async signin(dto: SigninDto) {
         const user = await this.prisma.user.findUnique({
             where: { email: dto.email },
         });
 
         if (!user) {
-            throw new ForbiddenException("Wrong credentials");
+            throw new ForbiddenException("credentials");
         }
 
         const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
         if (!isPasswordValid) {
-            throw new ForbiddenException("Wrong credentials");
+            throw new ForbiddenException("credentials");
         }
 
         const tokens = await this.generateTokens(user.id, user.email);
@@ -63,7 +62,6 @@ export class AuthService {
 
         return tokens;
     }
-
     async refreshTokens(userId: string, refreshToken: string) {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
@@ -84,7 +82,6 @@ export class AuthService {
 
         return tokens;
     }
-
     async updateRefreshToken(userId: string, refreshToken: string) {
         const hash = await bcrypt.hash(refreshToken, 10);
 
@@ -93,7 +90,6 @@ export class AuthService {
             data: { hashedRefreshToken: hash },
         });
     }
-
     async generateTokens(userId: string, email: string): Promise<SignToken> {
         const payload = { sub: userId, email };
 

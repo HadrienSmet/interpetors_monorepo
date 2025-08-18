@@ -13,6 +13,40 @@ export const fr = {
                 create: "Créer mon espace de travail",
             },
         },
+        auth: {
+            email: {
+                label: "Email",
+                placeholder: "exemple@mail.com",
+                requirements: {
+                    main: "Email doit être une adresse email valide",
+                },
+            },
+            errors: {
+                credentials: "Identifiants incorrects",
+                exists: "Un autre compte utilise déjà cette addresse email.",
+            },
+            password: {
+                label: "Mot de passe",
+                placeholder: "********",
+                requirements: {
+                    main: "Un mot de passe valide requière:",
+                    conditions: {
+                        "0": "Minimum 8 caractères",
+                        "1": "Minimum 1 majuscule",
+                        "2": "Minimum 1 minuscule",
+                        "3": "Minimum 1 chiffre",
+                        "4": "Minimum 1 symbole",
+                    },
+                },
+            },
+            signin: "Connexion",
+            signingIn: "Me connecter",
+            signingUp: "Créer mon compte",
+            signout: "Me déconnecter",
+            signup: "Inscription",
+            toSignin: "J'ai déjà un compte",
+            toSignup: "Me créer un compte",
+        },
         colorPanel: {
             creation: {
                 action: "Créer une palette de couleur",
@@ -103,6 +137,9 @@ export const fr = {
         },
         onConstruction: "Serveurs en construction",
         views: {
+            dic: {
+                title: "Dictionnaire généré",
+            },
             home: {
                 title: "Mon espace de travail",
                 sections: {
@@ -116,17 +153,14 @@ export const fr = {
                     downloadVocabulary: "Télécharger le vocabulaire",
                     save: "Sauvegarder la préparation",
                 },
-            title: "Définissez un titre à votre préparation.",
+                title: "Définissez un titre à votre préparation.",
             },
             notFound: {
-               title: "Oops, on s'est perdu ?",
-               buttonLabel: "Retour en sécurité"
+                title: "Oops, on s'est perdu ?",
+                buttonLabel: "Retour en sécurité"
             },
             old: {
                 title: "Mes préparations",
-            },
-            dic: {
-                title: "Dictionnaire généré",
             },
         },
         vocabulary: {

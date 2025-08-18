@@ -10,8 +10,18 @@
         padding: var(--space-h) var(--space-giga);
         width: 50%;
 
+        * {
+            transition: var(--transition-theme);
+        }
+
         > button {
             width:60%;
+        }
+        .error-msg {
+            color: var(--clr-txt-error);
+            font-size: .9rem;
+            font-weight: 600;
+            letter-spacing: .5px;
         }
     }
     &-input {
@@ -49,7 +59,7 @@
         display: flex;
         justify-content: end;
         margin-bottom: var(--space-l);
+        margin-right: 10%;
         text-decoration: underline;
-        width: 80%;
     }
 }
