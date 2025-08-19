@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
 
 import { Button, Modal } from "@/components";
-import { ColorPanel, useColorPanels, useWorkSpaces } from "@/contexts";
+import { ColorPanel, useColorPanels } from "@/contexts";
 
 import { ColorPanelForm } from "../form";
 
@@ -14,7 +14,7 @@ export const ColorPanelMissing = () => {
 
     const { createPanel } = useColorPanels();
     const { t } = useTranslation();
-    const { currentWorkSpace, editWorkSpace } = useWorkSpaces();
+    // const { currentWorkSpace } = useWorkSpaces();
 
     const close = () => setIsCreating(false);
     const open = () => setIsCreating(true);
@@ -23,7 +23,7 @@ export const ColorPanelMissing = () => {
         const id = uuidv4();
 
         createPanel({ ...colorsRecord, id });
-        editWorkSpace({ ...currentWorkSpace!, colorPanel: id });
+        // editWorkSpace({ ...currentWorkSpace!, colorPanel: id });
         close();
     };
 

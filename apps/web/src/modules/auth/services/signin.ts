@@ -1,16 +1,18 @@
-import { call, HTTP_METHODS } from "../common";
+import { call, HTTP_METHODS } from "@/utils";
+
+import { AuthTokens } from "../types";
 
 import { ROUTE } from "./const";
 
 type SigninParams = {
     readonly email: string;
     readonly password: string;
-}
+};
 export const signin = async (params: SigninParams) => {
-    const response = await call({
+    const response = await call<AuthTokens>({
         route: `${ROUTE}/signin`,
         method: HTTP_METHODS.POST,
-        body: params
+        body: params,
     });
 
     return (response);

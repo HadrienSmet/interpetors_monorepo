@@ -8,9 +8,7 @@ import { ExtractJwt, Strategy, StrategyOptionsWithRequest } from "passport-jwt";
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
     constructor() {
         const options: StrategyOptionsWithRequest = {
-            jwtFromRequest: ExtractJwt.fromExtractors([
-                (req: Request) => req?.cookies?.refresh_token, // ou header/body selon ton choix
-            ]),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.JWT_REFRESH_SECRET ?? "",
             passReqToCallback: true,
         };
@@ -19,7 +17,11 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-refres
     }
 
     validate(req: Request, payload: any) {
-        const refreshToken = req.cookies?.refresh_token;
+        const refreshToken = req.headers.authorization?.split(" ")[1];
+        if (!refreshToken) {
+            console.warn("Missing refresh token in header");
+        }
+
 
         return {
             ...payload,

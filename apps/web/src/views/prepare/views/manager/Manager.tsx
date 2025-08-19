@@ -3,7 +3,7 @@ import { MdDownload, MdSave } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { InputStyleLess } from "@/components";
-import { useWorkSpaces } from "@/contexts";
+import { useWorkSpaces } from "@/modules";
 import { useCssVariable } from "@/hooks";
 import {
     downloadFolderAsZip,
@@ -21,14 +21,14 @@ export const PreparationManager = () => {
     const { foldersStructures } = useFoldersManager();
     const { t } = useTranslation();
     const { list } = useVocabularyTable();
-    const { currentWorkSpace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkSpaces();
 
-    const { native, work } = currentWorkSpace!.languages;
+    const { languages, nativeLanguage } = currentWorkspace!;
 
     const headerToUse = [
         t("vocabulary.sources"),
-        native,
-        ...work.filter(lng => lng !== native)
+        nativeLanguage,
+        ...languages.filter(lng => lng !== nativeLanguage)
     ];
 
     const handleDownloadVoc = () => downloadVocabulary(list, headerToUse);

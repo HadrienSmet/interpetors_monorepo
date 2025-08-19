@@ -1,8 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
-import { AUTH } from "@/services";
-
 import { AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY } from "../const";
+import { verifyAccess } from "../services";
 import { refreshAccessToken } from "../utils";
 
 import { AuthContext } from "./AuthContext";
@@ -24,9 +23,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         const checkToken = async () => {
             const accessToken = localStorage.getItem(AUTH_STORAGE_KEY);
             if (accessToken) {
-                const response = await AUTH.verifyAccess({ accessToken });
+                const response = await verifyAccess({ accessToken });
 
-                if (response.ok) {
+                if (response.success) {
                     setIsAuthenticated(true);
                     return;
                 }

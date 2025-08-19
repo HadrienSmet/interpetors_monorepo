@@ -3,31 +3,29 @@ import { MdExitToApp, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdM
 import { useTranslation } from "react-i18next";
 
 import { Select } from "@/components";
-import { useWorkSpaces } from "@/contexts";
-import { ResizableSection, useAuth, useResizableLayout } from "@/modules";
+import { ResizableSection, useAuth, useResizableLayout, useWorkSpaces } from "@/modules";
 
 import { NavigationButton } from "./NavigationButton";
 import { NAVIGATION } from "./navigation.types";
 import "./navigation.scss";
 
 const WorkSpacesSelect = () => {
-    const { currentWorkSpace, workSpaces } = useWorkSpaces();
+    const { currentWorkspace, workspaces } = useWorkSpaces();
 
     const options = useMemo(() => (
-        Object.keys(workSpaces).map(key => {
-            const parsedKey = parseInt(key);
-            const workSpace = workSpaces[parsedKey];
+        Object.keys(workspaces).map(key => {
+            const workSpace = workspaces[key];
 
-            return ({ value: workSpace.id.toString(), label: workSpace.name });
+            return ({ value: workSpace.id, label: workSpace.name });
         })
-    ), [workSpaces]);
+    ), [workspaces]);
 
     return (
         <Select
             name="work-space"
             // TODO: Managing creation of other environment + Changing of environment
             onChange={() => console.log("Changed")}
-            defaultValue={currentWorkSpace?.id.toString()}
+            defaultValue={currentWorkspace?.id}
             options={options}
         />
     );

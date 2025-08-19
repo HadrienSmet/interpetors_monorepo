@@ -1,4 +1,5 @@
-import { useColorPanels, WorkSpace } from "@/contexts";
+import { useColorPanels } from "@/contexts";
+import { Workspace } from "@/modules";
 
 import { ColorPanelFilled } from "./filled";
 import { ColorPanelMissing } from "./missing";
@@ -6,16 +7,16 @@ import { ColorPanelMissing } from "./missing";
 import "./colorPanel.scss";
 
 type ColorPanelProps = {
-    readonly workspace: WorkSpace;
+    readonly workspace: Workspace;
 }
 export const ColorPanel = (props: ColorPanelProps) => {
     const { colorPanels } = useColorPanels();
 
     return (
         <div className="color-panel">
-            {props.workspace.colorPanel
-                ? colorPanels[props.workspace.colorPanel] !== undefined
-                    ? (<ColorPanelFilled colorPanel={colorPanels[props.workspace.colorPanel]} />)
+            {props.workspace.colorPanelId
+                ? colorPanels[props.workspace.colorPanelId] !== undefined
+                    ? (<ColorPanelFilled colorPanel={colorPanels[props.workspace.colorPanelId]} />)
                     : (<p>Wrong id</p>)
                 : (<ColorPanelMissing />)
             }

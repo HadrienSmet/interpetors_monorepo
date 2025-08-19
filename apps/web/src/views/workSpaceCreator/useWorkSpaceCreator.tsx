@@ -1,95 +1,63 @@
 import { ChangeEvent, useState } from "react";
 
-import { useWorkSpaces, WorkSpace } from "@/contexts";
+import { CreateWorkspaceParams, useWorkSpaces, Workspace } from "@/modules";
 
-const EMPTY_WORKSPACE: WorkSpace = {
-    colorPanel: null,
-    id: -1,
+const EMPTY_WORKSPACE: CreateWorkspaceParams = {
     name: "Default",
-    languages: {
-        work: [],
-        native: "",
-    },
-    vocabulary: {
-        languages: [],
-        translations: {},
-    },
-    preparations: [],
+    languages: [],
+    nativeLanguage: "",
 };
 export const creationSteps = [
     "WORK",
     "NATIVE",
 ] as const;
+export type CreationStep = typeof creationSteps[number]
 
 export type WorkSpaceCreatorState = {
-    readonly workSpace: WorkSpace;
-    readonly currentStep: typeof creationSteps[number];
+    readonly workSpace: Workspace;
+    readonly currentStep: CreationStep;
 };
 export const useWorkSpaceCreator = () => {
-    const [workspaceCreatorState, setWorkSpaceCreatorState] = useState<WorkSpaceCreatorState>({
-        workSpace: { ...EMPTY_WORKSPACE },
-        currentStep: creationSteps[0],
-    });
-    const { addNewWorkSpace } = useWorkSpaces();
+    const [workspace, setWorkspace] = useState<CreateWorkspaceParams>({ ...EMPTY_WORKSPACE });
+    const [creationStep, setCreationStep] = useState<CreationStep>(creationSteps[0]);
 
-    const handleNativeLanguage = (language: string) => setWorkSpaceCreatorState(state => ({
+    const { addNewWorkspace } = useWorkSpaces();
+
+    const handleNativeLanguage = (nativeLanguage: string) => setWorkspace(state => ({
         ...state,
-        workSpace: {
-            ...state.workSpace,
-            languages: {
-                ...state.workSpace.languages,
-                native: language,
-            },
-        },
+        nativeLanguage,
     }));
-    const handleTitle = (e: ChangeEvent<HTMLInputElement>) => setWorkSpaceCreatorState(state => ({
+    const handleTitle = (e: ChangeEvent<HTMLInputElement>) => setWorkspace(state => ({
         ...state,
-        workSpace: {
-            ...state.workSpace,
-            name: e.target.value,
-        },
+        name: e.target.value,
     }));
     const nextStep = () => {
-        const currentStepIndex = creationSteps.findIndex(step => step === workspaceCreatorState.currentStep);
+        const currentStepIndex = creationSteps.findIndex(step => step === creationStep);
         if (currentStepIndex === (creationSteps.length - 1)) {
-            addNewWorkSpace(workspaceCreatorState.workSpace);
+            addNewWorkspace(workspace);
             return;
         }
 
-        setWorkSpaceCreatorState(state => ({
-            ...state,
-            currentStep: creationSteps[currentStepIndex + 1],
-        }));
+        setCreationStep(creationSteps[currentStepIndex + 1])
     };
-    const pushWorkLanguage = (language: string) => setWorkSpaceCreatorState(state => ({
+    const pushLanguage = (language: string) => setWorkspace(state => ({
         ...state,
-        workSpace: {
-            ...state.workSpace,
-            languages: {
-                ...state.workSpace.languages,
-                work: state.workSpace.languages.work.includes(language)
-                    ? state.workSpace.languages.work
-                    : [...state.workSpace.languages.work, language],
-            },
-        },
+        languages: state.languages.length === 0
+            ? [language]
+            : [...state.languages, language],
     }));
-    const removeWorkLanguage = (languageToRemove: string) => setWorkSpaceCreatorState(state => ({
+    const removeLanguage = (languageToRemove: string) => setWorkspace(state => ({
         ...state,
-        workSpace: {
-            ...state.workSpace,
-            languages: {
-                ...state.workSpace.languages,
-                work: state.workSpace.languages.work.filter(language => language !== languageToRemove),
-            },
-        },
+        languages: state.languages.filter(language => language !== languageToRemove),
     }));
 
     return ({
+        creationStep,
         handleNativeLanguage,
         handleTitle,
         nextStep,
-        pushWorkLanguage,
-        removeWorkLanguage,
-        workspaceCreatorState,
+        pushLanguage,
+        removeLanguage,
+        workspace,
     });
 };

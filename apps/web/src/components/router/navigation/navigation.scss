@@ -74,7 +74,13 @@
         align-items: center;
         color: var(--clr-txt);
         display: flex;
+        flex-wrap: nowrap;
         gap: var(--space-s);
+        white-space: nowrap;
+
+        svg {
+            flex-shrink: 0;
+        }
     }
     &-padding {
         padding: var(--space-l) var(--space-m);

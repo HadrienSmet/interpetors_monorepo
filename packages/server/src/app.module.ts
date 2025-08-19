@@ -12,10 +12,12 @@ import {
     VocabularyModule,
     WorkspaceModule,
 } from "./modules";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
     imports: [
         AuthModule,
+        ConfigModule.forRoot(),
         FileModule,
         NotesModule,
         PreparationModule,

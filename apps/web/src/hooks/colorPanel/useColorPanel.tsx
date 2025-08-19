@@ -1,18 +1,19 @@
 import { useMemo } from "react";
 
-import { useColorPanels, useWorkSpaces } from "@/contexts";
+import { useColorPanels } from "@/contexts";
+import { useWorkSpaces } from "@/modules";
 
 export const useColorPanel = () => {
     const { colorPanels } = useColorPanels();
-    const { currentWorkSpace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkSpaces();
 
     const colorPanel = useMemo(() => {
-        if (!currentWorkSpace || !currentWorkSpace.colorPanel) {
+        if (!currentWorkspace || !currentWorkspace.colorPanelId) {
             return (undefined);
         }
 
-        return (colorPanels[currentWorkSpace.colorPanel]);
-    }, [currentWorkSpace?.colorPanel, colorPanels]);
+        return (colorPanels[currentWorkspace.colorPanelId]);
+    }, [currentWorkspace?.colorPanelId, colorPanels]);
 
     return ({ colorPanel });
 };

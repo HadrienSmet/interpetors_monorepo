@@ -3,7 +3,7 @@ import { MdDownload, MdSearch } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { DraggableSection, SearchInput, useDraggableSection } from "@/components";
-import { useWorkSpaces } from "@/contexts";
+import { useWorkSpaces } from "@/modules/workspace";
 
 import { useVocabularyTable } from "../../../contexts";
 import { downloadVocabulary } from "../../../utils";
@@ -34,9 +34,9 @@ type VocabularyTableFilterProps = {
 const VocabularyTableFilter = ({ closeSearch }: VocabularyTableFilterProps) => {
     const { t } = useTranslation();
     const { setSearchValue } = useVocabularyTable();
-    const { currentWorkSpace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkSpaces();
 
-    const { native, work } = currentWorkSpace!.languages;
+    const { languages, nativeLanguage } = currentWorkspace!;
 
     const onSubmit = (value: string) => {
         setSearchValue(value);
@@ -49,9 +49,9 @@ const VocabularyTableFilter = ({ closeSearch }: VocabularyTableFilterProps) => {
                 <p>{t("vocabulary.filterLabel")}</p>
                 <div className="vocabulary-table-filter-columns">
                     <VocabularyTableFilterColumn id="sources" />
-                    <VocabularyTableFilterColumn id={native} />
-                    {work
-                        .filter(lng => lng !== native)
+                    <VocabularyTableFilterColumn id={nativeLanguage} />
+                    {languages
+                        .filter(lng => lng !== nativeLanguage)
                         .map(lng => (<VocabularyTableFilterColumn id={lng} />))
                     }
                 </div>
@@ -69,14 +69,14 @@ const VocabularyTableToolsChild = () => {
 
     const { t } = useTranslation();
     const { list } = useVocabularyTable();
-    const { currentWorkSpace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkSpaces();
 
-    const { native, work } = currentWorkSpace!.languages;
+    const { languages, nativeLanguage } = currentWorkspace!;
 
     const headerToUse = [
         t("vocabulary.sources"),
-        native,
-        ...work.filter(lng => lng !== native)
+        nativeLanguage,
+        ...languages.filter(lng => lng !== nativeLanguage)
     ];
 
     const closeSearch = () => setIsSearching(false);

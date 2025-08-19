@@ -1,12 +1,12 @@
 import { PropsWithChildren } from "react";
 
-import { useWorkSpaces, WorkSpacesProvider } from "@/contexts/workspaces";
+import { useWorkSpaces, WorkSpacesProvider } from "@/modules";
 import { WorkSpaceCreator } from "@/views";
 
 const WorkSpaceWrapperChild = (props: PropsWithChildren) => {
-    const { currentWorkSpace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkSpaces();
 
-    if (!currentWorkSpace) {
+    if (!currentWorkspace) {
         return (<WorkSpaceCreator />);
     }
 

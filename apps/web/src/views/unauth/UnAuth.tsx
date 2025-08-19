@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
-import { AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth } from "@/modules";
-import { AUTH } from "@/services";
+import { AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY, signin, signup, useAuth } from "@/modules";
 
 import "./unauth.scss";
 
@@ -26,7 +25,7 @@ type UnAuthFormParams = {
     readonly passwordRef: RefObject<HTMLInputElement | null>;
     readonly submitLabel: string;
     readonly title: string;
-}
+};
 const UnAuthForm = (props: UnAuthFormParams) => {
     const { i18n, t } = useTranslation();
 
@@ -34,7 +33,7 @@ const UnAuthForm = (props: UnAuthFormParams) => {
         const output: Array<string> = [];
 
         for (let i = 0; i < 5; i++) {
-            output.push(t(`auth.password.requirements.conditions.${i}`))
+            output.push(t(`auth.password.requirements.conditions.${i}`));
         }
 
         return (output);
@@ -100,11 +99,11 @@ const Signin = () => {
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
 
-    const { signin } = useAuth();
+    const auth = useAuth();
     const { t } = useTranslation();
 
     const onClick = async () => {
-        setErrorMessage(undefined)
+        setErrorMessage(undefined);
         if (email === "") {
             emailRef.current?.focus();
             return;
@@ -114,28 +113,20 @@ const Signin = () => {
             return;
         }
 
-        const response = await AUTH.signin({ email, password });
+        const response = await signin({ email, password });
 
-        if (!response.ok) {
-            const errorMsg = await response.text();
-            const parsed = JSON.parse(errorMsg);
-
-            setErrorMessage(parsed.message);
+        if (!response.success) {
+            setErrorMessage(response.message);
             return;
         }
 
-        const text = await response.text();
-        const tokens = JSON.parse(text);
+        const tokens = response.data;
 
-        if (
-            "access_token" in tokens &&
-            "refresh_token" in tokens
-        ) {
-            localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
-            localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
 
-            signin();
-        }
+        localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
+        localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
+
+        auth.signin();
     };
 
     return (
@@ -178,28 +169,19 @@ const Signup = () => {
             return;
         }
 
-        const response = await AUTH.signup({ email, password });
+        const response = await signup({ email, password });
 
-        if (!response.ok) {
-            const errorMsg = await response.text();
-            const parsed = JSON.parse(errorMsg);
-
-            setErrorMessage(parsed.message);
+        if (!response.success) {;
+            setErrorMessage(response.message);
             return;
         }
 
-        const text = await response.text();
-        const tokens = JSON.parse(text);
+        const tokens = response.data;
 
-        if (
-            "access_token" in tokens &&
-            "refresh_token" in tokens
-        ) {
-            localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
-            localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
+        localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
+        localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
 
-            signin();
-        }
+        signin();
     };
     const onEmailBlur = () => {
         if (email.match(EMAIL_REGEX)) {

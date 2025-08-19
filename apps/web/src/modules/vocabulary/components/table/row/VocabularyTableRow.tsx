@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { MdLink } from "react-icons/md";
 import { Link } from "react-router";
 
-import { useWorkSpaces } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 import { PdfVocabulary } from "@/modules/folders";
+import { useWorkSpaces } from "@/modules/workspace";
 import { stringToRgba } from "@/utils";
 
 import { useVocabularyTable } from "../../../contexts";
@@ -18,9 +18,9 @@ type VocabularyTableRowProps = {
 export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
     const defaultBg = useCssVariable("--clr-txt");
     const { sortingState } = useVocabularyTable();
-    const { currentWorkSpace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkSpaces();
 
-    const { native, work } = currentWorkSpace!.languages;
+    const { languages, nativeLanguage } = currentWorkspace!;
 
     const backgroundColor = useMemo(() => {
         if (sortingState !== "NONE") {
@@ -50,11 +50,11 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                 </Link>
             </td>
             <CellToFill
-                locale={native}
+                locale={nativeLanguage}
                 pdfVocabulary={pdfVocabulary}
             />
-            {work
-                .filter(lng => lng !== native)
+            {languages
+                .filter(lng => lng !== nativeLanguage)
                 .map(lng => (
                     <CellToFill
                         key={`cell-to-fill-${lng}-${pdfVocabulary.occurence.text}`}

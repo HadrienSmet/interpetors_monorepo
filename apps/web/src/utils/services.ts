@@ -1,7 +1,8 @@
-import { AUTH_STORAGE_KEY, refreshAccessToken } from "@/modules";
+import { AUTH_STORAGE_KEY, refreshAccessToken } from "@/modules/auth";
 
 export const HTTP_METHODS = {
     GET: "GET",
+    DELETE: "DELETE",
     PATCH: "PATCH",
     POST: "POST",
     PUT: "PUT",
@@ -11,29 +12,40 @@ type MethodWithBody =
     | typeof HTTP_METHODS.PATCH
     | typeof HTTP_METHODS.POST
     | typeof HTTP_METHODS.PUT;
-type GetParams = {
+type CallWithoutBodyParams = {
     readonly route: string;
-    readonly method: typeof HTTP_METHODS.GET;
+    readonly method:
+        | typeof HTTP_METHODS.DELETE
+        | typeof HTTP_METHODS.GET;
 };
 type CallWithBodyParams = {
-    readonly route: string;
-    readonly method: MethodWithBody;
     readonly body: Record<string, any>;
+    readonly method: MethodWithBody;
+    readonly route: string;
 };
 type CallParams =
     (
-        | GetParams
+        | CallWithoutBodyParams
         | CallWithBodyParams
     )
     & {
         readonly headers?: any;
         readonly skipRefresh?: boolean;
     };
+type CallOutput<T> =
+    | {
+        readonly success: true;
+        readonly data: T;
+    }
+    | {
+        readonly success: false;
+        readonly message: string
+    }
 
 const HEADERS = {
     "Content-Type": "application/json",
 } as const;
-export const call = async ({ skipRefresh = false, ...params}: CallParams) => {
+export const call = async <T>({ skipRefresh = false, ...params}: CallParams): Promise<CallOutput<T>> => {
     let token = localStorage.getItem(AUTH_STORAGE_KEY);
 
     let requestInit: RequestInit = {
@@ -47,7 +59,11 @@ export const call = async ({ skipRefresh = false, ...params}: CallParams) => {
         method: params.method,
     };
 
-    if (params.method !== HTTP_METHODS.GET) {
+    if (
+        params.method === HTTP_METHODS.PATCH ||
+        params.method === HTTP_METHODS.POST ||
+        params.method === HTTP_METHODS.PUT
+    ) {
         requestInit.body = JSON.stringify(params.body);
     }
 
@@ -74,5 +90,17 @@ export const call = async ({ skipRefresh = false, ...params}: CallParams) => {
         }
     }
 
-    return (response);
+    if (response.ok) {
+        const strData = await response.text();
+
+        return ({
+            success: true,
+            data: JSON.parse(strData),
+        });
+    }
+
+    return ({
+        success: false,
+        message: await response.text(),
+    });
 };

@@ -1,17 +1,15 @@
-import { AUTH } from "@/services";
-
 import { AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY } from "../const";
+import { refreshAccess } from "../services";
 
 export const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem(REFRESH_STORAGE_KEY);
     if (!refreshToken) return (null);
 
-    const response = await AUTH.refreshAccess({ refreshToken });
+    const response = await refreshAccess({ refreshToken });
 
-    if (!response.ok) return (null);
+    if (!response.success) return (null);
 
-    const tokenStr = await response.text();
-    const tokens = JSON.parse(tokenStr);
+    const tokens = response.data;
 
     if (
         "access_token" in tokens &&

@@ -1,15 +1,15 @@
 import { useTranslation } from "react-i18next";
 
 import { ColorPanel } from "@/components";
-import { useWorkSpaces } from "@/contexts";
+import { useWorkSpaces } from "@/modules";
 
 import "./home.scss";
 
 export const Home = () => {
     const { t } = useTranslation();
-    const { currentWorkSpace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkSpaces();
 
-    if (!currentWorkSpace) {
+    if (!currentWorkspace) {
         return (<p>Error</p>);
     }
 
@@ -19,9 +19,9 @@ export const Home = () => {
             <section>
                 <p className="home-subtitle">{t("views.home.sections.languages")}</p>
                 <div className="languages">
-                    {currentWorkSpace.languages.work.map(language => (
+                    {currentWorkspace.languages.map(language => (
                         <div
-                            className={`language ${language === currentWorkSpace.languages.native
+                            className={`language ${language === currentWorkspace.nativeLanguage
                                 ? "selected"
                                 : ""
                             }`}
@@ -34,7 +34,7 @@ export const Home = () => {
             </section>
             <section>
                 <p className="home-subtitle">{t("views.home.sections.colorPanel")}</p>
-                <ColorPanel workspace={currentWorkSpace} />
+                <ColorPanel workspace={currentWorkspace} />
             </section>
         </main>
     );

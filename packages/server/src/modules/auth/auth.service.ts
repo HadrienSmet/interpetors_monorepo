@@ -68,13 +68,13 @@ export class AuthService {
         });
 
         if (!user || !user.hashedRefreshToken) {
-            throw new ForbiddenException('Accès refusé');
+            throw new ForbiddenException("Access denied");
         }
 
         const tokenMatches = await bcrypt.compare(refreshToken, user.hashedRefreshToken);
 
         if (!tokenMatches) {
-            throw new ForbiddenException('Refresh token invalide');
+            throw new ForbiddenException("Invalid token refresh");
         }
 
         const tokens = await this.generateTokens(user.id, user.email);
