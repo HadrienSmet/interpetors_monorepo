@@ -60,11 +60,12 @@ export const en = {
                 color: "COLOR",
                 name: "NAME",
             },
+            missing: "No color panel found",
             title: {
                 label: "Define a title",
                 placeholder: "Default color panel",
             },
-            missing: "No color panel found"
+            used: "Color panel used: {{name}}",
         },
         files: {
             "context-menu": {
@@ -121,6 +122,7 @@ export const en = {
                 prepare: "New preparation",
                 manager: "Manager",
                 vocabulary: "Vocabulary",
+                workspaces: "All my work spaces",
             },
         },
         notes: {
@@ -192,7 +194,16 @@ export const en = {
                         label: "Pick one of those to define your native language.",
                     },
                 },
-            }
-        }
+            },
+            new: "Create new workspace",
+            stats: {
+                encyclopedy_one: "{{count}} definition in the encyclopedy",
+                encyclopedy_other: "{{count}} definitions in the encyclopedy",
+                preparation_one: "{{count}} preparation",
+                preparation_other: "{{count}} preparations",
+                vocabulary_one: "{{count}} word generated in the vocabulary",
+                vocabulary_other: "{{count}} words generated in the vocabulary",
+            },
+        },
     },
 };

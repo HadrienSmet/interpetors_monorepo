@@ -1,5 +1,5 @@
 import { Dispatch, ReactNode, SetStateAction } from "react";
-import { MdAdd, MdApps, MdFilePresent, MdHistory, MdHome, MdMenuBook, MdTranslate } from "react-icons/md";
+import { MdAdd, MdApps, MdFilePresent, MdHistory, MdHome, MdMenuBook, MdOtherHouses, MdTranslate } from "react-icons/md";
 
 export type NavigationItem = {
     readonly id: string;
@@ -11,6 +11,10 @@ export const NAVIGATION = {
     HOME: {
         id: "home",
         icon: <MdHome />,
+    },
+    WORKSPACES: {
+        id: "workspaces",
+        icon: <MdOtherHouses />,
     },
     PREPARE: {
         id: "prepare",

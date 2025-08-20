@@ -49,15 +49,19 @@ export const call = async <T>({ skipRefresh = false, ...params}: CallParams): Pr
     let token = localStorage.getItem(AUTH_STORAGE_KEY);
 
     let requestInit: RequestInit = {
-        headers: params.headers
-            ? {
-                ...HEADERS,
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                ...params.headers,
-            }
-            : HEADERS,
+        headers: {
+            ...HEADERS,
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         method: params.method,
     };
+
+    if (params.headers) {
+        requestInit.headers = {
+            ...requestInit.headers,
+            ...params.headers,
+        }
+    }
 
     if (
         params.method === HTTP_METHODS.PATCH ||

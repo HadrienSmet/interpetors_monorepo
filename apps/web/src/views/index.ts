@@ -5,3 +5,4 @@ export * from "./preparations";
 export * from "./prepare";
 export * from "./unauth";
 export * from "./workSpaceCreator";
+export * from "./workspaces";

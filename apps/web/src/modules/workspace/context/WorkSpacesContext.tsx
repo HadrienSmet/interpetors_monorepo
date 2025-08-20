@@ -13,6 +13,7 @@ export type WorkSpacesContextType = {
     readonly addNewWorkspace: (params: CreateWorkspaceParams) => void;
     readonly changeWorkspace: (id: string) => void;
     readonly currentWorkspace: Workspace | null;
+    readonly isReady: boolean;
     // readonly editWorkSpace: (workSpace: Workspace) => void;
     // readonly removeWorkSpace: (id: string) => void;
     readonly workspaces: Record<string, Workspace>;

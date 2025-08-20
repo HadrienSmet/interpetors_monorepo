@@ -60,11 +60,12 @@ export const fr = {
                 color: "COULEUR",
                 name: "NOM",
             },
+            missing: "Aucune palette de couleur n'a été trouvée",
             title: {
                 label: "Défini un titre",
                 placeholder: "Palette par défaut",
             },
-            missing: "Aucune palette de couleur n'a été trouvée"
+            used: "Palette de couleur utilisée: {{name}}",
         },
         files: {
             "context-menu": {
@@ -121,6 +122,7 @@ export const fr = {
                 preparations: "Anciennes préparations",
                 prepare: "Nouvelle préparation",
                 vocabulary: "Vocabulaire",
+                workspaces: "Tous mes espaces de travail",
             },
         },
         notes: {
@@ -193,6 +195,15 @@ export const fr = {
                     },
                 },
             },
+            new: "Créer un nouvel espace de travail",
+            stats: {
+                encyclopedy_one: "{{count}} définition dans l'encyclopédie",
+                encyclopedy_other: "{{count}} définitions dans l'encyclopédie",
+                preparation_one: "{{count}} préparation",
+                preparation_other: "{{count}} préparations",
+                vocabulary_one: "{{count}} mot de vocabulaire généré",
+                vocabulary_other: "{{count}} mots de vocabulaire générés",
+            }
         },
     },
 };

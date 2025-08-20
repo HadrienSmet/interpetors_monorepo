@@ -1,5 +1,6 @@
 import { ChangeEvent, RefObject, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from "react-router";
 
 import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
@@ -91,7 +92,7 @@ const UnAuthForm = (props: UnAuthFormParams) => {
     );
 };
 
-const Signin = () => {
+export const Signin = () => {
     const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [password, setPassword] = useState("");
@@ -100,6 +101,7 @@ const Signin = () => {
     const passwordRef = useRef<HTMLInputElement>(null);
 
     const auth = useAuth();
+    const navigate = useNavigate();
     const { t } = useTranslation();
 
     const onClick = async () => {
@@ -127,25 +129,34 @@ const Signin = () => {
         localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
 
         auth.signin();
+        navigate("/");
     };
 
     return (
-        <UnAuthForm
-            email={email}
-            emailRef={emailRef}
-            errorMessage={errorMessage}
-            onEmailChange={(e) => setEmail(e.target.value)}
-            onPasswordChange={(e) => setPassword(e.target.value)}
-            onSubmit={onClick}
-            password={password}
-            passwordRef={passwordRef}
-            submitLabel={t("auth.signingIn")}
-            title={t("auth.signin")}
-        />
+        <UnAuthLayout>
+            <UnAuthForm
+                email={email}
+                emailRef={emailRef}
+                errorMessage={errorMessage}
+                onEmailChange={(e) => setEmail(e.target.value)}
+                onPasswordChange={(e) => setPassword(e.target.value)}
+                onSubmit={onClick}
+                password={password}
+                passwordRef={passwordRef}
+                submitLabel={t("auth.signingIn")}
+                title={t("auth.signin")}
+            />
+            <Link
+                className="unauth-toggler"
+                to="/signup"
+            >
+                <span>{t("auth.toSignup")}</span>
+            </Link>
+        </UnAuthLayout>
     );
 };
 
-const Signup = () => {
+export const Signup = () => {
     const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [isEmailValid, setIsEmailValid] = useState<boolean | null>(null);
@@ -156,6 +167,7 @@ const Signup = () => {
     const passwordRef = useRef<HTMLInputElement>(null);
 
     const { signin } = useAuth();
+    const navigate = useNavigate();
     const { t } = useTranslation();
 
     const onClick = async () => {
@@ -182,6 +194,7 @@ const Signup = () => {
         localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
 
         signin();
+        navigate("/");
     };
     const onEmailBlur = () => {
         if (email.match(EMAIL_REGEX)) {
@@ -201,46 +214,29 @@ const Signup = () => {
     };
 
     return (
-        <UnAuthForm
-            email={email}
-            emailRef={emailRef}
-            errorMessage={errorMessage}
-            isEmailValid={isEmailValid}
-            isPasswordValid={isPasswordValid}
-            onEmailBlur={onEmailBlur}
-            onEmailChange={(e) => setEmail(e.target.value)}
-            onPasswordBlur={onPasswordBlur}
-            onPasswordChange={(e) => setPassword(e.target.value)}
-            onSubmit={onClick}
-            password={password}
-            passwordRef={passwordRef}
-            submitLabel={t("auth.signingUp")}
-            title={t("auth.signup")}
-        />
-    );
-};
-export const UnAuthScreen = () => {
-    const [isSigningIn, setIsSigningIn] = useState(true);
-
-    const { t } = useTranslation();
-
-    const toggleState = () => setIsSigningIn(state => !state);
-
-    return (
         <UnAuthLayout>
-            {isSigningIn
-                ? <Signin />
-                : <Signup />
-            }
-            <button
+            <UnAuthForm
+                email={email}
+                emailRef={emailRef}
+                errorMessage={errorMessage}
+                isEmailValid={isEmailValid}
+                isPasswordValid={isPasswordValid}
+                onEmailBlur={onEmailBlur}
+                onEmailChange={(e) => setEmail(e.target.value)}
+                onPasswordBlur={onPasswordBlur}
+                onPasswordChange={(e) => setPassword(e.target.value)}
+                onSubmit={onClick}
+                password={password}
+                passwordRef={passwordRef}
+                submitLabel={t("auth.signingUp")}
+                title={t("auth.signup")}
+            />
+            <Link
                 className="unauth-toggler"
-                onClick={toggleState}
+                to="/signin"
             >
-                <span>{isSigningIn
-                    ? t("auth.toSignup")
-                    : t("auth.toSignin")
-                }</span>
-            </button>
+                <span>{t("auth.toSignin")}</span>
+            </Link>
         </UnAuthLayout>
     );
 };

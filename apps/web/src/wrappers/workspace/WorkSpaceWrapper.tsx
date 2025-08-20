@@ -1,13 +1,17 @@
 import { PropsWithChildren } from "react";
+import { Navigate } from "react-router";
 
+import { Loader } from "@/components";
 import { useWorkSpaces, WorkSpacesProvider } from "@/modules";
-import { WorkSpaceCreator } from "@/views";
 
 const WorkSpaceWrapperChild = (props: PropsWithChildren) => {
-    const { currentWorkspace } = useWorkSpaces();
+    const { currentWorkspace, isReady } = useWorkSpaces();
 
-    if (!currentWorkspace) {
-        return (<WorkSpaceCreator />);
+    if (!isReady) {
+        return (<Loader />);
+    }
+    if (currentWorkspace === null) {
+        return (<Navigate to="/workspace" />);
     }
 
     return (props.children);

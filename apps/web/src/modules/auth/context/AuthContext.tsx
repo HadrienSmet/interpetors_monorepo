@@ -4,6 +4,7 @@ import { getContextError } from "@/contexts/utils";
 
 type AuthContextType = {
     readonly isAuthenticated: boolean;
+    readonly isReady: boolean;
     readonly signin: () => void;
     readonly signout: () => void;
 };

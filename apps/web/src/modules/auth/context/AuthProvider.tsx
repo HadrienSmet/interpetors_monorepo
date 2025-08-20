@@ -9,6 +9,7 @@ import { AuthContext } from "./AuthContext";
 export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [hasCheck, setHasCheck] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isReady, setIsReady] = useState(false);
 
     const signin = () => {
         setIsAuthenticated(true);
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
                 if (response.success) {
                     setIsAuthenticated(true);
+                    setIsReady(true);
                     return;
                 }
             }
@@ -34,20 +36,22 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             const newToken = await refreshAccessToken();
             if (newToken) {
                 setIsAuthenticated(true);
-                return;
+            } else {
+                signout();
             }
 
-            signout();
+            setIsReady(true);
         };
 
         if (!hasCheck) {
-            checkToken();
-            setHasCheck(true);
+            checkToken()
+                .then(() => setHasCheck(true));
         }
     }, [hasCheck]);
 
     const value = {
         isAuthenticated,
+        isReady,
         signin,
         signout,
     };
