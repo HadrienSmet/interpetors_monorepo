@@ -33,9 +33,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
                         key={language}
                     >
                         <p>{language}</p>
-                        {creationStep === creationSteps[0] && (
-                            <MdClear onClick={() => removeWorkLanguage(language)} />
-                        )}
+                        <MdClear onClick={() => removeWorkLanguage(language)} />
                     </div>
                 ))}
             </div>

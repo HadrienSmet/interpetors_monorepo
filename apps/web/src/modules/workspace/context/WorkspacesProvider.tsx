@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 
 import { useAuth } from "@/modules/auth";
 
-import { create, getAll } from "../services";
+import { create, getAll, remove, update, UpdateParams } from "../services";
 import { Workspace } from "../types";
 
 import { CreateWorkspaceParams, WorkSpacesContext } from "./WorkSpacesContext";
@@ -35,7 +35,39 @@ export const WorkSpacesProvider = (props: PropsWithChildren) => {
             navigate("/");
         }
     };
-    const changeWorkspace = (id: string) => setWorkspaceId(id);
+    const changeWorkspace = (id: string) => {
+        setWorkspaceId(id);
+        localStorage.setItem(STORAGE_KEY, id);
+        navigate("/");
+    };
+    const removeWorkspace = async (id: string) => {
+        const response = await remove({ id });
+
+        if (response.success) {
+            setWorkspaces(state => {
+                const copy = { ...state };
+
+                if (id in copy) {
+                    delete copy[id];
+                }
+
+                return (copy);
+            });
+        }
+    };
+    const updateWorkspace = async ({ body, id }: UpdateParams) => {
+        const response = await update({ body, id });
+
+        if (response.success) {
+            setWorkspaces(state => ({
+                ...state,
+                [id]: {
+                    ...state[id],
+                    ...body,
+                },
+            }));
+        }
+    };
 
     useEffect(() => {
         if (hasFetch || !isAuthenticated) {
@@ -66,7 +98,7 @@ export const WorkSpacesProvider = (props: PropsWithChildren) => {
         fetchWorkspaces();
     }, [isAuthenticated, hasFetch]);
 
-    // // Retrieves the value stored locaclly to set it as current workspace
+    // Retrieves the value stored locaclly to set it as current workspace
     useEffect(() => {
         const storedItem = localStorage.getItem(STORAGE_KEY);
 
@@ -109,6 +141,8 @@ export const WorkSpacesProvider = (props: PropsWithChildren) => {
                 changeWorkspace,
                 currentWorkspace,
                 isReady,
+                removeWorkspace,
+                updateWorkspace,
                 workspaces,
             }}
         >

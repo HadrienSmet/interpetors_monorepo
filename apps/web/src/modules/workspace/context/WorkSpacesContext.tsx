@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
+import { UpdateParams } from "../services";
 import { Workspace } from "../types";
 
 export type CreateWorkspaceParams = {
@@ -10,12 +11,12 @@ export type CreateWorkspaceParams = {
     readonly nativeLanguage: string;
 };
 export type WorkSpacesContextType = {
-    readonly addNewWorkspace: (params: CreateWorkspaceParams) => void;
+    readonly addNewWorkspace: (params: CreateWorkspaceParams) => Promise<void>;
     readonly changeWorkspace: (id: string) => void;
     readonly currentWorkspace: Workspace | null;
     readonly isReady: boolean;
-    // readonly editWorkSpace: (workSpace: Workspace) => void;
-    // readonly removeWorkSpace: (id: string) => void;
+    readonly removeWorkspace: (id: string) => Promise<void>;
+    readonly updateWorkspace: (params: UpdateParams) => Promise<void>;
     readonly workspaces: Record<string, Workspace>;
 };
 export const WorkSpacesContext = createContext<WorkSpacesContextType | null>(null);
