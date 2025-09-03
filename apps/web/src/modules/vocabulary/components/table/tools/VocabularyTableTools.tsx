@@ -3,7 +3,7 @@ import { MdDownload, MdSearch } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { DraggableSection, SearchInput, useDraggableSection } from "@/components";
-import { useWorkSpaces } from "@/modules/workspace";
+import { useWorkspaces } from "@/modules/workspace";
 
 import { useVocabularyTable } from "../../../contexts";
 import { downloadVocabulary } from "../../../utils";
@@ -34,7 +34,7 @@ type VocabularyTableFilterProps = {
 const VocabularyTableFilter = ({ closeSearch }: VocabularyTableFilterProps) => {
     const { t } = useTranslation();
     const { setSearchValue } = useVocabularyTable();
-    const { currentWorkspace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkspaces();
 
     const { languages, nativeLanguage } = currentWorkspace!;
 
@@ -69,7 +69,7 @@ const VocabularyTableToolsChild = () => {
 
     const { t } = useTranslation();
     const { list } = useVocabularyTable();
-    const { currentWorkspace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkspaces();
 
     const { languages, nativeLanguage } = currentWorkspace!;
 

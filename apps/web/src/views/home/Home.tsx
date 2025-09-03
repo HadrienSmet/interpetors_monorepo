@@ -1,13 +1,12 @@
 import { useTranslation } from "react-i18next";
 
-import { ColorPanel } from "@/components";
-import { useWorkSpaces } from "@/modules";
+import { ColorPanel, useWorkspaces } from "@/modules";
 
 import "./home.scss";
 
 export const Home = () => {
     const { t } = useTranslation();
-    const { currentWorkspace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkspaces();
 
     if (!currentWorkspace) {
         return (<p>Error</p>);
@@ -34,7 +33,7 @@ export const Home = () => {
             </section>
             <section>
                 <p className="home-subtitle">{t("views.home.sections.colorPanel")}</p>
-                <ColorPanel workspace={currentWorkspace} />
+                <ColorPanel />
             </section>
         </main>
     );

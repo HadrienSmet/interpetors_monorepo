@@ -3,13 +3,13 @@ import { MdDownload, MdSave } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { InputStyleLess } from "@/components";
-import { useWorkSpaces } from "@/modules";
 import { useCssVariable } from "@/hooks";
 import {
     downloadFolderAsZip,
     downloadVocabulary,
     useFoldersManager,
     useVocabularyTable,
+    useWorkspaces,
 } from "@/modules";
 
 import "./manager.scss";
@@ -21,7 +21,7 @@ export const PreparationManager = () => {
     const { foldersStructures } = useFoldersManager();
     const { t } = useTranslation();
     const { list } = useVocabularyTable();
-    const { currentWorkspace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkspaces();
 
     const { languages, nativeLanguage } = currentWorkspace!;
 

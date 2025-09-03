@@ -20,6 +20,9 @@
                     height: 28px;
                     justify-content: center;
                     width: 28px;
+                    &:disabled {
+                        background-color: var(--clr-disabled);
+                    }
                 }
             }
             &-container {
@@ -63,9 +66,6 @@
                         color: var(--clr-bg-light);
                     }
                 }
-            }
-            &-selector:disabled {
-                background-color: var(--clr-disabled);
             }
         }
     }

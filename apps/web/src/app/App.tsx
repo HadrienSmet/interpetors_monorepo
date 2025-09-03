@@ -1,7 +1,7 @@
 import { Router } from "@/components";
-import { ColorPanelsProvider, ContextMenuProvider, ThemeProvider } from "@/contexts";
+import { ContextMenuProvider, ThemeProvider } from "@/contexts";
 import { useWindowSize } from "@/hooks";
-import { AuthProvider, ResizableLayoutProvider } from "@/modules";
+import { AuthProvider, ColorPanelWrapper, ResizableLayoutProvider } from "@/modules";
 
 import "./global.classes.scss";
 import "./global.root.scss";
@@ -21,9 +21,9 @@ export const App = () => {
                     rightMinSpace={RIGHT_MIN_SPACE}
                 >
                     <ContextMenuProvider>
-                        <ColorPanelsProvider>
+                        <ColorPanelWrapper>
                             <Router />
-                        </ColorPanelsProvider>
+                        </ColorPanelWrapper>
                     </ContextMenuProvider>
                 </ResizableLayoutProvider>
             </AuthProvider>

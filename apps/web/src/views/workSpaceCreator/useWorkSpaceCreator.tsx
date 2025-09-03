@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 
-import { CreateWorkspaceParams, useWorkSpaces, Workspace } from "@/modules";
+import { CreateWorkspaceParams, useWorkspaces, Workspace } from "@/modules";
 
 const EMPTY_WORKSPACE: CreateWorkspaceParams = {
     name: "Default",
@@ -21,7 +21,7 @@ export const useWorkSpaceCreator = () => {
     const [workspace, setWorkspace] = useState<CreateWorkspaceParams>({ ...EMPTY_WORKSPACE });
     const [creationStep, setCreationStep] = useState<CreationStep>(creationSteps[0]);
 
-    const { addNewWorkspace } = useWorkSpaces();
+    const { addNewWorkspace } = useWorkspaces();
 
     const handleNativeLanguage = (nativeLanguage: string) => setWorkspace(state => ({
         ...state,

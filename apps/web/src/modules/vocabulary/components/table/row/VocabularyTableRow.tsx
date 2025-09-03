@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 import { useCssVariable } from "@/hooks";
 import { PdfVocabulary } from "@/modules/folders";
-import { useWorkSpaces } from "@/modules/workspace";
+import { useWorkspaces } from "@/modules/workspace";
 import { stringToRgba } from "@/utils";
 
 import { useVocabularyTable } from "../../../contexts";
@@ -18,7 +18,7 @@ type VocabularyTableRowProps = {
 export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
     const defaultBg = useCssVariable("--clr-txt");
     const { sortingState } = useVocabularyTable();
-    const { currentWorkspace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkspaces();
 
     const { languages, nativeLanguage } = currentWorkspace!;
 

@@ -10,7 +10,7 @@ export type CreateWorkspaceParams = {
     readonly name: string;
     readonly nativeLanguage: string;
 };
-export type WorkSpacesContextType = {
+export type WorkspacesContextType = {
     readonly addNewWorkspace: (params: CreateWorkspaceParams) => Promise<void>;
     readonly changeWorkspace: (id: string) => void;
     readonly currentWorkspace: Workspace | null;
@@ -19,13 +19,13 @@ export type WorkSpacesContextType = {
     readonly updateWorkspace: (params: UpdateParams) => Promise<void>;
     readonly workspaces: Record<string, Workspace>;
 };
-export const WorkSpacesContext = createContext<WorkSpacesContextType | null>(null);
+export const WorkspacesContext = createContext<WorkspacesContextType | null>(null);
 
-export const useWorkSpaces = () => {
-    const context = useContext(WorkSpacesContext);
+export const useWorkspaces = () => {
+    const context = useContext(WorkspacesContext);
 
     if (!context) {
-        throw new Error(getContextError("useWorkSpaces", "WorkSpacesProvider"));
+        throw new Error(getContextError("useWorkspaces", "WorkspacesProvider"));
     }
 
     return (context);

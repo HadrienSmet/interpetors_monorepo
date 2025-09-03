@@ -6,11 +6,11 @@ import { useAuth } from "@/modules/auth";
 import { create, getAll, remove, update, UpdateParams } from "../services";
 import { Workspace } from "../types";
 
-import { CreateWorkspaceParams, WorkSpacesContext } from "./WorkSpacesContext";
+import { CreateWorkspaceParams, WorkspacesContext } from "./WorkspacesContext";
 
 const STORAGE_KEY = "workspaceId";
 
-export const WorkSpacesProvider = (props: PropsWithChildren) => {
+export const WorkspacesProvider = (props: PropsWithChildren) => {
     const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
     const [hasFetch, setHasFetch] = useState(false);
     const [isReady, setIsReady] = useState(false);
@@ -130,12 +130,14 @@ export const WorkSpacesProvider = (props: PropsWithChildren) => {
 
         // Consider ready when we have fetched and have tried to select a workspace (even null)
         if (hasFetch) {
-            setIsReady(true);
+            setTimeout(() => {
+                setIsReady(true);
+            })
         }
     }, [hasFetch, workspaceId, workspaces]);
 
     return (
-        <WorkSpacesContext.Provider
+        <WorkspacesContext.Provider
             value={{
                 addNewWorkspace,
                 changeWorkspace,
@@ -147,6 +149,6 @@ export const WorkSpacesProvider = (props: PropsWithChildren) => {
             }}
         >
             {props.children}
-        </WorkSpacesContext.Provider>
+        </WorkspacesContext.Provider>
     );
 };

@@ -65,6 +65,9 @@ export const fr = {
                 label: "Défini un titre",
                 placeholder: "Palette par défaut",
             },
+            update: {
+                title: "Modifies ta palette de couleur.",
+            },
             used: "Palette de couleur utilisée: {{name}}",
         },
         files: {

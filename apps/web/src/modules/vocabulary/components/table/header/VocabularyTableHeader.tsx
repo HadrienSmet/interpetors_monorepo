@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaArrowDownAZ, FaArrowDownZA } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
 
-import { useWorkSpaces } from "@/modules/workspace";
+import { useWorkspaces } from "@/modules/workspace";
 
 import { SortingState, sortingStateRecord, useVocabularyTable } from "../../../contexts";
 
@@ -58,7 +58,7 @@ const VocabularyTableHeaderCell = ({ id, label }: VocabularyTableHeaderCellProps
 
 export const VocabularyTableHeader = () => {
     const { t } = useTranslation();
-    const { currentWorkspace } = useWorkSpaces();
+    const { currentWorkspace } = useWorkspaces();
 
     const { languages, nativeLanguage } = currentWorkspace!
 

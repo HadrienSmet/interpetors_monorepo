@@ -11,7 +11,8 @@ import {
     MdTranslate,
 } from "react-icons/md";
 
-import { ColorPicker, DraggableSection, useDraggableSection } from "@/components";
+import { DraggableSection, useDraggableSection } from "@/components";
+import { ColorPicker } from "@/modules/colorPanel";
 import { getRgbColor } from "@/utils";
 
 import { usePdfFile, usePdfTools } from "../../../../contexts";
@@ -111,6 +112,7 @@ const PdfToolsChild = () => {
             <div className={`color-picker-container ${isPickingColor ? "expanded" : ""}`}>
                 <ColorPicker
                     color={color}
+                    displayPositions
                     height={COLOR_PICKER_DIMENSION}
                     isLandscape={!isLandscape}
                     onSelection={() => setIsPickingColor(false)}

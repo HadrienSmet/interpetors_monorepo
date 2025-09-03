@@ -65,6 +65,9 @@ export const en = {
                 label: "Define a title",
                 placeholder: "Default color panel",
             },
+            update: {
+                title: "Update your color panel",
+            },
             used: "Color panel used: {{name}}",
         },
         files: {

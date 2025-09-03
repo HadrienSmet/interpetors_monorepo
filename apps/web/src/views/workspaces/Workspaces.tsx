@@ -1,10 +1,10 @@
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { MdCheck, MdClear, MdDelete, MdEdit } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { Button, InputStyleLess, LanguageSelect } from "@/components";
-import { useWorkSpaces, Workspace } from "@/modules";
+import { useWorkspaces, Workspace } from "@/modules";
 
 import "./workspaces.scss";
 
@@ -44,7 +44,7 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
     const [workspace, setWorkspace] = useState({ ...props.workspace });
 
     const { t } = useTranslation();
-    const { currentWorkspace, changeWorkspace, removeWorkspace, updateWorkspace } = useWorkSpaces();
+    const { currentWorkspace, changeWorkspace, removeWorkspace, updateWorkspace, workspaces } = useWorkspaces();
 
     const handleNative = (lng: string) => setWorkspace(state => ({
         ...state,
@@ -69,7 +69,7 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
             id: workspace.id,
         });
 
-        setIsEditing(true);
+        setIsEditing(false);
     };
     const toggleEdit = () => setIsEditing(state => !state);
     const languagesListProps = useMemo(() => (
@@ -79,7 +79,7 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
                 removeLanguage
             })
             : {}
-    ), [isEditing])
+    ), [isEditing]);
 
     return (
         <div className="workspace-container">
@@ -127,7 +127,10 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
                 <button onClick={toggleEdit}>
                     <MdEdit />
                 </button>
-                <button onClick={remove}>
+                <button
+                    disabled={Object.keys(workspaces).length < 2}
+                    onClick={remove}
+                >
                     <MdDelete />
                 </button>
             </div>
@@ -137,7 +140,7 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
 
 export const Workspaces = () => {
     const { t } = useTranslation();
-    const { workspaces } = useWorkSpaces();
+    const { workspaces } = useWorkspaces();
 
     return (
         <div className="workspaces-screen">

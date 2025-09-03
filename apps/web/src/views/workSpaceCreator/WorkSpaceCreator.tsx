@@ -3,7 +3,7 @@ import { Trans, useTranslation } from "react-i18next";
 
 import { Button, LanguageSelect } from "@/components";
 import { useCssVariable } from "@/hooks";
-import { CreateWorkspaceParams } from "@/modules";
+import { CreateWorkspaceParams, WorkspacesProvider } from "@/modules";
 
 import { CreationStep, creationSteps, useWorkSpaceCreator } from "./useWorkSpaceCreator";
 import "./workSpaceCreator.scss";
@@ -58,7 +58,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
     );
 };
 
-export const WorkSpaceCreator = () => {
+const WorkspaceCreatorChild = () => {
     const {
         creationStep,
         handleNativeLanguage,
@@ -130,3 +130,8 @@ export const WorkSpaceCreator = () => {
         </main>
     );
 };
+export const WorkspaceCreator = () => (
+    <WorkspacesProvider>
+        <WorkspaceCreatorChild />
+    </WorkspacesProvider>
+)

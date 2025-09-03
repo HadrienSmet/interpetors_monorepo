@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 
 import { Layout } from "@/layout";
-import { Dictionary, Home, NotFound, Preparations, Prepare, Signin, Signup, WorkSpaceCreator, Workspaces } from "@/views";
+import { Dictionary, Home, NotFound, Preparations, Prepare, Signin, Signup, WorkspaceCreator, Workspaces } from "@/views";
 
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -35,7 +35,7 @@ const PROTECTED_ROUTES = {
     withoutLayout: [
         {
             path: "workspace",
-            element: <WorkSpaceCreator />,
+            element: <WorkspaceCreator />,
         },
     ],
 };
@@ -57,11 +57,7 @@ export const Router = () => (
             ))}
             {PROTECTED_ROUTES.withoutLayout.map(route => (
                 <Route
-                    element={
-                        <ProtectedRoute>
-                            {route.element}
-                        </ProtectedRoute>
-                    }
+                    element={route.element}
                     key={route.path}
                     path={route.path}
                 />
