@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { ColorPanel, useWorkspaces } from "@/modules";
+import { capitalize, getNativeName } from "@/utils";
 
 import "./home.scss";
 
@@ -26,7 +27,7 @@ export const Home = () => {
                             }`}
                             key={language}
                         >
-                            <p>{language}</p>
+                            <p>{capitalize(getNativeName(language) ?? "")}</p>
                         </div>
                     ))}
                 </div>

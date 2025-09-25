@@ -7,7 +7,7 @@ import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 
-import { isFileInStructure, useFoldersManager } from "../../../contexts";
+import { isClientPdfFile, useFoldersManager } from "../../../contexts";
 
 import { FileNode } from "./FileNode";
 import { TreeNodeProps } from "./nodes.types";
@@ -187,7 +187,7 @@ export const TreeNode = ({
         if (e.key === "Enter") handleRename();
     };
 
-    if (isFileInStructure(node)) {
+    if (isClientPdfFile(node)) {
         return (
             <FileNode
                 depth={depth}

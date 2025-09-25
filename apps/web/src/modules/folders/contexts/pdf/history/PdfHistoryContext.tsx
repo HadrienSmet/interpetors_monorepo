@@ -1,13 +1,15 @@
 import { createContext, useContext } from "react";
 
+import { GenerateResourceAction } from "@repo/types";
+
 import { getContextError } from "@/contexts/utils";
 
-import { ElementAction, GenerateElementAction, InterractiveReferenceAction } from "../../../types";
+import { ElementAction, InterractiveReferenceAction } from "../../../types";
 
 export type HistoryAction = {
     /** Used to get the pdf and the canvas elemnts */
     readonly elements: Array<ElementAction>;
-    readonly elementToGenerate?: GenerateElementAction;
+    readonly elementToGenerate?: GenerateResourceAction;
     /** Text highlighted on hover */
     readonly interractiveText?: InterractiveReferenceAction;
 };

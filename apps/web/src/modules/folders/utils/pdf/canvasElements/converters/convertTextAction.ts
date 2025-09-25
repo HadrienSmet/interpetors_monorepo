@@ -1,11 +1,13 @@
+import { TextCanvasElement } from "@repo/types";
+
 import { getRgbColor } from "@/utils";
 
-import { TextCanvasElement, TextAction } from "../../../../types";
+import { TextAction } from "../../../../types";
 
 import { ANNOTATION_SCALE } from "../../constants";
 
 export const convertTextAction = (action: TextAction): TextCanvasElement => {
-    const { color, pageDimensions, pageIndex, rect, text } = action.element;
+    const { color, pageDimensions, rect, text } = action.element;
 
     const options = {
         color: getRgbColor(color),
@@ -16,7 +18,6 @@ export const convertTextAction = (action: TextAction): TextCanvasElement => {
 
     return ({
         options,
-        pageIndex,
         text,
     });
 };

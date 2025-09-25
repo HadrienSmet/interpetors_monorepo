@@ -2,9 +2,9 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@/web/*":         ["apps/web/*"],
-            "@/backend":  ["packages/server"],
-            "@/commons":  ["packages/common"],
+            "@/web/*":             ["apps/web/*"],
+            "@/backend":      ["packages/server"],
+            "@/commons":      ["packages/common"],
         }
     }
 }

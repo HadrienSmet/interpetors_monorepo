@@ -1,14 +1,16 @@
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 
-import { PdfVocabulary } from "@/modules/folders";
+import { VocabularyTerm, VocabularyWithColor } from "@repo/types";
+
+import { useWorkspaces } from "@/modules/workspace";
 
 import { usePreparationVocabulary } from "../preparation";
 
 import { SortingIndex, sortingStateRecord, VocabularyTableContext, VocabularyTableContextValue } from "./VocabularyTableContext";
 
-const getItemValue = (voc: PdfVocabulary, key: string) => key === "sources"
+const getItemValue = (voc: VocabularyTerm, key: string, languages: Array<string>) => key === "sources"
     ? voc.occurence.text
-    : voc.translations[key];
+    : voc.translations[languages.findIndex(lang => lang === key)];
 export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
     const [searchingColumn, setSearchingColumn] = useState<string>("sources");
     const [sortingColumn, setSortingColumn] = useState<string | null>(null);
@@ -16,46 +18,74 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
     const [sortingStateIndex, setSortingStateIndex] = useState<SortingIndex>(0);
 
     const { vocabulary } = usePreparationVocabulary();
+    const { currentWorkspace } = useWorkspaces();
 
-    const baseVocabulary: Array<PdfVocabulary> = useMemo(() => {
-        const output = [];
+    const languages = useMemo(() => (
+        currentWorkspace!.languages
+    ), [currentWorkspace?.languages])
+
+    const baseVocabulary: Record<string, Array<VocabularyTerm>> = useMemo(() => {
+        const output: Record<string, Array<VocabularyTerm>> = {};
 
         for (const clr in vocabulary) {
+            const array = [];
+
             for (const id in vocabulary[clr]) {
-                output.push(vocabulary[clr][id]);
+                array.push(vocabulary[clr][id]);
             }
+
+            output[clr] = array;
         }
 
         return (output);
     }, [vocabulary]);
-    const filteredList = useMemo(() => {
-        if (!searchValue) return baseVocabulary;
+    const filteredList: Record<string, Array<VocabularyTerm>> = useMemo(() => {
+        if (!searchValue) {
+            return (baseVocabulary);
+        }
 
         const normalizedSearch = searchValue.toLowerCase();
+        const output: Record<string, Array<VocabularyTerm>> = {};
 
-        return (baseVocabulary.filter((item) => {
-            if (searchingColumn) {
-                const columnValue = getItemValue(item, searchingColumn);
+        for (const clr in baseVocabulary) {
+            const current = [...baseVocabulary[clr]];
 
-                return (columnValue?.toLowerCase().includes(normalizedSearch));
-            }
+            current.filter(term => {
+                if (searchingColumn) {
+                    const columnValue = getItemValue(term, searchingColumn, languages);
 
-            // Full row search
-            return (Object.keys(item).some((key) => {
-                const value = getItemValue(item, key);
+                    return (columnValue?.toLowerCase().includes(normalizedSearch));
+                }
 
-                return (value?.toLowerCase().includes(normalizedSearch));
-            }));
-        }));
+                return (Object.keys(term).some((key) => {
+                    const value = getItemValue(term, key, languages);
+
+                    return (value?.toLowerCase().includes(normalizedSearch));
+                }));
+            });
+
+            output[clr] = current;
+        }
+
+        return (output);
     }, [baseVocabulary, searchValue, searchingColumn]);
-    const sortedList = useMemo(() => {
+    const sortedList: Array<VocabularyWithColor> = useMemo(() => {
         const sortDirection = sortingStateRecord[sortingStateIndex];
+        const vocList = [];
+        for (const clr in filteredList) {
+            const current = filteredList[clr];
 
-        if (sortDirection === "NONE" || !sortingColumn) return (filteredList);
+            // TODO might have to sort alphabetically the terms within the color segments
+            vocList.push(...current.map(term => ({ ...term, color: clr })));
+        }
 
-        return ([...filteredList].sort((a, b) => {
-            const aValue = getItemValue(a, sortingColumn)?.toLowerCase() ?? "";
-            const bValue = getItemValue(b, sortingColumn)?.toLowerCase() ?? "";
+        if (sortDirection === "NONE" || !sortingColumn) {
+            return (vocList);
+        };
+
+        return ([...vocList].sort((a, b) => {
+            const aValue = getItemValue(a, sortingColumn, languages)?.toLowerCase() ?? "";
+            const bValue = getItemValue(b, sortingColumn, languages)?.toLowerCase() ?? "";
 
             if (aValue < bValue) return (sortDirection === "ASC" ? -1 : 1);
             if (aValue > bValue) return (sortDirection === "ASC" ? 1 : -1);

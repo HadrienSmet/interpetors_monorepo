@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 
+import { Note } from "@repo/types";
+
 import { useFoldersManager, usePdfFile } from "../../../../contexts";
-import { PdfNote } from "../../../../types";
 
 import { GroupedNotes } from "./grouped";
 
@@ -12,7 +13,7 @@ export const NotesDisplayer = () => {
     const { pageIndex } = usePdfFile();
 
     const grouped = useMemo(() => {
-        const output: Record<string, Array<PdfNote>> = {};
+        const output: Record<string, Array<Note>> = {};
 
         if (!selectedFile.fileInStructure) {
             return (output);

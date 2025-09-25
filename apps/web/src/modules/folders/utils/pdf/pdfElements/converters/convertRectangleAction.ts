@@ -1,4 +1,6 @@
-import { PDF_TOOLS, RectangleAction, RectanglePdfElement } from "../../../../types";
+import { RectanglePdfElement } from "@repo/types";
+
+import { PDF_TOOLS, RectangleAction } from "../../../../types";
 import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "../../../../utils";
 
 import { getPdfRgbColor } from "./tools";
@@ -34,7 +36,6 @@ export const convertRectangleAction = (action: RectangleAction): Array<Rectangle
                 color: pdfColor,
                 height,
                 opacity,
-                pageIndex,
                 width,
                 x,
                 y,

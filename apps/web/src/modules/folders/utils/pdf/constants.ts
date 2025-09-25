@@ -1,4 +1,4 @@
-import { PdfFileElements } from "../../types";
+import { PdfFileElements } from "@repo/types";
 
 export const ANNOTATION_SCALE = .6 as const;
 export const FILE_ELEMENTS: PdfFileElements = {
@@ -6,7 +6,6 @@ export const FILE_ELEMENTS: PdfFileElements = {
     notes: [],
     pdfElements : [],
     references: [],
-    vocabulary: [],
 };
 export const FIRST_PAGE = 1 as const;
 export const HIGLIGHT_OPACITY = 0.25 as const;

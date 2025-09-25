@@ -1,10 +1,11 @@
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { MdCheck, MdClear, MdDelete, MdEdit } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { Button, InputStyleLess, LanguageSelect } from "@/components";
 import { useWorkspaces, Workspace } from "@/modules";
+import { capitalize, getNativeName } from "@/utils";
 
 import "./workspaces.scss";
 
@@ -26,7 +27,7 @@ const LanguagesList = ({ handleNative, languages, nativeLanguage, removeLanguage
                     }
                     key={language}
                 >
-                    <p>{language}</p>
+                    <p>{capitalize(getNativeName(language) ?? "")}</p>
                     {removeLanguage && (
                         <MdClear onClick={() => removeLanguage(language)} />
                     )}

@@ -3,7 +3,7 @@ import { MdOutlineExpandMore  } from "react-icons/md";
 
 import "./select.scss";
 
-type SelectOption = {
+export type SelectOption = {
     readonly value: string;
     readonly label: string;
 };

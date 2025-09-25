@@ -1,6 +1,6 @@
 import { MdBorderColor, MdBrush, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 
-import { Position } from "@/types";
+import { Position } from "@repo/types";
 
 import { PDF_TOOLS, PdfTool } from "../../../types";
 

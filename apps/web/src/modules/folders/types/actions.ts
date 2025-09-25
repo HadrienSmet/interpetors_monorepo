@@ -1,9 +1,8 @@
-import { Position } from "@/types";
+import { ClientPdfFile, Position, DRAWING_TYPES, REFERENCE_TYPES } from "@repo/types";
+
 import { RgbColor } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
-import { DRAWING_TYPES, REFERENCE_TYPES } from "./elements";
-import { PdfFileInStructure } from "./pdf";
 import { PdfTool } from "./tools";
 
 type ActionElement = {
@@ -11,7 +10,7 @@ type ActionElement = {
     readonly pageDimensions: DOMRect;
     readonly pageIndex: number;
     readonly pdfDoc: PDFDocument;
-    readonly pdfFile: PdfFileInStructure;
+    readonly pdfFile: ClientPdfFile;
 };
 //==========================
 //=   INTERRACTIVE TEXTS   =

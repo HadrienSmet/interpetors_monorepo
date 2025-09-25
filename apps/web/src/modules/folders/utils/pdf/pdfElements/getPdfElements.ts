@@ -1,4 +1,6 @@
-import { DRAWING_TYPES, ElementAction, PdfElement } from "../../../types";
+import { DRAWING_TYPES, PdfElement } from "@repo/types";
+
+import { ElementAction } from "../../../types";
 
 import { convertPathAction, convertRectangleAction, convertTextAction } from "./converters";
 

@@ -1,8 +1,9 @@
 import { DragEventHandler, useEffect } from "react";
 import { useSearchParams } from "react-router";
 
-import { getFileInStructure, useFoldersManager } from "../../contexts";
-import { FolderStructure } from "../../types";
+import type { ClientFolderStructure } from "@repo/types";
+
+import { getClientPdfFile, useFoldersManager } from "../../contexts";
 
 import { FoldersExplorer } from "../explorer";
 import { FileDisplayer } from "../files";
@@ -10,7 +11,7 @@ import { FileDisplayer } from "../files";
 import './foldersDisplayer.scss';
 
 type FoldersDisplayerProps = {
-    readonly foldersStructures: Array<FolderStructure>;
+    readonly foldersStructures: Array<ClientFolderStructure>;
     readonly isDragged: boolean;
     readonly onDragEnter: DragEventHandler<HTMLDivElement>;
     readonly onDragLeave: DragEventHandler<HTMLDivElement>;
@@ -33,7 +34,7 @@ export const FoldersDisplayer = ({
         if (!path) return;
 
         for (const folder of foldersStructures) {
-            const fileInStructure = getFileInStructure(folder, `/${path}`);
+            const fileInStructure = getClientPdfFile(folder, `/${path}`);
 
             if (fileInStructure) {
                 setSelectedFile({ fileInStructure, path });

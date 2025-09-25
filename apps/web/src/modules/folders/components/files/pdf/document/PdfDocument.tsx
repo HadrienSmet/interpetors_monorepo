@@ -1,7 +1,8 @@
 import { Document, Page } from "react-pdf";
 
+import { REFERENCE_TYPES } from "@repo/types";
+
 import { useFoldersManager, usePdfFile, usePdfTools } from "../../../../contexts";
-import { REFERENCE_TYPES } from "../../../../types";
 
 import { InteractiveNote, InteractiveVocabulary } from "../textInteractive";
 

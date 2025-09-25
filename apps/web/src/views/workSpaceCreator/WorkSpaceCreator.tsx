@@ -4,6 +4,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { Button, LanguageSelect } from "@/components";
 import { useCssVariable } from "@/hooks";
 import { CreateWorkspaceParams, WorkspacesProvider } from "@/modules";
+import { capitalize, getNativeName } from "@/utils";
 
 import { CreationStep, creationSteps, useWorkSpaceCreator } from "./useWorkSpaceCreator";
 import "./workSpaceCreator.scss";
@@ -32,7 +33,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
                         className={`work-language ${workspace.nativeLanguage === language ? "selected" : ""}`}
                         key={language}
                     >
-                        <p>{language}</p>
+                        <p>{capitalize(getNativeName(language) ?? "")}</p>
                         <MdClear onClick={() => removeWorkLanguage(language)} />
                     </div>
                 ))}
@@ -50,7 +51,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
                         key={language}
                         onClick={() => handleNativeLanguage(language)}
                     >
-                        <p>{language}</p>
+                        <p>{capitalize(getNativeName(language) ?? "")}</p>
                     </div>
                 ))}
             </div>

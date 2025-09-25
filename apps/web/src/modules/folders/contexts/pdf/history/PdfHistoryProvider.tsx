@@ -1,8 +1,17 @@
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
 
+import {
+    GENERATED_ELEMENTS,
+    CanvasElement,
+    ClientPdfFile,
+    PdfElement,
+    PdfFileElements,
+    Note,
+    ReferenceElement,
+} from "@repo/types";
+
 import { usePreparationVocabulary } from "@/modules/vocabulary";
 
-import { CanvasElement, FileInStructure, GENRATED_ELEMENTS, PdfElement, PdfFileElements, PdfNote, PdfVocabulary, ReferenceElement } from "../../../types";
 import { FILE_ELEMENTS, FIRST_PAGE, getCanvasElements, getPdfElements, getInterractiveReference } from "../../../utils";
 
 import { useFoldersManager } from "../../manager";
@@ -11,12 +20,12 @@ import { usePdfFile } from "../file";
 
 import { HistoryAction, PdfHistoryContext, PdfHistoryContextType } from "./PdfHistoryContext";
 
-const DEFAULT_INDEX = -1;
+const DEFAULT_INDEX = -1 as const;
 /**
  * Responsible to update the folders structure and the vocabulary on user actions
  */
 export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
-    const [historyIndex, setHistoryIndex] = useState(DEFAULT_INDEX);
+    const [historyIndex, setHistoryIndex] = useState<number>(DEFAULT_INDEX);
     const [savedElements, setSavedElements] = useState<PdfFileElements>({ ...FILE_ELEMENTS });
     const [userActions, setUserActions] = useState<Array<HistoryAction>>([]);
 
@@ -52,7 +61,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         const copy = [...state];
 
         const actionIndex = copy.findIndex(action => (
-            action.elementToGenerate?.type === GENRATED_ELEMENTS.NOTE &&
+            action.elementToGenerate?.type === GENERATED_ELEMENTS.NOTE &&
             action.elementToGenerate.element.color === color &&
             action.elementToGenerate.element.id === id
         ));
@@ -67,9 +76,9 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         const updated: HistoryAction = {
             ...currentAction,
             elementToGenerate: {
-                type: GENRATED_ELEMENTS.NOTE,
+                type: GENERATED_ELEMENTS.NOTE,
                 element: {
-                    ...(currentAction.elementToGenerate!.element as PdfNote),
+                    ...(currentAction.elementToGenerate!.element as Note),
                     note: text,
                 },
             },
@@ -100,10 +109,9 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         }
 
         const canvasElements: Array<CanvasElement> = [...savedElements.canvasElements];
-        const notes: Array<PdfNote> = [...savedElements.notes];
+        const notes: Array<Note> = [...savedElements.notes];
         const pdfElements: Array<PdfElement> = [...savedElements.pdfElements];
         const references: Array<ReferenceElement> = [...savedElements.references];
-        const vocabulary: Array<PdfVocabulary> = [...savedElements.vocabulary];
 
         const indexToUse = historyIndex + 1;
 
@@ -122,13 +130,15 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             }
 
             if (userAction.elementToGenerate) {
-                if (userAction.elementToGenerate.type === GENRATED_ELEMENTS.NOTE) {
+                if (userAction.elementToGenerate.type === GENERATED_ELEMENTS.NOTE) {
+                    const note = userAction.elementToGenerate.element;
+                    // @ts-expect-error
+                    delete note.occurence.pageIndex;
                     notes.push(userAction.elementToGenerate.element);
                 }
-                if (userAction.elementToGenerate.type === GENRATED_ELEMENTS.VOCABULARY) {
-                    vocabulary.push(userAction.elementToGenerate.element);
+                if (userAction.elementToGenerate.type === GENERATED_ELEMENTS.VOCABULARY) {
                     addToVocabulary({
-                        ...userAction.elementToGenerate.element,
+                        color: userAction.elementToGenerate.element.color,
                         ...userAction.elementToGenerate.element.occurence,
                     });
                 }
@@ -145,14 +155,14 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 
                 if (
                     userAction.elementToGenerate &&
-                    userAction.elementToGenerate.type === GENRATED_ELEMENTS.VOCABULARY
+                    userAction.elementToGenerate.type === GENERATED_ELEMENTS.VOCABULARY
                 ) {
                     remove(userAction.elementToGenerate.element.color, userAction.elementToGenerate.element.id);
                 }
             }
         }
 
-        const updatedFile: FileInStructure = {
+        const updatedFile: ClientPdfFile = {
             ...file,
             elements: {
                 ...file.elements,
@@ -161,7 +171,6 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                     notes,
                     pdfElements,
                     references,
-                    vocabulary,
                 },
             },
         };

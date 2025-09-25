@@ -1,24 +1,25 @@
 import { DragEvent, useState } from "react";
 import { Trans } from "react-i18next";
 
-import { isFileInStructure, useFoldersManager } from "../../contexts";
-import { FileInStructure, FolderStructure } from "../../types";
+import type { ClientFolderStructure, ClientPdfFile } from "@repo/types";
+
+import { isClientPdfFile, useFoldersManager } from "../../contexts";
 import { FILE_ELEMENTS, FIRST_PAGE, PDF_TYPE } from "../../utils";
 
 import { FoldersDisplayer } from "../displayer";
 
 import "./folderDropzone.scss";
 
-const getNewFileInStructure = (file: File): FileInStructure => ({
+const getNewClientPdfFile = (file: File): ClientPdfFile => ({
     elements: { [FIRST_PAGE]: { ...FILE_ELEMENTS } },
     file,
     name: file.name,
 });
 const preventDefault = (e: DragEvent<HTMLDivElement>) => e.preventDefault();
 const setNestedFile = (
-    root: FolderStructure,
+    root: ClientFolderStructure,
     path: string[],
-    file: FileInStructure
+    file: ClientPdfFile
 ): void => {
     const [head, ...rest] = path;
 
@@ -31,11 +32,11 @@ const setNestedFile = (
         root[head] = {};
     }
 
-    setNestedFile(root[head] as FolderStructure, rest, file);
+    setNestedFile(root[head] as ClientFolderStructure, rest, file);
 };
 const readDirectory = async (
     directoryEntry: FileSystemDirectoryEntry,
-    root: FolderStructure,
+    root: ClientFolderStructure,
     pathPrefix: string
 ) => {
     const reader = directoryEntry.createReader();
@@ -60,7 +61,7 @@ const readDirectory = async (
                         setNestedFile(
                             root,
                             pathArray,
-                            getNewFileInStructure(file)
+                            getNewClientPdfFile(file)
                         );
                     }
                     resolve();
@@ -70,17 +71,25 @@ const readDirectory = async (
     }
 };
 
-const doesPathExist = (structure: FolderStructure, path: string[]): boolean => {
-    if (path.length === 0) return (false);
+const doesPathExist = (structure: ClientFolderStructure, path: string[]): boolean => {
+    if (path.length === 0) {
+        return (false);
+    }
     const [head, ...rest] = path;
     const node = structure[head];
 
-    if (!node) return (false);
-    if (rest.length === 0) return (true);
+    if (!node) {
+        return (false);
+    }
+    if (rest.length === 0) {
+        return (true);
+    }
 
-    if (isFileInStructure(node)) return (false);
+    if (isClientPdfFile(node)) {
+        return (false)
+    };
 
-    return (doesPathExist(node as FolderStructure, rest));
+    return (doesPathExist(node as ClientFolderStructure, rest));
 };
 export const FolderDropzone = () => {
     const [isDragged, setIsDragged] = useState(false);
@@ -94,7 +103,7 @@ export const FolderDropzone = () => {
     const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
         preventDefault(event);
         const items = event.dataTransfer.items;
-        const newFileTree: FolderStructure = {};
+        const newFileTree: ClientFolderStructure = {};
 
         for (const item of items) {
             if (item.kind === "file") {
@@ -108,7 +117,7 @@ export const FolderDropzone = () => {
                     const file = item.getAsFile();
 
                     if (file && file.type === PDF_TYPE.type) {
-                        setNestedFile(newFileTree, [file.name], getNewFileInStructure(file));
+                        setNestedFile(newFileTree, [file.name], getNewClientPdfFile(file));
                     }
                 }
             }
@@ -140,7 +149,7 @@ export const FolderDropzone = () => {
                         onDrop={handleDrop}
                     >
                         <Trans
-                            components={{ default: <p></p> }}
+                            components={{ default: <p /> }}
                             i18nKey="inputs.folders.empty"
                         />
                     </div>

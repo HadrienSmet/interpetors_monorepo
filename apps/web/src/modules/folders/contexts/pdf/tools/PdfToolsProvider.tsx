@@ -2,23 +2,28 @@ import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
 import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
+import {
+    DRAWING_TYPES,
+    GENERATED_ELEMENTS,
+    REFERENCE_TYPES,
+
+    GenerateResourceAction,
+    Note,
+    VocabularyTerm,
+    VocabularyWithColor,
+} from "@repo/types";
+
 import { useContextMenu } from "@/contexts";
 import { getRgbColor, getRgbFromString, RgbColor } from "@/utils";
 
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "../../../components";
 import {
-    DRAWING_TYPES,
-    GENRATED_ELEMENTS,
     PDF_TOOLS,
-    REFERENCE_TYPES,
     TOOLS_ON_SELECTION,
 
     ElementAction,
-    GenerateElementAction,
     InterractiveReferenceAction,
-    PdfNote,
     PdfTool,
-    PdfVocabulary,
 } from "../../../types";
 
 import { useFoldersManager } from "../../manager";
@@ -115,10 +120,12 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         let colorKey = "";
         let id = "";
         let text = "";
-        let element: PdfNote | PdfVocabulary;
+        let element: Note | VocabularyTerm;
+
         if (isNote) {
             const { y } = rectsArray[0];
             colorKey = getRgbColor(color);
+
             const noteGroup = pdfFile.elements[pageIndex].notes.filter(elem => elem.color === colorKey);
             text = noteGroup.length > 0
                 ? `${noteGroup.length + 1}`
@@ -150,7 +157,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                     pageIndex,
                     text: wordToAdd,
                 },
-                translations: {},
+                translations: [],
             };
         }
 
@@ -194,14 +201,14 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                     rectsArray,
                 },
             };
-        const generatedElement: GenerateElementAction = isNote
+        const generatedElement: GenerateResourceAction = isNote
             ? {
-                element: element as PdfNote,
-                type: GENRATED_ELEMENTS.NOTE,
+                element: element as Note,
+                type: GENERATED_ELEMENTS.NOTE,
             }
             : {
-                element: element as PdfVocabulary,
-                type: GENRATED_ELEMENTS.VOCABULARY,
+                element: element as VocabularyWithColor,
+                type: GENERATED_ELEMENTS.VOCABULARY,
             };
         const historyAction: HistoryAction = {
             elements: [elementAction, textAction],

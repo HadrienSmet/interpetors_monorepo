@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
 
+import { Note } from "@repo/types";
+
 import { getContextError } from "@/contexts/utils";
 
-import { PdfNote } from "../../../types";
-
 type PdfNotesContextValue = {
-    readonly selectedNote: PdfNote | undefined;
+    readonly selectedNote: Note | undefined;
     readonly setSelectedNote: (id: string) => void;
 };
 

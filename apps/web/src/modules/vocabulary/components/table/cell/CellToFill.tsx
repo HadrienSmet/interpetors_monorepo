@@ -1,16 +1,20 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { VocabularyWithColor } from "@repo/types";
+
 import { InputStyleLess } from "@/components";
-import { PdfVocabulary } from "@/modules/folders";
+import { getNativeName } from "@/utils";
 
 import { usePreparationVocabulary } from "../../../contexts";
+
 type CellToFillProps = {
     readonly locale: string;
-    readonly pdfVocabulary: PdfVocabulary;
+    readonly localeIndex: number;
+    readonly pdfVocabulary: VocabularyWithColor;
 };
 export const CellToFill = (props: CellToFillProps) => {
-    const [customTranslation, setCustomTranslation] = useState(props.pdfVocabulary.translations[props.locale] ?? "");
+    const [customTranslation, setCustomTranslation] = useState(props.pdfVocabulary.translations[props.localeIndex] ?? "");
     const [isEditing, setIsEditing] = useState(false);
 
     const { addTranslation } = usePreparationVocabulary();
@@ -20,9 +24,8 @@ export const CellToFill = (props: CellToFillProps) => {
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             addTranslation({
-                color: props.pdfVocabulary.color,
-                id: props.pdfVocabulary.id,
-                locale: props.locale,
+                ...props.pdfVocabulary,
+                ...props,
                 translation: customTranslation,
             });
             setIsEditing(false);
@@ -30,7 +33,7 @@ export const CellToFill = (props: CellToFillProps) => {
     };
 
     if (
-        !(props.locale in props.pdfVocabulary.translations) ||
+        props.pdfVocabulary.translations[props.localeIndex] === "" ||
         isEditing
     ) {
         return (
@@ -38,7 +41,7 @@ export const CellToFill = (props: CellToFillProps) => {
                 <InputStyleLess
                     onChange={onChange}
                     onKeyDown={onKeyDown}
-                    placeholder={t("vocabulary.placeholders.cell", { word: props.pdfVocabulary.occurence.text, language: props.locale })}
+                    placeholder={t("vocabulary.placeholders.cell", { word: props.pdfVocabulary.occurence.text, language: getNativeName(props.locale) })}
                     style={{ width: "100%" }}
                     value={customTranslation}
                 />
@@ -52,7 +55,7 @@ export const CellToFill = (props: CellToFillProps) => {
                 onDoubleClick={() => setIsEditing(true)}
                 title={t("actions.editOnDoubleClick")}
             >
-                {props.pdfVocabulary.translations[props.locale]}
+                {props.pdfVocabulary.translations[props.localeIndex]}
             </button>
         </td>
     );

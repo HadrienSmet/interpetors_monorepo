@@ -1,29 +1,25 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 
-import { FileInStructure, FolderStructure } from "../../types";
+import { ClientFolderStructure, ClientPdfFile } from "@repo/types";
 
-import { browseStructureToActionOnFile, FileVisitor, getTargetKeys, isFileInStructure } from "./foldersManager.utils";
+import { browseStructureToActionOnFile, FileVisitor, getTargetKeys, isClientPdfFile } from "./foldersManager.utils";
 import { FileData, FoldersManagerContext, FoldersManagerContextType } from "./FoldersManagerContext";
 
 export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
-    const [foldersStructures, setFoldersStructures] = useState<Array<FolderStructure>>([]);
+    const [foldersStructures, setFoldersStructures] = useState<Array<ClientFolderStructure>>([]);
     const [selectedFile, setSelectedFile] = useState<FileData>({ fileInStructure: null, path: "" });
-
-    useEffect(() => {
-        console.log({ foldersStructures });
-    }, [foldersStructures]);
 
     // ---------- Files methods ----------
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {
-        const moveFile = (structure: FolderStructure): [FolderStructure, FileInStructure | null] => {
-            const result: FolderStructure = {};
-            let fileToMove: FileInStructure | null = null;
+        const moveFile = (structure: ClientFolderStructure): [ClientFolderStructure, ClientPdfFile | null] => {
+            const result: ClientFolderStructure = {};
+            let fileToMove: ClientPdfFile | null = null;
 
             for (const [key, value] of Object.entries(structure)) {
-                if (isFileInStructure(value) && key === fileName) {
+                if (isClientPdfFile(value) && key === fileName) {
                     fileToMove = value;
                     continue; // Remove it
-                } else if (isFileInStructure(value)) {
+                } else if (isClientPdfFile(value)) {
                     result[key] = value;
                 } else {
                     const [newSubStructure, moved] = moveFile(value);
@@ -36,7 +32,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
             return ([result, fileToMove]);
         };
 
-        const insertFile = (structure: FolderStructure, pathParts: Array<string>, fileInStructure: FileInStructure): void => {
+        const insertFile = (structure: ClientFolderStructure, pathParts: Array<string>, fileInStructure: ClientPdfFile): void => {
             const [head, ...rest] = pathParts;
 
             if (!head) return;
@@ -46,9 +42,9 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
             }
 
             if (rest.length === 0) {
-                (structure[head] as FolderStructure)[fileInStructure.file.name] = fileInStructure;
+                (structure[head] as ClientFolderStructure)[fileInStructure.file.name] = fileInStructure;
             } else {
-                insertFile(structure[head] as FolderStructure, rest, fileInStructure);
+                insertFile(structure[head] as ClientFolderStructure, rest, fileInStructure);
             }
         };
 
@@ -65,7 +61,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
             })
         ));
     };
-    const deleteFile = (target: FileInStructure) => {
+    const deleteFile = (target: ClientPdfFile) => {
         const visitor: FileVisitor = (key, value) => {
             if (value === target) return (null);
 
@@ -74,7 +70,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
 
         setFoldersStructures(state => state.map(s => browseStructureToActionOnFile(s, visitor)));
     };
-    const renameFile = (target: FileInStructure, newName: string) => {
+    const renameFile = (target: ClientPdfFile, newName: string) => {
         const visitor: FileVisitor = (key, value) => {
             if (value === target) {
                 const updatedFile = new File([value.file], newName, {
@@ -90,7 +86,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
 
         setFoldersStructures(state => state.map(s => browseStructureToActionOnFile(s, visitor)));
     };
-    const updateFile = (file: FileInStructure) => {
+    const updateFile = (file: ClientPdfFile) => {
         const visitor: FileVisitor = (key, value) => {
             if (value.name !== file.name) {
                 return ([key, value]);
@@ -120,12 +116,12 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
         const sourceParts = getTargetKeys(sourcePath);
         const destinationParts = getTargetKeys(destinatationPath);
 
-        const moveFolder = (structure: FolderStructure): [FolderStructure, FolderStructure | null] => {
-            const result: FolderStructure = {};
-            let folderToMove: FolderStructure | null = null;
+        const moveFolder = (structure: ClientFolderStructure): [ClientFolderStructure, ClientFolderStructure | null] => {
+            const result: ClientFolderStructure = {};
+            let folderToMove: ClientFolderStructure | null = null;
 
             for (const [key, value] of Object.entries(structure)) {
-                if (!isFileInStructure(value)) {
+                if (!isClientPdfFile(value)) {
                     if (sourceParts[0] === key) {
                         if (sourceParts.length === 1) {
                             // This is the folder we want to remove.
@@ -150,7 +146,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
 
             return ([result, folderToMove]);
         };
-        const insertFolder = (structure: FolderStructure, parts: string[], folder: FolderStructure): void => {
+        const insertFolder = (structure: ClientFolderStructure, parts: string[], folder: ClientFolderStructure): void => {
             const [head, ...rest] = parts;
 
             if (!head) return;
@@ -161,9 +157,9 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
 
             if (rest.length === 0) {
                 // Insert folder here
-                Object.assign((structure[head] as FolderStructure), folder);
+                Object.assign((structure[head] as ClientFolderStructure), folder);
             } else {
-                insertFolder(structure[head] as FolderStructure, rest, folder);
+                insertFolder(structure[head] as ClientFolderStructure, rest, folder);
             }
         };
 
@@ -184,20 +180,20 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
     const createFolder = (folderName: string, targetPath: string) => {
         const pathParts = getTargetKeys(targetPath);
 
-        const create = (structure: FolderStructure, parts: Array<string>): FolderStructure => {
+        const create = (structure: ClientFolderStructure, parts: Array<string>): ClientFolderStructure => {
             if (parts.length === 0) return (structure);
 
             const [current, ...rest] = parts;
-            const result: FolderStructure = {};
+            const result: ClientFolderStructure = {};
 
             for (const [key, value] of Object.entries(structure)) {
                 if (key === current) {
                     if (rest.length === 0 && !(value instanceof File)) {
                         result[key] = value;
-                        (result[key] as FolderStructure)[folderName] = {};
+                        (result[key] as ClientFolderStructure)[folderName] = {};
                     }
 
-                    if (!isFileInStructure(value)) {
+                    if (!isClientPdfFile(value)) {
                         result[key] = create(value, rest);
                     } else {
                         result[key] = value;
@@ -215,11 +211,11 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
     const deleteFolder = (targetPath: string) => {
         const pathParts = getTargetKeys(targetPath);
 
-        const removeFolder = (structure: FolderStructure, parts: Array<string>): FolderStructure => {
+        const removeFolder = (structure: ClientFolderStructure, parts: Array<string>): ClientFolderStructure => {
             if (parts.length === 0) return (structure);
 
             const [current, ...rest] = parts;
-            const result: FolderStructure = {};
+            const result: ClientFolderStructure = {};
 
             for (const [key, value] of Object.entries(structure)) {
                 if (key === current) {
@@ -228,7 +224,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
                         continue;
                     }
 
-                    if (!isFileInStructure(value)) {
+                    if (!isClientPdfFile(value)) {
                         result[key] = removeFolder(value, rest);
                     } else {
                         result[key] = value;
@@ -246,11 +242,11 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
     const renameFolder = (targetPath: string, newName: string) => {
         const pathParts = getTargetKeys(targetPath);
 
-        const changeName = (structure: FolderStructure, parts: Array<string>): FolderStructure => {
+        const changeName = (structure: ClientFolderStructure, parts: Array<string>): ClientFolderStructure => {
             if (parts.length === 0) return (structure);
 
             const [current, ...rest] = parts;
-            const result: FolderStructure = {};
+            const result: ClientFolderStructure = {};
 
             for (const [key, value] of Object.entries(structure)) {
                 if (key === current) {
@@ -259,7 +255,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
                         continue;
                     }
 
-                    if (!isFileInStructure(value)) {
+                    if (!isClientPdfFile(value)) {
                         result[key] = changeName(value, rest);
                     } else {
                         result[key] = value;
@@ -275,7 +271,7 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
         setFoldersStructures(state => state.map(str => changeName(str, pathParts)));
     };
 
-    const onDrop = (folder: FolderStructure) => setFoldersStructures(state => [...state, folder]);
+    const onDrop = (folder: ClientFolderStructure) => setFoldersStructures(state => [...state, folder]);
 
     const value: FoldersManagerContextType = {
         files: {

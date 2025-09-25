@@ -1,7 +1,8 @@
 import { createContext, useContext } from "react";
 
+import { VocabularyWithColor } from "@repo/types";
+
 import { getContextError } from "@/contexts/utils";
-import { PdfVocabulary } from "@/modules/folders";
 
 export const sortingStateRecord = {
     0: "NONE",
@@ -12,7 +13,7 @@ export type SortingIndex = keyof typeof sortingStateRecord;
 export type SortingState = typeof sortingStateRecord[SortingIndex];
 
 export type VocabularyTableContextValue = {
-    readonly list: Array<PdfVocabulary>;
+    readonly list: Array<VocabularyWithColor>;
     readonly searchingColumn: string;
     readonly sortingColumn: string | null;
     readonly sortingState: SortingState;

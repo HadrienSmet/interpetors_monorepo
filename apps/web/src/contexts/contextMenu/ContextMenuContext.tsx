@@ -1,7 +1,8 @@
 import { createContext, ReactNode, useContext } from "react";
 
+import { Position } from "@repo/types";
+
 import { getContextError } from "../utils";
-import { Position } from "@/types";
 
 export type ContextMenuItemParams =  {
     readonly children: ReactNode;

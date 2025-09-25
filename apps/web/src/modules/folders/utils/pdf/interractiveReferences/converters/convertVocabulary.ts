@@ -1,8 +1,10 @@
-import { REFERENCE_TYPES, InterractiveVocabularyAction, VocabularyReferenceElement } from "../../../../types";
+import { VocabularyReferenceElement, REFERENCE_TYPES } from "@repo/types";
+
+import { InterractiveVocabularyAction } from "../../../../types";
 
 export const convertVocabularyAction = (vocAction: InterractiveVocabularyAction): Array<VocabularyReferenceElement> | null => {
     const { element } = vocAction;
-    const { rectsArray, pageIndex, pageDimensions, id } = element;
+    const { rectsArray, pageDimensions, id } = element;
 
     if (rectsArray.length < 0) return (null);
 
@@ -11,7 +13,6 @@ export const convertVocabularyAction = (vocAction: InterractiveVocabularyAction)
             element: {
             height: targetRect.height,
             id,
-            pageIndex,
             x: targetRect.left - pageDimensions.left,
             y: targetRect.top - pageDimensions.top,
             width: targetRect.width,

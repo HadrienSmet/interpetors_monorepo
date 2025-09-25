@@ -2,11 +2,12 @@ import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from "react";
 import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
+import type { ClientPdfFile } from "@repo/types";
+
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 
 import { useFoldersManager } from "../../../contexts";
-import { FileInStructure } from "../../../types";
 
 import { FileIcon } from "../../files";
 
@@ -15,7 +16,7 @@ import { getPaddingLeft } from "./nodes.utils";
 
 type FileNodeProps =
     & Omit<TreeNodeProps, "node">
-    & { readonly node: FileInStructure; };
+    & { readonly node: ClientPdfFile; };
 export const FileNode = ({ depth, name, node, path }: FileNodeProps) => {
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
@@ -46,8 +47,9 @@ export const FileNode = ({ depth, name, node, path }: FileNodeProps) => {
     ];
 
     const handleRename = () => {
-        if (newFileName.trim() && newFileName !== node.name)
+        if (newFileName.trim() && newFileName !== node.name) {
             files.rename(node, newFileName.trim());
+        }
 
         setIsEditingFile(false);
     };

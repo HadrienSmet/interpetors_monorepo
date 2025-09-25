@@ -34,6 +34,17 @@ export const PreparationManager = () => {
     const handleDownloadVoc = () => downloadVocabulary(list, headerToUse);
     const handleDownloadFolders = () => downloadFolderAsZip(foldersStructures);
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
+    const savePreparation = () => {
+        const params = {
+            foldersStructures,
+            title,
+            vocabulary: {
+                languages,
+                list,
+            },
+        };
+        console.log(JSON.stringify({ params }));
+    };
 
     return (
         <div className="preparation-manager">
@@ -72,7 +83,7 @@ export const PreparationManager = () => {
                     <span>{t("views.new.buttons.downloadVocabulary")}</span>
                 </button>
                 <button
-                    disabled
+                    onClick={savePreparation}
                     title={t("onConstruction")}
                 >
                     <MdSave />

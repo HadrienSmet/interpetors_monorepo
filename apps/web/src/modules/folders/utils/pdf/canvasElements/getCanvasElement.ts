@@ -1,4 +1,6 @@
-import { CanvasElement, DRAWING_TYPES, ElementAction, RectangleCanvasElement } from "../../../types";
+import { DRAWING_TYPES, CanvasElement } from "@repo/types";
+
+import { ElementAction } from "../../../types";
 
 import { convertPathAction, convertRectangleAction, convertTextAction } from "./converters";
 
@@ -11,7 +13,7 @@ export const getCanvasElements = ({ element, type }: ElementAction) => {
             canvasElements.push({ type, element: pathElement });
             break;
         case DRAWING_TYPES.RECTANGLE:
-            const rectangles: Array<RectangleCanvasElement> = convertRectangleAction({ element, type });
+            const rectangles = convertRectangleAction({ element, type });
             canvasElements = rectangles.map(element => ({
                 type,
                 element,

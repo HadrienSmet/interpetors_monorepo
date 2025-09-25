@@ -67,86 +67,95 @@ model Folder {
 }
 
 model File {
-  id                 String          @id @default(uuid())
+  id                 String       @id @default(uuid())
   folderId           String
-  folder             Folder          @relation(fields: [folderId], references: [id])
+  folder             Folder       @relation(fields: [folderId], references: [id])
   name               String
-  notes              Note[]
   path               String
+  // Unifie les notes : toutes les notes (libres ou ancrées)
+  notes              Note[]
+  // Les éléments de dessin PDF (rect/path/text) pour le rendu
   pdfElements        PdfElement[]
-  pdfNotes           PdfNote[]
+  // Occurrences "sur le PDF" d’un terme (peuvent mapper à un Vocabulary global)
   pdfVocabulary      PdfVocabulary[]
+  // Surbrillances cliquables qui référencent soit une Note soit un Vocabulary
   references         Reference[]
-  vocabularyAsSource Vocabulary[]    @relation("FileAsSource")
-}
+  vocabularyAsSource Vocabulary[] @relation("FileAsSource")
 
-model PdfNote {
-  color     String
-  fileId    String
-  file      File   @relation(fields: [fileId], references: [id])
-  id        String @id @default(uuid())
-  note      String
-  occurence Json // correspond à TextOccurence
-  y         Int
-}
-
-model PdfVocabulary {
-  color        String
-  fileId       String
-  file         File        @relation(fields: [fileId], references: [id])
-  id           String      @id @default(uuid())
-  occurence    Json
-  translations Json // Record<string, string>
-  vocabulary   Vocabulary? @relation(fields: [vocabularyId], references: [id])
-  vocabularyId String?     @unique
-}
-
-model PdfElement {
-  data      Json // stores path, rect, or text shape and options
-  fileId    String
-  file      File        @relation(fields: [fileId], references: [id])
-  id        String      @id @default(uuid())
-  pageIndex Int
-  type      DrawingType
-}
-
-model Reference {
-  fileId       String
-  file         File          @relation(fields: [fileId], references: [id])
-  id           String        @id @default(uuid())
-  note         Note?         @relation(fields: [noteId], references: [id])
-  noteId       String?       @unique
-  type         ReferenceType // enum
-  vocabularyId String?       @unique
-  vocabulary   Vocabulary?   @relation(fields: [vocabularyId], references: [id])
+  @@unique([folderId, name])
 }
 
 model Note {
-  content   String
+  id        String  @id @default(uuid())
   fileId    String
-  file      File       @relation(fields: [fileId], references: [id])
-  height    Int
-  id        String     @id @default(uuid())
+  file      File    @relation(fields: [fileId], references: [id])
+
+  // Notes libres
+  content   String
   pageIndex Int
-  reference Reference?
+
+  // Pour notes "ancrées"
+  color     String?
+  occurence Json?   // TextOccurrence (payload)
+  x         Int?    // pos facultative si tu veux les afficher
+  y         Int?
+  width     Int?
+  height    Int?
+
+  reference Reference[] // plusieurs références (zones cliquables) peuvent pointer la même note
+}
+
+model Reference {
+  id           String         @id @default(uuid())
+  fileId       String
+  file         File           @relation(fields: [fileId], references: [id])
+
+  type         ReferenceType  // NOTE | VOCABULARY
+  noteId       String?
+  note         Note?          @relation(fields: [noteId], references: [id])
+  vocabularyId String?
+  vocabulary   Vocabulary?    @relation(fields: [vocabularyId], references: [id])
+
+  // Géométrie de la zone cliquable (ou de l’annotation)
+  pageIndex Int
   x         Int
   y         Int
   width     Int
+  height    Int
+}
+
+model PdfVocabulary {
+  id           String      @id @default(uuid())
+  fileId       String
+  file         File        @relation(fields: [fileId], references: [id])
+  color        String
+  occurence    Json
+  translations Json
+  vocabularyId String?     // <-- plus de @unique ici !
+  vocabulary   Vocabulary? @relation(fields: [vocabularyId], references: [id])
 }
 
 model Vocabulary {
-  id            String         @id @default(uuid())
-  pdfVocabulary PdfVocabulary?
-  preparationId String?
-  preparation   Preparation?   @relation(fields: [preparationId], references: [id])
-  reference     Reference?
-  sourceFileId  String?
-  sourceFile    File?          @relation("FileAsSource", fields: [sourceFileId], references: [id])
+  id            String       @id @default(uuid())
+  term          String       // <--- ajouté, ex: "accusamus"
   translations  Json
-  user          User           @relation(fields: [userId], references: [id])
   userId        String
+  user          User         @relation(fields: [userId], references: [id])
   workspaceId   String
-  workspace     Workspace      @relation(fields: [workspaceId], references: [id])
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id])
+
+  // optionnel : rattacher à une préparation si tu veux “geler” un snapshot
+  preparationId String?
+  preparation   Preparation? @relation(fields: [preparationId], references: [id])
+
+  // Occurrences sur pdf, et références possibles
+  pdfVocabulary PdfVocabulary[]
+  reference     Reference[]
+
+  sourceFileId  String?
+  sourceFile    File?        @relation("FileAsSource", fields: [sourceFileId], references: [id])
+
+  @@unique([workspaceId, term]) // utile pour upsert propre
 }
 
 enum DrawingType {

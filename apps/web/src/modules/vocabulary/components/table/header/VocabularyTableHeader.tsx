@@ -3,6 +3,7 @@ import { FaArrowDownAZ, FaArrowDownZA } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
 
 import { useWorkspaces } from "@/modules/workspace";
+import { capitalize, getNativeName } from "@/utils";
 
 import { SortingState, sortingStateRecord, useVocabularyTable } from "../../../contexts";
 
@@ -72,7 +73,7 @@ export const VocabularyTableHeader = () => {
                 />
                 <VocabularyTableHeaderCell
                     id={nativeLanguage}
-                    label={nativeLanguage}
+                    label={capitalize(getNativeName(nativeLanguage) ?? "")}
                 />
                 {languages
                     .filter(lng => lng !== nativeLanguage)
@@ -80,7 +81,7 @@ export const VocabularyTableHeader = () => {
                         <VocabularyTableHeaderCell
                             id={lng}
                             key={lng}
-                            label={lng}
+                            label={capitalize(getNativeName(lng) ?? "")}
                         />
                     ))
                 }

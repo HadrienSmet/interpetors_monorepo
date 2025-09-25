@@ -1,9 +1,16 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
-import { Position } from "@/types";
+import {
+    DRAWING_TYPES,
+    PathCanvasElement,
+    RectangleCanvasElement,
+    TextCanvasElement,
+    Position,
+} from "@repo/types";
+
 import { getRgbColor, rgbToRgba } from "@/utils";
 
-import { DRAWING_TYPES, PathCanvasElement, PathElementAction, PDF_TOOLS, RectangleCanvasElement, TextCanvasElement } from "../../../types";
+import { PathElementAction, PDF_TOOLS } from "../../../types";
 import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "../../../utils";
 
 import { useFoldersManager } from "../../manager";

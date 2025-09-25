@@ -1,4 +1,6 @@
-import { PathAction, PathPdfElement } from "../../../../types";
+import { PathPdfElement } from "@repo/types";
+
+import { PathAction } from "../../../../types";
 import { STROKE_SIZE, REGULAR_OPACITY } from "../../../../utils";
 
 import { getPdfRgbColor } from "./tools";
@@ -39,7 +41,6 @@ export const convertPathAction = (action: PathAction): PathPdfElement => {
     };
 
     return ({
-        pageIndex,
         path,
         options,
     });

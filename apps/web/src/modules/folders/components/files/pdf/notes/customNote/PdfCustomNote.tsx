@@ -1,14 +1,15 @@
 import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Note } from "@repo/types";
+
 import { usePdfHistory, usePdfNotes } from "../../../../../contexts";
-import { PdfNote } from "../../../../../types";
 
 import "./pdfCustomNote.scss";
 
 type NoteProps = {
-    readonly note: PdfNote;
-}
+    readonly note: Note;
+};
 export const PdfCustomNote = ({ note }: NoteProps) => {
     const [isReading, setIsReading] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);

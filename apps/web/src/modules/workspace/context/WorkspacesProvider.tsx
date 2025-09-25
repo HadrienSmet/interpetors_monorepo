@@ -9,7 +9,6 @@ import { Workspace } from "../types";
 import { CreateWorkspaceParams, WorkspacesContext } from "./WorkspacesContext";
 
 const STORAGE_KEY = "workspaceId";
-
 export const WorkspacesProvider = (props: PropsWithChildren) => {
     const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
     const [hasFetch, setHasFetch] = useState(false);

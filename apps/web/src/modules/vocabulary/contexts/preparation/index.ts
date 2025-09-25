@@ -1,2 +1,2 @@
-export * from "./VocabularyContext";
-export * from "./VocabularyProvider";
+export * from "./PreparationVocabularyContext";
+export * from "./PreparationVocabularyProvider";

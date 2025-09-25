@@ -1,6 +1,6 @@
 import { PropsWithChildren, useState } from "react";
 
-import { Position } from "@/types";
+import { Position } from "@repo/types";
 
 import { ContextMenuContext, ContextMenuContextState, ContextMenuItemParams } from "./ContextMenuContext";
 

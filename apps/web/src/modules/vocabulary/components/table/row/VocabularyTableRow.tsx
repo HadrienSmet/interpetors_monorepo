@@ -2,8 +2,9 @@ import { useMemo } from "react";
 import { MdLink } from "react-icons/md";
 import { Link } from "react-router";
 
+import { VocabularyWithColor } from "@repo/types";
+
 import { useCssVariable } from "@/hooks";
-import { PdfVocabulary } from "@/modules/folders";
 import { useWorkspaces } from "@/modules/workspace";
 import { stringToRgba } from "@/utils";
 
@@ -13,7 +14,7 @@ import { CellToFill } from "../cell";
 
 type VocabularyTableRowProps = {
     readonly index: number;
-    readonly pdfVocabulary: PdfVocabulary;
+    readonly pdfVocabulary: VocabularyWithColor;
 };
 export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
     const defaultBg = useCssVariable("--clr-txt");
@@ -51,6 +52,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
             </td>
             <CellToFill
                 locale={nativeLanguage}
+                localeIndex={0}
                 pdfVocabulary={pdfVocabulary}
             />
             {languages
@@ -59,6 +61,9 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                     <CellToFill
                         key={`cell-to-fill-${lng}-${pdfVocabulary.occurence.text}`}
                         locale={lng}
+                        localeIndex={currentWorkspace!.languages
+                            .filter(lng => lng !== nativeLanguage)
+                            .findIndex(el => el === lng) + 1}
                         pdfVocabulary={pdfVocabulary}
                     />
                 ))

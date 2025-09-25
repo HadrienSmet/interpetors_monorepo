@@ -2,8 +2,9 @@ import { PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
 import { MdDragIndicator, MdExpandLess, MdExpandMore, MdOutlineMoreHoriz, MdOutlineMoreVert } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
+import { Position } from "@repo/types";
+
 import { useCssVariable } from "@/hooks";
-import { Position } from "@/types";
 
 import { DraggableSectionProvider } from "./DraggableSectionProvider";
 import { useDraggableSection } from "./DraggableSectionContext";

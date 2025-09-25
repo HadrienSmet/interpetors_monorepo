@@ -1,6 +1,6 @@
 import { PDFDocument, PDFPage } from "pdf-lib";
 
-import { DRAWING_TYPES, FileInStructure, PathPdfElement, RectanglePdfElement, TextPdfElement } from "../../types";
+import { ClientPdfFile, DRAWING_TYPES, PathPdfElement, RectanglePdfElement, TextPdfElement } from "@repo/types";
 
 import { PDF_TYPE } from "../files";
 
@@ -14,7 +14,7 @@ const drawText = (element: TextPdfElement, page: PDFPage) => {
     page.drawText(element.text, element.options);
 };
 
-export const applyChangesOnFile = (file: FileInStructure, pdfDoc: PDFDocument, numPages: number) => {
+export const applyChangesOnFile = (file: ClientPdfFile, pdfDoc: PDFDocument, numPages: number) => {
     for (let i = 0; i < numPages; i++) {
         const { pdfElements } = file.elements[i + 1];
         const page = pdfDoc.getPage(i);
@@ -37,7 +37,7 @@ export const applyChangesOnFile = (file: FileInStructure, pdfDoc: PDFDocument, n
         }
     }
 };
-const removeDynamicElements = (pdfFile: FileInStructure) => {
+const removeDynamicElements = (pdfFile: ClientPdfFile) => {
     const copy = { ...pdfFile };
 
     for (const key in copy.elements) {
@@ -50,10 +50,10 @@ const removeDynamicElements = (pdfFile: FileInStructure) => {
 
     return (copy);
 };
-export const getCleanedAndUpdatedFile = async (pdfDoc: PDFDocument, pdfFile: FileInStructure): Promise<FileInStructure> => {
+export const getCleanedAndUpdatedFile = async (pdfDoc: PDFDocument, pdfFile: ClientPdfFile): Promise<ClientPdfFile> => {
     const updatedBytes = await pdfDoc.save();
 
-    const updatedBlob = new Blob([updatedBytes], PDF_TYPE);
+    const updatedBlob = new Blob([new Uint8Array(updatedBytes)], PDF_TYPE);
     const updatedFile = new File([updatedBlob], pdfFile.name, PDF_TYPE);
 
     const cleanedFileInStructure = removeDynamicElements(pdfFile);
@@ -64,8 +64,8 @@ export const getCleanedAndUpdatedFile = async (pdfDoc: PDFDocument, pdfFile: Fil
     });
 };
 
-export const handleSaveChanges = async (file: FileInStructure, pdfDoc: PDFDocument, numPages: number) => {
-    await applyChangesOnFile(file, pdfDoc, numPages);
+export const handleSaveChanges = async (file: ClientPdfFile, pdfDoc: PDFDocument, numPages: number) => {
+    applyChangesOnFile(file, pdfDoc, numPages);
 
     const cleanedAndUpdated = await getCleanedAndUpdatedFile(pdfDoc, file);
 
@@ -80,7 +80,7 @@ export const handleSaveChanges = async (file: FileInStructure, pdfDoc: PDFDocume
 export const downloadPdf = async (pdfDoc: PDFDocument, filename = "document.pdf") => {
     const pdfBytes = await pdfDoc.save();
 
-    const blob = new Blob([pdfBytes], PDF_TYPE);
+    const blob = new Blob([new Uint8Array(pdfBytes)], PDF_TYPE);
 
     const url = URL.createObjectURL(blob);
 

@@ -52,7 +52,12 @@ const VocabularyTableFilter = ({ closeSearch }: VocabularyTableFilterProps) => {
                     <VocabularyTableFilterColumn id={nativeLanguage} />
                     {languages
                         .filter(lng => lng !== nativeLanguage)
-                        .map(lng => (<VocabularyTableFilterColumn id={lng} />))
+                        .map(lng => (
+                            <VocabularyTableFilterColumn
+                                id={lng}
+                                key={lng}
+                            />
+                        ))
                     }
                 </div>
             </div>

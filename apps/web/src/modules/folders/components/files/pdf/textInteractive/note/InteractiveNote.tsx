@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { NoteElement } from "@repo/types";
+
 import { usePdfNotes } from "../../../../../contexts";
-import { NoteElement } from "../../../../../types";
 
 import "./interactiveNote.scss";
 
@@ -10,7 +10,6 @@ type InteractiveNoteProps = {
     readonly note: NoteElement;
 };
 export const InteractiveNote = ({ note, index, i }: InteractiveNoteProps) => {
-    useEffect(() => {console.log({ note })}, [note]);
     const { setSelectedNote } = usePdfNotes();
 
     const onClick = () => setSelectedNote(note.id);

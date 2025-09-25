@@ -1,4 +1,6 @@
-import { TextAction, TextPdfElement } from "../../../../types";
+import { TextPdfElement } from "@repo/types";
+
+import { TextAction } from "../../../../types";
 
 import { ANNOTATION_SCALE } from "../../constants";
 
@@ -27,7 +29,6 @@ export const convertTextAction = (action: TextAction): TextPdfElement => {
 
     return ({
         options,
-        pageIndex,
         text,
     });
 };

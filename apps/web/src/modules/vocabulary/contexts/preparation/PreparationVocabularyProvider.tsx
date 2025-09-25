@@ -1,22 +1,31 @@
 import { PropsWithChildren, useState } from "react";
 
-import { PdfVocabulary } from "@/modules/folders";
+import { VocabularyTerm } from "@repo/types";
+
+import { useWorkspaces } from "@/modules/workspace";
 
 import { PreparationVocabulary, WordToAdd } from "../../types";
 
-import { AddTranslationParams, PreparationVocabularyContext } from "./VocabularyContext";
+import { AddTranslationParams, PreparationVocabularyContext } from "./PreparationVocabularyContext";
 
 export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) => {
     const [vocabulary, setVocabulary] = useState<PreparationVocabulary>({});
+    const { currentWorkspace } = useWorkspaces();
 
     const addToVocabulary = (word: WordToAdd) => {
-        // TODO two methods vocToId & idToVoc
-        const wordAsId = word.text.split(" ").join("-");
-
-        if (word.color in vocabulary && wordAsId in vocabulary[word.color]) {
+        if (word.color in vocabulary && word.text in vocabulary[word.color]) {
             return;
         }
 
+        const term: VocabularyTerm = {
+            id: word.text,
+            occurence: {
+                filePath: word.filePath,
+                pageIndex: word.pageIndex,
+                text: word.text,
+            },
+            translations: Array(currentWorkspace?.languages.length).fill(""),
+        };
         setVocabulary(state => {
             const copy = { ...state };
 
@@ -24,12 +33,7 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
                 copy[word.color] = {};
             }
 
-            copy[word.color][wordAsId] = {
-                color: word.color,
-                id: wordAsId,
-                occurence: { ...word },
-                translations: {},
-            };
+            copy[word.color][word.text] = term;
 
             return (copy);
         });
@@ -41,7 +45,7 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
             params.color in copy &&
             params.id in copy[params.color]
         ) {
-            copy[params.color][params.id].translations[params.locale] = params.translation
+            copy[params.color][params.id].translations[params.localeIndex] = params.translation;
         }
 
         return (copy);
@@ -53,7 +57,7 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
 
         return (copy);
     });
-    const update = (color: string, id: string, item: PdfVocabulary) => setVocabulary(state => {
+    const update = (color: string, id: string, item: VocabularyTerm) => setVocabulary(state => {
         const copy = { ...state };
 
         const updated = {

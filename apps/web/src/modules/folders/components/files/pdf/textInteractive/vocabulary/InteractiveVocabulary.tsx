@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 
-import { VocabularyElement } from "../../../../../types";
+import { VocabularyElement } from "@repo/types";
 
 import "./interactiveVocabulary.scss";
 

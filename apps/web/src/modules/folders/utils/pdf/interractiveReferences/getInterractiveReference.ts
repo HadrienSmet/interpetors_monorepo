@@ -1,4 +1,6 @@
-import { REFERENCE_TYPES, InterractiveReferenceAction } from "../../../types";
+import { REFERENCE_TYPES } from "@repo/types";
+
+import { InterractiveReferenceAction } from "../../../types";
 
 import { convertNoteAction, convertVocabularyAction } from "./converters";
 

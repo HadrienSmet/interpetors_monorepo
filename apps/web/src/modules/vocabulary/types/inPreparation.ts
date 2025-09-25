@@ -1,4 +1,4 @@
-import { PdfVocabulary } from "@/modules/folders";
+import { VocabularyTerm } from "@repo/types";
 
 // Voc item can only belong to one color
 export type WordToAdd = {
@@ -9,5 +9,6 @@ export type WordToAdd = {
 };
 /**
  * @description Color indexed then id indexed
- * @example { "rgb-255-2-20": { "arabiatta": VocabularyItem } } */
-export type PreparationVocabulary = Record<string, Record<string, PdfVocabulary>>;
+ * @example { "rgb-255-2-20": { "arabiatta": VocabularyTerm } }
+ */
+export type PreparationVocabulary = Record<string, Record<string, VocabularyTerm>>

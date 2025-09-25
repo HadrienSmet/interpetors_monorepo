@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 
+import { ClientPdfFile } from "@repo/types";
+
 import { useFoldersManager } from "../../../contexts";
-import { FileInStructure } from "../../../types";
 
 import { SUPPORTED_TYPES } from "../icon";
 import { PdfEditor } from "../pdf";
@@ -9,7 +10,7 @@ import { PdfEditor } from "../pdf";
 import "./fileDisplayer.scss";
 
 type FileToRenderProps = {
-    readonly fileInStructure: FileInStructure;
+    readonly fileInStructure: ClientPdfFile;
     readonly path: string;
 };
 const FileToRender = (props: FileToRenderProps) => {
@@ -36,8 +37,7 @@ const FileToRender = (props: FileToRenderProps) => {
     );
 };
 
-export const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
-
+const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
 export const FileDisplayer = () => {
     const { selectedFile } = useFoldersManager();
     const { t } = useTranslation();

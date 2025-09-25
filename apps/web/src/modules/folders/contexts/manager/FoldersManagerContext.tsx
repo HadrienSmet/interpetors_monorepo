@@ -1,28 +1,28 @@
 import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
+import { ClientFolderStructure, ClientPdfFile } from "@repo/types";
+
 import { getContextError } from "@/contexts/utils";
 
-import { FileInStructure, FolderStructure } from "../../types";
-
 export type FileData = {
-    readonly fileInStructure: FileInStructure | null;
+    readonly fileInStructure: ClientPdfFile | null;
     readonly path: string;
 };
 export type FoldersManagerContextType = {
     readonly files: {
         readonly changeDirectory: (fileName: string, targetPath: string) => void;
-        readonly delete: (file: FileInStructure) => void;
-        readonly rename: (file: FileInStructure, newName: string) => void;
-        readonly update: (file: FileInStructure) => void;
+        readonly delete: (file: ClientPdfFile) => void;
+        readonly rename: (file: ClientPdfFile, newName: string) => void;
+        readonly update: (file: ClientPdfFile) => void;
     };
     readonly folders: {
         readonly changeDirectory: (source: string, destination: string) => void;
         readonly create: (name: string, destination: string) => void;
         readonly delete: (destination: string) => void;
-        readonly onDrop: (folder: FolderStructure) => void;
+        readonly onDrop: (folder: ClientFolderStructure) => void;
         readonly rename: (targetPath: string, newName: string) => void;
     };
-    readonly foldersStructures: Array<FolderStructure>;
+    readonly foldersStructures: Array<ClientFolderStructure>;
     readonly selectedFile: FileData;
     readonly setSelectedFile: Dispatch<SetStateAction<FileData>>
 };

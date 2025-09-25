@@ -1,7 +1,9 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
-import { HIGLIGHT_OPACITY, PdfVocabulary } from "@/modules/folders";
+import { VocabularyWithColor } from "@repo/types";
+
+import { HIGLIGHT_OPACITY } from "@/modules/folders";
 import { blendWithWhite, rgbStringToHex } from "@/utils";
 
 const BORDER_COLOR = "FF000000";
@@ -10,11 +12,9 @@ const CELL_HEIGHT = 25 as const;
 const CELL_WIDTH = 50 as const;
 const HEADER_HEIGHT = 30 as const;
 
-export const downloadVocabulary = async (list: Array<PdfVocabulary>, header: Array<string>, filename = "vocabulary.xlsx") => {
+export const downloadVocabulary = async (list: Array<VocabularyWithColor>, header: Array<string>, filename = "vocabulary.xlsx") => {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Vocabulaire");
-
-    const languages = Object.keys(list[0]?.translations || {});
 
     sheet.addRow(header);
     sheet.getRow(1).height = HEADER_HEIGHT;
@@ -28,7 +28,7 @@ export const downloadVocabulary = async (list: Array<PdfVocabulary>, header: Arr
     list.forEach((voc) => {
         const rowValues = [
             voc.occurence.text,
-            ...languages.map(lang => voc.translations[lang] || ""),
+            ...voc.translations,
         ];
         const row = sheet.addRow(rowValues);
 

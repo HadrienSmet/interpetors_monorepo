@@ -1,4 +1,5 @@
 ### 🚀 PNPM & Node.js ###
+dist/
 node_modules/
 .pnpm-store/
 .pnp/

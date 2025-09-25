@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { MdComment } from "react-icons/md";
 import { Trans } from "react-i18next";
 
+import { Note } from "@repo/types";
+
 import { sleep } from "@/utils";
 
 import { usePdfNotes } from "../../../../../contexts";
-import { PdfNote } from "../../../../../types";
 
 import { PdfCustomNote } from "../customNote";
 
@@ -17,10 +18,11 @@ const COMPONENT_STATE = {
     focus: "focus",
     expanded: "expanded",
 } as const;
+const CONTAINER_DYNAMIC_CLASS = "switch-shadow";
 type ComponentState = keyof typeof COMPONENT_STATE;
 
 type GroupedNotesProps = {
-    readonly group: Array<PdfNote>;
+    readonly group: Array<Note>;
     readonly y: number;
 };
 export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
@@ -47,7 +49,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
             handleClass(COMPONENT_STATE.focus);
         }
         else {
-            containerRef.current?.classList.add("switch-shadow");
+            containerRef.current?.classList.add(CONTAINER_DYNAMIC_CLASS);
             setState(COMPONENT_STATE.expanded);
             handleClass(COMPONENT_STATE.expanded);
         }
@@ -64,7 +66,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
             setPreviousState(state);
             setState(COMPONENT_STATE.default);
             handleClass(COMPONENT_STATE.default);
-            containerRef.current?.classList.remove("switch-shadow");
+            containerRef.current?.classList.remove(CONTAINER_DYNAMIC_CLASS);
         }
     };
 
@@ -73,7 +75,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
 
         if (previousState === COMPONENT_STATE.default) {
             timeoutId = setTimeout(() => {
-                containerRef.current?.classList.add("switch-shadow");
+                containerRef.current?.classList.add(CONTAINER_DYNAMIC_CLASS);
             }, ANIMATION_DURATION);
         }
 
@@ -83,17 +85,17 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
     }, [previousState]);
     useEffect(() => {
         const handleNoteSelection = async () => {
-            setState("focus");
-            handleClass("focus");
+            setState(COMPONENT_STATE.focus);
+            handleClass(COMPONENT_STATE.focus);
 
             await sleep(ANIMATION_DURATION);
 
-            containerRef.current?.classList.add("switch-shadow");
+            containerRef.current?.classList.add(CONTAINER_DYNAMIC_CLASS);
 
             await sleep(50);
 
-            setState("expanded");
-            handleClass("expanded");
+            setState(COMPONENT_STATE.expanded);
+            handleClass(COMPONENT_STATE.expanded);
         }
         if (y === selectedNote?.y) {
             handleNoteSelection();
@@ -116,7 +118,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
 
             setState(COMPONENT_STATE.default);
             handleClass(COMPONENT_STATE.default);
-            containerRef.current?.classList.remove("switch-shadow");
+            containerRef.current?.classList.remove(CONTAINER_DYNAMIC_CLASS);
         };
 
         document.addEventListener("mousedown", handleClickOutside);
