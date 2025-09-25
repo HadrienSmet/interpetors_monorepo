@@ -2,11 +2,14 @@ import { ChangeEvent, useState } from "react";
 import { MdDownload, MdSave } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
+import { ClientFolderStructure, PdfFileElements, ServerFolderStructure } from "@repo/types";
+
 import { InputStyleLess } from "@/components";
 import { useCssVariable } from "@/hooks";
 import {
     downloadFolderAsZip,
     downloadVocabulary,
+    isClientPdfFile,
     useFoldersManager,
     useVocabularyTable,
     useWorkspaces,
@@ -34,9 +37,36 @@ export const PreparationManager = () => {
     const handleDownloadVoc = () => downloadVocabulary(list, headerToUse);
     const handleDownloadFolders = () => downloadFolderAsZip(foldersStructures);
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
+    const stripFolder = (folder: ClientFolderStructure): ServerFolderStructure => {
+        const output: ServerFolderStructure = {};
+
+        for (const [key, value] of Object.entries(folder)) {
+            if (isClientPdfFile(value)) {
+                const newElements: Record<number, Omit<PdfFileElements, "canvasElements">> = {};
+                for (const [pageStr, elements] of Object.entries(value.elements)) {
+                    const page = Number(pageStr);
+                    const { canvasElements: _drop, ...rest } = elements;
+                    newElements[page] = rest;
+                }
+
+                output[key] = {
+                    ...value,
+                    elements: newElements,
+                };
+            } else {
+                output[key] = stripFolder(value as ClientFolderStructure);
+            }
+        }
+
+        return (output);
+    };
+
+    // Version publiquement exposée qui traite un tableau de dossiers
+    const removeCanvasElements = (folders: Array<ClientFolderStructure>): Array<ServerFolderStructure> => (folders.map(stripFolder));
     const savePreparation = () => {
+        const cleaned = removeCanvasElements(foldersStructures)
         const params = {
-            foldersStructures,
+            folders: cleaned,
             title,
             vocabulary: {
                 languages,
