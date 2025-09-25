@@ -6,10 +6,9 @@ import type { ClientPdfFile } from "@repo/types";
 
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
+import { FileIcon } from "@/modules/files";
 
 import { useFoldersManager } from "../../../contexts";
-
-import { FileIcon } from "../../files";
 
 import { TreeNodeProps } from "./nodes.types";
 import { getPaddingLeft } from "./nodes.utils";

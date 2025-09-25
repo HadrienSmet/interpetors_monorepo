@@ -3,10 +3,11 @@ import { useSearchParams } from "react-router";
 
 import type { ClientFolderStructure } from "@repo/types";
 
+import { FileDisplayer } from "@/modules/files";
+
 import { getClientPdfFile, useFoldersManager } from "../../contexts";
 
 import { FoldersExplorer } from "../explorer";
-import { FileDisplayer } from "../files";
 
 import './foldersDisplayer.scss';
 

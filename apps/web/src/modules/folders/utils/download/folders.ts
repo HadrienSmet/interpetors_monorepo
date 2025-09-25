@@ -4,7 +4,7 @@ import { PDFDocument } from "pdf-lib";
 
 import { ClientFolderStructure, ClientPdfFile } from "@repo/types";
 
-import { handleSaveChanges } from "./files";
+import { handleSaveChanges } from "@/modules/pdf";
 
 const generatePdfBytes = async (file: ClientPdfFile): Promise<Uint8Array> => {
     const arrayBuffer = typeof file.file === "string"

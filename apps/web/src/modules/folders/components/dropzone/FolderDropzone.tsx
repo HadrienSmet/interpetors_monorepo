@@ -3,8 +3,10 @@ import { Trans } from "react-i18next";
 
 import type { ClientFolderStructure, ClientPdfFile } from "@repo/types";
 
+import { FILE_ELEMENTS, FIRST_PAGE } from "@/modules/files";
+import { PDF_TYPE } from "@/modules/pdf";
+
 import { isClientPdfFile, useFoldersManager } from "../../contexts";
-import { FILE_ELEMENTS, FIRST_PAGE, PDF_TYPE } from "../../utils";
 
 import { FoldersDisplayer } from "../displayer";
 

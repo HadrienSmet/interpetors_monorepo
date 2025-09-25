@@ -3,7 +3,7 @@ import { saveAs } from "file-saver";
 
 import { VocabularyWithColor } from "@repo/types";
 
-import { HIGLIGHT_OPACITY } from "@/modules/folders";
+import { HIGLIGHT_OPACITY } from "@/modules/files";
 import { blendWithWhite, rgbStringToHex } from "@/utils";
 
 const BORDER_COLOR = "FF000000";
