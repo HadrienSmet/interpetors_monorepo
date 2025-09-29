@@ -38,12 +38,28 @@ model Workspace {
 }
 
 model ColorPanel {
-  colors     Json // Record<label, color>
-  id         String      @id @default(uuid())
+  colors     ColorSwatch[]
+  id         String        @id @default(uuid())
   name       String
-  user       User        @relation(fields: [userId], references: [id])
   userId     String
+  user       User          @relation(fields: [userId], references: [id])
   workspaces Workspace[]
+}
+
+model ColorSwatch {
+  id      String     @id @default(uuid())
+  name    String
+  value   String
+  panelId String
+  panel   ColorPanel @relation(fields: [panelId], references: [id])
+
+  // <<< back-relations vers les entités qui référencent ce swatch >>>
+  notes               Note[]          @relation("NoteColor")
+  pdfElementsAsFill   PdfElement[]    @relation("PdfElementFillColor")
+  pdfElementsAsStroke PdfElement[]    @relation("PdfElementStrokeColor")
+  pdfVocabulary       PdfVocabulary[] @relation("PdfVocabularyColor")
+
+  @@unique([panelId, name]) // Unique names in a same panel
 }
 
 model Preparation {
@@ -67,9 +83,9 @@ model Folder {
 }
 
 model File {
-  id                 String       @id @default(uuid())
+  id                 String          @id @default(uuid())
   folderId           String
-  folder             Folder       @relation(fields: [folderId], references: [id])
+  folder             Folder          @relation(fields: [folderId], references: [id])
   name               String
   path               String
   // Unifie les notes : toutes les notes (libres ou ancrées)
@@ -80,41 +96,42 @@ model File {
   pdfVocabulary      PdfVocabulary[]
   // Surbrillances cliquables qui référencent soit une Note soit un Vocabulary
   references         Reference[]
-  vocabularyAsSource Vocabulary[] @relation("FileAsSource")
+  vocabularyAsSource Vocabulary[]    @relation("FileAsSource")
 
   @@unique([folderId, name])
 }
 
 model Note {
-  id        String  @id @default(uuid())
-  fileId    String
-  file      File    @relation(fields: [fileId], references: [id])
+  id     String @id @default(uuid())
+  fileId String
+  file   File   @relation(fields: [fileId], references: [id])
 
-  // Notes libres
   content   String
   pageIndex Int
 
-  // Pour notes "ancrées"
-  color     String?
-  occurence Json?   // TextOccurrence (payload)
-  x         Int?    // pos facultative si tu veux les afficher
+  occurence Json?
+  x         Int?
   y         Int?
   width     Int?
   height    Int?
 
-  reference Reference[] // plusieurs références (zones cliquables) peuvent pointer la même note
+  colorMode ColorSource  @default(PANEL)
+  colorId   String?
+  color     ColorSwatch? @relation("NoteColor", fields: [colorId], references: [id])
+
+  reference Reference[]
 }
 
 model Reference {
-  id           String         @id @default(uuid())
-  fileId       String
-  file         File           @relation(fields: [fileId], references: [id])
+  id     String @id @default(uuid())
+  fileId String
+  file   File   @relation(fields: [fileId], references: [id])
 
-  type         ReferenceType  // NOTE | VOCABULARY
+  type         ReferenceType // NOTE | VOCABULARY
   noteId       String?
-  note         Note?          @relation(fields: [noteId], references: [id])
+  note         Note?         @relation(fields: [noteId], references: [id])
   vocabularyId String?
-  vocabulary   Vocabulary?    @relation(fields: [vocabularyId], references: [id])
+  vocabulary   Vocabulary?   @relation(fields: [vocabularyId], references: [id])
 
   // Géométrie de la zone cliquable (ou de l’annotation)
   pageIndex Int
@@ -124,25 +141,73 @@ model Reference {
   height    Int
 }
 
+model PdfElement {
+  id        String      @id @default(uuid())
+  fileId    String
+  file      File        @relation(fields: [fileId], references: [id])
+  pageIndex Int
+  type      DrawingType
+
+  // --- Common fields ---
+  x Float?
+  y Float?
+
+  // Z-order si tu veux contrôler le rendu (optionnel)
+  zIndex Int? @default(0)
+
+  // --- Spécifique RECTANGLE ---
+  width   Float? // RECTANGLE uniquement
+  height  Float? // RECTANGLE uniquement
+  // Opacité utilisée pour RECTANGLE & PATH (TEXT n'en a pas côté front, donc nullable)
+  opacity Float?
+
+  // --- Spécifique PATH ---
+  path        String? // PATH uniquement (d string)
+  borderWidth Float? // PATH uniquement
+
+  // --- Spécifique TEXT ---
+  text     String? // TEXT uniquement
+  fontSize Float? // TEXT uniquement (TextOptions.size)
+
+  // --- Couleurs ---
+  fillColorMode ColorSource? @default(PANEL)
+  fillColorId   String?
+  fillColor     ColorSwatch? @relation("PdfElementFillColor", fields: [fillColorId], references: [id])
+
+  strokeColorMode ColorSource? @default(PANEL)
+  strokeColorId   String?
+  strokeColor     ColorSwatch? @relation("PdfElementStrokeColor", fields: [strokeColorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fileId, pageIndex, type], name: "idx_pdf_element_page_type")
+}
+
 model PdfVocabulary {
-  id           String      @id @default(uuid())
-  fileId       String
-  file         File        @relation(fields: [fileId], references: [id])
-  color        String
+  id     String @id @default(uuid())
+  fileId String
+  file   File   @relation(fields: [fileId], references: [id])
+
   occurence    Json
   translations Json
-  vocabularyId String?     // <-- plus de @unique ici !
+
+  colorMode ColorSource  @default(PANEL)
+  colorId   String?
+  color     ColorSwatch? @relation("PdfVocabularyColor", fields: [colorId], references: [id])
+
+  vocabularyId String?
   vocabulary   Vocabulary? @relation(fields: [vocabularyId], references: [id])
 }
 
 model Vocabulary {
-  id            String       @id @default(uuid())
-  term          String       // <--- ajouté, ex: "accusamus"
-  translations  Json
-  userId        String
-  user          User         @relation(fields: [userId], references: [id])
-  workspaceId   String
-  workspace     Workspace    @relation(fields: [workspaceId], references: [id])
+  id           String    @id @default(uuid())
+  term         String // <--- ajouté, ex: "accusamus"
+  translations Json
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id])
 
   // optionnel : rattacher à une préparation si tu veux “geler” un snapshot
   preparationId String?
@@ -152,10 +217,15 @@ model Vocabulary {
   pdfVocabulary PdfVocabulary[]
   reference     Reference[]
 
-  sourceFileId  String?
-  sourceFile    File?        @relation("FileAsSource", fields: [sourceFileId], references: [id])
+  sourceFileId String?
+  sourceFile   File?   @relation("FileAsSource", fields: [sourceFileId], references: [id])
 
   @@unique([workspaceId, term]) // utile pour upsert propre
+}
+
+enum ColorSource {
+  INLINE // hard coded
+  PANEL // reference to a color variable
 }
 
 enum DrawingType {

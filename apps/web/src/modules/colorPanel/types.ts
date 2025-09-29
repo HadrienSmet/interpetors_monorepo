@@ -1,13 +1,14 @@
-/** Color indexed */
+export type ColorSwatch = {
+    readonly id: string;
+    readonly name: string;
+    readonly value: string;
+};
 export type ColorPanelType = {
-    readonly colors: Record<string, string>;
+    readonly colors: Array<ColorSwatch>;
     readonly id: string;
     readonly name: string;
 };
-export type CreateColorPanelParams =
-    & Omit<ColorPanelType, "id" | "name">
-    & { readonly name?: string | undefined; };
-
-export type PatchColorPanelParams = Partial<CreateColorPanelParams>;
-/** Id indexed */
-export type ColorPanels = Record<string, ColorPanelType>;
+export type ColorPanelInCreation = {
+    readonly colors: Array<Omit<ColorSwatch, "id">>;
+    readonly name: string | undefined;
+};

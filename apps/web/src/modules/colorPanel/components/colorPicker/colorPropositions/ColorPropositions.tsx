@@ -25,18 +25,18 @@ export const ColorPropositions = ({ isLandscape, onSelection, setColor }: ColorP
                     : "column"
             }}
         >
-            {Object.keys(colorPanel.colors).map(key => (
+            {colorPanel.colors.map(color => (
                 <button
-                    key={`proposition-${key}`}
+                    key={`proposition-${color.name}`}
                     onClick={() => {
-                        setColor(getPdfRgbColor(key));
+                        setColor(getPdfRgbColor(color.value));
 
                         if (onSelection) {
                             onSelection();
                         }
                     }}
-                    style={{ backgroundColor: key }}
-                    title={colorPanel.colors[key]!}
+                    style={{ backgroundColor: color.value }}
+                    title={color.name!}
                 />
             ))}
         </div>

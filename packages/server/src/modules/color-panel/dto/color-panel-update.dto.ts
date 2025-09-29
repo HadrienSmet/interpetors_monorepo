@@ -1,5 +1,25 @@
-import { PartialType } from "@nestjs/mapped-types";
+import { Type } from "class-transformer";
+import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
 
-import { CreateColorPanelDto } from "./color-panel-create.dto";
+export class UpdateColorPanelDto {
+    @IsOptional()
+    @IsString()
+    name?: string;
 
-export class UpdateColorPanelDto extends PartialType(CreateColorPanelDto) {}
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ColorUpdate)
+    colors!: ColorUpdate[]; // Only used to update!
+}
+
+class ColorUpdate {
+    @IsOptional()
+    @IsString()
+    id: string;
+
+    @IsString()
+    name!: string;
+
+    @IsString()
+    value!: string;
+}

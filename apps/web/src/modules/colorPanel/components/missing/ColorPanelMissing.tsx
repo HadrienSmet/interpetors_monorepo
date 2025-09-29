@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Modal } from "@/components";
 
 import { useColorPanel } from "../../contexts";
-import { ColorPanelType } from "../../types";
+import { ColorPanelInCreation } from "../../types";
 
 import { ColorPanelForm } from "../form";
 
@@ -19,7 +19,7 @@ export const ColorPanelMissing = () => {
 
     const close = () => setIsCreating(false);
     const open = () => setIsCreating(true);
-    const submit = async (colorsRecord: Omit<ColorPanelType, "id" | "name"> & { name?: string }) => {
+    const submit = async (colorsRecord: ColorPanelInCreation) => {
         await createPanel({ ...colorsRecord, name: colorsRecord.name ?? "Default" });
         // editWorkSpace({ ...currentWorkSpace!, colorPanel: id });
         close();

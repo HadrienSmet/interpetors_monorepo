@@ -1,10 +1,20 @@
-import { IsString, IsNotEmpty, IsObject } from "class-validator";
+import { Type } from "class-transformer";
+import { IsString, IsNotEmpty, IsObject, IsArray, ValidateNested } from "class-validator";
 
 export class CreateColorPanelDto {
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+    @IsString() @IsNotEmpty()
+    name!: string;
 
-    @IsObject()
-    colors: Record<string, string>; // exemple : { "Important": "#FF0000" }
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => ColorInput)
+    colors!: ColorInput[];
+}
+
+class ColorInput {
+    @IsString() @IsNotEmpty()
+    name!: string;
+
+    @IsString() @IsNotEmpty()
+    value!: string;  // "rgb(230,0,0)"
 }

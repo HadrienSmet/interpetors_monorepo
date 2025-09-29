@@ -54,7 +54,7 @@ export const ColorPanelFilled = ({ colorPanel }: ColorPanelFilledProps) => {
                 <ColorPanelForm
                     colorPanel={colorPanel}
                     isOpen={isEditing}
-                    // @ts-expect-error
+                    //@ts-expect-error
                     onSubmit={submit}
                 />
             </Modal>

@@ -1,12 +1,11 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
 import { create, getOne, patch, remove } from "../service";
-import { ColorPanelType, CreateColorPanelParams } from "../types";
+import { ColorPanelInCreation, ColorPanelType } from "../types";
 
 import { ColorPanelContext } from "./ColorPanelContext";
 
 const STORAGE_KEY = "colorPanelId";
-
 export const ColorPanelProvider = (props: PropsWithChildren) => {
     const [colorPanel, setColorPanel] = useState<ColorPanelType | null>(null);
     const [hasFetched, setHasFetched] = useState(false);
@@ -33,7 +32,7 @@ export const ColorPanelProvider = (props: PropsWithChildren) => {
         fetchColorPanel(storedItem);
     }, []);
 
-    const createPanel = async (params: CreateColorPanelParams) => {
+    const createPanel = async (params: ColorPanelInCreation) => {
         setIsLoading(true);
         const response = await create({
             ...params,
@@ -48,6 +47,7 @@ export const ColorPanelProvider = (props: PropsWithChildren) => {
         const { data } = response;
 
         localStorage.setItem(STORAGE_KEY, data.id);
+
         setColorPanel(data);
         setIsLoading(false);
     };
@@ -68,7 +68,7 @@ export const ColorPanelProvider = (props: PropsWithChildren) => {
         const response = await patch(colorPanel);
 
         if (response.success) {
-            setColorPanel(colorPanel);
+            setColorPanel(response.data);
         }
 
         setIsLoading(false);

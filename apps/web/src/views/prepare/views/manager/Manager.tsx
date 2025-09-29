@@ -61,7 +61,6 @@ export const PreparationManager = () => {
         return (output);
     };
 
-    // Version publiquement exposée qui traite un tableau de dossiers
     const removeCanvasElements = (folders: Array<ClientFolderStructure>): Array<ServerFolderStructure> => (folders.map(stripFolder));
     const savePreparation = () => {
         const cleaned = removeCanvasElements(foldersStructures)

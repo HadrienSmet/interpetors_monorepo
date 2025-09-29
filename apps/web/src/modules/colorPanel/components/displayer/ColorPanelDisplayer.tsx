@@ -1,7 +1,7 @@
 import { MdClose } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import { ColorPanelType } from "../../types";
+import { ColorSwatch } from "../../types";
 
 import "./colorPanelDisplayer.scss";
 
@@ -29,14 +29,13 @@ const ColorPanelItem = ({ color, name, onRemove }: ColorPanelItemProps) => (
     </div>
 );
 
-type ColorPanelDisplayerProps =
-    & {
-        readonly backgroundColor?: string;
-        readonly name?: string;
-        readonly onRemove?: (key: string) => void;
-        readonly paddingBottom?: number;
-    }
-    & Omit<ColorPanelType, "id" | "name">;
+type ColorPanelDisplayerProps = {
+    readonly backgroundColor?: string;
+    readonly name?: string;
+    readonly onRemove?: (key: string) => void;
+    readonly paddingBottom?: number;
+    readonly colors: Array<Omit<ColorSwatch, "id">>;
+};
 export const ColorPanelDisplayer = ({
     backgroundColor,
     colors,
@@ -67,11 +66,11 @@ export const ColorPanelDisplayer = ({
                 className="colors-list"
                 style={{ paddingBottom }}
             >
-                {Object.keys(colors).length > 0 && Object.keys(colors).map(key => (
+                {colors.length > 0 && colors.map(color => (
                     <ColorPanelItem
-                        color={key}
-                        key={key}
-                        name={colors[key]}
+                        color={color.value}
+                        name={color.name}
+                        key={color.name}
                         onRemove={onRemove}
                     />
                 ))}

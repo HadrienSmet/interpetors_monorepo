@@ -6,7 +6,7 @@ import { Button, InputStyleLess } from "@/components";
 import { useCssVariable } from "@/hooks";
 import { getRgbColor, getRoundedRgbColor, RgbColor } from "@/utils";
 
-import { ColorPanelType, CreateColorPanelParams } from "../../types";
+import { ColorPanelInCreation, ColorPanelType } from "../../types";
 
 import { ColorPicker } from "../colorPicker";
 import { ColorPanelDisplayer } from "../displayer";
@@ -66,15 +66,15 @@ const DEFAULT_COLOR = { r: .1, g: .2, b: 1 } as const;
 type ColorPanelFormProps = {
     readonly colorPanel?: ColorPanelType;
     readonly isOpen: boolean;
-    readonly onSubmit: (colorsRecord: CreateColorPanelParams) => void;
+    readonly onSubmit: (colorsRecord: ColorPanelInCreation) => void;
 };
 export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormProps) => {
     const [color, setColor] = useState<RgbColor>(DEFAULT_COLOR);
     const [colorName, setColorName] = useState("");
     const [colorPickerWidth, setColorPickerWidth] = useState(0);
-    const [colorsRecord, setColorsRecord] = useState<CreateColorPanelParams>({
+    const [colorPanelInCreation, setColorPanelInCreation] = useState<ColorPanelInCreation>({
         name: undefined,
-        colors: {},
+        colors: [],
     });
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -82,31 +82,37 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
     const { t } = useTranslation();
 
     const addColor = () => {
-        setColorsRecord(state => ({
+        setColorPanelInCreation(state => ({
             ...state,
-            colors: {
+            colors: [
                 ...state.colors,
-                [getRoundedRgbColor(color)]: colorName,
-            }
+                {
+                    value: getRoundedRgbColor(color),
+                    name: colorName,
+                },
+            ],
         }));
 
         setColorName("");
     };
-    const onChange = (e: ChangeEvent<HTMLInputElement>) => setColorsRecord(state => ({
+    const onChange = (e: ChangeEvent<HTMLInputElement>) => setColorPanelInCreation(state => ({
         ...state,
         name: e.target.value,
     }));
-    const removeColor = (color: string) => setColorsRecord(state => {
+    const removeColor = (color: string) => setColorPanelInCreation(state => {
         const copy = { ...state };
 
-        delete copy.colors[color];
+        const filteredColors = copy.colors.filter(clr => clr.value !== color);
 
-        return (copy);
-    })
+        return ({
+            ...copy,
+            colors: filteredColors,
+        });
+    });
 
     useEffect(() => {
-        if (colorPanel) setColorsRecord(colorPanel);
-    }, []);
+        if (colorPanel) setColorPanelInCreation(colorPanel);
+    }, [colorPanel]);
     useEffect(() => {
         if (isOpen && containerRef.current) {
             const resizeObserver = new ResizeObserver(() => {
@@ -135,7 +141,7 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
                 <InputStyleLess
                     onChange={onChange}
                     placeholder={t("colorPanel.title.placeholder")}
-                    value={colorsRecord.name}
+                    value={colorPanelInCreation.name}
                 />
             </div>
             <div className="form-section">
@@ -157,7 +163,7 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
                     </div>
                     <div className="color-displayer-container">
                         <ColorPanelDisplayer
-                            {...colorsRecord}
+                            {...colorPanelInCreation}
                             paddingBottom={80}
                             onRemove={removeColor}
                         />
@@ -171,9 +177,9 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
                 </div>
             </div>
             <Button
-                disabled={Object.keys(colorsRecord.colors).length < 1}
+                disabled={colorPanelInCreation.colors.length < 1}
                 label={t("actions.confirm")}
-                onClick={() => onSubmit(colorsRecord)}
+                onClick={() => onSubmit(colorPanelInCreation)}
             />
         </div>
     );

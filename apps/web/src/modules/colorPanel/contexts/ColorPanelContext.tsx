@@ -2,12 +2,12 @@ import { createContext, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
-import { ColorPanelType, CreateColorPanelParams } from "../types";
+import { ColorPanelInCreation, ColorPanelType } from "../types";
 
 /** Provides basic methods to interacts with the color panels */
 type ColorPanelContextType = {
     readonly colorPanel: ColorPanelType | null;
-    readonly createPanel: (colorPanel: CreateColorPanelParams) => Promise<void>;
+    readonly createPanel: (colorPanel: ColorPanelInCreation) => Promise<void>;
     readonly deletePanel: (id: string) => void;
     readonly isLoading: boolean;
     readonly hasFetched: boolean;
