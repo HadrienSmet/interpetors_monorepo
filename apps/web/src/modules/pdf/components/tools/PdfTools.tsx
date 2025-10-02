@@ -75,7 +75,11 @@ const PdfToolsChild = () => {
 
     const togglePickingColor = () => setIsPickingColor(state => !state);
     const handlePickerColor = (value: RgbColor) => setColor({ kind: ColorKind.INLINE, value });
-    const handlePropositionColor = (colorSwatch: ColorSwatch) => setColor({ kind: ColorKind.PANEL, value: colorSwatch.id });
+    const handlePropositionColor = (colorSwatch: ColorSwatch) => setColor({
+        kind: ColorKind.PANEL,
+        lastValue: colorSwatch.value,
+        value: colorSwatch.id,
+    });
 
     // Cleaning the state on closing panel tools
     useEffect(() => {

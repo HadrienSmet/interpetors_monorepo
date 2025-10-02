@@ -12,6 +12,7 @@ import {
     VocabularyTerm,
     ActionColor,
     ColorKind,
+    CanvasColor,
 } from "@repo/types";
 
 import { useContextMenu } from "@/contexts";
@@ -121,7 +122,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         let id = "";
         let text = "";
         let element: Note | VocabularyTerm;
-        const canvasColor = color.kind === ColorKind.PANEL
+        const canvasColor: CanvasColor = color.kind === ColorKind.PANEL
             ? color
             : {
                 kind: ColorKind.INLINE,

@@ -1,4 +1,4 @@
-import { ColorKind, TextCanvasElement } from "@repo/types";
+import { CanvasColor, ColorKind, TextCanvasElement } from "@repo/types";
 
 import { ANNOTATION_SCALE, TextAction } from "@/modules/files";
 import { getRgbColor } from "@/utils";
@@ -6,7 +6,7 @@ import { getRgbColor } from "@/utils";
 export const convertTextAction = (action: TextAction): TextCanvasElement => {
     const { color, pageDimensions, rect, text } = action.element;
 
-    const colorToUse = color.kind === ColorKind.PANEL
+    const colorToUse: CanvasColor = color.kind === ColorKind.PANEL
         ? color
         : {
             kind: ColorKind.INLINE,

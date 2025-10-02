@@ -11,7 +11,7 @@ import {
 import { useColorPanel } from "@/modules/colorPanel";
 import { HIGLIGHT_OPACITY, PathElementAction, PDF_TOOLS, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
-import { handleActionColor, handleCanvasColor, rgbToRgba } from "@/utils";
+import { handleActionColor, handleCanvasColor, rgbToRgba, stringToRgba } from "@/utils";
 
 import { usePdfFile } from "../file";
 import { HistoryAction, usePdfHistory } from "../history";
@@ -124,12 +124,12 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         }
     };
     const drawRectOnMount = (rectangleElement: RectangleCanvasElement) => {
-        console.log("DrawRectOnMout");
         const ctx = canvasContextRef.current;
 
         if (!ctx) return;
 
-        const fillStyle = handleCanvasColor(rectangleElement.color, colorPanel);
+        const fillStyle = stringToRgba(handleCanvasColor(rectangleElement.color, colorPanel), rectangleElement.opacity);
+
         if (!fillStyle) return;
 
         ctx.fillStyle = fillStyle;

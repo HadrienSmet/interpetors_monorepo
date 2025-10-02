@@ -32,6 +32,7 @@ type PdfInlineColor = {
 type PanelColor = {
     readonly kind: ColorKind.PANEL;
     readonly value: string;
+    readonly lastValue: string;
 };
 export type ActionColor =
     | ActionInlineColor

@@ -1,4 +1,4 @@
-import { ColorKind, PathCanvasElement } from "@repo/types";
+import { CanvasColor, ColorKind, PathCanvasElement } from "@repo/types";
 
 import { PathAction } from "@/modules/files";
 import { getRgbColor } from "@/utils";
@@ -6,7 +6,7 @@ import { getRgbColor } from "@/utils";
 export const convertPathAction = (pathAction: PathAction): PathCanvasElement => {
     const { element } = pathAction;
 
-    const colorToUse = element.color.kind === ColorKind.PANEL
+    const colorToUse: CanvasColor = element.color.kind === ColorKind.PANEL
         ? element.color
         : {
             kind: ColorKind.INLINE,
