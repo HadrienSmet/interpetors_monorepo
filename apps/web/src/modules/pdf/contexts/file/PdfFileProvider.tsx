@@ -1,6 +1,7 @@
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
+import { useColorPanel } from "@/modules/colorPanel";
 import { useFoldersManager } from "@/modules/folders";
 import { sleep } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
@@ -23,6 +24,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const pageRef = useRef<HTMLDivElement | null>(null);
     const renderedPages = useRef(0);
 
+    const { colorPanel } = useColorPanel();
     const { files, selectedFile } = useFoldersManager();
 
     const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
@@ -43,8 +45,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
             return;
         }
 
-        const updatedFile = await handleSaveChanges(pdfFile, pdfDoc, numPages);
-
+        const updatedFile = await handleSaveChanges(pdfFile, pdfDoc, numPages, colorPanel);
         files.update(updatedFile);
 
         return (pdfDoc);
@@ -66,7 +67,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     // Removes the loader when the pdf is displayed
     useEffect(() => {
         if (isPdfRendered) {
-            // Between 200 and 500 ms
+            // Between 400 and 700 ms
             const randomTimeout = Math.ceil((Math.random() * 300)) + 400;
             setTimeout(() => {
                 setDisplayLoader(false);

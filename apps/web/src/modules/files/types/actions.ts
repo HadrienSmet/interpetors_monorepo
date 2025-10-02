@@ -1,11 +1,10 @@
-import { ClientPdfFile, Position, DRAWING_TYPES, REFERENCE_TYPES } from "@repo/types";
+import { ClientPdfFile, Position, DRAWING_TYPES, REFERENCE_TYPES, ActionColor } from "@repo/types";
 
 import { PdfTool } from "@/modules/pdf";
-import { RgbColor } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 type ActionElement = {
-    readonly color: RgbColor;
+    readonly color: ActionColor;
     readonly pageDimensions: DOMRect;
     readonly pageIndex: number;
     readonly pdfDoc: PDFDocument;

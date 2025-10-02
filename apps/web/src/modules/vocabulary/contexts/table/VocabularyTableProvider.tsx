@@ -1,8 +1,10 @@
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 
-import { VocabularyTerm, VocabularyWithColor } from "@repo/types";
+import { VocabularyTerm } from "@repo/types";
 
+import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
+import { handleCanvasColor } from "@/utils";
 
 import { usePreparationVocabulary } from "../preparation";
 
@@ -17,7 +19,8 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
     const [searchValue, setSearchValue] = useState("");
     const [sortingStateIndex, setSortingStateIndex] = useState<SortingIndex>(0);
 
-    const { vocabulary } = usePreparationVocabulary();
+    const { colorPanel } = useColorPanel();
+    const { preparationVocabulary } = usePreparationVocabulary();
     const { currentWorkspace } = useWorkspaces();
 
     const languages = useMemo(() => (
@@ -27,18 +30,14 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
     const baseVocabulary: Record<string, Array<VocabularyTerm>> = useMemo(() => {
         const output: Record<string, Array<VocabularyTerm>> = {};
 
-        for (const clr in vocabulary) {
-            const array = [];
+        for (const group of preparationVocabulary) {
+            const color = handleCanvasColor(group.colorToUse, colorPanel);
 
-            for (const id in vocabulary[clr]) {
-                array.push(vocabulary[clr][id]);
-            }
-
-            output[clr] = array;
+            output[color] = group.terms;
         }
 
         return (output);
-    }, [vocabulary]);
+    }, [preparationVocabulary]);
     const filteredList: Record<string, Array<VocabularyTerm>> = useMemo(() => {
         if (!searchValue) {
             return (baseVocabulary);
@@ -69,14 +68,14 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
 
         return (output);
     }, [baseVocabulary, searchValue, searchingColumn]);
-    const sortedList: Array<VocabularyWithColor> = useMemo(() => {
+    const sortedList: Array<VocabularyTerm> = useMemo(() => {
         const sortDirection = sortingStateRecord[sortingStateIndex];
-        const vocList = [];
+        const vocList: Array<VocabularyTerm> = [];
         for (const clr in filteredList) {
             const current = filteredList[clr];
 
             // TODO might have to sort alphabetically the terms within the color segments
-            vocList.push(...current.map(term => ({ ...term, color: clr })));
+            vocList.push(...current.map(term => ({ ...term })));
         }
 
         if (sortDirection === "NONE" || !sortingColumn) {

@@ -1,8 +1,6 @@
-import { RectanglePdfElement } from "@repo/types";
+import { ColorKind, PdfColor, RectanglePdfElement } from "@repo/types";
 
-import { HIGLIGHT_OPACITY, RectangleAction, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
-
-import { PDF_TOOLS } from "../../../../types";
+import { HIGLIGHT_OPACITY, PDF_TOOLS, RectangleAction, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
 
 import { getPdfRgbColor } from "./tools";
 
@@ -16,7 +14,12 @@ export const convertRectangleAction = (action: RectangleAction): Array<Rectangle
     const opacity = isHighlight
         ? HIGLIGHT_OPACITY
         : REGULAR_OPACITY;
-    const pdfColor = getPdfRgbColor(color);
+    const colorToUse: PdfColor = color.kind === ColorKind.PANEL
+        ? color
+        : {
+            kind: ColorKind.INLINE,
+            value: getPdfRgbColor(color.value),
+        };
 
     return (
         rectsArray.map(rect => {
@@ -34,7 +37,7 @@ export const convertRectangleAction = (action: RectangleAction): Array<Rectangle
             const y = pageHeight - scale(rect.bottom - pageDimensions.top);
 
             return ({
-                color: pdfColor,
+                color: colorToUse,
                 height,
                 opacity,
                 width,

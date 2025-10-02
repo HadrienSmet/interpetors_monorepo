@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import { MdLink } from "react-icons/md";
 import { Link } from "react-router";
 
-import { VocabularyWithColor } from "@repo/types";
+import { VocabularyTerm } from "@repo/types";
 
 import { useCssVariable } from "@/hooks";
+import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
-import { stringToRgba } from "@/utils";
+import { handleCanvasColor, stringToRgba } from "@/utils";
 
 import { useVocabularyTable } from "../../../contexts";
 
@@ -14,15 +15,17 @@ import { CellToFill } from "../cell";
 
 type VocabularyTableRowProps = {
     readonly index: number;
-    readonly pdfVocabulary: VocabularyWithColor;
+    readonly pdfVocabulary: VocabularyTerm;
 };
 export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
+    const { colorPanel } = useColorPanel();
     const defaultBg = useCssVariable("--clr-txt");
     const { sortingState } = useVocabularyTable();
     const { currentWorkspace } = useWorkspaces();
 
     const { languages, nativeLanguage } = currentWorkspace!;
 
+    const vocColor = useMemo(() => (handleCanvasColor(pdfVocabulary.color, colorPanel)), [pdfVocabulary.color, colorPanel]);
     const backgroundColor = useMemo(() => {
         if (sortingState !== "NONE") {
             if (index % 2 === 0) {
@@ -36,7 +39,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
             ? .1
             : .25;
 
-        return (stringToRgba(pdfVocabulary.color, opacity));
+        return (stringToRgba(vocColor, opacity));
     }, [pdfVocabulary.color, index, sortingState]);
 
     return (

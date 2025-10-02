@@ -10,6 +10,7 @@ import {
     downloadFolderAsZip,
     downloadVocabulary,
     isClientPdfFile,
+    useColorPanel,
     useFoldersManager,
     useVocabularyTable,
     useWorkspaces,
@@ -20,6 +21,7 @@ import "./manager.scss";
 export const PreparationManager = () => {
     const [title, setTitle] = useState("");
 
+    const { colorPanel } = useColorPanel();
     const inputSize = useCssVariable("--size-xl");
     const { foldersStructures } = useFoldersManager();
     const { t } = useTranslation();
@@ -34,8 +36,8 @@ export const PreparationManager = () => {
         ...languages.filter(lng => lng !== nativeLanguage)
     ];
 
-    const handleDownloadVoc = () => downloadVocabulary(list, headerToUse);
-    const handleDownloadFolders = () => downloadFolderAsZip(foldersStructures);
+    const handleDownloadVoc = () => downloadVocabulary(list, headerToUse, colorPanel);
+    const handleDownloadFolders = () => downloadFolderAsZip(foldersStructures, colorPanel);
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
     const stripFolder = (folder: ClientFolderStructure): ServerFolderStructure => {
         const output: ServerFolderStructure = {};

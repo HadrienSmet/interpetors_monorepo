@@ -1,9 +1,7 @@
-import { RectangleCanvasElement } from "@repo/types"
+import { ColorKind, RectangleCanvasElement } from "@repo/types";
 
-import { HIGLIGHT_OPACITY, RectangleAction, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
+import { HIGLIGHT_OPACITY, PDF_TOOLS, RectangleAction, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
 import { rgbToRgba } from "@/utils/colors";
-
-import { PDF_TOOLS } from "../../../../types";
 
 export const convertRectangleAction = (action: RectangleAction): Array<RectangleCanvasElement> => {
     const { color, pageDimensions, rectsArray, tool } = action.element;
@@ -21,6 +19,12 @@ export const convertRectangleAction = (action: RectangleAction): Array<Rectangle
             const opacity = isHighlight
                 ? HIGLIGHT_OPACITY
                 : REGULAR_OPACITY;
+            const colorToUse = color.kind === ColorKind.PANEL
+                ? color
+                : {
+                    kind: ColorKind.INLINE,
+                    value: rgbToRgba(color.value, opacity),
+                };
             const x = rect.left - pageDimensions.left;
             const y = isHighlight
                 ? rect.top - pageDimensions.top
@@ -33,7 +37,7 @@ export const convertRectangleAction = (action: RectangleAction): Array<Rectangle
                 width,
                 height,
                 opacity: REGULAR_OPACITY,
-                color: rgbToRgba(color, opacity),
+                color: colorToUse,
             });
         })
     );

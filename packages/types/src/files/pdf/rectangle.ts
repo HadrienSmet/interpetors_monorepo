@@ -1,10 +1,9 @@
-import { Color } from "pdf-lib";
-
+import { PdfColor } from "../../colors";
 import { RectangleElement } from "../../common";
 
 export type RectanglePdfElement =
     & RectangleElement
     & {
-        readonly color: Color;
+        readonly color: PdfColor;
         readonly opacity: number;
     };

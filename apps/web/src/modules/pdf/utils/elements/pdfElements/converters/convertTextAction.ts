@@ -1,4 +1,4 @@
-import { TextPdfElement } from "@repo/types";
+import { ColorKind, PdfColor, TextPdfElement } from "@repo/types";
 
 import { ANNOTATION_SCALE, TextAction } from "@/modules/files";
 
@@ -7,6 +7,12 @@ import { getPdfRgbColor } from "./tools";
 export const convertTextAction = (action: TextAction): TextPdfElement => {
     const { color, pageDimensions, pageIndex, pdfDoc, rect, text } = action.element;
 
+    const colorToUse: PdfColor = color.kind === ColorKind.PANEL
+        ? color
+        : {
+            kind: ColorKind.INLINE,
+            value: getPdfRgbColor(color.value),
+        };
     const page = pdfDoc.getPage(pageIndex - 1);
     const { width: pageWidth, height: pageHeight } = page.getSize();
 
@@ -19,7 +25,7 @@ export const convertTextAction = (action: TextAction): TextPdfElement => {
     const y = (pageHeight - scale(rect.bottom - pageDimensions.top)) + scale(size);
 
     const options = {
-        color: getPdfRgbColor(color),
+        color: colorToUse,
         size,
         x,
         y,

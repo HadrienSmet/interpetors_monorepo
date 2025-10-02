@@ -1,7 +1,10 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Note } from "@repo/types";
+
+import { useColorPanel } from "@/modules/colorPanel";
+import { handleCanvasColor } from "@/utils";
 
 import { usePdfHistory, usePdfNotes } from "../../../contexts";
 
@@ -15,7 +18,10 @@ export const PdfCustomNote = ({ note }: NoteProps) => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [noteContent, setNoteContent] = useState("");
 
+    const { colorPanel } = useColorPanel();
+    const { updateNoteInHistory } = usePdfHistory();
     const { selectedNote, setSelectedNote } = usePdfNotes();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (selectedNote?.id === note.id) {
@@ -24,10 +30,11 @@ export const PdfCustomNote = ({ note }: NoteProps) => {
         }
     }, [note, selectedNote]);
 
-    const { updateNoteInHistory } = usePdfHistory();
-    const { t } = useTranslation();
+    const splittedId = note.id.split("-");
+    const noteIndex = splittedId[splittedId.length-1];
+    const noteColor = useMemo(() => (handleCanvasColor(note.color, colorPanel)), [note.color, colorPanel]);
 
-    const updateNote = () => updateNoteInHistory(note.color, note.id, noteContent);
+    const updateNote = () => updateNoteInHistory(noteColor, note.id, noteContent);
 
     const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => setNoteContent(e.target.value);
     const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -52,9 +59,6 @@ export const PdfCustomNote = ({ note }: NoteProps) => {
     };
     const toggleReadMode = () => setIsReading(state => !state);
 
-    const splittedId = note.id.split("-");
-    const noteIndex = splittedId[splittedId.length-1];
-
     return (
         <div
             className="document-note"
@@ -65,7 +69,7 @@ export const PdfCustomNote = ({ note }: NoteProps) => {
         >
             <div
                 className="document-note-indicator"
-                style={{ backgroundColor: note.color }}
+                style={{ backgroundColor: noteColor }}
             />
             <p>{noteIndex}</p>
             {(

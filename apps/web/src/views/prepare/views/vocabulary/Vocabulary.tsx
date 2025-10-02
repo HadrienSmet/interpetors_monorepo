@@ -5,12 +5,12 @@ import { usePreparationVocabulary, VocabularyTable } from "@/modules";
 import "./vocabulary.scss";
 
 export const Vocabulary = () => {
-    const { vocabulary } = usePreparationVocabulary();
+    const { preparationVocabulary } = usePreparationVocabulary();
     const { t } = useTranslation();
 
     return (
         <section className="vocabulary">
-            {Object.keys(vocabulary).length > 0
+            {preparationVocabulary.length > 0
                 ? (<VocabularyTable />)
                 : (
                     <div className="vocabulary-empty">

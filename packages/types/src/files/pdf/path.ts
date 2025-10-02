@@ -1,7 +1,7 @@
-import { Color } from "pdf-lib";
+import { PdfColor } from "../../colors";
 
 export type PathPdfOptions = {
-    readonly borderColor: Color;
+    readonly borderColor: PdfColor;
     readonly borderWidth: number;
     readonly opacity: number;
     readonly x: number;

@@ -10,9 +10,11 @@ import {
     ReferenceElement,
 } from "@repo/types";
 
+import { useColorPanel } from "@/modules/colorPanel";
 import { FILE_ELEMENTS, FIRST_PAGE } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
 import { usePreparationVocabulary } from "@/modules/vocabulary";
+import { handleCanvasColor } from "@/utils";
 
 import { getCanvasElements, getInterractiveReference, getPdfElements } from "../../utils";
 
@@ -29,6 +31,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const [savedElements, setSavedElements] = useState<PdfFileElements>({ ...FILE_ELEMENTS });
     const [userActions, setUserActions] = useState<Array<HistoryAction>>([]);
 
+    const { colorPanel } = useColorPanel();
     const { files, selectedFile } = useFoldersManager();
     const { pageIndex } = usePdfFile();
     const { addToVocabulary, remove } = usePreparationVocabulary();
@@ -60,11 +63,22 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const updateNoteInHistory = (color: string, id: string, text: string) => setUserActions(state => {
         const copy = [...state];
 
-        const actionIndex = copy.findIndex(action => (
-            action.elementToGenerate?.type === GENERATED_ELEMENTS.NOTE &&
-            action.elementToGenerate.element.color === color &&
-            action.elementToGenerate.element.id === id
-        ));
+        const actionIndex = copy.findIndex(action => {
+            if (
+                !action.elementToGenerate ||
+                action.elementToGenerate.type !== GENERATED_ELEMENTS.NOTE
+            ) {
+                return (false);
+            }
+
+            const currentColor = handleCanvasColor(action.elementToGenerate.element.color, colorPanel);
+
+            return (
+                action.elementToGenerate?.type === GENERATED_ELEMENTS.NOTE &&
+                action.elementToGenerate.element.id === id &&
+                currentColor === color
+            );
+        });
 
         if (actionIndex === -1) {
             // No need to update it since got from file structure
@@ -134,6 +148,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                     const note = userAction.elementToGenerate.element;
                     // @ts-expect-error
                     delete note.occurence.pageIndex;
+
                     notes.push(userAction.elementToGenerate.element);
                 }
                 if (userAction.elementToGenerate.type === GENERATED_ELEMENTS.VOCABULARY) {

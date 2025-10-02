@@ -1,7 +1,7 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { VocabularyWithColor } from "@repo/types";
+import { VocabularyTerm } from "@repo/types";
 
 import { InputStyleLess } from "@/components";
 import { getNativeName } from "@/utils";
@@ -11,7 +11,7 @@ import { usePreparationVocabulary } from "../../../contexts";
 type CellToFillProps = {
     readonly locale: string;
     readonly localeIndex: number;
-    readonly pdfVocabulary: VocabularyWithColor;
+    readonly pdfVocabulary: VocabularyTerm;
 };
 export const CellToFill = (props: CellToFillProps) => {
     const [customTranslation, setCustomTranslation] = useState(props.pdfVocabulary.translations[props.localeIndex] ?? "");

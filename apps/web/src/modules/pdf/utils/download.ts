@@ -1,20 +1,44 @@
-import { PDFDocument, PDFPage } from "pdf-lib";
+import { PDFDocument, PDFPage, PDFPageDrawRectangleOptions, PDFPageDrawSVGOptions, PDFPageDrawTextOptions } from "pdf-lib";
 
-import { ClientPdfFile, DRAWING_TYPES, PathPdfElement, RectanglePdfElement, TextPdfElement } from "@repo/types";
+import { ClientPdfFile, ColorKind, DRAWING_TYPES, PdfColor } from "@repo/types";
+
+import { ColorPanelType } from "@/modules/colorPanel";
+import { getRgbFromString } from "@/utils";
 
 import { PDF_TYPE } from "./const";
+import { getPdfRgbColor } from "./elements";
 
-const drawPath = (element: PathPdfElement, page: PDFPage) => {
-    page.drawSvgPath(element.path, element.options);
+type DrawPathParams = {
+    readonly path: string;
+    readonly options: PDFPageDrawSVGOptions;
 };
-const drawRectangle = (element: RectanglePdfElement, page: PDFPage) => {
-    page.drawRectangle(element);
+const drawPath = (params: DrawPathParams, page: PDFPage) => {
+    page.drawSvgPath(params.path, params.options);
 };
-const drawText = (element: TextPdfElement, page: PDFPage) => {
-    page.drawText(element.text, element.options);
+const drawRectangle = (params: PDFPageDrawRectangleOptions, page: PDFPage) => {
+    page.drawRectangle(params);
+};
+type DrawTextParams = {
+    readonly text: string;
+    readonly options: PDFPageDrawTextOptions;
+};
+const drawText = (params: DrawTextParams, page: PDFPage) => {
+    page.drawText(params.text, params.options);
 };
 
-export const applyChangesOnFile = (file: ClientPdfFile, pdfDoc: PDFDocument, numPages: number) => {
+export const applyChangesOnFile = (file: ClientPdfFile, pdfDoc: PDFDocument, numPages: number, colorPanel: ColorPanelType | null) => {
+    const getColor = (pdfColor: PdfColor) => {
+        if (pdfColor.kind === ColorKind.INLINE) {
+            return (pdfColor.value);
+        }
+
+        const colorSwatch = colorPanel?.colors.find(clr => clr.id === pdfColor.value);
+        if (!colorSwatch) {
+            throw new Error("Should use lastValue");
+        }
+
+        return (getPdfRgbColor(getRgbFromString(colorSwatch.value)));
+    };
     for (let i = 0; i < numPages; i++) {
         const { pdfElements } = file.elements[i + 1];
         const page = pdfDoc.getPage(i);
@@ -23,15 +47,31 @@ export const applyChangesOnFile = (file: ClientPdfFile, pdfDoc: PDFDocument, num
         }
 
         for (const pdfElement of pdfElements) {
+            let colorToUse;
             switch (pdfElement.type) {
                 case DRAWING_TYPES.PATH:
-                    drawPath(pdfElement.element, page);
+                    colorToUse = getColor(pdfElement.element.options.borderColor);
+                    drawPath({
+                        ...pdfElement.element,
+                        options: {
+                            ...pdfElement.element.options,
+                            borderColor: colorToUse,
+                        }
+                    }, page);
                     break;
                 case DRAWING_TYPES.RECTANGLE:
-                    drawRectangle(pdfElement.element, page);
+                    colorToUse = getColor(pdfElement.element.color);
+                    drawRectangle({ ...pdfElement.element, color: colorToUse }, page);
                     break;
                 case DRAWING_TYPES.TEXT:
-                    drawText(pdfElement.element, page);
+                    colorToUse = getColor(pdfElement.element.options.color);
+                    drawText({
+                        ...pdfElement.element,
+                        options: {
+                            ...pdfElement.element.options,
+                            color: colorToUse,
+                        },
+                    }, page);
                     break;
             }
         }
@@ -64,8 +104,8 @@ export const getCleanedAndUpdatedFile = async (pdfDoc: PDFDocument, pdfFile: Cli
     });
 };
 
-export const handleSaveChanges = async (file: ClientPdfFile, pdfDoc: PDFDocument, numPages: number) => {
-    applyChangesOnFile(file, pdfDoc, numPages);
+export const handleSaveChanges = async (file: ClientPdfFile, pdfDoc: PDFDocument, numPages: number, colorPanel: ColorPanelType | null) => {
+    applyChangesOnFile(file, pdfDoc, numPages, colorPanel);
 
     const cleanedAndUpdated = await getCleanedAndUpdatedFile(pdfDoc, file);
 

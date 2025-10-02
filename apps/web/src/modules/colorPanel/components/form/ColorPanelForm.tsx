@@ -2,9 +2,11 @@ import { ChangeEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from
 import { MdAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
+import { RgbColor } from "@repo/types";
+
 import { Button, InputStyleLess } from "@/components";
 import { useCssVariable } from "@/hooks";
-import { getRgbColor, getRoundedRgbColor, RgbColor } from "@/utils";
+import { getRgbColor, getRoundedRgbColor } from "@/utils";
 
 import { ColorPanelInCreation, ColorPanelType } from "../../types";
 
@@ -156,7 +158,7 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
                     >
                         <ColorPicker
                             color={color}
-                            setColor={setColor}
+                            handlePickerColor={setColor}
                             width={colorPickerWidth}
                             height={300}
                         />

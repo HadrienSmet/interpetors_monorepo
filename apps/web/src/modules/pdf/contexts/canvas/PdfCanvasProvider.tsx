@@ -8,11 +8,10 @@ import {
     Position,
 } from "@repo/types";
 
-import { HIGLIGHT_OPACITY, PathElementAction, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
+import { useColorPanel } from "@/modules/colorPanel";
+import { HIGLIGHT_OPACITY, PathElementAction, PDF_TOOLS, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
-import { getRgbColor, rgbToRgba } from "@/utils";
-
-import { PDF_TOOLS } from "../../types";
+import { handleActionColor, handleCanvasColor, rgbToRgba } from "@/utils";
 
 import { usePdfFile } from "../file";
 import { HistoryAction, usePdfHistory } from "../history";
@@ -27,10 +26,14 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const canvasContextRef = useRef<CanvasRenderingContext2D>(null);
     const drawerContextRef = useRef<CanvasRenderingContext2D>(null);
 
+    const { colorPanel } = useColorPanel();
     const { selectedFile } = useFoldersManager();
     const { displayLoader, isPdfRendered, pageIndex, pageRef, pdfDoc } = usePdfFile();
     const { pushAction } = usePdfHistory();
     const { color, currentRange, tool } = usePdfTools();
+
+    const rgbColor = handleActionColor(color, colorPanel);
+    const getColorToUse = (opacity: number) => rgbToRgba(rgbColor, opacity);
 
     useCanvasResizeObserver(
         pageRef,
@@ -55,12 +58,13 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         const ctx = drawerContextRef.current;
         const containerDimensions = pageRef.current?.getBoundingClientRect();
 
-        if (!ctx || !containerDimensions) return;
+        const colorToUse = getColorToUse(REGULAR_OPACITY);
+        if (!ctx || !containerDimensions || !colorToUse) return;
 
         ctx.save();
         ctx.clearRect(0, 0, drawerRef.current!.width, drawerRef.current!.height);
 
-        ctx.fillStyle = rgbToRgba(color, REGULAR_OPACITY);
+        ctx.fillStyle = colorToUse;
 
         for (const rect of rects) {
             const height = STROKE_SIZE;
@@ -76,13 +80,13 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const drawRect = useCallback((rects: Array<DOMRect>) => {
         const ctx = drawerContextRef.current;
         const containerDimensions = pageRef.current?.getBoundingClientRect();
-
-        if (!ctx || !containerDimensions) return;
+        const colorToUse = getColorToUse(HIGLIGHT_OPACITY);
+        if (!ctx || !containerDimensions || !colorToUse) return;
 
         ctx.save();
         ctx.clearRect(0, 0, drawerRef.current!.width, drawerRef.current!.height);
 
-        ctx.fillStyle = rgbToRgba(color, HIGLIGHT_OPACITY);
+        ctx.fillStyle = colorToUse;
 
         for (const rect of rects) {
             const { height, width } = rect;
@@ -100,8 +104,11 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
         if (!ctx) return;
 
+        const strokeStyle = handleCanvasColor(pathElement.color, colorPanel);
+        if (!strokeStyle) return;
+
         ctx.lineWidth = STROKE_SIZE;
-        ctx.strokeStyle = pathElement.color;
+        ctx.strokeStyle = strokeStyle;
 
         ctx.beginPath();
 
@@ -117,11 +124,15 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         }
     };
     const drawRectOnMount = (rectangleElement: RectangleCanvasElement) => {
+        console.log("DrawRectOnMout");
         const ctx = canvasContextRef.current;
 
         if (!ctx) return;
 
-        ctx.fillStyle = rectangleElement.color;
+        const fillStyle = handleCanvasColor(rectangleElement.color, colorPanel);
+        if (!fillStyle) return;
+
+        ctx.fillStyle = fillStyle;
         ctx.fillRect(rectangleElement.x, rectangleElement.y, rectangleElement.width, rectangleElement.height);
     };
     const drawTextOnMount = (textElement: TextCanvasElement) => {
@@ -130,7 +141,10 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
         if (!ctx || !containerDimensions) return;
 
-        ctx.fillStyle = textElement.options.color;
+        const fillStyle = handleCanvasColor(textElement.options.color, colorPanel);
+        if (!fillStyle) return;
+
+        ctx.fillStyle = fillStyle;
         ctx.font = "8px serif";
         ctx.fillText(textElement.text, textElement.options.x, textElement.options.y);
     };
@@ -193,20 +207,20 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         const canvas = drawerRef.current;
         if (!canvas || tool !== PDF_TOOLS.BRUSH) return;
 
-
+        const colorToUse = getColorToUse(REGULAR_OPACITY);
         const pageDimensions = pageRef.current.getBoundingClientRect();
 
         canvas.width = pageDimensions.width;
         canvas.height = pageDimensions.height;
 
         const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+        if (!ctx || !colorToUse) return;
 
         let points: Array<Position> = [];
         let isDrawing = false;
 
         ctx.lineWidth = STROKE_SIZE;
-        ctx.strokeStyle = getRgbColor(color);
+        ctx.strokeStyle = colorToUse;
 
         const handleMouseDown = (e: MouseEvent) => {
             isDrawing = true;
@@ -280,12 +294,15 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         for (const canvasElement of selectedFile.fileInStructure.elements[pageIndex].canvasElements) {
             switch (canvasElement.type) {
                 case DRAWING_TYPES.PATH:
+                    console.log({ element: canvasElement.element });
                     drawPathOnMount(canvasElement.element);
                     break;
                 case DRAWING_TYPES.RECTANGLE:
+                    console.log({ element: canvasElement.element });
                     drawRectOnMount(canvasElement.element);
                     break;
                 case DRAWING_TYPES.TEXT:
+                    console.log({ element: canvasElement.element });
                     drawTextOnMount(canvasElement.element);
                     break;
             }

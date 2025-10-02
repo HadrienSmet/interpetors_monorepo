@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-import { VocabularyWithColor } from "@repo/types";
+import { VocabularyTerm } from "@repo/types";
 
 import { getContextError } from "@/contexts/utils";
 
@@ -13,7 +13,7 @@ export type SortingIndex = keyof typeof sortingStateRecord;
 export type SortingState = typeof sortingStateRecord[SortingIndex];
 
 export type VocabularyTableContextValue = {
-    readonly list: Array<VocabularyWithColor>;
+    readonly list: Array<VocabularyTerm>;
     readonly searchingColumn: string;
     readonly sortingColumn: string | null;
     readonly sortingState: SortingState;

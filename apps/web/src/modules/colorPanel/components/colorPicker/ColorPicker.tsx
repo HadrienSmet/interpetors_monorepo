@@ -1,26 +1,44 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 
-import { hslToRgb, rgbToHsl, RgbColor, getRgbColor } from "@/utils";
+import { RgbColor } from "@repo/types";
+
+import { hslToRgb, rgbToHsl, getRgbColor } from "@/utils";
+
+import { ColorSwatch } from "../../types";
 
 import { ColorPropositions } from "./colorPropositions";
 import "./colorPicker.scss";
 
-type ColorPickerProps = {
+type CommonProps = {
     readonly color: RgbColor;
-    readonly displayPositions?: boolean;
+    readonly handlePickerColor: (color: RgbColor) => void;
     readonly height: number;
     readonly isLandscape?: boolean;
     readonly onSelection?: () => void;
-    readonly setColor: (color: RgbColor) => void;
     readonly width: number;
 };
+type ColorPickerWithoutPropositions = {
+    readonly displayPropositions?: false;
+    readonly handlePropositionColor?: undefined;
+};
+type ColorPickerWithPropositions = {
+    readonly displayPropositions: true;
+    readonly handlePropositionColor: (colorSwatch: ColorSwatch) => void;
+};
+type ColorPickerProps =
+    & CommonProps
+    & (
+        ColorPickerWithPropositions |
+        ColorPickerWithoutPropositions
+    )
 export const ColorPicker = ({
     color,
-    displayPositions = false,
+    displayPropositions = false,
+    handlePickerColor,
+    handlePropositionColor,
     height,
     isLandscape = false,
     onSelection,
-    setColor,
     width,
 }: ColorPickerProps) => {
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
@@ -51,7 +69,7 @@ export const ColorPicker = ({
 
         const rgb = hslToRgb(h, s, l);
 
-        setColor(rgb);
+        handlePickerColor(rgb);
     };
 
     const onMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -95,11 +113,11 @@ export const ColorPicker = ({
                     }}
                 />
             </div>
-            {displayPositions && (
+            {displayPropositions && (
                 <ColorPropositions
                     isLandscape={isLandscape}
                     onSelection={onSelection}
-                    setColor={setColor}
+                    handleProposition={handlePropositionColor!}
                 />
             )}
         </div>

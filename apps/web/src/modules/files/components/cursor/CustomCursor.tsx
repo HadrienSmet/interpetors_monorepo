@@ -2,7 +2,9 @@ import { MdBorderColor, MdBrush, MdComment, MdFormatColorFill, MdOutlineMenuBook
 
 import { Position } from "@repo/types";
 
-import { PDF_TOOLS, PdfTool } from "@/modules/pdf";
+import { PdfTool } from "@/modules/pdf";
+
+import { PDF_TOOLS } from "../../types";
 
 import "./customCursor.scss";
 
@@ -48,7 +50,7 @@ export const CustomCursor = ({ color, position, tool }: CustomCursorProps) => (
     >
         <div
             className="custom-cursor-indicator"
-            style={{ backgroundColor: color, }}
+            style={{ backgroundColor: color }}
         />
         {getCursrorIcon({ color, tool })}
     </div>

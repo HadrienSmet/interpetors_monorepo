@@ -1,10 +1,9 @@
-import { Color } from "pdf-lib";
-
+import { PdfColor } from "../../colors";
 import { TextOptions } from "../../common";
 
 export type TextPdfOptions =
     & TextOptions
-    & { readonly color: Color; };
+    & { readonly color: PdfColor; };
 export type TextPdfElement = {
     readonly options: TextPdfOptions;
     readonly text: string;

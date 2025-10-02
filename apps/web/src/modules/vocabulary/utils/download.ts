@@ -1,10 +1,11 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
-import { VocabularyWithColor } from "@repo/types";
+import { VocabularyTerm } from "@repo/types";
 
+import { ColorPanelType } from "@/modules/colorPanel";
 import { HIGLIGHT_OPACITY } from "@/modules/files";
-import { blendWithWhite, rgbStringToHex } from "@/utils";
+import { blendWithWhite, handleCanvasColor, rgbStringToHex } from "@/utils";
 
 const BORDER_COLOR = "FF000000";
 const BORDER_STYLE = "thin";
@@ -12,7 +13,7 @@ const CELL_HEIGHT = 25 as const;
 const CELL_WIDTH = 50 as const;
 const HEADER_HEIGHT = 30 as const;
 
-export const downloadVocabulary = async (list: Array<VocabularyWithColor>, header: Array<string>, filename = "vocabulary.xlsx") => {
+export const downloadVocabulary = async (list: Array<VocabularyTerm>, header: Array<string>, colorPanel: ColorPanelType | null, filename = "vocabulary.xlsx") => {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Vocabulaire");
 
@@ -38,7 +39,7 @@ export const downloadVocabulary = async (list: Array<VocabularyWithColor>, heade
             cell.fill = {
                 type: "pattern",
                 pattern: "solid",
-                fgColor: { argb: rgbStringToHex(blendWithWhite(voc.color, HIGLIGHT_OPACITY)) },
+                fgColor: { argb: rgbStringToHex(blendWithWhite(handleCanvasColor(voc.color, colorPanel), HIGLIGHT_OPACITY)) },
             };
 
             cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };

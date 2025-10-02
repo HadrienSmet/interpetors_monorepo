@@ -1,15 +1,15 @@
-import { getPdfRgbColor, RgbColor } from "@/utils";
+import { ColorSwatch } from "@/modules/colorPanel/types";
 
 import { useColorPanel } from "../../../contexts";
 
 import "./colorPropositions.scss";
 
 type ColorPropositionsProps = {
+    readonly handleProposition: (colorSwatch: ColorSwatch) => void;
     readonly isLandscape: boolean;
     readonly onSelection?: () => void;
-    readonly setColor: (color: RgbColor) => void;
 };
-export const ColorPropositions = ({ isLandscape, onSelection, setColor }: ColorPropositionsProps) => {
+export const ColorPropositions = ({ handleProposition, isLandscape, onSelection }: ColorPropositionsProps) => {
     const { colorPanel } = useColorPanel();
 
     if (!colorPanel) {
@@ -29,7 +29,7 @@ export const ColorPropositions = ({ isLandscape, onSelection, setColor }: ColorP
                 <button
                     key={`proposition-${color.name}`}
                     onClick={() => {
-                        setColor(getPdfRgbColor(color.value));
+                        handleProposition(color);
 
                         if (onSelection) {
                             onSelection();

@@ -1,17 +1,9 @@
+import { ActionColor, CanvasColor, ColorKind, RgbColor, SplittedRgb } from "@repo/types";
+
+import { ColorPanelType } from "@/modules/colorPanel";
+
 const getRoundedValue = (num: string) => Math.max(Math.floor(Number(num)), 0);
 
-/** Each value is included in 0-1 range */
-export type RgbColor = {
-    readonly r: number;
-    readonly g: number;
-    readonly b: number;
-};
-/** Each value is included in 0-255 range */
-type SplittedRgb = {
-    readonly r: number;
-    readonly g: number;
-    readonly b: number;
-};
 export const getRgbFromString = (color: string): SplittedRgb => {
     const [r, g, b] = color
         .split("(")[1]
@@ -39,6 +31,30 @@ export const getPdfRgbColor = (color: string) => {
         g: g/255,
         b: b/255,
     });
+};
+export const handleActionColor = (color: ActionColor, colorPanel: ColorPanelType | null) => {
+    if (color.kind === ColorKind.INLINE) {
+        return (color.value);
+    }
+
+    const colorSwatch = colorPanel?.colors.find(elem => elem.id === color.value);
+    if (!colorSwatch) {
+        throw new Error("Should return lastValue");
+    }
+
+    return (stringToRgbColor(colorSwatch.value));
+};
+export const handleCanvasColor = (color: CanvasColor, colorPanel: ColorPanelType | null) => {
+    if (color.kind === ColorKind.INLINE) {
+        return (color.value);
+    }
+
+    const colorSwatch = colorPanel?.colors.find(elem => elem.id === color.value);
+    if (!colorSwatch) {
+        throw new Error("Should return lastValue");
+    }
+
+    return (colorSwatch.value);
 };
 export const hslToRgb = (h: number, s: number, l: number): RgbColor => {
     s /= 100;
@@ -123,4 +139,13 @@ export const stringToRgba = (color: string, opacity: number) => {
     const pdfColor = getPdfRgbColor(color);
 
     return (rgbToRgba(pdfColor, opacity));
+};
+export const stringToRgbColor = (color: string): RgbColor => {
+    const { r, g, b } = getRgbFromString(color);
+
+    return ({
+        r: r/255,
+        g: g/255,
+        b: b/255,
+    })
 };

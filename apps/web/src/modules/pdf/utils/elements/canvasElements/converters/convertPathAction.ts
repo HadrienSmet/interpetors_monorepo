@@ -1,12 +1,20 @@
-import { PathCanvasElement } from "@repo/types";
+import { ColorKind, PathCanvasElement } from "@repo/types";
 
 import { PathAction } from "@/modules/files";
 import { getRgbColor } from "@/utils";
 
 export const convertPathAction = (pathAction: PathAction): PathCanvasElement => {
+    const { element } = pathAction;
+
+    const colorToUse = element.color.kind === ColorKind.PANEL
+        ? element.color
+        : {
+            kind: ColorKind.INLINE,
+            value: getRgbColor(element.color.value),
+        };
     const pathElement: PathCanvasElement = {
-        color: getRgbColor(pathAction.element.color),
-        points: pathAction.element.points.map(point => ({x: point.x - pathAction.element.pageDimensions.left, y: point.y - pathAction.element.pageDimensions.top}))
+        color: colorToUse,
+        points: element.points.map(point => ({ x: point.x - element.pageDimensions.left, y: point.y - element.pageDimensions.top })),
     };
 
     return (pathElement);

@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
+import { PropsWithChildren, ReactNode, useEffect, useMemo, useState } from "react";
 import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
@@ -10,15 +10,17 @@ import {
     GenerateResourceAction,
     Note,
     VocabularyTerm,
-    VocabularyWithColor,
+    ActionColor,
+    ColorKind,
 } from "@repo/types";
 
 import { useContextMenu } from "@/contexts";
-import { ActionItem, CustomCursor, EditorContextMenuItem, ElementAction, InterractiveReferenceAction, TOOLS_ON_SELECTION } from "@/modules/files";
+import { useColorPanel } from "@/modules/colorPanel";
+import { ActionItem, CustomCursor, EditorContextMenuItem, ElementAction, InterractiveReferenceAction, PDF_TOOLS, TOOLS_ON_SELECTION } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
-import { getRgbColor, getRgbFromString, RgbColor } from "@/utils";
+import { getRgbColor, getRgbFromString, handleActionColor, handleCanvasColor } from "@/utils";
 
-import { PDF_TOOLS, PdfTool } from "../../types";
+import { PdfTool } from "../../types";
 
 import { usePdfFile } from "../file";
 import { HistoryAction, usePdfHistory } from "../history";
@@ -26,22 +28,26 @@ import { HistoryAction, usePdfHistory } from "../history";
 import { PdfToolsContext, PdfToolsContextType } from "./PdfToolsContext";
 import { getRange } from "./utils";
 
-const DEFAULT_COLOR: RgbColor = {
-    r: .2,
-    g: 1,
-    b: 0,
+const NEW_DEFAULT_COLOR: ActionColor = {
+    kind: ColorKind.INLINE,
+    value: {
+        r: .2,
+        g: 1,
+        b: 0,
+    },
 };
 export const getNoteId = (color: string, index: number | string) => (
     `${Object.values(getRgbFromString(color)).join("-")}-${index}`
 );
 
 export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
-    const [color, setColor] = useState<RgbColor>(DEFAULT_COLOR);
+    const [color, setColor] = useState<ActionColor>(NEW_DEFAULT_COLOR);
     /** Text selection range */
     const [currentRange, setCurrentRange] = useState<Range | undefined>(undefined);
     const [customCursor, setCustomCursor] = useState<ReactNode>(null);
     const [tool, setTool] = useState<PdfTool | null>(null);
 
+    const { colorPanel } = useColorPanel();
     const { setContextMenu } = useContextMenu();
     const { selectedFile } = useFoldersManager();
     const { containerRef, pageIndex, pageRef, pdfDoc, setDisplayLoader } = usePdfFile();
@@ -50,6 +56,8 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
     const { fileInStructure, path: filePath } = selectedFile;
     const pdfFile = fileInStructure!;
+
+    const rgbColor = useMemo(() => handleActionColor(color, colorPanel), [color, colorPanel]);
 
     const removeSelection = () => window.getSelection()?.removeAllRanges();
     // ------ HANDLERS ------
@@ -113,19 +121,31 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         let id = "";
         let text = "";
         let element: Note | VocabularyTerm;
+        const canvasColor = color.kind === ColorKind.PANEL
+            ? color
+            : {
+                kind: ColorKind.INLINE,
+                value: getRgbColor(color.value)
+            };
 
         if (isNote) {
             const { y } = rectsArray[0];
-            colorKey = getRgbColor(color);
+            colorKey = getRgbColor(rgbColor);
 
-            const noteGroup = pdfFile.elements[pageIndex].notes.filter(elem => elem.color === colorKey);
+            const noteFilter = (elem: Note) => {
+                const elemColor = handleCanvasColor(elem.color, colorPanel);
+
+                return (elemColor === colorKey);
+            };
+            const noteGroup = pdfFile.elements[pageIndex].notes.filter(noteFilter);
+            const occurenceText = currentRange.toString().trim();
+
             text = noteGroup.length > 0
                 ? `${noteGroup.length + 1}`
                 : "1";
-            const occurenceText = currentRange.toString().trim();
             id = getNoteId(colorKey, text);
             element = {
-                color: colorKey,
+                color: canvasColor,
                 note: "",
                 id,
                 occurence: {
@@ -139,10 +159,10 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             const wordToAdd = currentRange.toString().trim();
 
             id = wordToAdd.split(" ").join("-");
-            colorKey = getRgbColor(color);
+            colorKey = getRgbColor(rgbColor);
             text = "*";
             element = {
-                color: colorKey,
+                color: canvasColor,
                 id,
                 occurence: {
                     filePath,
@@ -199,7 +219,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 type: GENERATED_ELEMENTS.NOTE,
             }
             : {
-                element: element as VocabularyWithColor,
+                element: element as VocabularyTerm,
                 type: GENERATED_ELEMENTS.VOCABULARY,
             };
         const historyAction: HistoryAction = {
@@ -267,7 +287,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
             setCustomCursor(
                 <CustomCursor
-                    color={getRgbColor(color)}
+                    color={getRgbColor(rgbColor)}
                     position={{ x: e.clientX - containerLeft, y: e.clientY - containerTop }}
                     tool={tool!}
                 />

@@ -7,3 +7,5 @@ export enum TOOLS_ON_SELECTION {
 export enum OTHER_TOOLS {
     BRUSH = "brush",
 }
+
+export const PDF_TOOLS = { ...TOOLS_ON_SELECTION, ...OTHER_TOOLS };

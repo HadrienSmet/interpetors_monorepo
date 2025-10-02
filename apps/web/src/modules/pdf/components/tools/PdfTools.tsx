@@ -11,12 +11,14 @@ import {
     MdTranslate,
 } from "react-icons/md";
 
+import { ColorKind, RgbColor } from "@repo/types";
+
 import { DraggableSection, useDraggableSection } from "@/components";
-import { ColorPicker } from "@/modules/colorPanel";
-import { getRgbColor } from "@/utils";
+import { ColorPicker, ColorSwatch, useColorPanel } from "@/modules/colorPanel";
+import { PDF_TOOLS } from "@/modules/files";
+import { getRgbColor, handleActionColor } from "@/utils";
 
 import { usePdfFile, usePdfTools } from "../../contexts";
-import { PDF_TOOLS } from "../../types";
 
 import { HistoryButton, HistoryButtonItem, ToolButton, ToolButtonItem } from "./buttons";
 import "./pdfTools.scss";
@@ -62,14 +64,18 @@ const TOOLS_BUTTONS: Array<ToolButtonItem> = [
 const PdfToolsChild = () => {
     const [isPickingColor, setIsPickingColor] = useState(false);
 
+    const { colorPanel } = useColorPanel();
     const { dynamicClass, isLandscape, isLeftSide, isOpen, isTopSide } = useDraggableSection();
     const { downloadPdfFile } = usePdfFile();
     const { color, setColor } = usePdfTools();
     const { t } = useTranslation();
 
-    const colorPickerBg = useMemo(() => getRgbColor(color), [color]);
+    const rgbColor = useMemo(() => handleActionColor(color, colorPanel), [color, colorPanel]);
+    const colorPickerBg = useMemo(() => getRgbColor(rgbColor), [color, colorPanel]);
 
     const togglePickingColor = () => setIsPickingColor(state => !state);
+    const handlePickerColor = (value: RgbColor) => setColor({ kind: ColorKind.INLINE, value });
+    const handlePropositionColor = (colorSwatch: ColorSwatch) => setColor({ kind: ColorKind.PANEL, value: colorSwatch.id });
 
     // Cleaning the state on closing panel tools
     useEffect(() => {
@@ -111,12 +117,13 @@ const PdfToolsChild = () => {
             </div>
             <div className={`color-picker-container ${isPickingColor ? "expanded" : ""}`}>
                 <ColorPicker
-                    color={color}
-                    displayPositions
+                    color={rgbColor}
+                    displayPropositions
+                    handlePickerColor={handlePickerColor}
+                    handlePropositionColor={handlePropositionColor}
                     height={COLOR_PICKER_DIMENSION}
                     isLandscape={!isLandscape}
                     onSelection={() => setIsPickingColor(false)}
-                    setColor={setColor}
                     width={COLOR_PICKER_DIMENSION}
                 />
             </div>

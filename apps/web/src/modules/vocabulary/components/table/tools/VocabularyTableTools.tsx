@@ -3,6 +3,7 @@ import { MdDownload, MdSearch } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { DraggableSection, SearchInput, useDraggableSection } from "@/components";
+import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
 
 import { useVocabularyTable } from "../../../contexts";
@@ -72,6 +73,7 @@ const VocabularyTableToolsChild = () => {
     const [isSearching, setIsSearching] = useState(false);
     const { dynamicClass, isLeftSide, isOpen, isTopSide } = useDraggableSection();
 
+    const { colorPanel } = useColorPanel();
     const { t } = useTranslation();
     const { list } = useVocabularyTable();
     const { currentWorkspace } = useWorkspaces();
@@ -86,7 +88,7 @@ const VocabularyTableToolsChild = () => {
 
     const closeSearch = () => setIsSearching(false);
     // TODO Get the name from preparation title
-    const download = () => downloadVocabulary(list, headerToUse);
+    const download = () => downloadVocabulary(list, headerToUse, colorPanel);
     const toggleSearch = () => setIsSearching(state => !state);
 
     useEffect(() => {
