@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Note } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
-import { handleCanvasColor } from "@/utils";
+import { getRgbColor, handleActionColor } from "@/utils";
 
 import { usePdfHistory, usePdfNotes } from "../../../contexts";
 
@@ -32,9 +32,10 @@ export const PdfCustomNote = ({ note }: NoteProps) => {
 
     const splittedId = note.id.split("-");
     const noteIndex = splittedId[splittedId.length-1];
-    const noteColor = useMemo(() => (handleCanvasColor(note.color, colorPanel)), [note.color, colorPanel]);
+    const noteColor = useMemo(() => (handleActionColor(note.color, colorPanel)), [note.color, colorPanel]);
+    const noteColorStr = getRgbColor(noteColor);
 
-    const updateNote = () => updateNoteInHistory(noteColor, note.id, noteContent);
+    const updateNote = () => updateNoteInHistory(note.color, note.id, noteContent);
 
     const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => setNoteContent(e.target.value);
     const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -69,7 +70,7 @@ export const PdfCustomNote = ({ note }: NoteProps) => {
         >
             <div
                 className="document-note-indicator"
-                style={{ backgroundColor: noteColor }}
+                style={{ backgroundColor: noteColorStr }}
             />
             <p>{noteIndex}</p>
             {(

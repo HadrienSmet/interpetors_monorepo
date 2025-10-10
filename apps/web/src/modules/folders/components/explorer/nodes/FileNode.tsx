@@ -1,8 +1,8 @@
-import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react";
 import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import type { ClientPdfFile } from "@repo/types";
+import type { PdfFile } from "@repo/types";
 
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
@@ -15,7 +15,7 @@ import { getPaddingLeft } from "./nodes.utils";
 
 type FileNodeProps =
     & Omit<TreeNodeProps, "node">
-    & { readonly node: ClientPdfFile; };
+    & { readonly node: PdfFile; };
 export const FileNode = ({ depth, name, node, path }: FileNodeProps) => {
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
@@ -74,9 +74,13 @@ export const FileNode = ({ depth, name, node, path }: FileNodeProps) => {
         if (e.key === "Enter") handleRename();
     };
 
+    const isSelected = useMemo(() => (
+        selectedFile && node.name === selectedFile.fileInStructure?.name
+    ), [selectedFile.fileInStructure?.name, node.name]);
+
     return (
         <div
-            className={`folders-explorer__item ${(selectedFile && node.name === selectedFile.fileInStructure?.name) ? "selected" : ""}`}
+            className={`folders-explorer__item ${isSelected ? "selected" : ""}`}
             draggable
             onBlur={() => setIsEditingFile(false)}
             onClick={onClick}

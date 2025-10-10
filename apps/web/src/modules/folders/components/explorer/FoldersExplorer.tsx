@@ -12,10 +12,10 @@ const INITIAL_WIDTH = 200 as const;
 export const FoldersExplorer = () => {
     const [highlightedFolderPath, setHighlightedFolderPath] = useState<string | null>(null);
 
-    const { foldersStructures } = useFoldersManager();
+    const { foldersStructure } = useFoldersManager();
 
     const foldersTree = useMemo(() => (
-        foldersStructures.map((structure, idx) =>
+        foldersStructure.map((structure, idx) =>
             Object.entries(structure).sort().map(([name, node]) => (
                 <TreeNode
                     depth={0}
@@ -28,12 +28,12 @@ export const FoldersExplorer = () => {
                 />
             ))
         )
-    ), [foldersStructures, highlightedFolderPath]);
+    ), [foldersStructure, highlightedFolderPath]);
 
     return (
         <ResizableSection
             initialWidth={INITIAL_WIDTH}
-            id={"folders-explorer"}
+            id="folders-explorer"
         >
             {foldersTree}
         </ResizableSection>

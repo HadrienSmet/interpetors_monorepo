@@ -16,11 +16,14 @@ export const NotesDisplayer = () => {
     const grouped = useMemo(() => {
         const output: Record<string, Array<Note>> = {};
 
-        if (!selectedFile.fileInStructure) {
+        if (
+            !selectedFile.fileInStructure ||
+            !selectedFile.fileInStructure.actions[pageIndex].generatedResources
+        ) {
             return (output);
         }
 
-        for (const note of selectedFile.fileInStructure.elements[pageIndex].notes) {
+        for (const note of selectedFile.fileInStructure.actions[pageIndex].generatedResources) {
             if (!(note.y in output)) {
                 output[note.y] = [note];
             } else {

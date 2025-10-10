@@ -1,11 +1,6 @@
-export enum DRAWING_TYPES {
-    PATH = "path",
-    RECT = "rectangle",
-    TEXT = "text",
-}
-
 export type RectangleElement = {
     readonly height: number;
+    readonly opacity: number;
     readonly width: number;
     readonly x: number;
     readonly y: number;

@@ -1,16 +1,14 @@
-import { VocabularyReferenceElement, REFERENCE_TYPES } from "@repo/types";
+import { VocabularyReferenceElement, REFERENCE_TYPES, VocabularyAction } from "@repo/types";
 
-import { InterractiveVocabularyAction } from "@/modules/files";
-
-export const convertVocabularyAction = (vocAction: InterractiveVocabularyAction): Array<VocabularyReferenceElement> | null => {
+export const convertVocabularyAction = (vocAction: VocabularyAction): Array<VocabularyReferenceElement> => {
     const { element } = vocAction;
     const { rectsArray, pageDimensions, id } = element;
 
-    if (rectsArray.length < 0) return (null);
+    if (rectsArray.length < 0) return ([]);
 
     return (rectsArray.map(targetRect => ({
         type: REFERENCE_TYPES.VOCABULARY,
-            element: {
+        element: {
             height: targetRect.height,
             id,
             x: targetRect.left - pageDimensions.left,

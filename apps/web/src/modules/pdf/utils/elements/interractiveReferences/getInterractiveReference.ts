@@ -1,10 +1,8 @@
-import { REFERENCE_TYPES } from "@repo/types";
-
-import { InterractiveReferenceAction } from "@/modules/files";
+import { REFERENCE_TYPES, ReferenceAction, ReferenceElement } from "@repo/types";
 
 import { convertNoteAction, convertVocabularyAction } from "./converters";
 
-export const getInterractiveReference = (action: InterractiveReferenceAction) => {
+export const getInterractiveReference = (action: ReferenceAction): Array<ReferenceElement> => {
     switch(action.type) {
         case REFERENCE_TYPES.NOTE:
             return (convertNoteAction(action));

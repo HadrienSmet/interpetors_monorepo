@@ -1,6 +1,6 @@
-import { ClientFolderStructure, ClientPdfFile } from "@repo/types";
+import { FolderStructure, PdfFile } from "@repo/types";
 
-export const isClientPdfFile = (value: ClientPdfFile | ClientFolderStructure): value is ClientPdfFile => {
+export const isPdfFile = (value: PdfFile | FolderStructure): value is PdfFile => {
     return (
         typeof value === "object" &&
         value !== null &&
@@ -8,25 +8,26 @@ export const isClientPdfFile = (value: ClientPdfFile | ClientFolderStructure): v
         "name" in value &&
         typeof value.name === "string" &&
         value.file instanceof File &&
-        typeof value.elements === "object"
+        typeof value.actions === "object"
     );
 };
-export type FileVisitor = (key: string, value: ClientPdfFile, path: Array<string>) => [string, ClientPdfFile] | null;
+
+export type FileVisitor = (key: string, value: PdfFile, path: Array<string>) => [string, PdfFile] | null;
 /**
  * @description Browse a folder structure to perform an action on a file
  * @returns ClientFolderStructure
  */
 export const browseStructureToActionOnFile = (
-    structure: ClientFolderStructure,
+    structure: FolderStructure,
     visitor: FileVisitor,
     path: Array<string> = []
-): ClientFolderStructure => {
-    const result: ClientFolderStructure = {};
+): FolderStructure => {
+    const result: FolderStructure = {};
 
     for (const [key, value] of Object.entries(structure)) {
         const currentPath = [...path, key];
 
-        if (isClientPdfFile(value)) {
+        if (isPdfFile(value)) {
             const update = visitor(key, value, currentPath);
 
             if (update) {
@@ -43,18 +44,15 @@ export const browseStructureToActionOnFile = (
 
     return (result);
 };
-
-export const getClientPdfFile = (structure: ClientFolderStructure, targetPath: string, browsedPath?: string): ClientPdfFile | null => {
+export const getPdfFile = (structure: FolderStructure, targetPath: string, browsedPath?: string): PdfFile | null => {
     const originPath = browsedPath ?? "";
     for (const [key, value] of Object.entries(structure)) {
         const currentPath = `${originPath}/${key}`;
 
-        if (isClientPdfFile(value)) {
-            if (targetPath === currentPath) {
-                return (value);
-            }
+        if (isPdfFile(value)) {
+            if (targetPath === currentPath) return (value);
         } else {
-            const result = getClientPdfFile(value, targetPath, currentPath);
+            const result = getPdfFile(value, targetPath, currentPath);
 
             if (result) return (result);
         }

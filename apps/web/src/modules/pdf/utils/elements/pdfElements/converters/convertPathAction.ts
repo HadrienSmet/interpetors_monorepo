@@ -1,18 +1,19 @@
-import { ColorKind, PathPdfElement, PdfColor } from "@repo/types";
+import { PathAction } from "@repo/types";
 
-import { PathAction, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
+import { ColorPanelType } from "@/modules/colorPanel";
+import { REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
+import { getPdfDocument } from "@/modules/folders";
+import { getPdfRgbColor, handleActionColor } from "@/utils";
 
-import { getPdfRgbColor } from "./tools";
+import { PathPdfElement, PathPdfOptions } from "../types";
 
-export const convertPathAction = (action: PathAction): PathPdfElement => {
-    const { color, pageDimensions, pageIndex, pdfDoc, points } = action.element;
+export const convertPathAction = async (action: PathAction, colorPanel: ColorPanelType | null): Promise<PathPdfElement> => {
+    const { color: actionColor, file, pageDimensions, pageIndex, points } = action.element;
 
-    const colorToUse: PdfColor = color.kind === ColorKind.PANEL
-        ? color
-        : {
-            kind: ColorKind.INLINE,
-            value: getPdfRgbColor(color.value),
-        };
+    const rgbColor = handleActionColor(actionColor, colorPanel);
+    const borderColor = getPdfRgbColor(rgbColor);
+
+    const pdfDoc = await getPdfDocument(file);
     const page = pdfDoc.getPage(pageIndex - 1);
     const { width: pageWidth, height: pageHeight } = page.getSize();
 
@@ -36,8 +37,8 @@ export const convertPathAction = (action: PathAction): PathPdfElement => {
         )
         .join(" ");
 
-    const options = {
-        borderColor: colorToUse,
+    const options: PathPdfOptions = {
+        borderColor,
         borderWidth: STROKE_SIZE,
         opacity: REGULAR_OPACITY,
         x: minX,

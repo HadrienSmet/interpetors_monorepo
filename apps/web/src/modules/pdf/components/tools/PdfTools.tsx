@@ -11,11 +11,10 @@ import {
     MdTranslate,
 } from "react-icons/md";
 
-import { ColorKind, RgbColor } from "@repo/types";
+import { ColorKind, FILE_TOOLS, RgbColor } from "@repo/types";
 
 import { DraggableSection, useDraggableSection } from "@/components";
 import { ColorPicker, ColorSwatch, useColorPanel } from "@/modules/colorPanel";
-import { PDF_TOOLS } from "@/modules/files";
 import { getRgbColor, handleActionColor } from "@/utils";
 
 import { usePdfFile, usePdfTools } from "../../contexts";
@@ -41,23 +40,23 @@ const HISTORY_BUTTONS: Array<HistoryButtonItem> = [
 const TOOLS_BUTTONS: Array<ToolButtonItem> = [
     {
         icon: <MdBorderColor />,
-        id: PDF_TOOLS.UNDERLINE,
+        id: FILE_TOOLS.UNDERLINE,
     },
     {
         icon: <MdFormatColorFill />,
-        id: PDF_TOOLS.HIGHLIGHT,
+        id: FILE_TOOLS.HIGHLIGHT,
     },
     {
         icon: <MdBrush />,
-        id: PDF_TOOLS.BRUSH,
+        id: FILE_TOOLS.BRUSH,
     },
     {
         icon: <MdComment />,
-        id: PDF_TOOLS.NOTE,
+        id: FILE_TOOLS.NOTE,
     },
     {
         icon: <MdTranslate />,
-        id: PDF_TOOLS.VOCABULARY,
+        id: FILE_TOOLS.VOCABULARY,
     },
 ];
 

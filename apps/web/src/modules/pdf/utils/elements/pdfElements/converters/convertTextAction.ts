@@ -1,18 +1,19 @@
-import { ColorKind, PdfColor, TextPdfElement } from "@repo/types";
+import { TextAction } from "@repo/types";
 
-import { ANNOTATION_SCALE, TextAction } from "@/modules/files";
+import { ColorPanelType } from "@/modules/colorPanel";
+import { ANNOTATION_SCALE } from "@/modules/files";
+import { getPdfDocument } from "@/modules/folders";
+import { getPdfRgbColor, handleActionColor } from "@/utils";
 
-import { getPdfRgbColor } from "./tools";
+import { TextPdfElement } from "../types";
 
-export const convertTextAction = (action: TextAction): TextPdfElement => {
-    const { color, pageDimensions, pageIndex, pdfDoc, rect, text } = action.element;
+export const convertTextAction = async (action: TextAction, colorPanel: ColorPanelType | null): Promise<TextPdfElement> => {
+    const { color: actionColor, pageDimensions, pageIndex, file, rect, text } = action.element;
 
-    const colorToUse: PdfColor = color.kind === ColorKind.PANEL
-        ? color
-        : {
-            kind: ColorKind.INLINE,
-            value: getPdfRgbColor(color.value),
-        };
+    const rgbColor = handleActionColor(actionColor, colorPanel);
+    const color = getPdfRgbColor(rgbColor);
+
+    const pdfDoc = await getPdfDocument(file);
     const page = pdfDoc.getPage(pageIndex - 1);
     const { width: pageWidth, height: pageHeight } = page.getSize();
 
@@ -25,7 +26,7 @@ export const convertTextAction = (action: TextAction): TextPdfElement => {
     const y = (pageHeight - scale(rect.bottom - pageDimensions.top)) + scale(size);
 
     const options = {
-        color: colorToUse,
+        color,
         size,
         x,
         y,

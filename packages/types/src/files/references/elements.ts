@@ -5,22 +5,15 @@ export enum REFERENCE_TYPES {
     VOCABULARY = "vocabulary",
 }
 
-export type NoteElement = {
+export type ReferencingText = {
     readonly height: number;
     readonly id: string;
     readonly width: number;
     readonly x: number;
     readonly y: number;
 };
-export type VocabularyElement = {
-    readonly height: number;
-    readonly id: string;
-    readonly width: number;
-    readonly x: number;
-    readonly y: number;
-};
-export type NoteReferenceElement = TypedElement<REFERENCE_TYPES.NOTE, NoteElement>;
-export type VocabularyReferenceElement = TypedElement<REFERENCE_TYPES.VOCABULARY, VocabularyElement>;
+export type NoteReferenceElement = TypedElement<REFERENCE_TYPES.NOTE, ReferencingText>;
+export type VocabularyReferenceElement = TypedElement<REFERENCE_TYPES.VOCABULARY, ReferencingText>;
 
 export type ReferenceElement =
     | NoteReferenceElement

@@ -5,7 +5,7 @@ import { VocabularyTerm } from "@repo/types";
 
 import { ColorPanelType } from "@/modules/colorPanel";
 import { HIGLIGHT_OPACITY } from "@/modules/files";
-import { blendWithWhite, handleCanvasColor, rgbStringToHex } from "@/utils";
+import { blendWithWhite, getRgbColor, handleActionColor, rgbStringToHex } from "@/utils";
 
 const BORDER_COLOR = "FF000000";
 const BORDER_STYLE = "thin";
@@ -36,10 +36,13 @@ export const downloadVocabulary = async (list: Array<VocabularyTerm>, header: Ar
         row.height = CELL_HEIGHT;
 
         row.eachCell((cell) => {
+            const rgbColor = handleActionColor(voc.color, colorPanel);
+            const color = getRgbColor(rgbColor);
+
             cell.fill = {
                 type: "pattern",
                 pattern: "solid",
-                fgColor: { argb: rgbStringToHex(blendWithWhite(handleCanvasColor(voc.color, colorPanel), HIGLIGHT_OPACITY)) },
+                fgColor: { argb: rgbStringToHex(blendWithWhite(color, HIGLIGHT_OPACITY)) },
             };
 
             cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };

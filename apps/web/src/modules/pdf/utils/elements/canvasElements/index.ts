@@ -1,1 +1,2 @@
-export * from "./getCanvasElement";
+export * from "./converters";
+export * from "./types";

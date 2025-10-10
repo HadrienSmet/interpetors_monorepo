@@ -1,5 +1,3 @@
-import { Color } from "pdf-lib";
-
 /** Each value is included in 0-1 range */
 export type RgbColor = {
     readonly r: number;
@@ -21,14 +19,6 @@ type ActionInlineColor = {
     readonly kind: ColorKind.INLINE;
     readonly value: RgbColor;
 };
-type CanvasInlineColor = {
-    readonly kind: ColorKind.INLINE;
-    readonly value: string;
-};
-type PdfInlineColor = {
-    readonly kind: ColorKind.INLINE;
-    readonly value: Color;
-};
 type PanelColor = {
     readonly kind: ColorKind.PANEL;
     readonly value: string;
@@ -36,10 +26,4 @@ type PanelColor = {
 };
 export type ActionColor =
     | ActionInlineColor
-    | PanelColor;
-export type PdfColor =
-    | PdfInlineColor
-    | PanelColor;
-export type CanvasColor =
-    | CanvasInlineColor
     | PanelColor;

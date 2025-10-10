@@ -1,8 +1,10 @@
 import { PropsWithChildren, useState } from "react";
 
-import { CanvasColor, VocabularyTerm } from "@repo/types";
+import { ActionColor, VocabularyTerm } from "@repo/types";
 
+import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
+import { handleActionColor } from "@/utils";
 
 import { PreparationVocabulary, WordToAdd } from "../../types";
 
@@ -10,127 +12,100 @@ import { AddTranslationParams, PreparationVocabularyContext } from "./Preparatio
 
 export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) => {
     const [preparationVocabulary, setPreparationVocabulary] = useState<PreparationVocabulary>([]);
+
+    const { colorPanel } = useColorPanel();
     const { currentWorkspace } = useWorkspaces();
 
-    const getRightGroupIndex = (state: PreparationVocabulary, color: CanvasColor) => (
-        state.findIndex(group => (
-            group.colorToUse.kind === color.kind &&
-            group.colorToUse.value === color.value
-        ))
-    );
+    const getRightGroupIndex = (state: PreparationVocabulary, color: ActionColor) => {
+        const clr = handleActionColor(color, colorPanel);
+        return (state.findIndex(group => (
+            handleActionColor(group.colorToUse, colorPanel) === clr
+        )));
+    };
 
     const addToVocabulary = (word: WordToAdd) => {
-        // TODO: Need to check that word is not already presents
-        // if (word.color in vocabulary && word.text in vocabulary[word.color]) {
-        //     return;
-        // }
+        // Should be defined by the API
+        const termId = word.text;
 
         const term: VocabularyTerm = {
-            id: word.text,
+            id: termId,
             color: word.color,
             occurence: {
                 filePath: word.filePath,
                 pageIndex: word.pageIndex,
                 text: word.text,
             },
-            translations: Array(currentWorkspace?.languages.length).fill(""),
+            translations: Array(currentWorkspace?.languages.length ?? 0).fill(""),
         };
 
         setPreparationVocabulary(state => {
-            const copy = [...state];
-
-            if (copy.length === 0) {
-                copy.push({
-                    colorToUse: word.color,
-                    terms: [term],
-                });
-
-                return (copy);
-            }
-
+            const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
             const groupIndex = getRightGroupIndex(copy, word.color);
-            if (groupIndex < 0) {
-                copy.push({
-                    colorToUse: word.color,
-                    terms: [term],
-                });
 
-                return (copy);
+            if (groupIndex === -1) {
+                return ([...copy, { colorToUse: word.color, terms: [term] }]);
             }
 
             const group = copy[groupIndex];
+            if (group.terms.some(term => term.id === termId)) return (copy);
+
             group.terms.push(term);
-            return (copy.splice(groupIndex, 1, group));
+            copy[groupIndex] = group;
+            return (copy);
         });
     };
 
-    const addTranslation = (params: AddTranslationParams) => setPreparationVocabulary(state => {
-        const copy = [...state];
+    const addTranslation = (params: AddTranslationParams) => (
+        setPreparationVocabulary(state => {
+            const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
+            const groupIndex = getRightGroupIndex(copy, params.color);
+            if (groupIndex < 0) return (copy);
 
-        const groupIndex = getRightGroupIndex(copy, params.color);
-        if (groupIndex < 0) {
+            const group = copy[groupIndex];
+            const termIndex = group.terms.findIndex(term => term.id === params.id);
+            if (termIndex < 0) return (copy);
+
+            const updated = { ...group.terms[termIndex] };
+            const translations = [...updated.translations];
+            translations[params.localeIndex] = params.translation;
+            updated.translations = translations;
+
+            group.terms[termIndex] = updated;
+            copy[groupIndex] = { ...group };
             return (copy);
-        }
+        })
+    );
 
-        const group = copy[groupIndex];
-        const termIndex = group.terms.findIndex(term => term.id === params.id);
-        if (termIndex > 0) {
+    const remove = (color: ActionColor, id: string) => (
+        setPreparationVocabulary(state => {
+            const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
+            const groupIndex = getRightGroupIndex(copy, color);
+            if (groupIndex < 0) return (copy);
+
+            const group = copy[groupIndex];
+            const terms = group.terms.filter(t => t.id !== id);
+            copy[groupIndex] = { ...group, terms };
             return (copy);
-        }
+        })
+    );
 
-        const term = group.terms[termIndex];
-        term.translations[params.localeIndex] = params.translation;
+    const update = (color: ActionColor, id: string, item: VocabularyTerm) =>
+        setPreparationVocabulary(state => {
+            const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
+            const groupIndex = getRightGroupIndex(copy, color);
+            if (groupIndex < 0) return (copy);
 
-        const updatedGroup = {
-            ...group,
-            terms: group.terms.splice(termIndex, 1, term),
-        };
+            const group = copy[groupIndex];
+            const termIndex = group.terms.findIndex(term => term.id === id);
+            if (termIndex < 0) return (copy);
 
-        return (copy.splice(groupIndex, 1, updatedGroup));
-    });
-    const remove = (color: CanvasColor, id: string) => setPreparationVocabulary(state => {
-        const copy = [...state];
-
-        const groupIndex = getRightGroupIndex(copy, color);
-        if (groupIndex < 0) {
+            group.terms[termIndex] = { ...item };
+            copy[groupIndex] = { ...group };
             return (copy);
-        }
-
-        const group = copy[groupIndex];
-        const termIndex = group.terms.findIndex(term => term.id === id);
-        if (termIndex < 0) {
-            return (copy);
-        }
-
-        const updatedGroup = {
-            ...group,
-            terms: group.terms.splice(termIndex, 1),
-        };
-
-        return (copy.splice(groupIndex, 1, updatedGroup));
-    });
-    const update = (color: CanvasColor, id: string, item: VocabularyTerm) => setPreparationVocabulary(state => {
-        const copy = [...state];
-
-        const groupIndex = getRightGroupIndex(copy, color);
-        if (groupIndex < 0) {
-            return (copy);
-        }
-
-        const group = copy[groupIndex];
-        const termIndex = group.terms.findIndex(term => term.id === id);
-
-        const updatedGroup = {
-            ...group,
-            terms: group.terms.splice(termIndex, 1, item),
-        };
-
-        return (copy.splice(groupIndex, 1, updatedGroup));
-    });
+        });
 
     const value = {
         preparationVocabulary,
-
         addTranslation,
         addToVocabulary,
         remove,

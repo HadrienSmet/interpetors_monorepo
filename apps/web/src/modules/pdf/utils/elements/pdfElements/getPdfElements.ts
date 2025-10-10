@@ -1,27 +1,32 @@
-import { DRAWING_TYPES, PdfElement } from "@repo/types";
+import { DRAWING_TYPES, ElementAction } from "@repo/types";
 
-import { ElementAction } from "@/modules/files";
+import { ColorPanelType } from "@/modules/colorPanel";
 
-import { convertPathAction, convertRectangleAction, convertTextAction } from "./converters";
+import { convertPathAction, convertRectAction, convertTextAction } from "./converters";
+import { PdfElement } from "./types";
 
-export const getPdfElements = ({ element, type }: ElementAction) => {
+type GetPdfElementsParams = {
+    readonly colorPanel: ColorPanelType | null;
+    readonly typedElement: ElementAction;
+};
+export const getPdfElements = async ({ colorPanel, typedElement }: GetPdfElementsParams) => {
     let pdfElements: Array<PdfElement> = [];
 
-    switch (type) {
+    switch (typedElement.type) {
         case DRAWING_TYPES.PATH:
-            const pathElement = convertPathAction({ element, type });
+            const pathElement = await convertPathAction(typedElement, colorPanel);
 
-            pdfElements.push({ type, element: pathElement })
+            pdfElements.push({ type: typedElement.type, element: pathElement })
             break;
-        case DRAWING_TYPES.RECTANGLE:
-            const rectangles = convertRectangleAction({ element, type });
+        case DRAWING_TYPES.RECT:
+            const rectangles = await convertRectAction(typedElement, colorPanel);
 
-            pdfElements = rectangles.map(element => ({ type, element }));
+            pdfElements = rectangles.map(element => ({ type: typedElement.type, element }));
             break;
         case DRAWING_TYPES.TEXT:
-            const text = convertTextAction({ element, type });
+            const text = await convertTextAction(typedElement, colorPanel);
 
-            pdfElements.push({ type, element: text });
+            pdfElements.push({ type: typedElement.type, element: text });
             break;
     }
 

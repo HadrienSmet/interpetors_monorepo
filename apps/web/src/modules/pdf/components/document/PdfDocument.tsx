@@ -1,12 +1,13 @@
 import { Document, Page } from "react-pdf";
+import { useNavigate } from "react-router";
 
 import { REFERENCE_TYPES } from "@repo/types";
 
 import { useFoldersManager } from "@/modules/folders";
 
-import { usePdfFile, usePdfTools } from "../../contexts";
+import { usePdfFile, usePdfNotes, usePdfTools } from "../../contexts";
 
-import { InteractiveNote, InteractiveVocabulary } from "../textInteractive";
+import { TextInteractive } from "../textInteractive";
 
 import { PageManager } from "./pageManager";
 import "./pdfDocument.scss";
@@ -15,9 +16,10 @@ const OPTIONS = {
     cMapPacked: true,
     cMapUrl: "/cmaps/",
     standardFontDataUrl: "/standard_fonts/",
-};
+} as const;
 export const PdfDocument = () => {
     const { selectedFile } = useFoldersManager();
+    const navigate = useNavigate();
     const {
         numPages,
         onDocumentLoadSuccess,
@@ -25,13 +27,15 @@ export const PdfDocument = () => {
         pageIndex,
         setIsPdfRendered,
     } = usePdfFile();
+    const { setSelectedNote } = usePdfNotes();
     const { onContextMenu, tool } = usePdfTools();
 
     const pdfFile = selectedFile.fileInStructure!;
 
     const displayNoteReferences = (
-        pdfFile.elements[pageIndex] &&
-        pdfFile.elements[pageIndex].references.length > 0
+        pdfFile.actions[pageIndex] &&
+        pdfFile.actions[pageIndex].references &&
+        pdfFile.actions[pageIndex].references.length > 0
     );
     const displayPageManager: boolean = (
         numPages !== undefined &&
@@ -41,6 +45,8 @@ export const PdfDocument = () => {
     const onLoadError = (error: Error) => console.error("An error occured while loading document", error);
     const onRenderError = (error: Error) => console.error("An error occured while loading page", error);
     const onRenderSucces = () => setIsPdfRendered(true);
+    const onNoteClick = (id: string) => setSelectedNote(id);
+    const onVocClick = (id: string) => navigate(`/prepare/vocabulary?id=${id}`);
 
     return (
         <div className="pdf-document" ref={pageRef}>
@@ -64,27 +70,28 @@ export const PdfDocument = () => {
                 />
             </Document>
 
-            {displayNoteReferences && pdfFile.elements[pageIndex].references
-                .filter(ref => ref.type === REFERENCE_TYPES.NOTE)
-                .map((ref, i) => (
-                    <InteractiveNote
-                        key={`noteRef-${pageIndex}-${i}`}
-                        note={ref.element}
-                        i={i}
-                        index={pageIndex}
-                    />
-                ))
-            }
-            {displayNoteReferences && pdfFile.elements[pageIndex].references
-                .filter(ref => ref.type === REFERENCE_TYPES.VOCABULARY)
-                .map((ref, i) => (
-                    <InteractiveVocabulary
-                        key={`noteRef-${pageIndex}-${i}`}
-                        vocabulary={ref.element}
-                        i={i}
-                        index={pageIndex}
-                    />
-                ))
+            {displayNoteReferences && pdfFile.actions[pageIndex].references!
+                .map((ref, i) => {
+                    if (ref.type === REFERENCE_TYPES.NOTE) {
+                        return (
+                            <TextInteractive
+                                key={`interactiveRef-${pageIndex}-${i}`}
+                                onClick={() => onNoteClick(ref.element.id)}
+                                referencingText={ref.element}
+                                title="Navigate to note"
+                            />
+                        );
+                    }
+
+                    return (
+                        <TextInteractive
+                            key={`noteRef-${pageIndex}-${i}`}
+                            onClick={() => onVocClick(ref.element.id)}
+                            referencingText={ref.element}
+                            title="Navigate to vocabulary"
+                        />
+                    );
+                })
             }
         </div>
     );

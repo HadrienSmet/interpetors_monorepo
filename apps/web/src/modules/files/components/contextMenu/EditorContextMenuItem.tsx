@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import { TFunction } from "i18next";
 
-import { TOOLS_ON_SELECTION } from "../../types";
+import { TOOLS_ON_SELECTION } from "@repo/types";
 
 export type ActionItem = {
-    readonly icon: ReactNode,
+    readonly icon: ReactNode;
     readonly onClick: () => void;
 };
 type ContextMenuItemProps = {

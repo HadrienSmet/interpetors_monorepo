@@ -2,14 +2,11 @@ import { ChangeEvent, useState } from "react";
 import { MdDownload, MdSave } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import { ClientFolderStructure, PdfFileElements, ServerFolderStructure } from "@repo/types";
-
 import { InputStyleLess } from "@/components";
 import { useCssVariable } from "@/hooks";
 import {
     downloadFolderAsZip,
     downloadVocabulary,
-    isClientPdfFile,
     useColorPanel,
     useFoldersManager,
     useVocabularyTable,
@@ -23,7 +20,7 @@ export const PreparationManager = () => {
 
     const { colorPanel } = useColorPanel();
     const inputSize = useCssVariable("--size-xl");
-    const { foldersStructures } = useFoldersManager();
+    const { foldersStructure } = useFoldersManager();
     const { t } = useTranslation();
     const { list } = useVocabularyTable();
     const { currentWorkspace } = useWorkspaces();
@@ -37,37 +34,12 @@ export const PreparationManager = () => {
     ];
 
     const handleDownloadVoc = () => downloadVocabulary(list, headerToUse, colorPanel);
-    const handleDownloadFolders = () => downloadFolderAsZip(foldersStructures, colorPanel);
+    const handleDownloadFolders = () => downloadFolderAsZip(foldersStructure, colorPanel);
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
-    const stripFolder = (folder: ClientFolderStructure): ServerFolderStructure => {
-        const output: ServerFolderStructure = {};
 
-        for (const [key, value] of Object.entries(folder)) {
-            if (isClientPdfFile(value)) {
-                const newElements: Record<number, Omit<PdfFileElements, "canvasElements">> = {};
-                for (const [pageStr, elements] of Object.entries(value.elements)) {
-                    const page = Number(pageStr);
-                    const { canvasElements: _drop, ...rest } = elements;
-                    newElements[page] = rest;
-                }
-
-                output[key] = {
-                    ...value,
-                    elements: newElements,
-                };
-            } else {
-                output[key] = stripFolder(value as ClientFolderStructure);
-            }
-        }
-
-        return (output);
-    };
-
-    const removeCanvasElements = (folders: Array<ClientFolderStructure>): Array<ServerFolderStructure> => (folders.map(stripFolder));
     const savePreparation = () => {
-        const cleaned = removeCanvasElements(foldersStructures)
         const params = {
-            folders: cleaned,
+            folders: foldersStructure,
             title,
             vocabulary: {
                 languages,
@@ -93,9 +65,9 @@ export const PreparationManager = () => {
             </div>
             <div className="preparation-buttons">
                 <button
-                    disabled={foldersStructures.length === 0}
+                    disabled={foldersStructure.length === 0}
                     onClick={handleDownloadFolders}
-                    title={foldersStructures.length === 0
+                    title={foldersStructure.length === 0
                         ? t("folders.empty")
                         : t("folders.download")}
                 >

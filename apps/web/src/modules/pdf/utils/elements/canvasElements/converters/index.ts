@@ -1,3 +1,3 @@
 export * from "./convertPathAction";
-export * from "./convertRectangleAction";
+export * from "./convertRectAction";
 export * from "./convertTextAction";

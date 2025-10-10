@@ -1,4 +1,6 @@
-import { ActionColor, CanvasColor, ColorKind, RgbColor, SplittedRgb } from "@repo/types";
+import { rgb } from "pdf-lib";
+
+import { ActionColor, ColorKind, RgbColor, SplittedRgb } from "@repo/types";
 
 import { ColorPanelType } from "@/modules/colorPanel";
 
@@ -23,19 +25,9 @@ export const getRgbColor = (color: RgbColor) => (
 export const getRoundedRgbColor = (color: RgbColor) => (
     `rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)})`
 );
-export const getPdfRgbColor = (color: string) => {
-    const { r, g, b } = getRgbFromString(color);
-
-    return ({
-        r: r/255,
-        g: g/255,
-        b: b/255,
-    });
-};
-export const handleActionColor = (color: ActionColor, colorPanel: ColorPanelType | null) => {
-    if (color.kind === ColorKind.INLINE) {
-        return (color.value);
-    }
+export const getPdfRgbColor = (color: RgbColor) => (rgb(color.r, color.g, color.b));
+export const handleActionColor = (color: ActionColor, colorPanel: ColorPanelType | null): RgbColor => {
+    if (color.kind === ColorKind.INLINE) return (color.value);
 
     const colorSwatch = colorPanel?.colors.find(elem => elem.id === color.value);
     if (!colorSwatch) {
@@ -44,27 +36,14 @@ export const handleActionColor = (color: ActionColor, colorPanel: ColorPanelType
 
     return (stringToRgbColor(colorSwatch.value));
 };
-export const handleCanvasColor = (color: CanvasColor, colorPanel: ColorPanelType | null) => {
-    if (color.kind === ColorKind.INLINE) {
-        return (color.value);
-    }
 
-    const colorSwatch = colorPanel?.colors.find(elem => elem.id === color.value);
-    if (!colorSwatch) {
-        throw new Error("Should return lastValue");
-    }
-
-    return (colorSwatch.value);
-};
 export const hslToRgb = (h: number, s: number, l: number): RgbColor => {
     s /= 100;
     l /= 100;
 
     const k = (n: number)  => (n + h / 30) % 12;
     const a = s * Math.min(l, 1 - l);
-    const f = (n: number) => (
-        l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1))
-    );
+    const f = (n: number) => (l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)));
 
     const r = f(0);
     const g = f(8);
@@ -79,8 +58,7 @@ export const blendWithWhite = (rgb: string, alpha: number): string => {
 
     const [r, g, b] = matches.map(Number);
 
-    const blend = (channel: number) =>
-        Math.round(channel * alpha + 255 * (1 - alpha));
+    const blend = (channel: number) => (Math.round(channel * alpha + 255 * (1 - alpha)));
 
     const newR = blend(r);
     const newG = blend(g);
@@ -136,7 +114,13 @@ export const rgbToRgba = (color: RgbColor, opacity: number) => (
     `rgba(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}, ${opacity})`
 );
 export const stringToRgba = (color: string, opacity: number) => {
-    const pdfColor = getPdfRgbColor(color);
+    const { r, g, b } = getRgbFromString(color);
+
+    const pdfColor = {
+        r: r/255,
+        g: g/255,
+        b: b/255,
+    };
 
     return (rgbToRgba(pdfColor, opacity));
 };
@@ -147,5 +131,5 @@ export const stringToRgbColor = (color: string): RgbColor => {
         r: r/255,
         g: g/255,
         b: b/255,
-    })
+    });
 };

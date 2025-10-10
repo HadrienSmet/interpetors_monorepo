@@ -1,20 +1,18 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext } from "react";
 
-import { ActionColor } from "@repo/types";
+import { ActionColor, FileTool } from "@repo/types";
 
 import { getContextError } from "@/contexts/utils";
-
-import { PdfTool } from "../../types";
 
 export type PdfToolsContextType = {
     readonly color: ActionColor;
     readonly currentRange: Range | undefined;
     readonly customCursor: ReactNode;
     readonly onContextMenu: (e: MouseEvent) => void;
-    readonly onToolSelection: (tool: PdfTool | null) => void;
+    readonly onToolSelection: (tool: FileTool | null) => void;
     readonly setColor: Dispatch<SetStateAction<ActionColor>>;
-    readonly setTool: Dispatch<SetStateAction<PdfTool | null>>;
-    readonly tool: PdfTool | null;
+    readonly setTool: Dispatch<SetStateAction<FileTool | null>>;
+    readonly tool: FileTool | null;
 };
 
 export const PdfToolsContext = createContext<PdfToolsContextType | null>(null);

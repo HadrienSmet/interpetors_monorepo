@@ -1,12 +1,10 @@
-import { NoteReferenceElement, REFERENCE_TYPES } from "@repo/types";
+import { NoteAction, NoteReferenceElement, REFERENCE_TYPES } from "@repo/types";
 
-import { InterractiveNoteAction } from "@/modules/files";
-
-export const convertNoteAction = (noteAction: InterractiveNoteAction): Array<NoteReferenceElement> | null => {
+export const convertNoteAction = (noteAction: NoteAction): Array<NoteReferenceElement> => {
     const { element } = noteAction;
     const { rectsArray, pageDimensions, id } = element;
 
-    if (!rectsArray.length) return (null);
+    if (!rectsArray.length) return ([]);
 
 
     return (rectsArray.map(targetRect => ({

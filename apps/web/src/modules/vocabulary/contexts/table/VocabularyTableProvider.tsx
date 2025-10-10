@@ -4,7 +4,7 @@ import { VocabularyTerm } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
-import { handleCanvasColor } from "@/utils";
+import { getRgbColor, handleActionColor } from "@/utils";
 
 import { usePreparationVocabulary } from "../preparation";
 
@@ -31,7 +31,8 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
         const output: Record<string, Array<VocabularyTerm>> = {};
 
         for (const group of preparationVocabulary) {
-            const color = handleCanvasColor(group.colorToUse, colorPanel);
+            const rgbColor = handleActionColor(group.colorToUse, colorPanel);
+            const color = getRgbColor(rgbColor);
 
             output[color] = group.terms;
         }

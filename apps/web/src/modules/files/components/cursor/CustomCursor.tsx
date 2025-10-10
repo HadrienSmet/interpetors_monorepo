@@ -1,10 +1,6 @@
 import { MdBorderColor, MdBrush, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
 
-import { Position } from "@repo/types";
-
-import { PdfTool } from "@/modules/pdf";
-
-import { PDF_TOOLS } from "../../types";
+import { FILE_TOOLS, FileTool, Position } from "@repo/types";
 
 import "./customCursor.scss";
 
@@ -19,15 +15,15 @@ type ToolIconParams = {
 type CustomCursorProps = {
     readonly color: string;
     readonly position: Position;
-    readonly tool: PdfTool;
+    readonly tool: FileTool;
 };
 // TODO: Need to have one source of truth for tools icons
 const TOOLS_ICONS = {
-    [PDF_TOOLS.BRUSH]: (params: ToolIconParams) => <MdBrush {...params} />,
-    [PDF_TOOLS.HIGHLIGHT]: (params: ToolIconParams) => <MdFormatColorFill {...params} />,
-    [PDF_TOOLS.NOTE]: (params: ToolIconParams) => <MdComment {...params} />,
-    [PDF_TOOLS.UNDERLINE]: (params: ToolIconParams) => <MdBorderColor {...params} />,
-    [PDF_TOOLS.VOCABULARY]: (params: ToolIconParams) => <MdOutlineMenuBook {...params} />,
+    [FILE_TOOLS.BRUSH]: (params: ToolIconParams) => <MdBrush {...params} />,
+    [FILE_TOOLS.HIGHLIGHT]: (params: ToolIconParams) => <MdFormatColorFill {...params} />,
+    [FILE_TOOLS.NOTE]: (params: ToolIconParams) => <MdComment {...params} />,
+    [FILE_TOOLS.UNDERLINE]: (params: ToolIconParams) => <MdBorderColor {...params} />,
+    [FILE_TOOLS.VOCABULARY]: (params: ToolIconParams) => <MdOutlineMenuBook {...params} />,
 };
 const getCursrorIcon = ({ color, tool }: Omit<CustomCursorProps, "position">) => {
     const toolIcon = TOOLS_ICONS[tool];

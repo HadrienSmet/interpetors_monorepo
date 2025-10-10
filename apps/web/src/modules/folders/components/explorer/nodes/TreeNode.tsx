@@ -7,7 +7,7 @@ import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 
-import { isClientPdfFile, useFoldersManager } from "../../../contexts";
+import { isPdfFile, useFoldersManager } from "../../../contexts";
 
 import { FileNode } from "./FileNode";
 import { TreeNodeProps } from "./nodes.types";
@@ -117,7 +117,7 @@ export const TreeNode = ({
 
     // ----- Events ------
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setUpdatedName(e.target.value);
-    const onClick = () => setIsOpen(!isOpen);
+    const onClick = () => setIsOpen(state => !state);
     const onContextMenu = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -187,7 +187,7 @@ export const TreeNode = ({
         if (e.key === "Enter") handleRename();
     };
 
-    if (isClientPdfFile(node)) {
+    if (isPdfFile(node)) {
         return (
             <FileNode
                 depth={depth}

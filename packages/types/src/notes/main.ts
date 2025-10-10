@@ -1,8 +1,13 @@
-import { FileReference } from "../common";
+import { ActionColor } from "../colors";
 
-export type Note =
-    & FileReference
-    & {
-        readonly note: string;
-        readonly y: number;
-    };
+type NoteOccurence = {
+    readonly filePath: string;
+    readonly text: string;
+};
+export type Note = {
+    readonly color: ActionColor;
+    readonly id: string;
+    readonly occurence: NoteOccurence;
+    readonly note: string;
+    readonly y: number;
+};

@@ -1,25 +1,25 @@
-import { ColorKind, PdfColor, RectanglePdfElement } from "@repo/types";
+import { FILE_TOOLS, RectAction } from "@repo/types";
 
-import { HIGLIGHT_OPACITY, PDF_TOOLS, RectangleAction, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
+import { ColorPanelType } from "@/modules/colorPanel";
+import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
+import { getPdfDocument } from "@/modules/folders";
+import { getPdfRgbColor, handleActionColor } from "@/utils";
 
-import { getPdfRgbColor } from "./tools";
+import { RectPdfElement } from "../types";
 
-export const convertRectangleAction = (action: RectangleAction): Array<RectanglePdfElement> => {
-    const { color, pageDimensions, pageIndex, pdfDoc, rectsArray, tool } = action.element;
+export const convertRectAction = async (action: RectAction, colorPanel : ColorPanelType | null): Promise<Array<RectPdfElement>> => {
+    const { color: actionColor, pageDimensions, pageIndex, file, rectsArray, tool } = action.element;
 
     const isHighlight = (
-        tool === PDF_TOOLS.HIGHLIGHT ||
-        tool === PDF_TOOLS.VOCABULARY
+        tool === FILE_TOOLS.HIGHLIGHT ||
+        tool === FILE_TOOLS.VOCABULARY
     );
+    const pdfDoc = await getPdfDocument(file);
     const opacity = isHighlight
         ? HIGLIGHT_OPACITY
         : REGULAR_OPACITY;
-    const colorToUse: PdfColor = color.kind === ColorKind.PANEL
-        ? color
-        : {
-            kind: ColorKind.INLINE,
-            value: getPdfRgbColor(color.value),
-        };
+    const rgbColor = handleActionColor(actionColor, colorPanel);
+    const color = getPdfRgbColor(rgbColor);
 
     return (
         rectsArray.map(rect => {
@@ -37,7 +37,7 @@ export const convertRectangleAction = (action: RectangleAction): Array<Rectangle
             const y = pageHeight - scale(rect.bottom - pageDimensions.top);
 
             return ({
-                color: colorToUse,
+                color,
                 height,
                 opacity,
                 width,

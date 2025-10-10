@@ -53,9 +53,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const downloadPdfFile = async () => {
         const updatedDocument = await savePdfFileChanges();
 
-        if (!updatedDocument || !selectedFile.fileInStructure) {
-            return;
-        }
+        if (!updatedDocument || !selectedFile.fileInStructure) return;
 
         downloadPdf(updatedDocument, selectedFile.fileInStructure?.name)
     };
@@ -85,7 +83,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         const loadPdf = async () => {
             if (!selectedFile.fileInStructure) return;
 
-            const pdfFile = selectedFile.fileInStructure
+            const pdfFile = selectedFile.fileInStructure;
 
             const arrayBuffer = typeof pdfFile.file === "string"
                 ? await fetch(pdfFile.file).then(res => res.arrayBuffer())
@@ -108,7 +106,6 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         onDocumentLoadSuccess,
         pageIndex,
         pageRef,
-        pdfDoc,
         previousPage,
         renderedPages,
         setDisplayLoader,

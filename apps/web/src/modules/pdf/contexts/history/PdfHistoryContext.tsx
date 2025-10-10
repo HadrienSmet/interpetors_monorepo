@@ -1,17 +1,8 @@
 import { createContext, useContext } from "react";
 
-import { GenerateResourceAction } from "@repo/types";
+import { ActionColor, HistoryAction } from "@repo/types";
 
 import { getContextError } from "@/contexts/utils";
-import { ElementAction, InterractiveReferenceAction } from "@/modules/files";
-
-export type HistoryAction = {
-    /** Used to get the pdf and the canvas elemnts */
-    readonly elements: Array<ElementAction>;
-    readonly elementToGenerate?: GenerateResourceAction;
-    /** Text highlighted on hover */
-    readonly interractiveText?: InterractiveReferenceAction;
-};
 
 export type PdfHistoryContextType = {
     /** Decrease history index */
@@ -22,7 +13,8 @@ export type PdfHistoryContextType = {
     readonly isUpToDate: boolean;
     /** Adds the last user action at the right history index */
     readonly pushAction: (action: HistoryAction) => void;
-    readonly updateNoteInHistory: (color: string, id: string, text: string) => void;
+    readonly updateNoteInHistory: (color: ActionColor, id: string, text: string) => void;
+    readonly version: number;
 };
 
 export const PdfHistoryContext = createContext<PdfHistoryContextType | null>(null);

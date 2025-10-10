@@ -8,4 +8,5 @@ export enum OTHER_TOOLS {
     BRUSH = "brush",
 }
 
-export const PDF_TOOLS = { ...TOOLS_ON_SELECTION, ...OTHER_TOOLS };
+export const FILE_TOOLS = { ...TOOLS_ON_SELECTION, ...OTHER_TOOLS };
+export type FileTool = typeof FILE_TOOLS[keyof typeof FILE_TOOLS];

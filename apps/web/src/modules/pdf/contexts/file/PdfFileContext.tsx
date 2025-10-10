@@ -2,7 +2,6 @@ import { createContext, Dispatch, RefObject, SetStateAction, useContext } from "
 import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
 import { getContextError } from "@/contexts/utils";
-import { PDFDocument } from "@/workers/pdfConfig";
 
 type PdfFileContextType = {
     readonly containerRef: RefObject<HTMLDivElement | null>;
@@ -14,7 +13,6 @@ type PdfFileContextType = {
     readonly onDocumentLoadSuccess: (document: DocumentCallback) => void;
     readonly pageIndex: number;
     readonly pageRef: RefObject<HTMLDivElement | null>;
-    readonly pdfDoc: PDFDocument | undefined;
     readonly previousPage: () => void;
     readonly renderedPages: RefObject<number>;
     readonly setDisplayLoader: Dispatch<SetStateAction<boolean>>;

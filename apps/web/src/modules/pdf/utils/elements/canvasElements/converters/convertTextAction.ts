@@ -1,20 +1,19 @@
-import { CanvasColor, ColorKind, TextCanvasElement } from "@repo/types";
+import { TextAction } from "@repo/types";
 
-import { ANNOTATION_SCALE, TextAction } from "@/modules/files";
-import { getRgbColor } from "@/utils";
+import { ColorPanelType } from "@/modules/colorPanel";
+import { ANNOTATION_SCALE } from "@/modules/files";
+import { getRgbColor, handleActionColor } from "@/utils";
 
-export const convertTextAction = (action: TextAction): TextCanvasElement => {
-    const { color, pageDimensions, rect, text } = action.element;
+import { TextCanvasElement } from "../types";
 
-    const colorToUse: CanvasColor = color.kind === ColorKind.PANEL
-        ? color
-        : {
-            kind: ColorKind.INLINE,
-            value: getRgbColor(color.value),
-        };
+export const convertTextAction = (action: TextAction, colorPanel: ColorPanelType | null): TextCanvasElement => {
+    const { color: actionColor, pageDimensions, rect, text } = action.element;
+
+    const rgbColor = handleActionColor(actionColor, colorPanel);
+    const color = getRgbColor(rgbColor);
 
     const options = {
-        color: colorToUse,
+        color,
         size: rect.height * ANNOTATION_SCALE,
         x: rect.left + rect.width - pageDimensions.left - 1,
         y: rect.top - pageDimensions.top + (rect.height * .3),

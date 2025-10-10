@@ -1,14 +1,14 @@
-import { CanvasColor, VocabularyTerm } from "@repo/types";
+import { ActionColor, VocabularyTerm } from "@repo/types";
 
 // Voc item can only belong to one color
 export type WordToAdd = {
-    readonly color: CanvasColor;
+    readonly color: ActionColor;
     readonly filePath: string;
     readonly pageIndex: number;
     readonly text: string;
 };
 export type GroupedVocabulary = {
-    readonly colorToUse: CanvasColor;
+    readonly colorToUse: ActionColor;
     readonly terms: Array<VocabularyTerm>;
 };
 export type PreparationVocabulary = Array<GroupedVocabulary>;

@@ -1,12 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { FileTool } from "@repo/types";
+
 import { usePdfTools } from "../../../contexts";
-import { PdfTool } from "../../../types";
 
 export type ToolButtonItem = {
     readonly icon: React.JSX.Element;
-    readonly id: PdfTool;
+    readonly id: FileTool;
 };
 type ToolButtonProps = ToolButtonItem;
 export const ToolButton = (props: ToolButtonProps) => {

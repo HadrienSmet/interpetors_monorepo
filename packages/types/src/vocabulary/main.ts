@@ -1,4 +1,4 @@
-import { CanvasColor } from "../colors";
+import { ActionColor } from "../colors";
 
 export type VocabularyOccurence = {
     readonly filePath: string;
@@ -8,6 +8,6 @@ export type VocabularyOccurence = {
 export type VocabularyTerm = {
     readonly id: string;
     readonly occurence: VocabularyOccurence;
-    readonly color: CanvasColor;
+    readonly color: ActionColor;
     readonly translations: Array<string>;
 };

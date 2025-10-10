@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { ClientPdfFile } from "@repo/types";
+import { PdfFile } from "@repo/types";
 
 import { useFoldersManager } from "@/modules/folders";
 import { PdfEditor } from "@/modules/pdf";
@@ -10,7 +10,7 @@ import { SUPPORTED_TYPES } from "../icon";
 import "./fileDisplayer.scss";
 
 type FileToRenderProps = {
-    readonly fileInStructure: ClientPdfFile;
+    readonly fileInStructure: PdfFile;
     readonly path: string;
 };
 const FileToRender = (props: FileToRenderProps) => {

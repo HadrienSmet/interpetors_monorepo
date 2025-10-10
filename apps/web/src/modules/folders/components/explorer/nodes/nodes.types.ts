@@ -1,8 +1,8 @@
-import type { ClientFolderStructure, ClientPdfFile } from "@repo/types";
+import type { FolderStructure, PdfFile } from "@repo/types";
 
 export type TreeNodeProps = {
     readonly depth: number;
     readonly name: string;
-    readonly node: ClientFolderStructure | ClientPdfFile;
+    readonly node: FolderStructure | PdfFile;
     readonly path: string;
 };

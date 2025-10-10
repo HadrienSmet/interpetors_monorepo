@@ -1,26 +1,26 @@
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
 
 import {
-    GENERATED_ELEMENTS,
-    CanvasElement,
-    ClientPdfFile,
-    PdfElement,
-    PdfFileElements,
+    GENERATED_RESOURCES,
+
+    ActionColor,
+    HistoryAction,
+    FileAction,
     Note,
-    ReferenceElement,
+    PdfFile,
 } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
-import { FILE_ELEMENTS, FIRST_PAGE } from "@/modules/files";
+import { FIRST_PAGE } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
 import { usePreparationVocabulary } from "@/modules/vocabulary";
-import { handleCanvasColor } from "@/utils";
+import { handleActionColor } from "@/utils";
 
-import { getCanvasElements, getInterractiveReference, getPdfElements } from "../../utils";
+import { getInterractiveReference } from "../../utils";
 
 import { usePdfFile } from "../file";
 
-import { HistoryAction, PdfHistoryContext, PdfHistoryContextType } from "./PdfHistoryContext";
+import { PdfHistoryContext, PdfHistoryContextType } from "./PdfHistoryContext";
 
 const DEFAULT_INDEX = -1 as const;
 /**
@@ -28,8 +28,9 @@ const DEFAULT_INDEX = -1 as const;
  */
 export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const [historyIndex, setHistoryIndex] = useState<number>(DEFAULT_INDEX);
-    const [savedElements, setSavedElements] = useState<PdfFileElements>({ ...FILE_ELEMENTS });
+    const [savedElements, setSavedElements] = useState<FileAction | null>(null);
     const [userActions, setUserActions] = useState<Array<HistoryAction>>([]);
+    const [version, setVersion] = useState(0);
 
     const { colorPanel } = useColorPanel();
     const { files, selectedFile } = useFoldersManager();
@@ -37,6 +38,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const { addToVocabulary, remove } = usePreparationVocabulary();
 
     const shouldUpdateRef = useRef(false);
+    const prevIndexRef = useRef<number>(DEFAULT_INDEX);
 
     const backward = () => {
         shouldUpdateRef.current = true;
@@ -51,8 +53,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 
         if (copy.length === 0) {
             copy.push(action);
-        }
-        else {
+        } else {
             copy.splice(historyIndex + 1, Infinity, action);
         }
 
@@ -60,23 +61,24 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         shouldUpdateRef.current = true;
         setUserActions(copy);
     };
-    const updateNoteInHistory = (color: string, id: string, text: string) => setUserActions(state => {
+    const updateNoteInHistory = (color: ActionColor, id: string, text: string) => setUserActions(state => {
         const copy = [...state];
 
         const actionIndex = copy.findIndex(action => {
             if (
-                !action.elementToGenerate ||
-                action.elementToGenerate.type !== GENERATED_ELEMENTS.NOTE
+                !action.resourceToGenerate ||
+                action.resourceToGenerate.type !== GENERATED_RESOURCES.NOTE
             ) {
                 return (false);
             }
 
-            const currentColor = handleCanvasColor(action.elementToGenerate.element.color, colorPanel);
+            const currentColor = handleActionColor(action.resourceToGenerate.element.color, colorPanel);
+            const noteColor = handleActionColor(color, colorPanel);
 
             return (
-                action.elementToGenerate?.type === GENERATED_ELEMENTS.NOTE &&
-                action.elementToGenerate.element.id === id &&
-                currentColor === color
+                action.resourceToGenerate?.type === GENERATED_RESOURCES.NOTE &&
+                action.resourceToGenerate.element.id === id &&
+                currentColor === noteColor
             );
         });
 
@@ -89,10 +91,10 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 
         const updated: HistoryAction = {
             ...currentAction,
-            elementToGenerate: {
-                type: GENERATED_ELEMENTS.NOTE,
+            resourceToGenerate: {
+                type: GENERATED_RESOURCES.NOTE,
                 element: {
-                    ...(currentAction.elementToGenerate!.element as Note),
+                    ...(currentAction.resourceToGenerate!.element as Note),
                     note: text,
                 },
             },
@@ -111,88 +113,96 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         setUserActions([]);
 
         const file = selectedFile.fileInStructure;
-        if (!file || !(pageIndex in file.elements)) return;
-
-        setSavedElements(file.elements[pageIndex]);
-    }, [selectedFile.path, pageIndex]);
-    // Responsible to update the folders structure on history actions
-    useEffect(() => {
-        const file = selectedFile.fileInStructure;
-        if (!file || !shouldUpdateRef.current) {
+        if (!file || !(pageIndex in file.actions)) {
+            setSavedElements({ elements: [], generatedResources: [], references: [] });
+            prevIndexRef.current = DEFAULT_INDEX;
             return;
         }
 
-        const canvasElements: Array<CanvasElement> = [...savedElements.canvasElements];
-        const notes: Array<Note> = [...savedElements.notes];
-        const pdfElements: Array<PdfElement> = [...savedElements.pdfElements];
-        const references: Array<ReferenceElement> = [...savedElements.references];
+        const { elements = [], generatedResources = [], references = [] } = file.actions[pageIndex];
 
-        const indexToUse = historyIndex + 1;
+        setSavedElements({
+            elements: [...elements],
+            generatedResources: [...generatedResources],
+            references: [...references],
+        });
 
-        for (let i = 0; i < indexToUse; i++) {
-            const userAction = userActions[i];
-            for (const element of userAction.elements) {
-                canvasElements.push(...getCanvasElements(element));
-                pdfElements.push(...getPdfElements(element));
-            }
+        prevIndexRef.current = DEFAULT_INDEX;
+    }, [selectedFile.path, pageIndex]);
 
-            if (userAction.interractiveText) {
-                const reference = getInterractiveReference(userAction.interractiveText);
-                if (reference) {
-                    references.push(...reference);
-                }
-            }
+    // Responsible to update the folders structure on history actions
+    useEffect(() => {
+        const file = selectedFile.fileInStructure;
+        if (!file || !shouldUpdateRef.current || !savedElements) return;
 
-            if (userAction.elementToGenerate) {
-                if (userAction.elementToGenerate.type === GENERATED_ELEMENTS.NOTE) {
-                    const note = userAction.elementToGenerate.element;
-                    // @ts-expect-error
-                    delete note.occurence.pageIndex;
+        const handleUserActions = async () => {
+            const currentIndex = Math.max(-1, Math.min(historyIndex, userActions.length - 1));
+            const prev = prevIndexRef.current;
+            const indexToUse = currentIndex + 1;
 
-                    notes.push(userAction.elementToGenerate.element);
-                }
-                if (userAction.elementToGenerate.type === GENERATED_ELEMENTS.VOCABULARY) {
-                    addToVocabulary({
-                        color: userAction.elementToGenerate.element.color,
-                        ...userAction.elementToGenerate.element.occurence,
-                    });
-                }
-            }
-        }
+            const elements = [...(savedElements.elements ?? [])];
+            const references = [...(savedElements.references ?? [])];
+            const notes = [...(savedElements.generatedResources ?? [])];
 
-        if (indexToUse < userActions.length) {
-            for (let i = indexToUse; userActions.length; i++) {
+            for (let i = 0; i < indexToUse; i++) {
                 const userAction = userActions[i];
+                if (!userAction) break;
 
-                if (!userAction) {
-                    break;
+                elements.push(...userAction.elements);
+
+                if (userAction.reference) {
+                    references.push(...getInterractiveReference(userAction.reference));
                 }
 
-                if (
-                    userAction.elementToGenerate &&
-                    userAction.elementToGenerate.type === GENERATED_ELEMENTS.VOCABULARY
-                ) {
-                    remove(userAction.elementToGenerate.element.color, userAction.elementToGenerate.element.id);
+                if (userAction.resourceToGenerate?.type === GENERATED_RESOURCES.NOTE) {
+                    notes.push(userAction.resourceToGenerate.element);
                 }
             }
-        }
 
-        const updatedFile: ClientPdfFile = {
-            ...file,
-            elements: {
-                ...file.elements,
-                [Math.max(pageIndex, FIRST_PAGE)]: {
-                    canvasElements,
-                    notes,
-                    pdfElements,
-                    references,
+            if (currentIndex > prev) {
+                for (let i = prev + 1; i <= currentIndex; i++) {
+                    const userAction = userActions[i];
+                    if (userAction?.resourceToGenerate?.type === GENERATED_RESOURCES.VOCABULARY) {
+                        const { element } = userAction.resourceToGenerate;
+                        addToVocabulary({
+                            color: element.color,
+                            ...element.occurence,
+                        });
+                    }
+                }
+            } else if (currentIndex < prev) {
+                for (let i = prev; i > currentIndex; i--) {
+                    const userAction = userActions[i];
+                    if (userAction?.resourceToGenerate?.type === GENERATED_RESOURCES.VOCABULARY) {
+                        const e = userAction.resourceToGenerate.element;
+                        remove(e.color, e.occurence.text); // cf. clé d’ID ci-dessous
+                    }
+                }
+            }
+
+            const updatedFile: PdfFile = {
+                ...file,
+                actions: {
+                    ...(file.actions ?? {}),
+                    [Math.max(pageIndex, FIRST_PAGE)]: {
+                        elements,
+                        generatedResources: notes,
+                        references,
+                    },
                 },
-            },
+            };
+
+            files.update(updatedFile);
+
+            prevIndexRef.current = currentIndex;
+            shouldUpdateRef.current = false;
+
+            setVersion(state => state + 1);
         };
 
-        files.update(updatedFile);
-        shouldUpdateRef.current = false;
-    }, [historyIndex, savedElements, userActions]);
+        handleUserActions();
+    }, [historyIndex, savedElements, userActions, selectedFile.fileInStructure]);
+
 
     const isUpToDate = useMemo(() => (
         historyIndex === userActions.length - 1
@@ -205,6 +215,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         historyIndex,
         pushAction,
         updateNoteInHistory,
+        version,
     };
 
     return (

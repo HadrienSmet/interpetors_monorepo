@@ -2,19 +2,29 @@ import { PropsWithChildren, useCallback, useEffect, useRef } from "react";
 
 import {
     DRAWING_TYPES,
-    PathCanvasElement,
-    RectangleCanvasElement,
-    TextCanvasElement,
+    FILE_TOOLS,
+
+    HistoryAction,
+    PathActionElement,
     Position,
 } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
-import { HIGLIGHT_OPACITY, PathElementAction, PDF_TOOLS, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
+import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
-import { handleActionColor, handleCanvasColor, rgbToRgba, stringToRgba } from "@/utils";
+import { handleActionColor, rgbToRgba, stringToRgba } from "@/utils";
+
+import {
+    convertPathAction,
+    convertRectAction,
+    convertTextAction,
+    PathCanvasElement,
+    RectCanvasElement,
+    TextCanvasElement,
+} from "../../utils";
 
 import { usePdfFile } from "../file";
-import { HistoryAction, usePdfHistory } from "../history";
+import { usePdfHistory } from "../history";
 import { usePdfTools } from "../tools";
 
 import { PdfCanvasContext } from "./PdfCanvasContext";
@@ -28,8 +38,8 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
     const { colorPanel } = useColorPanel();
     const { selectedFile } = useFoldersManager();
-    const { displayLoader, isPdfRendered, pageIndex, pageRef, pdfDoc } = usePdfFile();
-    const { pushAction } = usePdfHistory();
+    const { displayLoader, isPdfRendered, pageIndex, pageRef } = usePdfFile();
+    const { pushAction, version } = usePdfHistory();
     const { color, currentRange, tool } = usePdfTools();
 
     const rgbColor = handleActionColor(color, colorPanel);
@@ -104,16 +114,12 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
         if (!ctx) return;
 
-        const strokeStyle = handleCanvasColor(pathElement.color, colorPanel);
-        if (!strokeStyle) return;
-
         ctx.lineWidth = STROKE_SIZE;
-        ctx.strokeStyle = strokeStyle;
-
-        ctx.beginPath();
+        ctx.strokeStyle = pathElement.color;
 
         const { x: startX, y: startY } = pathElement.points[0];
 
+        ctx.beginPath();
         ctx.moveTo(startX, startY);
 
         for (let i = 1; i < pathElement.points.length; i++) {
@@ -123,28 +129,21 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             ctx.stroke();
         }
     };
-    const drawRectOnMount = (rectangleElement: RectangleCanvasElement) => {
+    const drawRectOnMount = (rectangleElement: RectCanvasElement) => {
         const ctx = canvasContextRef.current;
 
         if (!ctx) return;
 
-        const fillStyle = stringToRgba(handleCanvasColor(rectangleElement.color, colorPanel), rectangleElement.opacity);
-
-        if (!fillStyle) return;
-
-        ctx.fillStyle = fillStyle;
+        ctx.fillStyle = stringToRgba(rectangleElement.color, rectangleElement.opacity);
         ctx.fillRect(rectangleElement.x, rectangleElement.y, rectangleElement.width, rectangleElement.height);
     };
     const drawTextOnMount = (textElement: TextCanvasElement) => {
-        const ctx = canvasContextRef.current;
         const containerDimensions = pageRef.current?.getBoundingClientRect();
+        const ctx = canvasContextRef.current;
 
         if (!ctx || !containerDimensions) return;
 
-        const fillStyle = handleCanvasColor(textElement.options.color, colorPanel);
-        if (!fillStyle) return;
-
-        ctx.fillStyle = fillStyle;
+        ctx.fillStyle = textElement.options.color;
         ctx.font = "8px serif";
         ctx.fillText(textElement.text, textElement.options.x, textElement.options.y);
     };
@@ -158,41 +157,29 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             return;
         }
 
-        const targetPage = pageRef.current;
-        if (!targetPage) {
-            return;
-        };
-
-        const drawerCtx = drawerRef.current.getContext("2d");
-        if (!drawerCtx) {
-            return;
-        };
-        drawerContextRef.current = drawerCtx;
-
         const canvasCtx = canvasRef.current.getContext("2d");
-        if (!canvasCtx) {
-            return;
-        };
+        const drawerCtx = drawerRef.current.getContext("2d");
+        const targetPage = pageRef.current;
+
+        if (!targetPage || !drawerCtx || !canvasCtx) return;
+
+        drawerContextRef.current = drawerCtx;
         canvasContextRef.current = canvasCtx;
     }, [isPdfRendered]);
     // Responsible to draw on user action
     useEffect(() => {
-        if (!currentRange || !tool) return;
-
-        if (tool === PDF_TOOLS.BRUSH) {
-            return;
-        }
+        if (!currentRange || !tool || tool === FILE_TOOLS.BRUSH) return;
 
         const rects = currentRange.getClientRects();
         const rectsArray = Array.from(rects);
 
         switch (tool) {
-            case PDF_TOOLS.HIGHLIGHT:
-            case PDF_TOOLS.VOCABULARY:
+            case FILE_TOOLS.HIGHLIGHT:
+            case FILE_TOOLS.VOCABULARY:
                 drawRect(rectsArray);
                 break;
-            case PDF_TOOLS.NOTE:
-            case PDF_TOOLS.UNDERLINE:
+            case FILE_TOOLS.NOTE:
+            case FILE_TOOLS.UNDERLINE:
                 drawLine(rectsArray);
                 break;
             default:
@@ -201,18 +188,24 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     }, [currentRange, tool]);
     // Handles the brush
     useEffect(() => {
-        const pdfFile = selectedFile.fileInStructure;
-        if (!isPdfRendered || !pageRef.current || !pdfFile) return;
-
+        const { fileInStructure: pdfFile } = selectedFile;
         const canvas = drawerRef.current;
-        if (!canvas || tool !== PDF_TOOLS.BRUSH) return;
+        if (
+            !isPdfRendered ||
+            !pageRef.current ||
+            !pdfFile ||
+            !canvas ||
+            tool !== FILE_TOOLS.BRUSH
+        ) {
+            return;
+        }
 
-        const colorToUse = getColorToUse(REGULAR_OPACITY);
         const pageDimensions = pageRef.current.getBoundingClientRect();
 
         canvas.width = pageDimensions.width;
         canvas.height = pageDimensions.height;
 
+        const colorToUse = getColorToUse(REGULAR_OPACITY);
         const ctx = canvas.getContext("2d");
         if (!ctx || !colorToUse) return;
 
@@ -239,14 +232,13 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             points.push({ x: e.clientX, y: e.clientY });
         };
         const handleMouseUp = async () => {
-            if (points.length < 2 || !pdfDoc) return;
+            if (points.length < 2) return;
 
-            const element: PathElementAction = {
+            const element: PathActionElement = {
                 color,
                 pageDimensions,
                 pageIndex,
-                pdfDoc,
-                pdfFile,
+                file: pdfFile.file,
                 points,
             };
             const historyAction: HistoryAction = {
@@ -270,52 +262,50 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             pageRef.current?.removeEventListener("mousemove", handleMouseMove);
             pageRef.current?.removeEventListener("mouseup", handleMouseUp);
         };
-    }, [color, isPdfRendered, pdfDoc, selectedFile.fileInStructure, tool]);
+    }, [color, isPdfRendered, selectedFile.fileInStructure, tool]);
     // Responsible to draw the canvas elements from file update / page change
     useEffect(() => {
-        if (!selectedFile.fileInStructure || !isPdfRendered || displayLoader) {
-            return;
-        }
+        if (!selectedFile.fileInStructure || !isPdfRendered || displayLoader) return;
 
         const canvasCtx = canvasContextRef.current;
         const drawerCtx = drawerContextRef.current;
 
-        if (canvasCtx) {
-            canvasCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+        if (canvasCtx && canvasRef.current) {
+            canvasCtx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
 
         if (
-            !selectedFile.fileInStructure.elements[pageIndex] ||
-            selectedFile.fileInStructure.elements[pageIndex].canvasElements.length < 1
+            !selectedFile.fileInStructure.actions[pageIndex] ||
+            selectedFile.fileInStructure.actions[pageIndex].elements.length < 1
         ) {
             return;
         }
 
-        for (const canvasElement of selectedFile.fileInStructure.elements[pageIndex].canvasElements) {
-            switch (canvasElement.type) {
+        for (const element of selectedFile.fileInStructure.actions[pageIndex].elements) {
+            switch (element.type) {
                 case DRAWING_TYPES.PATH:
-                    console.log({ element: canvasElement.element });
-                    drawPathOnMount(canvasElement.element);
+                    drawPathOnMount(convertPathAction(element, colorPanel));
                     break;
-                case DRAWING_TYPES.RECTANGLE:
-                    console.log({ element: canvasElement.element });
-                    drawRectOnMount(canvasElement.element);
+                case DRAWING_TYPES.RECT:
+                    const rectElements = convertRectAction(element, colorPanel);
+
+                    rectElements.forEach(rect => drawRectOnMount(rect));
                     break;
                 case DRAWING_TYPES.TEXT:
-                    console.log({ element: canvasElement.element });
-                    drawTextOnMount(canvasElement.element);
+                    drawTextOnMount(convertTextAction(element, colorPanel));
                     break;
             }
         }
 
-        if (drawerCtx) {
-            drawerCtx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+        if (drawerCtx && canvasRef.current) {
+            drawerCtx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
     }, [
+        colorPanel,
         displayLoader,
         isPdfRendered,
-        selectedFile.fileInStructure?.elements[pageIndex].canvasElements,
-        pageIndex
+        pageIndex,
+        version,
     ]);
 
     return (

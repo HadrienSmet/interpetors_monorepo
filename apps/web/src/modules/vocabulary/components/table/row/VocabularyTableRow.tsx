@@ -7,7 +7,7 @@ import { VocabularyTerm } from "@repo/types";
 import { useCssVariable } from "@/hooks";
 import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
-import { handleCanvasColor, stringToRgba } from "@/utils";
+import { getRgbColor, handleActionColor, stringToRgba } from "@/utils";
 
 import { useVocabularyTable } from "../../../contexts";
 
@@ -25,7 +25,10 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
 
     const { languages, nativeLanguage } = currentWorkspace!;
 
-    const vocColor = useMemo(() => (handleCanvasColor(pdfVocabulary.color, colorPanel)), [pdfVocabulary.color, colorPanel]);
+    const vocColor = useMemo(() => (
+        handleActionColor(pdfVocabulary.color, colorPanel)
+    ), [pdfVocabulary.color, colorPanel]);
+    const vocColorStr = getRgbColor(vocColor);
     const backgroundColor = useMemo(() => {
         if (sortingState !== "NONE") {
             if (index % 2 === 0) {
@@ -39,7 +42,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
             ? .1
             : .25;
 
-        return (stringToRgba(vocColor, opacity));
+        return (stringToRgba(vocColorStr, opacity));
     }, [pdfVocabulary.color, index, sortingState]);
 
     return (

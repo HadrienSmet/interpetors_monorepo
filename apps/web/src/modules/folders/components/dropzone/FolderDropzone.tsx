@@ -1,27 +1,27 @@
 import { DragEvent, useState } from "react";
 import { Trans } from "react-i18next";
 
-import type { ClientFolderStructure, ClientPdfFile } from "@repo/types";
+import type { FolderStructure, PdfFile } from "@repo/types";
 
-import { FILE_ELEMENTS, FIRST_PAGE } from "@/modules/files";
+import { FIRST_PAGE } from "@/modules/files";
 import { PDF_TYPE } from "@/modules/pdf";
 
-import { isClientPdfFile, useFoldersManager } from "../../contexts";
+import { isPdfFile, useFoldersManager } from "../../contexts";
 
 import { FoldersDisplayer } from "../displayer";
 
 import "./folderDropzone.scss";
 
-const getNewClientPdfFile = (file: File): ClientPdfFile => ({
-    elements: { [FIRST_PAGE]: { ...FILE_ELEMENTS } },
+const getPdfFile = (file: File): PdfFile => ({
+    actions: { [FIRST_PAGE]: { elements: [] } },
     file,
     name: file.name,
 });
 const preventDefault = (e: DragEvent<HTMLDivElement>) => e.preventDefault();
 const setNestedFile = (
-    root: ClientFolderStructure,
+    root: FolderStructure,
     path: string[],
-    file: ClientPdfFile
+    file: PdfFile
 ): void => {
     const [head, ...rest] = path;
 
@@ -34,11 +34,11 @@ const setNestedFile = (
         root[head] = {};
     }
 
-    setNestedFile(root[head] as ClientFolderStructure, rest, file);
+    setNestedFile(root[head] as FolderStructure, rest, file);
 };
 const readDirectory = async (
     directoryEntry: FileSystemDirectoryEntry,
-    root: ClientFolderStructure,
+    root: FolderStructure,
     pathPrefix: string
 ) => {
     const reader = directoryEntry.createReader();
@@ -63,7 +63,7 @@ const readDirectory = async (
                         setNestedFile(
                             root,
                             pathArray,
-                            getNewClientPdfFile(file)
+                            getPdfFile(file)
                         );
                     }
                     resolve();
@@ -73,39 +73,31 @@ const readDirectory = async (
     }
 };
 
-const doesPathExist = (structure: ClientFolderStructure, path: string[]): boolean => {
-    if (path.length === 0) {
-        return (false);
-    }
+const doesPathExist = (structure: FolderStructure, path: string[]): boolean => {
+    if (path.length === 0) return (false);
+
     const [head, ...rest] = path;
     const node = structure[head];
 
-    if (!node) {
-        return (false);
-    }
-    if (rest.length === 0) {
-        return (true);
-    }
+    if (!node) return (false);
+    if (rest.length === 0) return (true);
+    if (isPdfFile(node)) return (false);
 
-    if (isClientPdfFile(node)) {
-        return (false)
-    };
-
-    return (doesPathExist(node as ClientFolderStructure, rest));
+    return (doesPathExist(node as FolderStructure, rest));
 };
 export const FolderDropzone = () => {
     const [isDragged, setIsDragged] = useState(false);
 
-    const foldersManager = useFoldersManager();
+    const { folders, foldersStructure } = useFoldersManager();
 
-    const doesFolderAlreadyExist = (path: string[]): boolean => foldersManager.foldersStructures.some(structure => doesPathExist(structure, path));
+    const doesFolderAlreadyExist = (path: string[]): boolean => foldersStructure.some(structure => doesPathExist(structure, path));
 
     const handleDragEnter = () => setIsDragged(true);
     const handleDragLeave = () => setIsDragged(false);
     const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
         preventDefault(event);
         const items = event.dataTransfer.items;
-        const newFileTree: ClientFolderStructure = {};
+        const newFileTree: FolderStructure = {};
 
         for (const item of items) {
             if (item.kind === "file") {
@@ -114,27 +106,25 @@ export const FolderDropzone = () => {
                     if (!doesFolderAlreadyExist([entry.name])) {
                         await readDirectory(entry as FileSystemDirectoryEntry, newFileTree, entry.name);
                     }
-                }
-                else if (entry?.isFile) {
+                } else if (entry?.isFile) {
                     const file = item.getAsFile();
 
                     if (file && file.type === PDF_TYPE.type) {
-                        setNestedFile(newFileTree, [file.name], getNewClientPdfFile(file));
+                        setNestedFile(newFileTree, [file.name], getPdfFile(file));
                     }
                 }
             }
         }
 
-        foldersManager.folders.onDrop(newFileTree);
+        folders.onDrop(newFileTree);
         handleDragLeave();
     };
 
     return (
         <div style={{ flex: 1, width: "100%" }}>
-            {foldersManager.foldersStructures.length > 0
+            {foldersStructure.length > 0
                 ?   (
                     <FoldersDisplayer
-                        foldersStructures={foldersManager.foldersStructures}
                         isDragged={isDragged}
                         onDragEnter={handleDragEnter}
                         onDragLeave={handleDragLeave}

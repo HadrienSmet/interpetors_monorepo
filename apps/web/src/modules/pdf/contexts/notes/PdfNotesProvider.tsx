@@ -17,7 +17,7 @@ export const PdfNotesProvider = ({ children }: PropsWithChildren) => {
             return (undefined);
         }
 
-        const output = selectedFile.fileInStructure.elements[pageIndex].notes.find(note => note.id === id);
+        const output = selectedFile.fileInStructure.actions[pageIndex].generatedResources?.find(note => note.id === id);
 
         return (output);
     }, [id, selectedFile]);
