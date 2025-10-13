@@ -4,7 +4,7 @@ import { ActionColor, VocabularyTerm } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
-import { handleActionColor } from "@/utils";
+import { getRgbColor, handleActionColor } from "@/utils";
 
 import { PreparationVocabulary, WordToAdd } from "../../types";
 
@@ -17,10 +17,13 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
     const { currentWorkspace } = useWorkspaces();
 
     const getRightGroupIndex = (state: PreparationVocabulary, color: ActionColor) => {
-        const clr = handleActionColor(color, colorPanel);
-        return (state.findIndex(group => (
-            handleActionColor(group.colorToUse, colorPanel) === clr
-        )));
+        const clr = getRgbColor(handleActionColor(color, colorPanel));
+
+        return (state.findIndex(group => {
+            const grpClr = getRgbColor(handleActionColor(group.colorToUse, colorPanel));
+
+            return (grpClr === clr);
+        }));
     };
 
     const addToVocabulary = (word: WordToAdd) => {
