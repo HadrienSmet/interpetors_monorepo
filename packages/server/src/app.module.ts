@@ -1,26 +1,32 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
 import {
     AuthModule,
     ColorPanelModule,
-    FileModule,
+    FileActionsModule,
+    FilesModule,
+    FoldersModule,
     NotesModule,
-    PreparationModule,
+    PreparationsModule,
+    PresignModule,
     PrismaModule,
     PrismaService,
     UserModule,
     VocabularyModule,
     WorkspaceModule,
 } from "./modules";
-import { ConfigModule } from "@nestjs/config";
 
 @Module({
     imports: [
         AuthModule,
         ConfigModule.forRoot(),
-        FileModule,
+        FileActionsModule,
+        FilesModule,
+        FoldersModule,
         NotesModule,
-        PreparationModule,
+        PreparationsModule,
+        PresignModule,
         UserModule,
         VocabularyModule,
         WorkspaceModule,

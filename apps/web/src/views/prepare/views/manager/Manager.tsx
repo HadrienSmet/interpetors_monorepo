@@ -7,6 +7,8 @@ import { useCssVariable } from "@/hooks";
 import {
     downloadFolderAsZip,
     downloadVocabulary,
+    PREPARATION,
+    uploadPreparation,
     useColorPanel,
     useFoldersManager,
     useVocabularyTable,
@@ -20,9 +22,9 @@ export const PreparationManager = () => {
 
     const { colorPanel } = useColorPanel();
     const inputSize = useCssVariable("--size-xl");
-    const { foldersStructure } = useFoldersManager();
+    const { foldersStructure: folders } = useFoldersManager();
     const { t } = useTranslation();
-    const { list } = useVocabularyTable();
+    const { list: vocabularyTerms } = useVocabularyTable();
     const { currentWorkspace } = useWorkspaces();
 
     const { languages, nativeLanguage } = currentWorkspace!;
@@ -33,20 +35,28 @@ export const PreparationManager = () => {
         ...languages.filter(lng => lng !== nativeLanguage)
     ];
 
-    const handleDownloadVoc = () => downloadVocabulary(list, headerToUse, colorPanel);
-    const handleDownloadFolders = () => downloadFolderAsZip(foldersStructure, colorPanel);
+    const handleDownloadVoc = () => downloadVocabulary(vocabularyTerms, headerToUse, colorPanel);
+    const handleDownloadFolders = () => downloadFolderAsZip(folders, colorPanel);
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
 
-    const savePreparation = () => {
-        const params = {
-            folders: foldersStructure,
-            title,
-            vocabulary: {
-                languages,
-                list,
-            },
-        };
-        console.log(JSON.stringify({ params }));
+    const handleSave = async () => {
+        const workspaceId = currentWorkspace!.id;
+        const prepRes = await PREPARATION.create({
+            body: { title },
+            workspaceId,
+        });
+
+        if (!prepRes.success) {
+            throw new Error("An error occured while creating preparation");
+        }
+
+        await uploadPreparation({
+            folders,
+            preparationId: prepRes.data.id,
+            rootFolderId: "root",
+            vocabularyTerms,
+            workspaceId,
+        });
     };
 
     return (
@@ -65,9 +75,9 @@ export const PreparationManager = () => {
             </div>
             <div className="preparation-buttons">
                 <button
-                    disabled={foldersStructure.length === 0}
+                    disabled={folders.length === 0}
                     onClick={handleDownloadFolders}
-                    title={foldersStructure.length === 0
+                    title={folders.length === 0
                         ? t("folders.empty")
                         : t("folders.download")}
                 >
@@ -75,9 +85,9 @@ export const PreparationManager = () => {
                     <span>{t("views.new.buttons.downloadFiles")}</span>
                 </button>
                 <button
-                    disabled={list.length === 0}
+                    disabled={vocabularyTerms.length === 0}
                     onClick={handleDownloadVoc}
-                    title={list.length === 0
+                    title={vocabularyTerms.length === 0
                         ? t("vocabulary.empty")
                         : t("views.new.buttons.downloadVocabulary")
                     }
@@ -86,7 +96,11 @@ export const PreparationManager = () => {
                     <span>{t("views.new.buttons.downloadVocabulary")}</span>
                 </button>
                 <button
-                    onClick={savePreparation}
+                    disabled={(
+                        title === "" ||
+                        folders.length === 0
+                    )}
+                    onClick={handleSave}
                     title={t("onConstruction")}
                 >
                     <MdSave />

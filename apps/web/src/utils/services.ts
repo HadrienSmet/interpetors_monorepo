@@ -32,7 +32,7 @@ type CallParams =
         readonly headers?: any;
         readonly skipRefresh?: boolean;
     };
-type CallOutput<T> =
+export type CallOutput<T> =
     | {
         readonly success: true;
         readonly data: T;
