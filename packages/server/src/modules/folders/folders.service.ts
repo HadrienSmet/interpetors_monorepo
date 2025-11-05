@@ -5,6 +5,8 @@ import {
     NotFoundException,
 } from "@nestjs/common";
 
+import { ApiFile, FlatFolder, FolderNode } from "@repo/types";
+
 import { PrismaService } from "../prisma";
 
 import { CreateFolderDto, RenameFolderDto } from "./dto";
@@ -84,32 +86,36 @@ export class FoldersService {
         return created;
     }
 
-    /** Liste les dossiers d"une preparation. Si parentId est fourni, liste ses enfants, sinon les dossiers racine. */
-    async list(
-        workspaceId: string,
-        preparationId: string,
-        parentId?: string,
-    ) {
+    async list(workspaceId: string, preparationId: string) {
         await this.assertWorkspaceAndPreparation(workspaceId, preparationId);
 
-        if (parentId) {
-            // vérifier parent
-            const parent = await this.prisma.folder.findUnique({
-                where: { id: parentId },
-                select: { id: true, preparationId: true },
-            });
-
-            if (!parent) throw new NotFoundException(`Folder ${parentId} not found`);
-            if (parent.preparationId !== preparationId) {
-                throw new BadRequestException("Folder belongs to a different preparation");
-            }
-        }
-
         const rows = await this.prisma.folder.findMany({
-            where: {
-                preparationId,
-                parentId: parentId ?? null,
+            where: { preparationId },
+            select: {
+                id: true,
+                name: true,
+                parentId: true,
+                preparationId: true,
+                createdAt: true,
+                updatedAt: true,
+                _count: { select: { children: true, files: true } },
             },
+            orderBy: [{ parentId: "asc" }, { name: "asc" }, { id: "asc" }],
+        });
+
+        return rows;
+    }
+
+    async tree(
+        workspaceId: string,
+        preparationId: string,
+        opts?: { includeFiles?: boolean; },
+    ): Promise<Array<FolderNode>> {
+        await this.assertWorkspaceAndPreparation(workspaceId, preparationId);
+
+        // 1) On récupère tous les dossiers en un seul roundtrip
+        const folders: Array<FlatFolder> = await this.prisma.folder.findMany({
+            where: { preparationId },
             select: {
                 id: true,
                 name: true,
@@ -122,7 +128,66 @@ export class FoldersService {
             orderBy: [{ name: "asc" }, { id: "asc" }],
         });
 
-        return rows;
+        // 2) On prépare éventuellement les fichiers (si demandé)
+        let filesByFolder = new Map<string, Array<ApiFile>>();
+        if (opts?.includeFiles) {
+            const files = await this.prisma.pdfFile.findMany({
+                where: { folder: { preparationId } },
+                select: {
+                    id: true,
+                    name: true,
+                    s3Key: true,
+                    folderId: true,
+                }
+            });
+            filesByFolder = files.reduce((acc, file) => {
+                const arr = acc.get(file.folderId) ?? [];
+                arr.push(file);
+                acc.set(file.folderId, arr);
+                return acc;
+            }, new Map<string, Array<ApiFile>>());
+        }
+
+        // 3) On construit l’arbre en O(n)
+        const byId = new Map<string, FolderNode>();
+        const roots: Array<FolderNode> = [];
+
+        for (const folder of folders) {
+            const { id, name, parentId, preparationId, createdAt, updatedAt, _count } = folder;
+            byId.set(id, {
+                id: id,
+                name: name,
+                parentId: parentId,
+                preparationId: preparationId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                children: [],
+                filesCount: _count.files,
+                childrenCount: _count.children,
+                ...(opts?.includeFiles ? { files: filesByFolder.get(id) ?? [] } : {}),
+            });
+        }
+
+        for (const node of byId.values()) {
+            if (node.parentId) {
+                const parent = byId.get(node.parentId);
+                // un parent peut avoir été supprimé entre temps: on garde robuste
+                if (parent) parent.children.push(node);
+                else roots.push(node); // fallback
+            } else {
+                roots.push(node);
+            }
+        }
+
+        // tri enfants par nom (déjà trié au findMany mais on sécurise la hiérarchie)
+        const sortRec = (n: FolderNode) => {
+            n.children.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
+            n.children.forEach(sortRec);
+        };
+        roots.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
+        roots.forEach(sortRec);
+
+        return roots;
     }
 
     /** Renommer un dossier (et empêcher les doublons de nom au même niveau) */

@@ -1,0 +1,7 @@
+.preparations {
+    &-view {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xl);
+    }
+}

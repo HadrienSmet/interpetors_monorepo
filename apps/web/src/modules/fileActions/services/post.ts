@@ -2,7 +2,9 @@ import { FileAction } from "@repo/types";
 
 import { call, HTTP_METHODS } from "@/utils";
 
-import { getRoute } from "./const";
+import { ApiFileActions } from "../types";
+
+import { ROUTE } from "./const";
 
 export type PostFileActionParams =
     & {
@@ -19,7 +21,8 @@ export const post = async (params: PostFileActionParams) => {
         references,
     } = params;
 
-    const body = {
+    const body: ApiFileActions = {
+        pdfFileId: fileId,
         elementsJson: JSON.stringify(elements),
         generatedResourcesJson: JSON.stringify(generatedResources),
         pageIndex,
@@ -29,7 +32,7 @@ export const post = async (params: PostFileActionParams) => {
     const response = await call({
         body,
         method: HTTP_METHODS.POST,
-        route: getRoute(fileId),
+        route: ROUTE,
     });
 
     return (response);

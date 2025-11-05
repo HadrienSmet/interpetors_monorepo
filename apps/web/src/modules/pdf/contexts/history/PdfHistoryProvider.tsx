@@ -166,7 +166,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                         const { element } = userAction.resourceToGenerate;
                         addToVocabulary({
                             color: element.color,
-                            ...element.occurence,
+                            ...element.occurrence,
                         });
                     }
                 }
@@ -175,7 +175,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                     const userAction = userActions[i];
                     if (userAction?.resourceToGenerate?.type === GENERATED_RESOURCES.VOCABULARY) {
                         const e = userAction.resourceToGenerate.element;
-                        remove(e.color, e.occurence.text); // cf. clé d’ID ci-dessous
+                        remove(e.color, e.occurrence.text); // cf. clé d’ID ci-dessous
                     }
                 }
             }

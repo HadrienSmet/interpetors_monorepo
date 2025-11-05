@@ -7,7 +7,7 @@ type NoteOccurence = {
 export type Note = {
     readonly color: ActionColor;
     readonly id: string;
-    readonly occurence: NoteOccurence;
+    readonly occurrence: NoteOccurence;
     readonly note: string;
     readonly y: number;
 };

@@ -2,11 +2,17 @@ import { PropsWithChildren, useState } from "react";
 
 import { FolderStructure, PdfFile } from "@repo/types";
 
-import { getTargetKeys, isPdfFile, browseStructureToActionOnFile, FileVisitor } from "./foldersManager.utils";
-import { FoldersManagerContext, FoldersManagerContextType, FileData } from "./FoldersManagerContext";
+import { FileData } from "../../types";
 
-export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
+import { getTargetKeys, isPdfFile, browseStructureToActionOnFile, FileVisitor } from "./foldersManager.utils";
+import { NewFoldersManagerContext, NewFoldersManagerContextType } from "./FoldersManagerContext";
+
+type FoldersManagerProviderProps =
+    & { readonly editable?: boolean }
+    & PropsWithChildren;
+export const FoldersManagerProvider = ({ children, editable = false }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
+    const [isEditable, setIsEditable] = useState(editable);
     const [selectedFile, setSelectedFile] = useState<FileData>({ fileInStructure: null, path: "" });
 
     // ---------- Files methods ----------
@@ -280,7 +286,8 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
 
     const onDrop = (folder: FolderStructure) => setFoldersStructure(state => [...state, folder]);
 
-    const value: FoldersManagerContextType = {
+    const value: NewFoldersManagerContextType = {
+        isEditable,
         files: {
             changeDirectory: changeFileDirectory,
             delete: deleteFile,
@@ -296,12 +303,14 @@ export const FoldersManagerProvider = ({ children }: PropsWithChildren) => {
         },
         foldersStructure,
         selectedFile,
+        setIsEditable,
         setSelectedFile,
+        setFoldersStructure,
     };
 
     return (
-        <FoldersManagerContext.Provider value={value}>
+        <NewFoldersManagerContext.Provider value={value}>
             {children}
-        </FoldersManagerContext.Provider>
+        </NewFoldersManagerContext.Provider>
     );
 };

@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 
 import { CreatePreparationDto } from "./dto";
 import { PreparationsService } from "./preparations.service";
@@ -16,4 +16,11 @@ export class PreparationsController {
 
         return (prep);
     }
+
+    /** Récupère toutes les préparations d’un workspace */
+    @Get()
+    async list(@Param("workspaceId") workspaceId: string) {
+        return this.service.listByWorkspace(workspaceId);
+    }
+
 }

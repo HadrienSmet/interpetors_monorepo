@@ -1,1 +1,1 @@
-export * from "./FileDisplayer";
+export * from "./NewFileDisplayer";

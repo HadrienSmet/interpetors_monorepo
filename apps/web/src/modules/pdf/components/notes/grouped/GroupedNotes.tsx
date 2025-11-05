@@ -4,11 +4,10 @@ import { Trans } from "react-i18next";
 
 import { Note } from "@repo/types";
 
+import { usePdfNotes } from "@/modules/pdf";
 import { sleep } from "@/utils";
 
-import { usePdfNotes } from "../../../contexts";
-
-import { PdfCustomNote } from "../customNote";
+import { PdfNote } from "../note";
 
 import "./groupedNotes.scss";
 
@@ -21,11 +20,11 @@ const COMPONENT_STATE = {
 const CONTAINER_DYNAMIC_CLASS = "switch-shadow";
 type ComponentState = keyof typeof COMPONENT_STATE;
 
-type GroupedNotesProps = {
+type GroupedEditableNotesProps = {
     readonly group: Array<Note>;
     readonly y: number;
 };
-export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
+export const GroupedNotes = ({ group, y }: GroupedEditableNotesProps) => {
     const [previousState, setPreviousState] = useState<ComponentState | null>(null);
     const [state, setState] = useState<ComponentState>(COMPONENT_STATE.default);
 
@@ -162,7 +161,7 @@ export const GroupedNotes = ({ group, y }: GroupedNotesProps) => {
             <div className="notes-poc__expanded-content">
                 <div className="notes-poc__notes-list">
                     {group.map(note => (
-                        <PdfCustomNote
+                        <PdfNote
                             key={note.id}
                             note={note}
                         />

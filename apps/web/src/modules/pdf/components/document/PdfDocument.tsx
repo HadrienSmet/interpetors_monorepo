@@ -17,18 +17,13 @@ const OPTIONS = {
     cMapUrl: "/cmaps/",
     standardFontDataUrl: "/standard_fonts/",
 } as const;
+
 export const PdfDocument = () => {
     const { selectedFile } = useFoldersManager();
-    const navigate = useNavigate();
-    const {
-        numPages,
-        onDocumentLoadSuccess,
-        pageRef,
-        pageIndex,
-        setIsPdfRendered,
-    } = usePdfFile();
+    const { numPages, onDocumentLoadSuccess, pageIndex, pageRef, setIsPdfRendered } = usePdfFile();
     const { setSelectedNote } = usePdfNotes();
     const { onContextMenu, tool } = usePdfTools();
+    const navigate = useNavigate();
 
     const pdfFile = selectedFile.fileInStructure!;
 

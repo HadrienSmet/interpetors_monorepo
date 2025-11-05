@@ -1,6 +1,5 @@
 .accordion {
     &-item {
-        border: var(--border-s) solid var(--clr-txt-02);
         border-bottom-width: 0px;
         overflow: hidden;
 
@@ -31,7 +30,6 @@
         }
         &__header {
             align-items: center;
-            box-shadow: 0 2px 12px var(--clr-txt-02);
             display: flex;
             flex-direction: row;
             justify-content: space-between;
@@ -50,8 +48,6 @@
                 width: 100%;
             }
             &.closed {
-                box-shadow: none;
-
                 svg {
                     transform: rotate(180deg);
                 }

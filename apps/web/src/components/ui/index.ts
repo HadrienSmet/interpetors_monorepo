@@ -6,4 +6,5 @@ export * from "./inputs";
 export * from "./loader";
 export * from "./modals";
 export * from "./selects";
+export * from "./tabs";
 export * from "./togglers";

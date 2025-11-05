@@ -1,0 +1,37 @@
+.preparation {
+    &-folders {
+        height: 100%;
+    }
+    &-tabs {
+        &-view {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+
+            .tabs__tabbar {
+                padding-left: calc(var(--space-l) + 24px);
+                position: relative;
+                &::after {
+                    background-color: var(--clr-txt-01);
+                    bottom: 0;
+                    content: "";
+                    height: var(--border-s);
+                    left: 10%;
+                    position: absolute;
+                    width: 80%;
+                }
+            }
+
+            > button {
+                padding-top: calc(var(--space-l) + var(--space-s));
+                position: absolute;
+                z-index: 2;
+            }
+        }
+    }
+    &-vocabulary {
+        height: 100%;
+        position: relative;
+    }
+}

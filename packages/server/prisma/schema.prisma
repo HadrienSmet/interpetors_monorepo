@@ -125,7 +125,7 @@ model Folder {
 model PdfFile {
   id       String @id @default(cuid())
   name     String
-  filePath String // ex: "s3://bucket/.../file.pdf" ou "/uploads/..."
+  s3Key    String
 
   folderId String
   folder   Folder @relation(fields: [folderId], references: [id])

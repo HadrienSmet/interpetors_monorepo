@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useLocation } from "react-router";
 
 import { NavigationState } from "@/components";
-import { FoldersManagerProvider, PreparationVocabularyProvider, VocabularyTableProvider } from "@/modules";
+import { FoldersManagerProvider, PreparationVocabularyProvider, usePreparationVocabulary, VocabularyTableProvider } from "@/modules";
 import { NotFound } from "@/views";
 
 import { Files, PreparationManager, Vocabulary } from "./views";
@@ -33,17 +33,22 @@ const PrepareView = () => {
     return (<NotFound />);
 };
 
-const PrepareContent = () => (
-    <main className="prepare">
-        <PrepareView />
-    </main>
-);
+const PrepareChild = () => {
+    const { preparationVocabulary } = usePreparationVocabulary();
+
+    return (
+        <VocabularyTableProvider preparationVocabulary={preparationVocabulary}>
+            <main className="prepare">
+                <PrepareView />
+            </main>
+        </VocabularyTableProvider>
+    );
+};
+
 export const Prepare = () => (
-    <FoldersManagerProvider>
+    <FoldersManagerProvider editable>
         <PreparationVocabularyProvider>
-            <VocabularyTableProvider>
-                <PrepareContent />
-            </VocabularyTableProvider>
+            <PrepareChild />
         </PreparationVocabularyProvider>
     </FoldersManagerProvider>
 );

@@ -1,5 +1,20 @@
-import { IsArray, ArrayNotEmpty, IsString, IsObject, IsOptional } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsArray, ArrayNotEmpty, IsString, IsObject, IsOptional, ValidateNested } from "class-validator";
 
+class OccurrenceDto {
+    @IsString()
+    pdfFileId!: string;
+
+    @IsString()
+    filePath!: string;
+
+    @IsArray()
+    @IsOptional()
+    pageIndex!: number;
+
+    @IsString()
+    text!: string;
+}
 export class CreateVocabularyTermDto {
     @IsObject()
     colorJson: Record<string, any>;
@@ -17,10 +32,8 @@ export class UpsertVocabularyTermDto extends CreateVocabularyTermDto {
     termId?: string; // si fourni: on met à jour/relie ce terme existant
 
     @IsOptional()
-    occurrence?: {
-        pdfFileId: string;
-        pageIndex: number;
-        text: string;
-        filePath: string;
-    };
+    @ValidateNested()
+    @Type(() => OccurrenceDto)
+    @Transform(({ value, obj }) => value ?? obj?.occurence ?? undefined)
+    occurrence?: OccurrenceDto;
 }

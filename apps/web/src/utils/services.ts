@@ -7,7 +7,6 @@ export const HTTP_METHODS = {
     POST: "POST",
     PUT: "PUT",
 } as const;
-export type HttpMethod = typeof HTTP_METHODS[keyof typeof HTTP_METHODS];
 type MethodWithBody =
     | typeof HTTP_METHODS.PATCH
     | typeof HTTP_METHODS.POST
@@ -34,18 +33,18 @@ type CallParams =
     };
 export type CallOutput<T> =
     | {
-        readonly success: true;
         readonly data: T;
+        readonly success: true;
     }
     | {
+        readonly message: string;
         readonly success: false;
-        readonly message: string
-    }
+    };
 
 const HEADERS = {
     "Content-Type": "application/json",
 } as const;
-export const call = async <T>({ skipRefresh = false, ...params}: CallParams): Promise<CallOutput<T>> => {
+export const call = async <T>({ skipRefresh = false, ...params }: CallParams): Promise<CallOutput<T>> => {
     let token = localStorage.getItem(AUTH_STORAGE_KEY);
 
     let requestInit: RequestInit = {
@@ -60,7 +59,7 @@ export const call = async <T>({ skipRefresh = false, ...params}: CallParams): Pr
         requestInit.headers = {
             ...requestInit.headers,
             ...params.headers,
-        }
+        };
     }
 
     if (
@@ -82,7 +81,7 @@ export const call = async <T>({ skipRefresh = false, ...params}: CallParams): Pr
 
         if (token) {
             response = await fetch(
-               `${import.meta.env.VITE_API_URL}/${params.route}`,
+                `${import.meta.env.VITE_API_URL}/${params.route}`,
                 {
                     ...requestInit,
                     headers: {
@@ -90,7 +89,7 @@ export const call = async <T>({ skipRefresh = false, ...params}: CallParams): Pr
                         Authorization: `Bearer ${token}`,
                     }
                 }
-            )
+            );
         }
     }
 
@@ -107,4 +106,26 @@ export const call = async <T>({ skipRefresh = false, ...params}: CallParams): Pr
         success: false,
         message: await response.text(),
     });
+};
+
+export const handleServicesConcurrency = (limit: number) => {
+    let active = 0;
+    const queue: Array<() => void> = [];
+
+    const next = () => {
+        active--;
+        if (queue.length > 0) queue.shift()!();
+    };
+
+    return async <T>(fn: () => Promise<T>): Promise<T> => {
+        if (active >= limit) {
+            await new Promise<void>((resolve) => queue.push(resolve));
+        }
+        active++;
+        try {
+            return (await fn());
+        } finally {
+            next();
+        }
+    };
 };

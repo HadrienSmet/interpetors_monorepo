@@ -13,19 +13,19 @@ type FolderJob = {
     readonly parentTempId?: string;
 };
 type TempPostBulkTerm =
-    & Omit<VOCABULARY.PostBulkTerm, "occurence">
-    & { readonly occurence: VocabularyOccurence };
+    & Omit<VOCABULARY.PostBulkTerm, "occurrence">
+    & { readonly occurrence: VocabularyOccurence };
 type FileJobRecord = {
     readonly filesActions: Array<Omit<FILE_ACTION.PostFileActionParams, "fileId">>;
     readonly parentTempId: string | undefined;
-    readonly pdf: Omit<FILES.PostPdfParams, "folderId">;
+    readonly pdf: Omit<FILES.PostPdfParams, "folderId" | "s3Key">;
     readonly s3: FILES.UploadParams;
     readonly terms: Array<TempPostBulkTerm>;
 };
 type ResolvedFileJobRecord = {
     readonly filesActions: Array<Omit<FILE_ACTION.PostFileActionParams, "fileId">>;
     readonly folderId: string;
-    readonly pdf: FILES.PostPdfParams;
+    readonly pdf: Omit<FILES.PostPdfParams, "s3Key">;
     readonly s3: FILES.UploadParams;
     readonly terms: Array<TempPostBulkTerm>;
 };
@@ -56,7 +56,7 @@ const flattenFolderStructureToBatches = (fs: FolderStructure, terms: Array<Vocab
                     const fullPath = `${path}/${value.name}`;
                     const copy = [...terms];
 
-                    const currentTerms = copy.filter(term => term.occurence.filePath === fullPath);
+                    const currentTerms = copy.filter(term => term.occurrence.filePath === fullPath);
                     const fileJobRecord: FileJobRecord = {
                         parentTempId: path || undefined,
                         s3: {
@@ -64,10 +64,7 @@ const flattenFolderStructureToBatches = (fs: FolderStructure, terms: Array<Vocab
                             file: value.file,
                             fileName: value.name,
                         },
-                        pdf: {
-                            filePath: path,
-                            name: value.name,
-                        },
+                        pdf: { name: value.name },
                         filesActions: Object.keys(value.actions).map(index => {
                             const pageIndex = Number(index);
                             const fileAction = value.actions[pageIndex];
@@ -122,7 +119,9 @@ const createAllFoldersFromBatches = async (
         // construire les payloads avec le parentId réel si parentTempId existe
         const payloads = batch.map(({ name, parentTempId }) => ({
             name,
-            parentId: parentTempId ? idByTemp.get(parentTempId) : undefined,
+            parentId: parentTempId
+                ? idByTemp.get(parentTempId)
+                : undefined,
         }));
 
         // Sécurité: s’il manque un parentId attendu, on le détecte tôt (mauvaise structure)
@@ -172,8 +171,7 @@ const resolveFileJobs = (
                 );
             }
 
-
-            const pdf: FILES.PostPdfParams = {
+            const pdf: Omit<FILES.PostPdfParams, "s3Key"> = {
                 ...jobPdf,
                 folderId: rootId,
             };
@@ -196,7 +194,7 @@ const resolveFileJobs = (
             );
         }
 
-        const pdf: FILES.PostPdfParams = {
+        const pdf: Omit<FILES.PostPdfParams, "s3Key"> = {
             ...jobPdf,
             folderId,
         };
@@ -221,7 +219,7 @@ const handleFileJob = async (fileJob: ResolvedFileJobRecord, workspaceId: string
 
     const pdfRes = await FILES.postPdf({
         ...fileJob.pdf,
-        filePath: s3Res.data.url,
+        s3Key: s3Res.data.key,
     });
     if (!pdfRes.success) {
         throw new Error(`An error occured while storing the file in database. [ERROR]; ${pdfRes.message}`);
@@ -229,7 +227,7 @@ const handleFileJob = async (fileJob: ResolvedFileJobRecord, workspaceId: string
 
     const { id: fileId } = pdfRes.data;
 
-    const fileActionsResponses = await Promise.all(
+    await Promise.all(
         fileJob.filesActions.map(fileAction => FILE_ACTION.post({
             ...fileAction,
             fileId,
@@ -240,19 +238,17 @@ const handleFileJob = async (fileJob: ResolvedFileJobRecord, workspaceId: string
         return;
     }
 
-    const termsResponse = await VOCABULARY.postBulk({
+    await VOCABULARY.postBulk({
         terms: fileJob.terms.map(term => ({
             ...term,
-            occurence: {
-                ...term.occurence,
+            occurrence: {
+                ...term.occurrence,
                 pdfFileId: fileId,
             }
         })),
         preparationId,
         workspaceId,
     });
-
-    console.log(fileActionsResponses, termsResponse);
 };
 type UploadPreparationParams = {
     readonly folders: Array<FolderStructure>;

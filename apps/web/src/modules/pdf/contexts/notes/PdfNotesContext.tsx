@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
 import { Note } from "@repo/types";
 
@@ -6,7 +6,7 @@ import { getContextError } from "@/contexts/utils";
 
 type PdfNotesContextValue = {
     readonly selectedNote: Note | undefined;
-    readonly setSelectedNote: (id: string) => void;
+    readonly setSelectedNote: Dispatch<SetStateAction<string>>;
 };
 
 export const PdfNotesContext = createContext<PdfNotesContextValue | null>(null);

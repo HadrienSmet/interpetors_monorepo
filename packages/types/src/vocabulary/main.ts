@@ -7,7 +7,7 @@ export type VocabularyOccurence = {
 };
 export type VocabularyTerm = {
     readonly id: string;
-    readonly occurence: VocabularyOccurence;
+    readonly occurrence: VocabularyOccurence;
     readonly color: ActionColor;
     readonly translations: Array<string>;
 };

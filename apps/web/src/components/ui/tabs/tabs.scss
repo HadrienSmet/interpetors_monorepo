@@ -1,0 +1,48 @@
+.tabs {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    &__panel {
+        flex: 0 0 100%;
+        min-height: 1px;
+        scroll-snap-align: start;
+    }
+    &__tab {
+        appearance: none;
+        background: transparent;
+        border: 0;
+        border-radius: var(--radius-s);
+        box-shadow: var(--shadow-default) var(--clr-txt-02);
+        color: var(--clr-txt);
+        cursor: pointer;
+        padding: var(--space-m) var(--space-xl);
+        white-space: nowrap;
+
+        &:hover {
+            background: var(--clr-txt-02);
+        }
+
+        &.is-active {
+            background: var(--clr-txt);
+            color: var(--clr-bg);
+        }
+    }
+    &__tabbar {
+        align-items: center;
+        display: flex;
+        gap: var(--space-xl);
+        overflow-x: auto;
+        padding: var(--space-l);
+    }
+    &__track {
+        display: flex;
+        height: 100%;
+        min-width: 100%;
+    }
+    &__viewport {
+        height: 100%;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+    }
+}

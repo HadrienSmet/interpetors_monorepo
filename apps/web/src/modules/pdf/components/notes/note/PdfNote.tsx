@@ -4,16 +4,15 @@ import { useTranslation } from "react-i18next";
 import { Note } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
+import { usePdfHistory, usePdfNotes } from "@/modules/pdf";
 import { getRgbColor, handleActionColor } from "@/utils";
 
-import { usePdfHistory, usePdfNotes } from "../../../contexts";
+import "./pdfNote.scss";
 
-import "./pdfCustomNote.scss";
-
-type NoteProps = {
+type PdfNoteProps = {
     readonly note: Note;
 };
-export const PdfCustomNote = ({ note }: NoteProps) => {
+export const PdfNote = ({ note }: PdfNoteProps) => {
     const [isReading, setIsReading] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [noteContent, setNoteContent] = useState("");
@@ -73,10 +72,7 @@ export const PdfCustomNote = ({ note }: NoteProps) => {
                 style={{ backgroundColor: noteColorStr }}
             />
             <p>{noteIndex}</p>
-            {(
-                note.note === "" ||
-                isUpdating
-            )
+            {(note.note === "" || isUpdating)
                 ? (
                     <textarea
                         autoFocus

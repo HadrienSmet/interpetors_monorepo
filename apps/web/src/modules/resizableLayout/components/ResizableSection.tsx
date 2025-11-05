@@ -37,6 +37,8 @@ export const ResizableSection = ({
     const onMouseUp = () => {
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
+
+        window.dispatchEvent(new Event("layout-resized"));
     };
 
     window.addEventListener("mousemove", onMouseMove);

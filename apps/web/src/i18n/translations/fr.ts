@@ -70,6 +70,9 @@ export const fr = {
             },
             used: "Palette de couleur utilisée: {{name}}",
         },
+        commons: {
+            createdAt: "Créé le {{date}}",
+        },
         files: {
             "context-menu": {
                 delete: "Supprimer le fichier",
@@ -141,6 +144,13 @@ export const fr = {
             subtitle: "L'outil professionnel pour travailler avec les langues",
         },
         onConstruction: "Serveurs en construction",
+        preparations: {
+            empty: "Aucunes préparations trouvées",
+            stats: {
+                folders: "<default><strong>{{amount}}</strong> dossiers</default>",
+                terms: "<default><strong>{{amount}}</strong> termes de vocabulaires</default>",
+            },
+        },
         views: {
             dic: {
                 title: "Dictionnaire généré",
@@ -163,9 +173,6 @@ export const fr = {
             notFound: {
                 title: "Oops, on s'est perdu ?",
                 buttonLabel: "Retour en sécurité"
-            },
-            old: {
-                title: "Mes préparations",
             },
         },
         vocabulary: {

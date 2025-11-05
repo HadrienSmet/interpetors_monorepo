@@ -16,15 +16,11 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
     const { colorPanel } = useColorPanel();
     const { currentWorkspace } = useWorkspaces();
 
-    const getRightGroupIndex = (state: PreparationVocabulary, color: ActionColor) => {
-        const clr = getRgbColor(handleActionColor(color, colorPanel));
-
-        return (state.findIndex(group => {
-            const grpClr = getRgbColor(handleActionColor(group.colorToUse, colorPanel));
-
-            return (grpClr === clr);
-        }));
-    };
+    const getRightGroupIndex = (state: PreparationVocabulary, color: ActionColor) => (
+        state.findIndex(group => (
+            getRgbColor(handleActionColor(group.colorToUse, colorPanel)) === getRgbColor(handleActionColor(color, colorPanel))
+        ))
+    );
 
     const addToVocabulary = (word: WordToAdd) => {
         // Should be defined by the API
@@ -33,7 +29,7 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
         const term: VocabularyTerm = {
             id: termId,
             color: word.color,
-            occurence: {
+            occurrence: {
                 filePath: word.filePath,
                 pageIndex: word.pageIndex,
                 text: word.text,
@@ -92,7 +88,7 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
         })
     );
 
-    const update = (color: ActionColor, id: string, item: VocabularyTerm) =>
+    const update = (color: ActionColor, id: string, item: VocabularyTerm) => (
         setPreparationVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
             const groupIndex = getRightGroupIndex(copy, color);
@@ -105,7 +101,8 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
             group.terms[termIndex] = { ...item };
             copy[groupIndex] = { ...group };
             return (copy);
-        });
+        })
+    );
 
     const value = {
         preparationVocabulary,

@@ -6,7 +6,7 @@ export type PresignPostFileParams = {
     readonly contentType: string;
     readonly fileName: string;
 };
-type PresignPostFileOutput = {
+export type PresignPostFileOutput = {
     readonly headers: { readonly "Content-Type": string; };
     readonly key: string;
     readonly s3Uri: string;

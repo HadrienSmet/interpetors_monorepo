@@ -51,4 +51,38 @@ export class PreparationsService {
             throw err;
         }
     }
+
+    /** Retourne toutes les préparations d’un workspace */
+    async listByWorkspace(workspaceId: string) {
+        // Vérifie que le workspace existe
+        const workspace = await this.prisma.workspace.findUnique({
+            where: { id: workspaceId },
+            select: { id: true },
+        });
+
+        if (!workspace) {
+            throw new NotFoundException(`Workspace ${workspaceId} not found`);
+        }
+
+        // Récupère les préparations
+        const preparations = await this.prisma.preparation.findMany({
+            where: { workspaceId },
+            orderBy: { createdAt: "desc" },
+            select: {
+                id: true,
+                title: true,
+                createdAt: true,
+                updatedAt: true,
+                // optionnel: renvoyer un comptage ou aperçu
+                _count: {
+                    select: {
+                        folders: true,
+                        vocabularyTerms: true,
+                    },
+                },
+            },
+        });
+
+        return preparations;
+    }
 }

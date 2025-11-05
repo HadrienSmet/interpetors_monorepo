@@ -7,6 +7,7 @@ import {
     MdBrush,
     MdComment,
     MdDownload,
+    MdEdit,
     MdFormatColorFill,
     MdTranslate,
 } from "react-icons/md";
@@ -15,6 +16,7 @@ import { ColorKind, FILE_TOOLS, RgbColor } from "@repo/types";
 
 import { DraggableSection, useDraggableSection } from "@/components";
 import { ColorPicker, ColorSwatch, useColorPanel } from "@/modules/colorPanel";
+import { useFoldersManager } from "@/modules/folders";
 import { getRgbColor, handleActionColor } from "@/utils";
 
 import { usePdfFile, usePdfTools } from "../../contexts";
@@ -135,11 +137,23 @@ const PdfToolsChild = () => {
     );
 };
 
-export const PdfTools = () => (
-    <DraggableSection
-        expansionEnabled
-        rotateEnabled
-    >
-        <PdfToolsChild />
-    </DraggableSection>
-);
+export const PdfTools = () => {
+    const { isEditable, setIsEditable } = useFoldersManager();
+
+    if (!isEditable) {
+        return (
+            <button onClick={() => setIsEditable(true)}>
+                <MdEdit />
+            </button>
+        );
+    }
+
+    return (
+        <DraggableSection
+            expansionEnabled
+            rotateEnabled
+        >
+            <PdfToolsChild />
+        </DraggableSection>
+    );
+};

@@ -2,26 +2,30 @@ import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react
 import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import type { PdfFile } from "@repo/types";
-
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { FileIcon } from "@/modules/files";
+import { useFoldersManager } from "@/modules/folders/contexts";
 
-import { useFoldersManager } from "../../../contexts";
+import { getPaddingLeft } from "../nodes.utils";
+import { FileNodeProps } from "./FileNode";
 
-import { TreeNodeProps } from "./nodes.types";
-import { getPaddingLeft } from "./nodes.utils";
-
-type FileNodeProps =
-    & Omit<TreeNodeProps, "node">
-    & { readonly node: PdfFile; };
-export const FileNode = ({ depth, name, node, path }: FileNodeProps) => {
+export const handleDynamicEvent = (execute: boolean, fn: (params: any) => void) => (
+    execute
+        ? fn
+        : undefined
+)
+export const NewFileNode = ({
+    depth,
+    name,
+    node,
+    path,
+}: FileNodeProps) => {
     const [isEditingFile, setIsEditingFile] = useState(false);
     const [newFileName, setNewFileName] = useState(name);
 
     const { setContextMenu } = useContextMenu();
-    const { files, selectedFile, setSelectedFile } = useFoldersManager();
+    const { files, isEditable, selectedFile, setSelectedFile } = useFoldersManager()
     const { t } = useTranslation();
 
     const items = [
@@ -82,15 +86,22 @@ export const FileNode = ({ depth, name, node, path }: FileNodeProps) => {
         <div
             className={`folders-explorer__item ${isSelected ? "selected" : ""}`}
             draggable
-            onBlur={() => setIsEditingFile(false)}
+            // onBlur={isEditable
+            //     ? () => setIsEditingFile(false)
+            //     : undefined
+            // }
+            onBlur={() => handleDynamicEvent(isEditable, () => setIsEditingFile(false))}
             onClick={onClick}
-            onContextMenu={onContextMenu}
-            onDoubleClick={onDoubleClick}
-            onDragStart={onDragStart}
+            // onContextMenu={onContextMenu}
+            onContextMenu={(e) => handleDynamicEvent(isEditable, () => onContextMenu(e))}
+            // onDoubleClick={onDoubleClick}
+            onDoubleClick={() => handleDynamicEvent(isEditable, () => onDoubleClick())}
+            // onDragStart={onDragStart}
+            onDragStart={(e) => handleDynamicEvent(isEditable, () => onDragStart(e))}
             style={{ paddingLeft: getPaddingLeft(depth) }}
         >
             <FileIcon node={node.file} />
-            {isEditingFile
+            {(isEditable && isEditingFile)
                 ? (
                     <InputStyleLess
                         autoFocus

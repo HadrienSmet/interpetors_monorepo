@@ -4,11 +4,10 @@ import { FolderStructure, PdfFile } from "@repo/types";
 
 import { getContextError } from "@/contexts/utils";
 
-export type FileData = {
-    readonly fileInStructure: PdfFile | null;
-    readonly path: string;
-};
-export type FoldersManagerContextType = {
+import { FileData } from "../../types";
+
+export type NewFoldersManagerContextType = {
+    readonly isEditable: boolean;
     readonly files: {
         readonly changeDirectory: (fileName: string, targetPath: string) => void;
         readonly delete: (file: PdfFile) => void;
@@ -24,13 +23,15 @@ export type FoldersManagerContextType = {
     };
     readonly foldersStructure: Array<FolderStructure>;
     readonly selectedFile: FileData;
+    readonly setIsEditable: Dispatch<SetStateAction<boolean>>;
     readonly setSelectedFile: Dispatch<SetStateAction<FileData>>;
+    readonly setFoldersStructure: Dispatch<SetStateAction<Array<FolderStructure>>>;
 };
 
-export const FoldersManagerContext = createContext<FoldersManagerContextType | null>(null);
+export const NewFoldersManagerContext = createContext<NewFoldersManagerContextType | null>(null);
 
 export const useFoldersManager = () => {
-    const context = useContext(FoldersManagerContext);
+    const context = useContext(NewFoldersManagerContext);
 
     if (!context)
         throw new Error(getContextError("useFoldersManager", "FoldersManagerProvider"));

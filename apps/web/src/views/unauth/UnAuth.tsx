@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router";
 
 import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
-import { AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY, signin, signup, useAuth } from "@/modules";
+import { AUTH, AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth } from "@/modules";
 
 import "./unauth.scss";
 
@@ -115,7 +115,7 @@ export const Signin = () => {
             return;
         }
 
-        const response = await signin({ email, password });
+        const response = await AUTH.signin({ email, password });
 
         if (!response.success) {
             setErrorMessage(response.message);
@@ -181,7 +181,7 @@ export const Signup = () => {
             return;
         }
 
-        const response = await signup({ email, password });
+        const response = await AUTH.signup({ email, password });
 
         if (!response.success) {;
             setErrorMessage(response.message);

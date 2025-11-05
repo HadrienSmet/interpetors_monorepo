@@ -1,10 +1,10 @@
 import { useEffect, useRef, useCallback, RefObject } from "react";
 
-export function useCanvasResizeObserver(
+export const useCanvasResizeObserver = (
     pageRef: RefObject<HTMLDivElement | null> | null,
     canvasRef: RefObject<HTMLCanvasElement | null>,
     canvasContextRef: RefObject<CanvasRenderingContext2D | null>
-) {
+) => {
     const observer = useRef<ResizeObserver | null>(null);
 
     const resizeCanvas = useCallback(() => {

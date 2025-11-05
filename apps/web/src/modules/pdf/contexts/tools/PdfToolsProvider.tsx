@@ -148,7 +148,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
                 color,
                 note: "",
                 id,
-                occurence: {
+                occurrence: {
                     filePath,
                     pageIndex,
                     text: occurenceText,
@@ -164,7 +164,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
             element = {
                 color,
                 id,
-                occurence: {
+                occurrence: {
                     filePath,
                     pageIndex,
                     text: wordToAdd,

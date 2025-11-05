@@ -9,7 +9,7 @@ export class FilesService {
     constructor(private readonly prisma: PrismaService) { }
 
     async create(folderId: string, dto: CreatePdfFileDto) {
-        if (!dto.name || !dto.filePath) {
+        if (!dto.name || !dto.s3Key) {
             throw new BadRequestException("Missing required fields");
         }
 
@@ -25,8 +25,7 @@ export class FilesService {
         // Création du PdfFile
         const pdfFile = await this.prisma.pdfFile.create({
             data: {
-                name: dto.name,
-                filePath: dto.filePath,
+                ...dto,
                 folderId: folderId,
             },
         });

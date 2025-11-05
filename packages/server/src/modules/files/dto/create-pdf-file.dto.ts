@@ -5,5 +5,5 @@ export class CreatePdfFileDto {
     name: string;
 
     @IsString()
-    filePath: string; // ex: s3://bucket/...
+    s3Key: string;
 }

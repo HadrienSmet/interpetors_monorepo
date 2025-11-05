@@ -22,13 +22,11 @@ export const downloadVocabulary = async (list: Array<VocabularyTerm>, header: Ar
     sheet.getRow(1).font = { bold: true };
     sheet.getRow(1).alignment = { vertical: "middle", horizontal: "center" };
 
-    sheet.columns = header.map(() => ({
-        width: CELL_WIDTH,
-    }));
+    sheet.columns = header.map(() => ({ width: CELL_WIDTH }));
 
     list.forEach((voc) => {
         const rowValues = [
-            voc.occurence.text,
+            voc.occurrence.text,
             ...voc.translations,
         ];
         const row = sheet.addRow(rowValues);
@@ -40,18 +38,22 @@ export const downloadVocabulary = async (list: Array<VocabularyTerm>, header: Ar
             const color = getRgbColor(rgbColor);
 
             cell.fill = {
-                type: "pattern",
-                pattern: "solid",
                 fgColor: { argb: rgbStringToHex(blendWithWhite(color, HIGLIGHT_OPACITY)) },
+                pattern: "solid",
+                type: "pattern",
             };
 
-            cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
+            cell.alignment = {
+                horizontal: "center",
+                vertical: "middle",
+                wrapText: true,
+            };
 
             cell.border = {
-                top: { style: BORDER_STYLE, color: { argb: BORDER_COLOR } },
-                left: { style: BORDER_STYLE, color: { argb: BORDER_COLOR } },
                 bottom: { style: BORDER_STYLE, color: { argb: BORDER_COLOR } },
+                left: { style: BORDER_STYLE, color: { argb: BORDER_COLOR } },
                 right: { style: BORDER_STYLE, color: { argb: BORDER_COLOR } },
+                top: { style: BORDER_STYLE, color: { argb: BORDER_COLOR } },
             };
         });
     });

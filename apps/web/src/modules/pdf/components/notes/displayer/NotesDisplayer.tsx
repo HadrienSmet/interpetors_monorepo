@@ -3,10 +3,10 @@ import { useMemo } from "react";
 import { Note } from "@repo/types";
 
 import { useFoldersManager } from "@/modules/folders";
+import { usePdfFile } from "@/modules/pdf";
 
-import { usePdfFile } from "../../contexts";
+import { GroupedNotes } from "../grouped";
 
-import { GroupedNotes } from "./grouped";
 import "./notesDisplayer.scss";
 
 export const NotesDisplayer = () => {

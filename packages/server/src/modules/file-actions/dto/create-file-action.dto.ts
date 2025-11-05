@@ -1,4 +1,4 @@
-import { IsInt, IsJSON, IsOptional, Min } from "class-validator";
+import { IsInt, IsJSON, IsOptional, IsString, Min } from "class-validator";
 
 export class CreateFileActionDto {
     @IsInt()
@@ -15,4 +15,9 @@ export class CreateFileActionDto {
     @IsOptional()
     @IsJSON()
     generatedResourcesJson?: string;
+}
+
+export class UpsertFileActionBody extends CreateFileActionDto {
+    @IsString()
+    pdfFileId: string;
 }

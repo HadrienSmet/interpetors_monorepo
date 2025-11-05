@@ -1,1 +1,1 @@
-export * from "./NotesDisplayer";
+export * from "./displayer";

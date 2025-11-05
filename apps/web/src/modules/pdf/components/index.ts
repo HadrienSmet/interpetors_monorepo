@@ -1,2 +1,2 @@
+export * from "./editor";
 export * from "./loader";
-export * from "./PdfEditor";

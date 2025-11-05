@@ -24,9 +24,8 @@ export class FoldersController {
     async list(
         @Param("workspaceId") workspaceId: string,
         @Param("preparationId") preparationId: string,
-        @Query("parentId") parentId?: string,
     ) {
-        return this.service.list(workspaceId, preparationId, parentId);
+        return this.service.tree(workspaceId, preparationId, { includeFiles: true });
     }
 
     @Patch(":folderId")

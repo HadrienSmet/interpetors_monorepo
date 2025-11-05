@@ -7,15 +7,14 @@ import {
     usePdfCanvas,
     usePdfFile,
     usePdfTools,
-} from "../contexts";
+} from "../../contexts";
+import { PDF_WIDTH } from "../../utils";
 
-import { PdfDocument } from "./document";
-import { NotesDisplayer } from "./notes";
-import { PdfTools } from "./tools";
+import { PdfDocument } from "../document";
+import { NotesDisplayer } from "../notes";
+import { PdfTools } from "../tools";
 
 import "./pdfEditor.scss";
-
-const PDF_EDITOR_WIDTH = 597 as const;
 
 const PdfEditorChild = () => {
     const { canvasRef, drawerRef } = usePdfCanvas();
@@ -24,7 +23,7 @@ const PdfEditorChild = () => {
 
     const canvasStyle = useMemo(() => (
         containerRef.current
-            ? { left: (containerRef.current.getBoundingClientRect().width - PDF_EDITOR_WIDTH) / 2, }
+            ? { left: (containerRef.current.getBoundingClientRect().width - PDF_WIDTH) / 2, }
             : {}
     ), []);
 

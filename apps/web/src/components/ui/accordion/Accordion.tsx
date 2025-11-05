@@ -16,11 +16,12 @@ const AccordionItem = (props: AccordionItemProps) => {
 
     return (
         <div className="accordion-item">
-            <div className={`accordion-item__header ${isExpanded ? "expanded" : "closed"}`}>
+            <div
+                className={`accordion-item__header ${isExpanded ? "expanded" : "closed"}`}
+                onClick={toggleExpansion}
+            >
                 {props.title}
-                <button onClick={toggleExpansion}>
-                    <MdExpandLess size={ICON_SIZE} />
-                </button>
+                <MdExpandLess size={ICON_SIZE} />
             </div>
             <div className={`accordion-item__content-wrapper ${isExpanded ? "expanded" : ""}`}>
                 <div className="accordion-item__content">

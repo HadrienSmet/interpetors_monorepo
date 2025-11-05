@@ -48,7 +48,7 @@ erDiagram
         string color
         string note
         int y
-        json occurence
+        json occurrence
     }
 
     PDF_VOCABULARY {
@@ -56,7 +56,7 @@ erDiagram
         string file_id
         string color
         json translations
-        json occurence
+        json occurrence
     }
 
     PDF_ELEMENT {

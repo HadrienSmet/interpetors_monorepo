@@ -7,27 +7,31 @@ import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 
-import { isPdfFile, useFoldersManager } from "../../../contexts";
+import { isPdfFile, useFoldersManager } from "../../../../contexts";
 
-import { FileNode } from "./FileNode";
-import { TreeNodeProps } from "./nodes.types";
-import { getPaddingLeft } from "./nodes.utils";
+import { handleDynamicEvent, NewFileNode } from "../file";
+import { getPaddingLeft } from "../nodes.utils";
+
+import { TreeNodeProps } from "../nodes.types";
 
 const isSubPath = (originPath: string, targetPath: string): boolean => targetPath === originPath || targetPath.startsWith(`${originPath}/`);
-type FolderNodeProps =
+
+type CurrentTreeNodeProps =
     & TreeNodeProps
     & {
         readonly highlightedFolderPath: string | null;
         readonly setHighlightedFolderPath: (path: string | null) => void;
     };
-export const TreeNode = ({
-    depth,
-    highlightedFolderPath,
-    name,
-    node,
-    path,
-    setHighlightedFolderPath,
-}: FolderNodeProps) => {
+export const NewTreeNode = (props: CurrentTreeNodeProps) => {
+    const {
+        depth,
+        highlightedFolderPath,
+        name,
+        node,
+        path,
+        setHighlightedFolderPath,
+    } = props;
+
     /** Indicates if user is creating a folder inside the TreeNode */
     const [isCreating, setIsCreating] = useState(false);
     /** Indicates if user is renaming the TreeNode */
@@ -42,7 +46,7 @@ export const TreeNode = ({
 
     const { setContextMenu } = useContextMenu();
     const higlightedColor = useCssVariable("--clr-txt-02");
-    const { files, folders } = useFoldersManager();
+    const { files, folders, isEditable } = useFoldersManager();
     const { t } = useTranslation();
 
     const fullPath = useMemo(
@@ -158,7 +162,7 @@ export const TreeNode = ({
 
         e.dataTransfer.setData("application/folder-path", fullPath);
         e.dataTransfer.effectAllowed = "move";
-    }
+    };
     const onDrop = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -186,12 +190,12 @@ export const TreeNode = ({
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") handleRename();
     };
+    const handleEditableEvent = (fn: () => void) => handleDynamicEvent(isEditable, fn);
 
     if (isPdfFile(node)) {
         return (
-            <FileNode
-                depth={depth}
-                name={name}
+            <NewFileNode
+                {...props}
                 node={node}
                 path={fullPath}
             />
@@ -201,12 +205,12 @@ export const TreeNode = ({
     return (
         <div
             draggable
-            onContextMenu={onContextMenu}
-            onDragEnter={onDragEnter}
-            onDragLeave={onDragLeave}
-            onDragOver={onDragOver}
-            onDragStart={onDragStart}
-            onDrop={onDrop}
+            onContextMenu={(e) => handleEditableEvent(() => onContextMenu(e))}
+            onDragEnter={(e) => handleEditableEvent(() => onDragEnter(e))}
+            onDragLeave={(e) => handleEditableEvent(() => onDragLeave(e))}
+            onDragOver={(e) => handleEditableEvent(() => onDragOver(e))}
+            onDragStart={(e) => handleEditableEvent(() => onDragStart(e))}
+            onDrop={(e) => handleEditableEvent(() => onDrop(e))}
             ref={folderRef}
             style={{
                 backgroundColor: isHighlighted
@@ -220,14 +224,14 @@ export const TreeNode = ({
             <div
                 className="folders-explorer__item folder"
                 onClick={onClick}
-                onDoubleClick={onDoubleClick}
+                onDoubleClick={handleEditableEvent(() => onDoubleClick())}
                 style={{ paddingLeft: getPaddingLeft(depth) }}
             >
                 {isOpen
                     ? <VscFolderOpened />
                     : <VscFolder />
                 }
-                {isRenaming
+                {(isEditable && isRenaming)
                     ? (
                         <InputStyleLess
                             autoFocus
@@ -244,7 +248,7 @@ export const TreeNode = ({
             </div>
             {isOpen && (
                 <div className="nested-content">
-                    {isCreating && (
+                    {(isCreating && isEditable) && (
                         <div
                             className="folders-explorer__item folder"
                             style={{ marginLeft: getPaddingLeft(depth + 1) }}
@@ -261,14 +265,13 @@ export const TreeNode = ({
                         </div>
                     )}
                     {Object.entries(node).sort().map(([childName, childNode]) => (
-                        <TreeNode
+                        <NewTreeNode
+                            {...props}
                             depth={depth + 1}
-                            highlightedFolderPath={highlightedFolderPath}
                             key={childName}
                             name={childName}
                             node={childNode}
                             path={fullPath}
-                            setHighlightedFolderPath={setHighlightedFolderPath}
                         />
                     ))}
                 </div>

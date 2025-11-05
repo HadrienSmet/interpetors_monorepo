@@ -9,15 +9,16 @@ import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
 import { getRgbColor, handleActionColor, stringToRgba } from "@/utils";
 
-import { useVocabularyTable } from "../../../contexts";
+import { AddTranslationParams, useVocabularyTable } from "../../../contexts";
 
 import { CellToFill } from "../cell";
 
 type VocabularyTableRowProps = {
+    readonly addTranslation: (params: AddTranslationParams) => void;
     readonly index: number;
     readonly pdfVocabulary: VocabularyTerm;
 };
-export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
+export const VocabularyTableRow = ({ addTranslation, index, pdfVocabulary }: VocabularyTableRowProps) => {
     const { colorPanel } = useColorPanel();
     const defaultBg = useCssVariable("--clr-txt");
     const { sortingState } = useVocabularyTable();
@@ -51,12 +52,13 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
             style={{ backgroundColor }}
         >
             <td className="vocabulary-table-cell">
-                <Link to={`/prepare/files?filepath=${pdfVocabulary.occurence.filePath}`}>
+                <Link to={`/prepare/files?filepath=${pdfVocabulary.occurrence.filePath}`}>
                     <MdLink />
-                    <em>{pdfVocabulary.occurence.text}</em>
+                    <em>{pdfVocabulary.occurrence.text}</em>
                 </Link>
             </td>
             <CellToFill
+                addTranslation={addTranslation}
                 locale={nativeLanguage}
                 localeIndex={0}
                 pdfVocabulary={pdfVocabulary}
@@ -65,7 +67,8 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                 .filter(lng => lng !== nativeLanguage)
                 .map(lng => (
                     <CellToFill
-                        key={`cell-to-fill-${lng}-${pdfVocabulary.occurence.text}`}
+                        addTranslation={addTranslation}
+                        key={`cell-to-fill-${lng}-${pdfVocabulary.occurrence.text}`}
                         locale={lng}
                         localeIndex={currentWorkspace!.languages
                             .filter(lng => lng !== nativeLanguage)

@@ -1,29 +1,29 @@
-import { DragEventHandler, useEffect } from "react";
+import { Dispatch, useEffect } from "react";
 import { useSearchParams } from "react-router";
 
-import { FileDisplayer } from "@/modules/files";
+import { FolderStructure } from "@repo/types";
 
-import { getPdfFile, useFoldersManager } from "../../contexts";
+import { FileDisplayer } from "@/modules/files/components/displayer/FileDisplayer";
+
+import { getPdfFile } from "../../contexts";
+import { FileData } from "../../types";
 
 import { FoldersExplorer } from "../explorer";
 
-import './foldersDisplayer.scss';
+import "./foldersDisplayer.scss";
+import { NewFileDisplayer } from "@/modules/files";
+import { NewFoldersExplorer } from "../explorer/NewFoldersExplorer";
 
-type FoldersDisplayerProps = {
-    readonly isDragged: boolean;
-    readonly onDragEnter: DragEventHandler<HTMLDivElement>;
-    readonly onDragLeave: DragEventHandler<HTMLDivElement>;
-    readonly onDragOver: DragEventHandler<HTMLDivElement>;
-    readonly onDrop: DragEventHandler<HTMLDivElement>;
+type FoldersExplorerProps = {
+    readonly foldersStructure: Array<FolderStructure>;
+    readonly selectedFile: FileData;
+    readonly setSelectedFile: Dispatch<FileData>;
 };
 export const FoldersDisplayer = ({
-    isDragged,
-    onDragEnter,
-    onDragLeave,
-    onDragOver,
-    onDrop
-}: FoldersDisplayerProps) => {
-    const { foldersStructure, setSelectedFile } = useFoldersManager();
+    foldersStructure,
+    selectedFile,
+    setSelectedFile,
+}: FoldersExplorerProps) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
@@ -45,15 +45,9 @@ export const FoldersDisplayer = ({
 
     return (
         <div className="folders-displayer">
-            <FoldersExplorer />
-            <div
-                className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
-                onDragEnter={onDragEnter}
-                onDragLeave={onDragLeave}
-                onDragOver={onDragOver}
-                onDrop={onDrop}
-            >
-                <FileDisplayer />
+            <NewFoldersExplorer />
+            <div className="folder-dropzone">
+                <NewFileDisplayer />
             </div>
         </div>
     );

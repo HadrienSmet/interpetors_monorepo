@@ -6,21 +6,24 @@ import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
 import { getRgbColor, handleActionColor } from "@/utils";
 
-import { usePreparationVocabulary } from "../preparation";
+import { PreparationVocabulary } from "../../types";
 
 import { SortingIndex, sortingStateRecord, VocabularyTableContext, VocabularyTableContextValue } from "./VocabularyTableContext";
 
 const getItemValue = (voc: VocabularyTerm, key: string, languages: Array<string>) => key === "sources"
-    ? voc.occurence.text
+    ? voc.occurrence.text
     : voc.translations[languages.findIndex(lang => lang === key)];
-export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
+
+type VocabularyTableProviderProps =
+    & { readonly preparationVocabulary: PreparationVocabulary; }
+    & PropsWithChildren
+export const VocabularyTableProvider = ({ children, preparationVocabulary }: VocabularyTableProviderProps) => {
     const [searchingColumn, setSearchingColumn] = useState<string>("sources");
     const [sortingColumn, setSortingColumn] = useState<string | null>(null);
     const [searchValue, setSearchValue] = useState("");
     const [sortingStateIndex, setSortingStateIndex] = useState<SortingIndex>(0);
 
     const { colorPanel } = useColorPanel();
-    const { preparationVocabulary } = usePreparationVocabulary();
     const { currentWorkspace } = useWorkspaces();
 
     const languages = useMemo(() => (

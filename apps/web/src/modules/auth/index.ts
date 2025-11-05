@@ -1,4 +1,4 @@
 export * from "./const";
 export * from "./context";
-export * from "./services";
+export * as AUTH from "./services";
 export * from "./utils";

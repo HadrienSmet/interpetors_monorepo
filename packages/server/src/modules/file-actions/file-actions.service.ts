@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
+import { retryAsync } from "src/common";
+
 import { PrismaService } from "../prisma";
 
 import { CreateFileActionDto } from "./dto";
@@ -12,6 +14,10 @@ export class FileActionsService {
      * Crée ou met à jour une FileAction (1 par pageIndex)
      */
     async upsert(pdfFileId: string, dto: CreateFileActionDto) {
+        if (!pdfFileId) {
+            throw new BadRequestException("pdfFileId is required");
+        }
+
         // Vérifie que le fichier existe
         const pdfFile = await this.prisma.pdfFile.findUnique({
             where: { id: pdfFileId },
@@ -46,7 +52,6 @@ export class FileActionsService {
 
             return action;
         } catch (err) {
-            console.error("[FileActionsService.upsert] Error:", err);
             throw new BadRequestException("Invalid JSON or database error");
         }
     }
@@ -55,9 +60,36 @@ export class FileActionsService {
      * Récupère toutes les actions d’un PDF (facultatif)
      */
     async findAllByPdfFile(pdfFileId: string) {
-        return this.prisma.fileAction.findMany({
-            where: { pdfFileId },
-            orderBy: { pageIndex: "asc" },
-        });
+        return (retryAsync(
+            () => (
+                this.prisma.fileAction.findMany({
+                    where: { pdfFileId },
+                    orderBy: { pageIndex: "asc" },
+                })
+            ),
+        ));
+    }
+    async findAllByPdfFiles(pdfFileIds: string[]) {
+        if (!pdfFileIds.length) return {};
+
+        const rows = await retryAsync(
+            () => (
+                this.prisma.fileAction.findMany({
+                    where: { pdfFileId: { in: pdfFileIds } },
+                    orderBy: [
+                        { pdfFileId: "asc" },
+                        { pageIndex: "asc" },
+                    ],
+                })
+            ),
+            { maxAttempts: 5 },
+        );
+
+        // Regroupe par pdfFileId
+        const map: Record<string, typeof rows> = {};
+        for (const row of rows) {
+            (map[row.pdfFileId] ??= []).push(row);
+        }
+        return map;
     }
 }

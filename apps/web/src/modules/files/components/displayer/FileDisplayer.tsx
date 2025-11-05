@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 
 import { PdfFile } from "@repo/types";
 
-import { useFoldersManager } from "@/modules/folders";
-import { PdfEditor } from "@/modules/pdf";
+import { FileData } from "@/modules/folders";
+import { PdfDisplayer } from "@/modules/pdf";
 
 import { SUPPORTED_TYPES } from "../icon";
 
@@ -19,7 +19,7 @@ const FileToRender = (props: FileToRenderProps) => {
     const { file } = fileInStructure;
 
     if (file.type.startsWith(SUPPORTED_TYPES.PDF)) {
-        return (<PdfEditor />);
+        return (<PdfDisplayer />);
     }
     if (file.type.startsWith(SUPPORTED_TYPES.WORD)) {
         return (<p>Word will be supported soon</p>);
@@ -38,8 +38,10 @@ const FileToRender = (props: FileToRenderProps) => {
 };
 
 const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
-export const FileDisplayer = () => {
-    const { selectedFile } = useFoldersManager();
+type FileDisplayerProps = {
+    readonly selectedFile: FileData;
+};
+export const FileDisplayer = ({ selectedFile }: FileDisplayerProps) => {
     const { t } = useTranslation();
 
     return (

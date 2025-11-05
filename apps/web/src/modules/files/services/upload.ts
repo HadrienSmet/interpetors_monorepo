@@ -1,15 +1,12 @@
 import { CallOutput, HTTP_METHODS } from "@/utils";
 
-import { presignPostFile, PresignPostFileParams } from "./postS3";
+import { presignPostFile, PresignPostFileOutput, PresignPostFileParams } from "./postS3";
 
 export type UploadParams =
     & PresignPostFileParams
     & { readonly file: File; };
-type UploadResponse = {
-    readonly url: string;
-    readonly s3Uri: string;
-};
-export const upload = async (params: UploadParams): Promise<CallOutput<UploadResponse>> => {
+
+export const upload = async (params: UploadParams): Promise<CallOutput<PresignPostFileOutput>> => {
     const { file, ...rest } = params;
 
     const presignedUrlRes = await presignPostFile(rest);
@@ -31,10 +28,7 @@ export const upload = async (params: UploadParams): Promise<CallOutput<UploadRes
     if (pdfRes.ok) {
         return ({
             success: true,
-            data: {
-                url: presignedUrlRes.data.url,
-                s3Uri: presignedUrlRes.data.s3Uri,
-            },
+            data: presignedUrlRes.data,
         });
     }
 

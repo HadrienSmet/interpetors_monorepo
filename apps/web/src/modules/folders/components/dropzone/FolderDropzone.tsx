@@ -8,7 +8,7 @@ import { PDF_TYPE } from "@/modules/pdf";
 
 import { isPdfFile, useFoldersManager } from "../../contexts";
 
-import { FoldersDisplayer } from "../displayer";
+import { FOLDERS_TYPES, NewFoldersDisplayer } from "../displayer";
 
 import "./folderDropzone.scss";
 
@@ -124,7 +124,8 @@ export const FolderDropzone = () => {
         <div style={{ flex: 1, width: "100%" }}>
             {foldersStructure.length > 0
                 ?   (
-                    <FoldersDisplayer
+                    <NewFoldersDisplayer
+                        type={FOLDERS_TYPES.EDITABLE}
                         isDragged={isDragged}
                         onDragEnter={handleDragEnter}
                         onDragLeave={handleDragLeave}

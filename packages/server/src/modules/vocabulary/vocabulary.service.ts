@@ -5,10 +5,12 @@ import { PrismaService } from "../prisma";
 
 import { CreateVocabularyTermDto, UpsertVocabularyTermDto } from "./dto";
 
-type SlimTerm = Pick<VocabularyTerm, "id" | "translations" | "colorJson" | "createdAt" | "updatedAt"> & {
-    readonly workspaceId: string;
-    readonly preparationId: string;
-};
+type SlimTerm =
+    & Pick<VocabularyTerm, "id" | "translations" | "colorJson" | "createdAt" | "updatedAt">
+    & {
+        readonly workspaceId: string;
+        readonly preparationId: string;
+    };
 
 @Injectable()
 export class VocabularyService {
@@ -45,17 +47,40 @@ export class VocabularyService {
                         translations: true,
                         createdAt: false,
                         updatedAt: false,
+                        occurrences: {
+                            select: {
+                                filePath: true,
+                                pageIndex: true,
+                                text: true,
+                            },
+                        },
                     },
                 },
             },
             orderBy: { termId: "asc" },
         });
 
-        return rows.map((r) => ({
-            ...r.term,
-            workspaceId,
-            preparationId,
-        }));
+        return rows.map((r) => {
+            const { term } = r;
+
+            // tu peux choisir ici quelle occurrence renvoyer :
+            //  soit la première (souvent c’est le cas d’usage)
+            //  soit toutes les occurrences si tu veux un tableau
+            const firstOcc = term.occurrences?.[0];
+
+            return {
+                id: term.id,
+                occurrence: firstOcc
+                    ? {
+                        filePath: firstOcc.filePath,
+                        pageIndex: firstOcc.pageIndex,
+                        text: firstOcc.text,
+                    }
+                    : undefined,
+                color: term.colorJson, // colorJson correspond exactement à ton type ActionColor
+                translations: term.translations,
+            };
+        });
     }
 
     /** Création unitaire: crée OU relie un terme puis l"attache à la préparation + au workspace */
@@ -127,26 +152,26 @@ export class VocabularyService {
 
                 // 4) Lier les occurrences (fichier + page)
                 if (item.occurrence) {
-                    const occurence = item.occurrence;
+                    const occurrence = item.occurrence;
                     await tx.vocabularyOccurrence.upsert({
                         where: {
                             // clé composite si tu veux éviter les doublons
                             pdfFileId_pageIndex_termId: {
-                                pdfFileId: occurence.pdfFileId,
-                                pageIndex: occurence.pageIndex,
+                                pdfFileId: occurrence.pdfFileId,
+                                pageIndex: occurrence.pageIndex,
                                 termId: term.id,
                             },
                         },
                         update: {
-                            text: occurence.text,
-                            filePath: occurence.filePath,
+                            text: occurrence.text,
+                            filePath: occurrence.filePath,
                         },
                         create: {
                             termId: term.id,
-                            pdfFileId: occurence.pdfFileId,
-                            pageIndex: occurence.pageIndex,
-                            text: occurence.text,
-                            filePath: occurence.filePath,
+                            pdfFileId: occurrence.pdfFileId,
+                            pageIndex: occurrence.pageIndex,
+                            text: occurrence.text,
+                            filePath: occurrence.filePath,
                         },
                     });
 
