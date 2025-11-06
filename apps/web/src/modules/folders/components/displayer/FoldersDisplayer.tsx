@@ -1,33 +1,45 @@
-import { Dispatch, useEffect } from "react";
+import { DragEventHandler, useEffect } from "react";
 import { useSearchParams } from "react-router";
 
-import { FolderStructure } from "@repo/types";
+import { FileDisplayer } from "@/modules/files";
 
-import { FileDisplayer } from "@/modules/files/components/displayer/FileDisplayer";
-
-import { getPdfFile } from "../../contexts";
-import { FileData } from "../../types";
+import { getPdfFile, useFoldersManager } from "../../contexts";
 
 import { FoldersExplorer } from "../explorer";
 
 import "./foldersDisplayer.scss";
-import { NewFileDisplayer } from "@/modules/files";
-import { NewFoldersExplorer } from "../explorer/NewFoldersExplorer";
 
-type FoldersExplorerProps = {
-    readonly foldersStructure: Array<FolderStructure>;
-    readonly selectedFile: FileData;
-    readonly setSelectedFile: Dispatch<FileData>;
+const URL_PARAMS = "filepath";
+
+export enum FOLDERS_TYPES {
+    EDITABLE = "editable",
+    UNEDITABLE = "uneditable",
+}
+type DropZoneEvents = {
+    readonly onDragEnter: DragEventHandler<HTMLDivElement>;
+    readonly onDragLeave: DragEventHandler<HTMLDivElement>;
+    readonly onDragOver: DragEventHandler<HTMLDivElement>;
+    readonly onDrop: DragEventHandler<HTMLDivElement>;
 };
-export const FoldersDisplayer = ({
-    foldersStructure,
-    selectedFile,
-    setSelectedFile,
-}: FoldersExplorerProps) => {
+type FoldersExplorerProps =
+    | { readonly type: FOLDERS_TYPES.UNEDITABLE; }
+    | (
+        & { readonly isDragged: boolean; readonly type: FOLDERS_TYPES.EDITABLE; }
+        & DropZoneEvents
+    );
+export const FoldersDisplayer = (props: FoldersExplorerProps) => {
+    const {
+        foldersStructure,
+        setSelectedFile,
+    } = useFoldersManager();
     const [searchParams, setSearchParams] = useSearchParams();
 
+    const dropZoneAttributes: DropZoneEvents | undefined = props.type === FOLDERS_TYPES.EDITABLE
+        ? props
+        : undefined;
+
     useEffect(() => {
-        const path = searchParams.get("filepath");
+        const path = searchParams.get(URL_PARAMS);
         if (!path) return;
 
         for (const folder of foldersStructure) {
@@ -39,15 +51,18 @@ export const FoldersDisplayer = ({
             }
         }
 
-        searchParams.delete("filepath");
+        searchParams.delete(URL_PARAMS);
         setSearchParams(searchParams);
     }, [foldersStructure, searchParams]);
 
     return (
         <div className="folders-displayer">
-            <NewFoldersExplorer />
-            <div className="folder-dropzone">
-                <NewFileDisplayer />
+            <FoldersExplorer />
+            <div
+                className={`folder-dropzone ${(props.type === FOLDERS_TYPES.EDITABLE && props.isDragged) ? "dragged" : ""}`}
+                {...dropZoneAttributes}
+            >
+                <FileDisplayer />
             </div>
         </div>
     );

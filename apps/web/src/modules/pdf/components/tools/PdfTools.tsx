@@ -140,9 +140,14 @@ const PdfToolsChild = () => {
 export const PdfTools = () => {
     const { isEditable, setIsEditable } = useFoldersManager();
 
+    const onClick = () => setIsEditable(true);
+
     if (!isEditable) {
         return (
-            <button onClick={() => setIsEditable(true)}>
+            <button
+                className="pdf-edit"
+                onClick={onClick}
+            >
                 <MdEdit />
             </button>
         );

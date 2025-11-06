@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { MdArrowBack } from "react-icons/md";
 
 import { Loader, Tabs } from "@/components";
-import { FOLDERS_TYPES, NewFoldersDisplayer, FoldersManagerProvider, useFoldersManager } from "@/modules/folders";
+import { FOLDERS_TYPES, FoldersDisplayer, FoldersManagerProvider, useFoldersManager } from "@/modules/folders";
 import { groupVocabularyByColor, PreparationVocabularyProvider, VocabularyTable, VocabularyTableProvider } from "@/modules/vocabulary";
 
 import { usePreparations } from "../../contexts";
@@ -45,7 +45,7 @@ const PreparationLayoutChild = ({ backToList }: PreparationLayoutProps) => {
                     title: "folders",
                     content: (
                         <div className="preparation-folders">
-                            <NewFoldersDisplayer type={FOLDERS_TYPES.UNEDITABLE} />
+                            <FoldersDisplayer type={FOLDERS_TYPES.UNEDITABLE} />
                         </div>
                     )
                 },

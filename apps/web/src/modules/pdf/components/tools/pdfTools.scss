@@ -1,95 +1,110 @@
-.pdf-tools {
-    display: flex;
-    padding: var(--space-m);
-
-    &-buttons {
-        display: flex;
-        gap: var(--space-s);
-    }
-
-    &.column {
-        flex-direction: row;
-
-        &.left button:not(:disabled):hover {
-            transform: translateX(10%) scale(1.05);
-        }
-        &.right button:not(:disabled):hover {
-            transform: translateX(-10%) scale(1.05);
-        }
-
-        .color-picker-container {
-            align-items: flex-end;
-            justify-content: center;
-            max-width: 0;
-
-            &.expanded {
-                max-width: 700px;
-                padding-left: calc(2 * var(--space-m));
-            }
-        }
-        .pdf-tools-buttons {
-            flex-direction: column;
-        }
-    }
-    &.row {
-        flex-direction: column;
-        &.bot button:not(:disabled):hover {
-            transform: translateY(-10%) scale(1.05);
-        }
-        &.top button:not(:disabled):hover {
-            transform: translateY(10%) scale(1.05);
-        }
-
-        .color-picker-container {
-            align-items: center;
-            justify-content: flex-end;
-            max-height: 0;
-
-            &.expanded {
-                max-height: 700px;
-                padding-top: calc(2 * var(--space-m));
-            }
-        }
-        .pdf-tools-buttons {
-            flex-direction: row;
-        }
-    }
-
-    .color-picker-container {
-        display: flex;
-        overflow: hidden;
-        transition: var(--transition-hover);
-    }
-    .color-picker-trigger {
-        border: var(--border-m) solid var(--clr-bg-light);
-        border-radius: var(--radius-round);
-        height: 100%;
-        width: 100%;
-
-        &:hover {
-            border-color: var(--clr-txt-02);
-        }
-    }
-    button {
+.pdf {
+    &-edit {
         align-items: center;
         background-color: var(--clr-bg-light);
         border-radius: var(--radius-round);
+        box-shadow: var(--shadow-default) var(--clr-txt-02);
         display: flex;
         height: 40px;
         justify-content: center;
-        position: relative;
-        transition: var(--transition-hover);
+        left: 0px;
+        position: absolute;
         width: 40px;
+        z-index: 10;
+    }
+    &-tools {
+        display: flex;
+        padding: var(--space-m);
 
-        &:disabled {
-            background-color: var(--clr-txt-02);
-            color: var(--clr-bg-light);
-            cursor: not-allowed;
+        &-buttons {
+            display: flex;
+            gap: var(--space-s);
         }
-        &.selected,
-        &:not(:disabled):hover {
-            background-color: var(--clr-txt-04);
-            color: var(--clr-bg-light);
+
+        &.column {
+            flex-direction: row;
+
+            &.left button:not(:disabled):hover {
+                transform: translateX(10%) scale(1.05);
+            }
+            &.right button:not(:disabled):hover {
+                transform: translateX(-10%) scale(1.05);
+            }
+
+            .color-picker-container {
+                align-items: flex-end;
+                justify-content: center;
+                max-width: 0;
+
+                &.expanded {
+                    max-width: 700px;
+                    padding-left: calc(2 * var(--space-m));
+                }
+            }
+            .pdf-tools-buttons {
+                flex-direction: column;
+            }
+        }
+        &.row {
+            flex-direction: column;
+            &.bot button:not(:disabled):hover {
+                transform: translateY(-10%) scale(1.05);
+            }
+            &.top button:not(:disabled):hover {
+                transform: translateY(10%) scale(1.05);
+            }
+
+            .color-picker-container {
+                align-items: center;
+                justify-content: flex-end;
+                max-height: 0;
+
+                &.expanded {
+                    max-height: 700px;
+                    padding-top: calc(2 * var(--space-m));
+                }
+            }
+            .pdf-tools-buttons {
+                flex-direction: row;
+            }
+        }
+
+        .color-picker-container {
+            display: flex;
+            overflow: hidden;
+            transition: var(--transition-hover);
+        }
+        .color-picker-trigger {
+            border: var(--border-m) solid var(--clr-bg-light);
+            border-radius: var(--radius-round);
+            height: 100%;
+            width: 100%;
+
+            &:hover {
+                border-color: var(--clr-txt-02);
+            }
+        }
+        button {
+            align-items: center;
+            background-color: var(--clr-bg-light);
+            border-radius: var(--radius-round);
+            display: flex;
+            height: 40px;
+            justify-content: center;
+            position: relative;
+            transition: var(--transition-hover);
+            width: 40px;
+
+            &:disabled {
+                background-color: var(--clr-txt-02);
+                color: var(--clr-bg-light);
+                cursor: not-allowed;
+            }
+            &.selected,
+            &:not(:disabled):hover {
+                background-color: var(--clr-txt-04);
+                color: var(--clr-bg-light);
+            }
         }
     }
 }

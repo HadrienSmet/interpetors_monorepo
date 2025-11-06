@@ -100,7 +100,8 @@ export const fr = {
                     vertical: "Afficher verticalement",
                     vocabulary: "Ajouter au vocabulaire"
                 }
-            }
+            },
+            unsupported: "{{type}} sera supporté prochainement",
         },
         folders: {
             "context-menu": {

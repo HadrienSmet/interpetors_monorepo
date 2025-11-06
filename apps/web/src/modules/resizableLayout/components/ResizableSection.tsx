@@ -28,22 +28,22 @@ export const ResizableSection = ({
     }, [id, initialWidth, minWidth, registerSection]);
 
     const startResize = (e: React.MouseEvent) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const onMouseMove = (moveEvent: MouseEvent) => {
-        updateWidth(id, moveEvent.clientX);
+        const onMouseMove = (moveEvent: MouseEvent) => {
+            updateWidth(id, moveEvent.clientX);
+        };
+
+        const onMouseUp = () => {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+
+            window.dispatchEvent(new Event("layout-resized"));
+        };
+
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
     };
-
-    const onMouseUp = () => {
-        window.removeEventListener("mousemove", onMouseMove);
-        window.removeEventListener("mouseup", onMouseUp);
-
-        window.dispatchEvent(new Event("layout-resized"));
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-};
 
     const width = sections[id]?.width ?? initialWidth;
 
@@ -51,7 +51,10 @@ export const ResizableSection = ({
         <div
             className="resizable-section"
             ref={containerRef}
-            style={{ width }}
+            style={{
+                width,
+                minWidth: width,
+            }}
         >
             {children}
             <div
