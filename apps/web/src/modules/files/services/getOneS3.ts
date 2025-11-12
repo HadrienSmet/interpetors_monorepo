@@ -1,6 +1,7 @@
 import { call, CallOutput, HTTP_METHODS } from "@/utils";
 
 import { ROUTE } from "./const";
+import { PDF_TYPE } from "@/modules/pdf";
 
 type PresignGetOneResponse = {
     readonly url: string;
@@ -8,14 +9,14 @@ type PresignGetOneResponse = {
 const presignGetOne = async (key: string) => {
     const response = await call<PresignGetOneResponse>({
         method: HTTP_METHODS.GET,
-        route: `${ROUTE}/presign-get?key=${key}`
+        route: `${ROUTE}/presign-get?key=${key}`,
     });
 
     return (response);
 };
 
 
-export const getOne = async (key: string, name: string): Promise<CallOutput<File>> => {
+export const getOneS3 = async (key: string, name: string): Promise<CallOutput<File>> => {
     const urlRes = await presignGetOne(key);
 
     if (!urlRes.success) {
@@ -37,10 +38,10 @@ export const getOne = async (key: string, name: string): Promise<CallOutput<File
 
     const blob = await pdfRes.blob();
 
-    const file = new File([blob], name, { type: "application/pdf" });
+    const file = new File([blob], name, PDF_TYPE);
 
     return ({
         success: true,
-        data: file
+        data: file,
     })
 };

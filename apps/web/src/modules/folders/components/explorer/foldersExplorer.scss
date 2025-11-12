@@ -3,6 +3,23 @@
     overflow-y: auto;
     width: 30%;
 
+    &__header {
+        align-items: center;
+        background-color: var(--clr-txt-02);
+        display: flex;
+        gap: var(--space-s);
+        justify-content: end;
+        padding: var(--space-s);
+        padding-right: var(--space-m);
+
+        input {
+            min-width: 0px;
+            width: 100%;
+        }
+        svg {
+            flex-shrink: 0;
+        }
+    }
     &__item {
         align-items: center;
         cursor: pointer;

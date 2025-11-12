@@ -1,46 +1,34 @@
-import { Dispatch, ReactNode, SetStateAction } from "react";
-import { MdAdd, MdApps, MdFilePresent, MdHistory, MdHome, MdMenuBook, MdOtherHouses, MdTranslate } from "react-icons/md";
+import { ReactNode } from "react";
+import { MdAdd, MdHistory, MdHome, MdMenuBook, MdOtherHouses } from "react-icons/md";
 
 export type NavigationItem = {
-    readonly id: string;
     readonly icon: ReactNode;
+    readonly id: string;
     readonly nestedNav?: NavigationRecord;
 };
 type NavigationRecord = Record<string, NavigationItem>;
 export const NAVIGATION = {
     HOME: {
-        id: "home",
         icon: <MdHome />,
+        id: "home",
     },
     WORKSPACES: {
-        id: "workspaces",
         icon: <MdOtherHouses />,
+        id: "workspaces",
     },
-    PREPARE: {
-        id: "prepare",
-        icon: <MdAdd />,
+    PREPARATIONS: {
+        icon: <MdHistory />,
+        id: "preparations",
         nestedNav: {
-            HOME: {
-                id: "manager",
-                icon: <MdApps />,
-            },
-            FILES: {
-                id: "files",
-                icon: <MdFilePresent />,
-            },
-            VOCABULARY: {
-                id: "vocabulary",
-                icon: <MdTranslate />,
+            NEW: {
+                icon: <MdAdd />,
+                id: "new",
             },
         },
     },
-    PREPARATIONS: {
-        id: "preparations",
-        icon: <MdHistory />,
-    },
     DICTIONARY: {
-        id: "dictionary",
         icon: <MdMenuBook />,
+        id: "dictionary",
     },
 } as const;
 
@@ -53,9 +41,3 @@ type ExtractPaths<T extends NavigationRecord> = {
 }[keyof T];
 
 export type NavigationState = ExtractPaths<typeof NAVIGATION>;
-
-
-export type NavigationProps = {
-    readonly navigation: NavigationState;
-    readonly setNavigation: Dispatch<SetStateAction<NavigationState>>;
-};

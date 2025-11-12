@@ -1,5 +1,4 @@
-import { DragEvent, useState } from "react";
-import { Trans } from "react-i18next";
+import { DragEvent, PropsWithChildren, useState } from "react";
 
 import type { FolderStructure, PdfFile } from "@repo/types";
 
@@ -7,8 +6,6 @@ import { FIRST_PAGE } from "@/modules/files";
 import { PDF_TYPE } from "@/modules/pdf";
 
 import { isPdfFile, useFoldersManager } from "../../contexts";
-
-import { FOLDERS_TYPES, FoldersDisplayer } from "../displayer";
 
 import "./folderDropzone.scss";
 
@@ -42,9 +39,7 @@ const readDirectory = async (
     pathPrefix: string
 ) => {
     const reader = directoryEntry.createReader();
-    const entries = await new Promise<FileSystemEntry[]>((resolve) =>
-        reader.readEntries(resolve)
-    );
+    const entries = await new Promise<FileSystemEntry[]>((resolve) => reader.readEntries(resolve));
 
     for (const entry of entries) {
         const fullPath = `${pathPrefix}/${entry.name}`;
@@ -85,7 +80,7 @@ const doesPathExist = (structure: FolderStructure, path: string[]): boolean => {
 
     return (doesPathExist(node as FolderStructure, rest));
 };
-export const FolderDropzone = () => {
+export const FolderDropzone = ({ children }: PropsWithChildren) => {
     const [isDragged, setIsDragged] = useState(false);
 
     const { folders, foldersStructure } = useFoldersManager();
@@ -121,33 +116,14 @@ export const FolderDropzone = () => {
     };
 
     return (
-        <div style={{ flex: 1, width: "100%" }}>
-            {foldersStructure.length > 0
-                ?   (
-                    <FoldersDisplayer
-                        type={FOLDERS_TYPES.EDITABLE}
-                        isDragged={isDragged}
-                        onDragEnter={handleDragEnter}
-                        onDragLeave={handleDragLeave}
-                        onDragOver={preventDefault}
-                        onDrop={handleDrop}
-                    />
-                )
-                : (
-                    <div
-                        className={`folder-dropzone empty ${isDragged ? "dragged" : ""}`}
-                        onDragEnter={handleDragEnter}
-                        onDragLeave={handleDragLeave}
-                        onDragOver={preventDefault}
-                        onDrop={handleDrop}
-                    >
-                        <Trans
-                            components={{ default: <p /> }}
-                            i18nKey="inputs.folders.empty"
-                        />
-                    </div>
-                )
-            }
+        <div
+            className={`folder-dropzone ${isDragged ? "dragged" : ""}`}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={preventDefault}
+            onDrop={handleDrop}
+        >
+            {children}
         </div>
     );
 };

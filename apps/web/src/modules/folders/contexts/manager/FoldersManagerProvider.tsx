@@ -8,7 +8,7 @@ import { getTargetKeys, isPdfFile, browseStructureToActionOnFile, FileVisitor } 
 import { NewFoldersManagerContext, NewFoldersManagerContextType } from "./FoldersManagerContext";
 
 type FoldersManagerProviderProps =
-    & { readonly editable?: boolean }
+    & { readonly editable?: boolean; }
     & PropsWithChildren;
 export const FoldersManagerProvider = ({ children, editable = false }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
@@ -16,6 +16,65 @@ export const FoldersManagerProvider = ({ children, editable = false }: FoldersMa
     const [selectedFile, setSelectedFile] = useState<FileData>({ fileInStructure: null, path: "" });
 
     // ---------- Files methods ----------
+    const EMPTY_PAGE_ACTION = { elements: [] as any[] };
+
+    const addNewPageActions = (path: string, pageIndex: number) => {
+        const parts = getTargetKeys(path);
+        if (parts.length === 0) return;
+
+        const addAtPath = (structure: FolderStructure, segs: string[]): FolderStructure => {
+            const [head, ...rest] = segs;
+            if (!head) return (structure);
+
+            const result: FolderStructure = {};
+
+            for (const [key, value] of Object.entries(structure)) {
+                if (key !== head) {
+                    // autre clé: recopier tel quel
+                    result[key] = value;
+                    continue;
+                }
+
+                // On est sur le segment courant du chemin
+                if (rest.length === 0) {
+                    // Dernier segment -> devrait être le fichier
+                    if (isPdfFile(value)) {
+                        const alreadyExists = value.actions[pageIndex] != null;
+                        result[key] = alreadyExists
+                            ? value // rien à faire
+                            : {
+                                ...value,
+                                actions: {
+                                    ...value.actions,
+                                    [pageIndex]: EMPTY_PAGE_ACTION,
+                                },
+                            };
+
+                        // si le fichier affiché est celui-ci, on le met aussi à jour dans le state sélectionné
+                        if (selectedFile.fileInStructure && selectedFile.fileInStructure.name === value.name) {
+                            const updated = result[key] as PdfFile;
+                            setSelectedFile((s) => ({ ...s, fileInStructure: updated }));
+                        }
+                    } else {
+                        // ce n’est pas un fichier: recopier tel quel
+                        result[key] = value;
+                    }
+                } else {
+                    // Il reste des segments -> descendre si c'est un dossier
+                    if (!isPdfFile(value)) {
+                        result[key] = addAtPath(value, rest);
+                    } else {
+                        // on attendait un dossier mais on a un fichier: recopier
+                        result[key] = value;
+                    }
+                }
+            }
+
+            return (result);
+        };
+
+        setFoldersStructure((state) => state.map((root) => addAtPath(root, parts)));
+    };
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {
         const moveFile = (structure: FolderStructure): [FolderStructure, PdfFile | null] => {
             const result: FolderStructure = {};
@@ -289,6 +348,7 @@ export const FoldersManagerProvider = ({ children, editable = false }: FoldersMa
     const value: NewFoldersManagerContextType = {
         isEditable,
         files: {
+            addNewPageActions,
             changeDirectory: changeFileDirectory,
             delete: deleteFile,
             rename: renameFile,

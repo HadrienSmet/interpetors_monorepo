@@ -1,67 +1,98 @@
-import { FolderNode } from "@repo/types";
+import { SavedFolderStructure } from "@repo/types";
 
-export type PdfFilePlaceholder = {
-    readonly actions: Record<number, any>;
-    readonly name: string;
-    readonly id: string;
-    readonly s3Key: string;   // fourni par le backend (filePath)
-    readonly file?: File;       // sera ajouté par hydratation
-};
-export type TempFolderStructure = {
-    [key: string]: TempFolderStructure | PdfFilePlaceholder;
-};
-export type BatchItem = {
-    readonly id: string;
-    readonly name: string;
-    readonly s3Key: string;
-};
-type BuildFromApiOutput = {
-    readonly structure: TempFolderStructure;
-    readonly batches: Array<BatchItem>;
-};
+import { FILE_ACTION } from "@/modules/fileActions";
+import { FILES } from "@/modules/files";
+import { handleServicesConcurrency } from "@/utils";
 
-/**
- * Construit une FolderStructure-like depuis la réponse backend "tree".
- * Chaque fichier est stocké en placeholder (avec fileUrl) jusqu'à hydratation.
- */
-export function buildFolderStructureFromApi(
-    apiRoots: Array<FolderNode>,
-): BuildFromApiOutput {
-    const structure: TempFolderStructure = {};
-    const batches: Array<BatchItem> = [];
-
-    const insertFolderNode = (
-        target: TempFolderStructure,
-        node: FolderNode,
-    ): void => {
-        const folderObj: TempFolderStructure = {};
-
-        // 1) fichiers du dossier courant -> placeholders
-        for (const f of node.files ?? []) {
-            folderObj[f.name] = {
-                id: f.id,
-                name: f.name,
-                actions: {},       // à remplir si tu charges des actions par page
-                s3Key: f.s3Key,
-            };
-            batches.push({ id: f.id, s3Key: f.s3Key, name: f.name })
-        }
-
-        // 2) enfants -> récursif
-        for (const child of node.children ?? []) {
-            insertFolderNode(folderObj, child);
-        }
-
-        // 3) raccrocher ce dossier dans la cible
-        target[node.name] = folderObj;
-    };
-
-    for (const r of apiRoots) {
-        insertFolderNode(structure, r);
+const handleFile = async (
+    item: FILES.FileApiResponse,
+    actionsByFileId: FILE_ACTION.GetBulkResponse
+) => {
+    const fileRes = await FILES.getOneS3(item.s3Key, item.name);
+    if (!fileRes.success) {
+        throw new Error(fileRes.message);
     }
 
+    const fileActions = actionsByFileId[item.id] ?? [];
+
+    const actionsRecord = fileActions.reduce<Record<number, any>>((acc, act) => {
+        acc[act.pageIndex] = {
+            elements: act.elementsJson ?? [],
+            references: act.referencesJson ?? [],
+            generatedResources: act.generatedResourcesJson ?? [],
+        };
+        return (acc);
+    }, {});
+
     return ({
-        batches,
-        structure,
+        ...item,
+        file: fileRes.data,
+        actions: actionsRecord,
     });
-}
+};
+
+const limit = handleServicesConcurrency(4);
+
+export const buildFoldersStructure = async (preparationId: string) => {
+    const output: Array<SavedFolderStructure> = [];
+
+    const pdfFilesResponse = await FILES.getAllApi(preparationId);
+    if (!pdfFilesResponse.success) {
+        throw new Error(pdfFilesResponse.message);
+    }
+
+    const files = pdfFilesResponse.data;
+    const ids = files.map(file => file.id);
+
+    const bulkRes = await FILE_ACTION.getAllBulk(ids);
+    if (!bulkRes.success) {
+        throw new Error(bulkRes.message);
+    }
+
+    const actionsByFileId = bulkRes.data;
+    const hydrated = await Promise.all(
+        files.map(file => limit(() => handleFile(file, actionsByFileId)))
+    );
+
+    for (const fileData of hydrated) {
+        const { id, filePath, name, file, actions } = fileData;
+        const parts = filePath ? filePath.split("/").filter(Boolean) : [];
+
+        let currentLevel: SavedFolderStructure;
+
+        // Trouve ou crée la racine correspondante
+        if (parts.length === 0) {
+            // fichier à la racine → nouvelle structure si besoin
+            currentLevel = output[0] ?? {};
+            output[0] = currentLevel;
+        } else {
+            // essaie de retrouver la racine correspondante sinon crée une nouvelle
+            const rootName = parts[0];
+            let root = output.find((f) => rootName in f);
+            if (!root) {
+                root = { [rootName]: {} };
+                output.push(root);
+            }
+            currentLevel = root[rootName] as SavedFolderStructure;
+
+            // crée récursivement les sous-dossiers
+            for (let i = 1; i < parts.length; i++) {
+                const folder = parts[i];
+                if (!(folder in currentLevel)) {
+                    currentLevel[folder] = {};
+                }
+                currentLevel = currentLevel[folder] as SavedFolderStructure;
+            }
+        }
+
+        // insère le PdfFile
+        currentLevel[name] = {
+            id,
+            actions,
+            file,
+            name,
+        };
+    }
+
+    return (output);
+};

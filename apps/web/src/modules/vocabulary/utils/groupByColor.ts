@@ -13,8 +13,10 @@ const makeColorKey = (color: ActionColor): string => {
 };
 
 export const groupVocabularyByColor = (
-    terms: Array<VocabularyTerm>,
-): PreparationVocabulary => {
+    terms: Array<VocabularyTerm> | undefined,
+): PreparationVocabulary | undefined => {
+    if (!terms) return (undefined);
+
     const map = new Map<string, GroupedVocabulary>();
 
     for (const term of terms) {

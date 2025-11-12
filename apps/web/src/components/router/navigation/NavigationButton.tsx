@@ -6,7 +6,10 @@ import { NAVIGATION, NavigationItem } from "./navigation.types";
 
 type NavigationButtonProps =
     & NavigationItem
-    & { readonly depth?: number; };
+    & {
+        readonly depth?: number;
+        readonly displayNested: boolean;
+    };
 
 const SELECTED_CLASS = "selected";
 
@@ -15,23 +18,23 @@ export const NavigationButton = ({
     icon,
     id,
     nestedNav,
+    displayNested,
 }: NavigationButtonProps) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const { t } = useTranslation();
     const location = useLocation();
+    const navigate = useNavigate();
+
     const navigation = location.pathname
         .split("/")
         .filter(Boolean);
-    const navigate = useNavigate();
-
     const buttonStyle = useMemo(() => ({
         fontSize: `${16 - (2 * depth)}px`,
         paddingLeft: `${8 + (depth * 16)}px`,
     }), [depth]);
-    const isSelected = useMemo(
-        () => (navigation[depth] === id),
-        [navigation, depth, id]
-    );
+    const isSelected = useMemo(() => (
+        navigation[depth] === id
+    ), [navigation, depth, id]);
 
     useEffect(() => {
         if (isSelected) {
@@ -63,7 +66,10 @@ export const NavigationButton = ({
 
         const finalPath = descendFirst(currentItem, updatedPath);
 
-        const urlPath = "/" + finalPath.join("/");
+        const urlPath = displayNested
+            ? "/" + finalPath.join("/")
+            : "/" + updatedPath[0];
+
         navigate(urlPath);
     };
 
@@ -77,13 +83,14 @@ export const NavigationButton = ({
                 {icon} {t(`navigation.buttons.${id}`)}
             </button>
 
-            {isSelected && nestedNav && (
+            {(displayNested && isSelected && nestedNav) && (
                 <div className="nested-navigation">
                     {Object.values(nestedNav).map(item => (
                         <NavigationButton
                             {...item}
                             key={item.id}
                             depth={depth + 1}
+                            displayNested
                         />
                     ))}
                 </div>

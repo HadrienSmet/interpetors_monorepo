@@ -27,7 +27,13 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const { colorPanel } = useColorPanel();
     const { files, selectedFile } = useFoldersManager();
 
-    const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
+    const nextPage = () => {
+        const next = pageIndex + 1;
+        if (selectedFile.fileInStructure && (!(next in selectedFile.fileInStructure?.actions))) {
+            files.addNewPageActions(selectedFile.path, next);
+        }
+        setPageIndex(state => Math.min(state + 1, numPages ?? 1));
+    };
     const previousPage = () => setPageIndex(state => Math.max(state - 1, 1));
 
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: DocumentCallback): void => (

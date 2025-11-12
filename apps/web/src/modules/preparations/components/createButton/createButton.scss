@@ -1,0 +1,18 @@
+.create-preparation {
+    align-items: center;
+    background-color: var(--clr-txt);
+    border-radius: var(--radius-s);
+    color: var(--clr-bg-light);
+    display: flex;
+    font-weight: 500;
+    justify-content: center;
+    letter-spacing: 1.5px;
+    min-width: 300px;
+    padding: var(--space-l) var(--space-h);
+    text-transform: uppercase;
+    transition: var(--transition-theme);
+
+    &:hover {
+        background-color: var(--clr-txt-06);
+    }
+}

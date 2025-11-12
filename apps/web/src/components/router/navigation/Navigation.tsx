@@ -29,7 +29,8 @@ const UnexpandedNavigation = (props: { setIsExpanded: Dispatch<SetStateAction<bo
 
 const NAVIGATION_DEFAULT_WIDTH = 275 as const;
 const SECTION_ID = "navigation";
-export const Navigation = () => {
+type NavigationProps = { readonly displayNested?: boolean; };
+export const Navigation = ({ displayNested = false }: NavigationProps) => {
     const [isExpanded, setIsExpanded] = useState(true);
 
     const { signout } = useAuth();
@@ -63,6 +64,7 @@ export const Navigation = () => {
                         return (
                             <NavigationButton
                                 {...current}
+                                displayNested={displayNested}
                                 key={current.id}
                             />
                         );

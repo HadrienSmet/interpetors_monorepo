@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 
 import { Layout } from "@/layout";
-import { Dictionary, Home, NotFound, Preparations, Prepare, Signin, Signup, WorkspaceCreator, Workspaces } from "@/views";
+import { Dictionary, Home, NotFound, Preparations, Signin, Signup, WorkspaceCreator, Workspaces } from "@/views";
 
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -12,11 +12,7 @@ const PROTECTED_ROUTES = {
             element: <Home />,
         },
         {
-            path: "prepare/*",
-            element: <Prepare />,
-        },
-        {
-            path: "preparations",
+            path: "preparations/*",
             element: <Preparations />,
         },
         {

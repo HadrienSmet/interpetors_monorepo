@@ -38,15 +38,15 @@ export class FileActionsService {
                 },
                 update: {
                     elementsJson: JSON.parse(dto.elementsJson),
-                    referencesJson: dto.referencesJson ? JSON.parse(dto.referencesJson) : undefined,
-                    generatedResourcesJson: dto.generatedResourcesJson ? JSON.parse(dto.generatedResourcesJson) : undefined,
+                    referencesJson: dto.referencesJson ? JSON.parse(dto.referencesJson) : [],
+                    generatedResourcesJson: dto.generatedResourcesJson ? JSON.parse(dto.generatedResourcesJson) : [],
                 },
                 create: {
                     pdfFileId,
                     pageIndex: dto.pageIndex,
                     elementsJson: JSON.parse(dto.elementsJson),
-                    referencesJson: dto.referencesJson ? JSON.parse(dto.referencesJson) : undefined,
-                    generatedResourcesJson: dto.generatedResourcesJson ? JSON.parse(dto.generatedResourcesJson) : undefined,
+                    referencesJson: dto.referencesJson ? JSON.parse(dto.referencesJson) : [],
+                    generatedResourcesJson: dto.generatedResourcesJson ? JSON.parse(dto.generatedResourcesJson) : [],
                 },
             });
 

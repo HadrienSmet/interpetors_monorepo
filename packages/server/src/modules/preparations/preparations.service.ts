@@ -19,7 +19,6 @@ export class PreparationsService {
             where: { id: workspaceId },
             select: { id: true },
         });
-
         if (!workspace) {
             throw new NotFoundException(`Workspace ${workspaceId} not found`);
         }
@@ -76,7 +75,7 @@ export class PreparationsService {
                 // optionnel: renvoyer un comptage ou aperçu
                 _count: {
                     select: {
-                        folders: true,
+                        pdfFiles: true,
                         vocabularyTerms: true,
                     },
                 },

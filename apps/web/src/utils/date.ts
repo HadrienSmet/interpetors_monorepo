@@ -1,9 +1,10 @@
+export const addZero = (num: number) => (num < 10 ? `0${num}` : `${num}`);
 export const formatDate = (date: Date, long: boolean = false) => {
     const day = date.getDate();
+    const dayStr = addZero(day);
+
     const month = date.getMonth() + 1;
-    const monthStr = month < 10
-        ? `0${month}`
-        : `${month}`;
+    const monthStr = addZero(month);
 
     const year = date.getFullYear();
     const stringifiedYear = year.toString();
@@ -11,5 +12,5 @@ export const formatDate = (date: Date, long: boolean = false) => {
         ? `${stringifiedYear}`
         : `${stringifiedYear.slice(stringifiedYear.length - 2)}`;
 
-    return (`${day}/${monthStr}/${yearStr}`);
+    return (`${dayStr}/${monthStr}/${yearStr}`);
 };

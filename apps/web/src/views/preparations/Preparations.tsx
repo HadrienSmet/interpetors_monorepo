@@ -1,17 +1,68 @@
-import { Loader } from "@/components";
+import { useMemo } from "react";
+import { useLocation, useNavigate } from "react-router";
+
+import { Loader, NavigationState } from "@/components";
 import {
+    newUploadPreparation,
+    PREPARATION,
+    PreparationLayout,
     PreparationsEmpty,
     PreparationsFilled,
     PreparationsProvider,
-    usePreparations
+    SavePreparationParams,
+    usePreparations,
 } from "@/modules/preparations";
+import { useWorkspaces } from "@/modules/workspace";
 
 import "./preparations.scss";
 
+const SCREEN_NAVIGATION_LEVEL = 1 as const;
+
 const PreparationsChild = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
     const { isLoading, preparations } = usePreparations();
+    const { currentWorkspace } = useWorkspaces();
+
+    const currentView = useMemo(() => (
+        (location.pathname
+            .split("/")
+            .filter(Boolean) as NavigationState
+        )[SCREEN_NAVIGATION_LEVEL]
+    ), [location.pathname]);
+
+    const createPreparation = async ({ title, folders, rootFolderId, vocabularyTerms }: SavePreparationParams) => {
+        const workspaceId = currentWorkspace!.id;
+        const prepRes = await PREPARATION.create({
+            body: { title },
+            workspaceId,
+        });
+
+        if (!prepRes.success) {
+            throw new Error("An error occured while creating preparation");
+        }
+
+        await newUploadPreparation({
+            folders,
+            preparationId: prepRes.data.id,
+            rootFolderId: rootFolderId ?? "root",
+            vocabularyTerms,
+            workspaceId,
+        });
+    };
 
     if (isLoading) return (<Loader />);
+
+    if (currentView === "new") {
+        return (
+            <PreparationLayout
+                backToList={() => navigate("/preparations")}
+                editable
+                preparation={undefined}
+                savePreparation={createPreparation}
+            />
+        );
+    }
 
     return (
         <main

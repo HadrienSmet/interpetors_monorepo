@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, KeyboardEvent, MouseEvent, useMemo, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { MdCreateNewFolder, MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
 import { VscFolder, VscFolderOpened } from "react-icons/vsc";
 import { useTranslation } from "react-i18next";
@@ -20,11 +20,13 @@ const isSubPath = (originPath: string, targetPath: string): boolean => (
 type CurrentTreeNodeProps =
     & TreeNodeProps
     & {
+        readonly collapseSignal: number;
         readonly highlightedFolderPath: string | null;
         readonly setHighlightedFolderPath: (path: string | null) => void;
     };
 export const TreeNode = (props: CurrentTreeNodeProps) => {
     const {
+        collapseSignal,
         depth,
         highlightedFolderPath,
         name,
@@ -50,14 +52,12 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
     const { files, folders, isEditable } = useFoldersManager();
     const { t } = useTranslation();
 
-    const fullPath = useMemo(
-        () => (path ? `${path}/${name}` : name),
-        [path, name]
-    );
-    const isHighlighted = useMemo(
-        () => (highlightedFolderPath === fullPath),
-        [name, path, highlightedFolderPath]
-    );
+    const fullPath = useMemo(() => (
+        path ? `${path}/${name}` : name
+    ), [path, name]);
+    const isHighlighted = useMemo(() => (
+        highlightedFolderPath === fullPath
+    ),[name, path, highlightedFolderPath]);
 
     const handleCreation = () => {
         const trimmed = newFolderName
@@ -192,6 +192,10 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
         if (e.key === "Enter") handleRename();
     };
     const handleEditableEvent = (fn: () => void) => handleDynamicEvent(isEditable, fn);
+
+    useEffect(() => {
+        setIsOpen(false);
+    }, [collapseSignal]);
 
     if (isPdfFile(node)) {
         return (

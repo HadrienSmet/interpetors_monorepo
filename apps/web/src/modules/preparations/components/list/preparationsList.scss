@@ -9,6 +9,7 @@
         .accordion-item {
             border-radius: var(--radius-s);
             box-shadow: var(--shadow-default) var(--clr-txt-02);
+            cursor: pointer;
             padding: var(--space-l) var(--space-xl);
             width: 100%;
         }

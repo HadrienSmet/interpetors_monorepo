@@ -1,1 +1,1 @@
-export * from "./PrepartionLayout";
+export * from "./PreparationLayout";

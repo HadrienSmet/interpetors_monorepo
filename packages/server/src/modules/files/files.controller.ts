@@ -1,20 +1,24 @@
-import { Body, Controller, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 
 import { JwtAuthGuard } from "src/common";
 
 import { CreatePdfFileDto } from "./dto";
 import { FilesService } from "./files.service";
 
-@Controller("folders/:folderId/files")
+@Controller("preparations/:preparationId/files")
 @UseGuards(JwtAuthGuard)
 export class FilesController {
     constructor(private readonly service: FilesService) { }
 
     @Post()
     async create(
-        @Param("folderId") folderId: string,
+        @Param("preparationId") preparationId: string,
         @Body() dto: CreatePdfFileDto,
     ) {
-        return this.service.create(folderId, dto);
+        return this.service.create(preparationId, dto);
+    }
+    @Get()
+    async getAll(@Param("preparationId") preparationId: string) {
+        return this.service.getAll(preparationId);
     }
 }

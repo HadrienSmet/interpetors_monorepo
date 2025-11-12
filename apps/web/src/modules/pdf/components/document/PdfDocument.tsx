@@ -1,9 +1,10 @@
 import { Document, Page } from "react-pdf";
-import { useNavigate } from "react-router";
+import { useSearchParams } from "react-router";
 
 import { REFERENCE_TYPES } from "@repo/types";
 
 import { useFoldersManager } from "@/modules/folders";
+import { URL_PARAMETERS, URL_VIEWS } from "@/utils";
 
 import { usePdfFile, usePdfNotes, usePdfTools } from "../../contexts";
 
@@ -23,7 +24,7 @@ export const PdfDocument = () => {
     const { numPages, onDocumentLoadSuccess, pageIndex, pageRef, setIsPdfRendered } = usePdfFile();
     const { setSelectedNote } = usePdfNotes();
     const { onContextMenu, tool } = usePdfTools();
-    const navigate = useNavigate();
+    const [_, setSearchParams] = useSearchParams();
 
     const pdfFile = selectedFile.fileInStructure!;
 
@@ -41,7 +42,15 @@ export const PdfDocument = () => {
     const onRenderError = (error: Error) => console.error("An error occured while loading page", error);
     const onRenderSucces = () => setIsPdfRendered(true);
     const onNoteClick = (id: string) => setSelectedNote(id);
-    const onVocClick = (id: string) => navigate(`/prepare/vocabulary?id=${id}`);
+    const onVocClick = (id: string) => setSearchParams(prev => {
+        const next = new URLSearchParams(prev);
+
+        next.set(URL_PARAMETERS.view, URL_VIEWS.vocabulary);
+        next.set(URL_PARAMETERS.term, id);
+        next.delete(URL_PARAMETERS.filepath);
+
+        return (next);
+    });
 
     return (
         <div className="pdf-document" ref={pageRef}>

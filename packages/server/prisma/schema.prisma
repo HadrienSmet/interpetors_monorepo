@@ -90,7 +90,7 @@ model ColorSwatch {
 model Preparation {
   id      String   @id @default(cuid())
   title   String
-  folders Folder[] @relation("PreparationFolders")
+  pdfFiles PdfFile[] @relation("PreparationFiles")
 
   vocabularyTerms PreparationVocabularyTerm[]
 
@@ -101,34 +101,14 @@ model Preparation {
   updatedAt DateTime @updatedAt
 }
 
-model Folder {
-  id   String @id @default(cuid())
-  name String
-
-  preparationId String
-  preparation   Preparation @relation("PreparationFolders", fields: [preparationId], references: [id])
-
-  // auto-reference to parent folder
-  parentId String?
-  parent   Folder?  @relation("FolderToChildren", fields: [parentId], references: [id])
-  children Folder[] @relation("FolderToChildren")
-
-  files PdfFile[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([preparationId])
-  @@index([parentId])
-}
-
 model PdfFile {
   id       String @id @default(cuid())
   name     String
   s3Key    String
+  filePath  String
 
-  folderId String
-  folder   Folder @relation(fields: [folderId], references: [id])
+  preparationId String
+  preparation   Preparation @relation("PreparationFiles", fields: [preparationId], references: [id])
 
   actions               FileAction[]
   notes                 Note[]
@@ -137,7 +117,7 @@ model PdfFile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([folderId])
+  @@index([preparationId])
   @@index([name])
 }
 

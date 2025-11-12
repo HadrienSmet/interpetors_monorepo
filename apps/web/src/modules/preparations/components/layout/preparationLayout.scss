@@ -2,31 +2,43 @@
     &-folders {
         height: 100%;
     }
-    &-tabs {
-        &-view {
+    &-header {
+        align-items: center;
+        display: flex;
+        gap: var(--space-m);
+        padding-inline: var(--space-l);
+
+        .button {
+            align-items: center;
             display: flex;
-            flex-direction: column;
-            height: 100%;
+            gap: var(--space-m);
+        }
+
+        input {
+            flex: 1;
+            font-size: var(--size-xl);
+            font-weight: 600;
+        }
+    }
+    &-tabs-view {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-width: 0;
+        padding-top: var(--space-l);
+        position: relative;
+
+        .tabs__tabbar {
+            padding-left: var(--space-l);
             position: relative;
-
-            .tabs__tabbar {
-                padding-left: calc(var(--space-l) + 24px);
-                position: relative;
-                &::after {
-                    background-color: var(--clr-txt-01);
-                    bottom: 0;
-                    content: "";
-                    height: var(--border-s);
-                    left: 10%;
-                    position: absolute;
-                    width: 80%;
-                }
-            }
-
-            > button {
-                padding-top: calc(var(--space-l) + var(--space-s));
+            &::after {
+                background-color: var(--clr-txt-01);
+                bottom: 0;
+                content: "";
+                height: var(--border-s);
+                left: 10%;
                 position: absolute;
-                z-index: 2;
+                width: 80%;
             }
         }
     }

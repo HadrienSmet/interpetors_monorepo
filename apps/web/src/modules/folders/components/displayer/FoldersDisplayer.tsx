@@ -2,14 +2,13 @@ import { DragEventHandler, useEffect } from "react";
 import { useSearchParams } from "react-router";
 
 import { FileDisplayer } from "@/modules/files";
+import { URL_PARAMETERS } from "@/utils";
 
 import { getPdfFile, useFoldersManager } from "../../contexts";
 
 import { FoldersExplorer } from "../explorer";
 
 import "./foldersDisplayer.scss";
-
-const URL_PARAMS = "filepath";
 
 export enum FOLDERS_TYPES {
     EDITABLE = "editable",
@@ -21,11 +20,16 @@ type DropZoneEvents = {
     readonly onDragOver: DragEventHandler<HTMLDivElement>;
     readonly onDrop: DragEventHandler<HTMLDivElement>;
 };
+type FoldersExplorerDefaultProps =
+    & DropZoneEvents
 type FoldersExplorerProps =
     | { readonly type: FOLDERS_TYPES.UNEDITABLE; }
     | (
-        & { readonly isDragged: boolean; readonly type: FOLDERS_TYPES.EDITABLE; }
-        & DropZoneEvents
+        & {
+            readonly isDragged: boolean;
+            readonly type: FOLDERS_TYPES.EDITABLE;
+        }
+        & FoldersExplorerDefaultProps
     );
 export const FoldersDisplayer = (props: FoldersExplorerProps) => {
     const {
@@ -39,7 +43,7 @@ export const FoldersDisplayer = (props: FoldersExplorerProps) => {
         : undefined;
 
     useEffect(() => {
-        const path = searchParams.get(URL_PARAMS);
+        const path = searchParams.get(URL_PARAMETERS.filepath);
         if (!path) return;
 
         for (const folder of foldersStructure) {
@@ -51,8 +55,13 @@ export const FoldersDisplayer = (props: FoldersExplorerProps) => {
             }
         }
 
-        searchParams.delete(URL_PARAMS);
-        setSearchParams(searchParams);
+        setSearchParams(state => {
+            const next = new URLSearchParams(state);
+
+            next.delete(URL_PARAMETERS.filepath);
+
+            return (next);
+        });
     }, [foldersStructure, searchParams]);
 
     return (

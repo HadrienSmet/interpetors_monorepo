@@ -1,4 +1,4 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 
 import { ActionColor, VocabularyTerm } from "@repo/types";
 
@@ -10,7 +10,10 @@ import { PreparationVocabulary, WordToAdd } from "../../types";
 
 import { AddTranslationParams, PreparationVocabularyContext } from "./PreparationVocabularyContext";
 
-export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) => {
+type PreparationVocabularyProviderProps =
+    & { readonly preparationVocabulary?: PreparationVocabulary; }
+    & PropsWithChildren;
+export const PreparationVocabularyProvider = ({ children, preparationVocabulary: savedVoc }: PreparationVocabularyProviderProps) => {
     const [preparationVocabulary, setPreparationVocabulary] = useState<PreparationVocabulary>([]);
 
     const { colorPanel } = useColorPanel();
@@ -103,6 +106,12 @@ export const PreparationVocabularyProvider = ({ children }: PropsWithChildren) =
             return (copy);
         })
     );
+
+    useEffect(() => {
+        if (savedVoc) {
+            setPreparationVocabulary(savedVoc)
+        }
+    }, [savedVoc]);
 
     const value = {
         preparationVocabulary,

@@ -1,10 +1,11 @@
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, ReactNode } from "react";
 
 import "./button.scss";
 
 type ButtonProps = {
+    readonly children?: ReactNode;
     readonly disabled?: boolean;
-    readonly label: string;
+    readonly label?: string;
     readonly onClick: MouseEventHandler<HTMLButtonElement>;
 };
 export const Button = (props: ButtonProps) => {
@@ -16,7 +17,7 @@ export const Button = (props: ButtonProps) => {
             disabled={disabled}
             onClick={props.onClick}
         >
-            {props.label}
+            {props.children ?? props.label}
         </button>
     );
 };

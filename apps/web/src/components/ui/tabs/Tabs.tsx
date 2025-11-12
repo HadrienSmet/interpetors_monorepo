@@ -27,12 +27,15 @@ export const Tabs: React.FC<TabsProps> = ({
     initialIndex = DEFAULT_INDEX,
     onChange,
 }) => {
-    const [tabIndex, setTabIndex] = useState<number>(Math.min(Math.max(initialIndex, 0), Math.max(views.length - 1, 0)));
+    const [tabIndex, setTabIndex] = useState<number>(0);
 
     // refs
     const viewportRef = useRef<HTMLDivElement | null>(null);
     const panelRefs = useRef<Array<HTMLDivElement | null>>([]);
     panelRefs.current = views.map((_, i) => panelRefs.current[i] ?? null);
+
+    const onChangeRef = useRef(onChange);
+    useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
 
     // ids ARIA
     const ids = useMemo(() => (
@@ -58,8 +61,11 @@ export const Tabs: React.FC<TabsProps> = ({
     };
 
     useEffect(() => {
-        onChange?.(tabIndex);
-    }, [tabIndex, onChange]);
+        setTabIndex(Math.min(Math.max(initialIndex, 0), Math.max(views.length - 1, 0)));
+    }, [initialIndex, views.length]);
+    useEffect(() => {
+        onChangeRef.current?.(tabIndex);
+    }, [tabIndex]);
     useEffect(() => {
         const eventType = "layout-resized";
         const viewport = viewportRef.current;

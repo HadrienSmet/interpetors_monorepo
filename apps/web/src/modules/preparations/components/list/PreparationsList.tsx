@@ -1,9 +1,9 @@
 import { Trans, useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 
 import { Accordion } from "@/components";
-import { formatDate } from "@/utils";
+import { formatDate, URL_PARAMETERS, URL_VIEWS } from "@/utils";
 
-import { usePreparations } from "../../contexts";
 import { SavedPreparation } from "../../types";
 
 import "./preparationsList.scss";
@@ -11,11 +11,8 @@ import "./preparationsList.scss";
 export type PreparationsFilledProps = {
     readonly preparations: Array<SavedPreparation>;
 };
-type PreparationListProps =
-    & PreparationsFilledProps
-    & { readonly onClick: () => void; };
-export const PreparationsList = ({ onClick, preparations }: PreparationListProps) => {
-    const { setSelectedPreparation } = usePreparations();
+export const PreparationsList = ({ preparations }: PreparationsFilledProps) => {
+    const [_, setSearchParams] = useSearchParams();
     const { t } = useTranslation();
 
     return (
@@ -25,8 +22,12 @@ export const PreparationsList = ({ onClick, preparations }: PreparationListProps
                     <div
                         className="preparation-content"
                         onClick={() => {
-                            onClick();
-                            setSelectedPreparation(prep.id);
+                            setSearchParams(state => {
+                                state.set(URL_PARAMETERS.preparationid, prep.id);
+                                state.set(URL_PARAMETERS.view, URL_VIEWS.folders);
+
+                                return (state);
+                            });
                         }}
                     >
                         <p>{t("commons.createdAt", { date: formatDate(new Date(prep.createdAt)) })}</p>

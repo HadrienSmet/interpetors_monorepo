@@ -1,10 +1,13 @@
 import { RefObject, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router";
 
-import { scrollToChild } from "@/utils";
+import { scrollToChild, URL_PARAMETERS } from "@/utils";
 
 import { usePreparations } from "../../contexts";
+import { diffPreparations } from "../../utils";
 
-import { PreparationLayout } from "../layout";
+import { CreateButton } from "../createButton";
+import { PreparationLayout, SavePreparationParams } from "../layout";
 import { PreparationsFilledProps, PreparationsList } from "../list";
 
 import "./preparationsFilled.scss";
@@ -21,7 +24,8 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
     const tabsRef = useRef<HTMLDivElement>(null);
     const viewportRef = useRef<HTMLDivElement>(null);
 
-    const { setSelectedPreparation } = usePreparations();
+    const { selectedPreparation, setSelectedPreparation } = usePreparations();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const scrollTo = (targetRef: RefObject<HTMLDivElement | null>, targetName: TabsNames) => {
         const viewport = viewportRef.current;
@@ -36,8 +40,21 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
     const scrollToTabs = () => scrollTo(tabsRef, TABS_NAMES.tabs);
 
     const backToList = () => {
-        scrollToList();
+        setSearchParams(state => {
+            const next = new URLSearchParams(state);
+
+            next.delete(URL_PARAMETERS.preparationid);
+            next.delete(URL_PARAMETERS.view)
+
+            return (next);
+        });
         setSelectedPreparation(undefined);
+        scrollToList();
+    };
+    const patchPreparation = async (params: SavePreparationParams) => {
+        const preparationDiffs = diffPreparations(params.old!, params);
+
+        console.log({ preparationDiffs })
     };
 
     useEffect(() => {
@@ -50,7 +67,7 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                 : listRef.current;
             if (!target) return;
 
-            // réaligne seulement si un delta existe
+            // Realign only if there is a delta
             const vp = viewport.getBoundingClientRect();
             const tg = target.getBoundingClientRect();
             const delta = tg.left - vp.left;
@@ -58,7 +75,6 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                 scrollToChild(viewport, target, smooth);
             }
         };
-
 
         const observer = new ResizeObserver(() => realignToCurrentTarget(false));
         observer.observe(viewport);
@@ -71,7 +87,13 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
             window.removeEventListener("layout-resized", onLayoutResized);
         };
     }, []);
+    useEffect(() => {
+        const path = searchParams.get(URL_PARAMETERS.preparationid);
+        if (!path) return;
 
+        setSelectedPreparation(path);
+        scrollToTabs();
+    }, [searchParams.toString()]);
 
     return (
         <div className="preparations-filled">
@@ -84,15 +106,19 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                     ref={listRef}
                 >
                     <PreparationsList
-                        onClick={scrollToTabs}
                         preparations={preparations}
                     />
+                    <CreateButton />
                 </div>
                 <div
                     className="preparation-tabs-container"
                     ref={tabsRef}
                 >
-                    <PreparationLayout backToList={backToList} />
+                    <PreparationLayout
+                        backToList={backToList}
+                        preparation={selectedPreparation}
+                        savePreparation={patchPreparation}
+                    />
                 </div>
             </div>
         </div>

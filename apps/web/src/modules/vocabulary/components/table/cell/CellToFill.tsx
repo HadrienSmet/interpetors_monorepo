@@ -6,10 +6,9 @@ import { VocabularyTerm } from "@repo/types";
 import { InputStyleLess } from "@/components";
 import { getNativeName } from "@/utils";
 
-import { AddTranslationParams } from "../../../contexts";
+import { usePreparationVocabulary } from "../../../contexts";
 
 type CellToFillProps = {
-    readonly addTranslation: (params: AddTranslationParams) => void;
     readonly locale: string;
     readonly localeIndex: number;
     readonly pdfVocabulary: VocabularyTerm;
@@ -18,12 +17,13 @@ export const CellToFill = (props: CellToFillProps) => {
     const [customTranslation, setCustomTranslation] = useState(props.pdfVocabulary.translations[props.localeIndex] ?? "");
     const [isEditing, setIsEditing] = useState(false);
 
+    const { addTranslation } = usePreparationVocabulary();
     const { t } = useTranslation();
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => setCustomTranslation(event.target.value);
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
-            props.addTranslation({
+            addTranslation({
                 ...props.pdfVocabulary,
                 ...props,
                 translation: customTranslation,

@@ -104,12 +104,15 @@ export const en = {
             unsupported: "{{type}} will be supported soon",
         },
         folders: {
+            close_one: "Close the folder",
+            close_other: "Close all the folders",
             "context-menu": {
                 create: "Create new folder",
                 delete: "Delete the folder",
                 rename: "Rename the folder",
             },
-            download: "Download the updated files",
+            download_one: "Download the folder",
+            download_other: "Download the folders",
             empty: "No files in this preparation",
         },
         inputs: {
@@ -125,7 +128,7 @@ export const en = {
                 dictionary: "Dictionary",
                 files: "Source folders",
                 home: "My work space",
-                preparations: "Old preparations",
+                preparations: "My preparations",
                 prepare: "New preparation",
                 manager: "Manager",
                 vocabulary: "Vocabulary",
@@ -146,7 +149,10 @@ export const en = {
         },
         onConstruction: "Servers under construction",
         preparations: {
+            backToList: "Back to preparations list",
             empty: "No preparations found",
+            new: "Create new préparation",
+            save: "Save preparation",
             stats: {
                 folders: "<default><strong>{{amount}}</strong> folders</default>",
                 terms: "<default><strong>{{amount}}</strong> vocabulary terms</default>",

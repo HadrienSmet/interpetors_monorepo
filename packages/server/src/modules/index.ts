@@ -2,7 +2,6 @@ export * from "./auth";
 export * from "./color-panel";
 export * from "./file-actions";
 export * from "./files";
-export * from "./folders";
 export * from "./notes";
 export * from "./preparations";
 export * from "./prisma";

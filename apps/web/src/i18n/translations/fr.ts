@@ -104,12 +104,15 @@ export const fr = {
             unsupported: "{{type}} sera supporté prochainement",
         },
         folders: {
+            close_one: "Fermer le dossier",
+            close_other: "Fermer tous les dossiers",
             "context-menu": {
                 create: "Nouveau dossier",
                 delete: "Supprimer le dossier",
                 rename: "Renommer le dossier",
             },
-            download: "Télécharger les fichiers modifiés",
+            download_one: "Télécharger le dossier",
+            download_other: "Télécharger les dossiers",
             empty: "Aucuns fichiers dans cette préparation",
         },
         inputs: {
@@ -126,7 +129,7 @@ export const fr = {
                 files: "Dossiers sources",
                 home: "Mon espace de travail",
                 manager: "Manager",
-                preparations: "Anciennes préparations",
+                preparations: "Mes préparations",
                 prepare: "Nouvelle préparation",
                 vocabulary: "Vocabulaire",
                 workspaces: "Tous mes espaces de travail",
@@ -146,7 +149,10 @@ export const fr = {
         },
         onConstruction: "Serveurs en construction",
         preparations: {
+            backToList: "Retour à la liste des préparations",
             empty: "Aucunes préparations trouvées",
+            new: "Créer une préparation",
+            save: "Sauver la préparation",
             stats: {
                 folders: "<default><strong>{{amount}}</strong> dossiers</default>",
                 terms: "<default><strong>{{amount}}</strong> termes de vocabulaires</default>",

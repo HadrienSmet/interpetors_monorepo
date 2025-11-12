@@ -9,6 +9,7 @@ import { FileData } from "../../types";
 export type NewFoldersManagerContextType = {
     readonly isEditable: boolean;
     readonly files: {
+        readonly addNewPageActions: (path: string, pageIndex: number) => void;
         readonly changeDirectory: (fileName: string, targetPath: string) => void;
         readonly delete: (file: PdfFile) => void;
         readonly rename: (file: PdfFile, newName: string) => void;
