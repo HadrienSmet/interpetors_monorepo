@@ -51,6 +51,7 @@ export class VocabularyService {
                             select: {
                                 filePath: true,
                                 pageIndex: true,
+                                pdfFileId: true,
                                 text: true,
                             },
                         },
@@ -74,6 +75,7 @@ export class VocabularyService {
                     ? {
                         filePath: firstOcc.filePath,
                         pageIndex: firstOcc.pageIndex,
+                        pdfFileId: firstOcc.pdfFileId,
                         text: firstOcc.text,
                     }
                     : undefined,

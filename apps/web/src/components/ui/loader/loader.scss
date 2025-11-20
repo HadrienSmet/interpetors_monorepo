@@ -1,17 +1,32 @@
 
 .loader {
+    --clr-anim: var(--clr-txt);
+    --loader-width: 80px;
+    --border-width: calc(var(--loader-width)/8);
+    --radial-value: calc(var(--loader-width)/4);
+    --conic-value: calc(var(--loader-width)/2);
+    --blur-value: calc(var(--loader-width)/40);
+    --padding-value: calc(var(--loader-width)/ 16);
+
+    &.onBackground {
+        --clr-anim: var(--clr-bg);
+    }
+    &.disabled {
+        --blur-value: 0.5px;
+    }
+
     animation: loader 2s infinite;
     aspect-ratio: 1;
     background:
-        radial-gradient(farthest-side, var(--clr-txt) 98%,transparent) 0 0/20px 20px no-repeat,
-        conic-gradient(from 90deg at 10px 10px,transparent 90deg, var(--clr-txt) 0) content-box,
-        conic-gradient(from -90deg at 40px 40px, transparent 90deg, var(--clr-txt) 0) content-box,
-        var(--clr-bg);
-    border: 10px solid transparent;
+        radial-gradient(farthest-side, var(--clr-anim) 98%,transparent) 0 0/var(--radial-value) var(--radial-value) no-repeat,
+        conic-gradient(from 90deg at var(--border-width) var(--border-width),transparent 90deg, var(--clr-anim) 0) content-box,
+        conic-gradient(from -90deg at var(--conic-value) var(--conic-value), transparent 90deg, var(--clr-anim) 0) content-box,
+        transparent;
+    border: var(--border-width) solid transparent;
     box-sizing: border-box;
-    filter: blur(4px) contrast(10);
-    padding: 5px;
-    width: 80px;
+    filter: blur(var(--blur-value)) contrast(10);
+    padding: var(--padding-value);
+    width: var(--loader-width);
 
     &-container {
         align-items: center;

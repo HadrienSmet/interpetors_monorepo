@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
+import { PdfFileApi } from "@repo/types";
+
 import { PrismaService } from "../prisma";
 
-import { CreatePdfFileDto } from "./dto";
+import { CreatePdfFileDto, PatchPdfFileDto, PatchPdfFilesDto } from "./dto";
 
 @Injectable()
 export class FilesService {
@@ -43,5 +45,31 @@ export class FilesService {
         });
 
         return (pdfFiles);
+    }
+
+    async patch(preparationId: string, { files }: PatchPdfFilesDto) {
+        const output: Array<PdfFileApi> = [];
+        await this.assertPreparation(preparationId);
+
+        for (const { id, ...data } of files) {
+            const patched = await this.prisma.pdfFile.update({
+                where: { id },
+                data,
+            });
+
+            output.push(patched);
+        }
+
+        return (output);
+    }
+    async patchOne(preparationId: string, fileId: string, dto: PatchPdfFileDto) {
+        await this.assertPreparation(preparationId);
+
+        const updated = await this.prisma.pdfFile.update({
+            where: { id: fileId },
+            data: dto,
+        });
+
+        return (updated);
     }
 }

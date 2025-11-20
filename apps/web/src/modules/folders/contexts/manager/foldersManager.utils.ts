@@ -1,5 +1,7 @@
 import { FolderStructure, PdfFile } from "@repo/types";
 
+import { FileData } from "../../types";
+
 export const isPdfFile = (value: PdfFile | FolderStructure): value is PdfFile => {
     return (
         typeof value === "object" &&
@@ -61,3 +63,33 @@ export const getPdfFile = (structure: FolderStructure, targetPath: string, brows
     return (null);
 };
 export const getTargetKeys = (targetPath: string) => targetPath.split("/").filter(Boolean);
+
+const searchNode = (
+    node: FolderStructure,
+    prefix: string,
+    target: string
+): FileData | null => {
+    for (const [key, value] of Object.entries(node)) {
+        const currentPath = prefix ? `${prefix}/${key}` : key;
+
+        if (isPdfFile(value)) {
+            if (currentPath === target) {
+                return ({ fileInStructure: value, path: currentPath });
+            }
+            continue;
+        }
+
+        const sub = searchNode(value, currentPath, target);
+        if (sub) return (sub);
+    }
+
+    return (null);
+};
+export const findFile = (nodes: FolderStructure[], target: string): FileData => {
+    for (const root of nodes) {
+        const result = searchNode(root, "", target);
+        if (result) return (result);
+    }
+
+    return ({ fileInStructure: null, path: "" });
+};

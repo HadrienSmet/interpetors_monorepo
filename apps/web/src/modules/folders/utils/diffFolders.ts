@@ -5,25 +5,32 @@ import { isPdfFile } from "../contexts";
 type FilePath = string;
 
 type NewActions = {
-    readonly path: FilePath;
+    readonly elements: ElementAction[];
+    readonly fileId: string;
+    readonly generatedResources?: Note[];
     readonly pageIndex: number;
+    readonly references?: ReferenceElement[];
+};
+type PatchActions = {
     readonly elements?: ElementAction[];
+    readonly fileId: string;
+    readonly pageIndex: number;
     readonly references?: ReferenceElement[];
     readonly generatedResources?: Note[];
 };
 type NewFile = {
-    readonly path: FilePath;
-    readonly file: PdfFile;
+    readonly filePath: FilePath;
+    readonly pdfFile: PdfFile;
 };
 type MovedFile = {
-    readonly from: FilePath;
-    readonly to: FilePath;
-    readonly file: PdfFile;
+    readonly filePath: string;
+    readonly id: string;
 };
 export type Delta = {
-    readonly newFiles: Array<NewFile>;
     readonly movedFiles: Array<MovedFile>;
     readonly newActions: Array<NewActions>;
+    readonly newFiles: Array<NewFile>;
+    readonly patchActions: Array<PatchActions>;
 };
 
 // ---------- Implémentation ----------
@@ -92,20 +99,24 @@ export const diffFolderStructures = (
     const newFiles: Delta["newFiles"] = [];
     const movedFiles: Delta["movedFiles"] = [];
     const newActions: Delta["newActions"] = [];
+    const patchActions: Delta["patchActions"] = [];
 
     // 1) Détecter nouveaux fichiers + fichiers déplacés
     for (const [key, { path: newPath, pdf }] of newIdx.byKey.entries()) {
         const oldPath = oldIdx.pathByKey.get(key);
+        const splitted = newPath.split("/");
+        splitted.pop();
+        const pathWithoutName = splitted.join("/");
+
         if (!oldPath) {
-            // key inconnue -> nouveau fichier
-            newFiles.push({ path: newPath, file: pdf });
+            newFiles.push({ filePath: pathWithoutName, pdfFile: pdf });
         } else if (oldPath !== newPath) {
-            movedFiles.push({ from: oldPath, to: newPath, file: pdf });
+            movedFiles.push({ filePath: pathWithoutName, id: pdf.id });
         }
     }
 
     // 2) Détecter nouvelles actions
-    for (const [key, { path: newPath, pdf: newPdf, pages: newPages }] of newIdx.byKey.entries()) {
+    for (const [key, { pdf: newPdf, pages: newPages }] of newIdx.byKey.entries()) {
         const oldEntry = oldIdx.byKey.get(key);
 
         // Si c’est un nouveau fichier, toutes ses pages sont “nouvelles” → on reporte tout
@@ -119,7 +130,7 @@ export const diffFolderStructures = (
                     (action.generatedResources?.length ?? 0) > 0
                 ) {
                     newActions.push({
-                        path: newPath,
+                        fileId: newPdf.id,
                         pageIndex,
                         elements: action.elements ?? [],
                         references: action.references ?? [],
@@ -140,7 +151,7 @@ export const diffFolderStructures = (
             if (!oldMeta) {
                 // page nouvelle -> tout le contenu est “nouveau”
                 newActions.push({
-                    path: newPath,
+                    fileId: newPdf.id,
                     pageIndex,
                     elements: actionNew.elements ?? [],
                     references: actionNew.references ?? [],
@@ -154,8 +165,8 @@ export const diffFolderStructures = (
             if (elemsNewLen > oldMeta.elementsLen) {
                 const slice = actionNew.elements!.slice(oldMeta.elementsLen);
                 if (slice.length) {
-                    newActions.push({
-                        path: newPath,
+                    patchActions.push({
+                        fileId: newPdf.id,
                         pageIndex,
                         elements: slice,
                     });
@@ -167,8 +178,8 @@ export const diffFolderStructures = (
             if (refsNewLen > oldMeta.referencesLen) {
                 const slice = actionNew.references!.slice(oldMeta.referencesLen);
                 if (slice.length) {
-                    newActions.push({
-                        path: newPath,
+                    patchActions.push({
+                        fileId: newPdf.id,
                         pageIndex,
                         references: slice,
                     });
@@ -180,8 +191,8 @@ export const diffFolderStructures = (
             if (resNewLen > oldMeta.resourcesLen) {
                 const slice = actionNew.generatedResources!.slice(oldMeta.resourcesLen) as Note[];
                 if (slice.length) {
-                    newActions.push({
-                        path: newPath,
+                    patchActions.push({
+                        fileId: newPdf.id,
                         pageIndex,
                         generatedResources: slice,
                     });
@@ -190,5 +201,5 @@ export const diffFolderStructures = (
         }
     }
 
-    return ({ newFiles, movedFiles, newActions });
+    return ({ newFiles, movedFiles, newActions, patchActions });
 };

@@ -1,19 +1,12 @@
-import { ActionColor, VocabularyOccurence } from "@repo/types";
+import { SavedVocabularyTerm } from "@repo/types";
 
 import { call, HTTP_METHODS } from "@/utils";
 
 import { getRoute } from "./const";
 
-export type PostBulkTerm = {
-    readonly color: ActionColor;
-    readonly occurrence:
-        & { readonly pdfFileId: string; }
-        & VocabularyOccurence;
-    readonly translations: Array<string>;
-};
 type PostBulkParams = {
     readonly preparationId: string;
-    readonly terms: Array<PostBulkTerm>;
+    readonly terms: Array<SavedVocabularyTerm>;
     readonly workspaceId: string;
 };
 export const postBulk = async (params: PostBulkParams) => {
@@ -23,14 +16,15 @@ export const postBulk = async (params: PostBulkParams) => {
         workspaceId,
     } = params;
 
+    const body = {
+        terms: terms.map(term => ({
+            colorJson: term.color,
+            occurrence: term.occurrence,
+            translations: term.translations,
+        })),
+    };
     const response = await call({
-        body: {
-            terms: terms.map(term => ({
-                colorJson: term.color,
-                occurrence: term.occurrence,
-                translations: term.translations,
-            })),
-        },
+        body,
         method: HTTP_METHODS.POST,
         route: `${getRoute(workspaceId, preparationId)}/bulk`,
     });

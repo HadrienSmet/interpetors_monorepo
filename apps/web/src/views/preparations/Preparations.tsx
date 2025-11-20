@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 
 import { Loader, NavigationState } from "@/components";
 import {
-    newUploadPreparation,
+    uploadPreparation,
     PREPARATION,
     PreparationLayout,
     PreparationsEmpty,
@@ -42,7 +42,7 @@ const PreparationsChild = () => {
             throw new Error("An error occured while creating preparation");
         }
 
-        await newUploadPreparation({
+        await uploadPreparation({
             folders,
             preparationId: prepRes.data.id,
             rootFolderId: rootFolderId ?? "root",

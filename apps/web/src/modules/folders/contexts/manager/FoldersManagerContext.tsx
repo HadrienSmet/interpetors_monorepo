@@ -6,7 +6,7 @@ import { getContextError } from "@/contexts/utils";
 
 import { FileData } from "../../types";
 
-export type NewFoldersManagerContextType = {
+export type FoldersManagerContextValue = {
     readonly isEditable: boolean;
     readonly files: {
         readonly addNewPageActions: (path: string, pageIndex: number) => void;
@@ -25,14 +25,14 @@ export type NewFoldersManagerContextType = {
     readonly foldersStructure: Array<FolderStructure>;
     readonly selectedFile: FileData;
     readonly setIsEditable: Dispatch<SetStateAction<boolean>>;
-    readonly setSelectedFile: Dispatch<SetStateAction<FileData>>;
+    readonly setSelectedFilePath: Dispatch<SetStateAction<string | undefined>>;
     readonly setFoldersStructure: Dispatch<SetStateAction<Array<FolderStructure>>>;
 };
 
-export const NewFoldersManagerContext = createContext<NewFoldersManagerContextType | null>(null);
+export const FoldersManagerContext = createContext<FoldersManagerContextValue | null>(null);
 
 export const useFoldersManager = () => {
-    const context = useContext(NewFoldersManagerContext);
+    const context = useContext(FoldersManagerContext);
 
     if (!context)
         throw new Error(getContextError("useFoldersManager", "FoldersManagerProvider"));

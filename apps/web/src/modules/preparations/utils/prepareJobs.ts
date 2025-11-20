@@ -1,19 +1,16 @@
-import { FolderStructure, VocabularyOccurence, VocabularyTerm } from "@repo/types";
+import { FolderStructure, VocabularyTerm } from "@repo/types";
 
 import { FILE_ACTION } from "@/modules/fileActions";
 import { FILES } from "@/modules/files";
-import { VOCABULARY } from "@/modules/vocabulary";
 import { isPdfFile } from "@/modules/folders";
+import { PDF_TYPE } from "@/modules/pdf";
 
 type PdfFileJob = Omit<FILES.PostPdfParams, "s3Key">;
-type TempPostBulkTerm =
-    & Omit<VOCABULARY.PostBulkTerm, "occurrence">
-    & { readonly occurrence: VocabularyOccurence };
 type FlatJob = {
     pdf: PdfFileJob;
     s3: FILES.UploadParams;
     filesActions: Array<Omit<FILE_ACTION.PostFileActionParams, "fileId">>;
-    terms: Array<TempPostBulkTerm>;
+    terms: Array<VocabularyTerm>;
 };
 type Queue = { path: string; node: FolderStructure; };
 
@@ -62,7 +59,7 @@ export const prepareJobs = (
                         preparationId,
                     },
                     s3: {
-                        contentType: "application/pdf",
+                        contentType: PDF_TYPE.type,
                         file: value.file,
                         fileName: value.name,
                     },

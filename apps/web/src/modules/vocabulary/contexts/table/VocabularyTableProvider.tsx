@@ -1,6 +1,6 @@
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 
-import { VocabularyTerm } from "@repo/types";
+import { SavedVocabularyTerm, VocabularyTerm } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
@@ -16,7 +16,7 @@ const getItemValue = (voc: VocabularyTerm, key: string, languages: Array<string>
 
 type VocabularyTableProviderProps =
     & { readonly preparationVocabulary: PreparationVocabulary; }
-    & PropsWithChildren
+    & PropsWithChildren;
 export const VocabularyTableProvider = ({ children, preparationVocabulary }: VocabularyTableProviderProps) => {
     const [searchingColumn, setSearchingColumn] = useState<string>("sources");
     const [sortingColumn, setSortingColumn] = useState<string | null>(null);
@@ -28,10 +28,10 @@ export const VocabularyTableProvider = ({ children, preparationVocabulary }: Voc
 
     const languages = useMemo(() => (
         currentWorkspace!.languages
-    ), [currentWorkspace?.languages])
+    ), [currentWorkspace?.languages]);
 
-    const baseVocabulary: Record<string, Array<VocabularyTerm>> = useMemo(() => {
-        const output: Record<string, Array<VocabularyTerm>> = {};
+    const baseVocabulary: Record<string, Array<SavedVocabularyTerm>> = useMemo(() => {
+        const output: Record<string, Array<SavedVocabularyTerm>> = {};
 
         for (const group of preparationVocabulary) {
             const rgbColor = handleActionColor(group.colorToUse, colorPanel);
@@ -42,13 +42,13 @@ export const VocabularyTableProvider = ({ children, preparationVocabulary }: Voc
 
         return (output);
     }, [preparationVocabulary]);
-    const filteredList: Record<string, Array<VocabularyTerm>> = useMemo(() => {
+    const filteredList: Record<string, Array<SavedVocabularyTerm>> = useMemo(() => {
         if (!searchValue) {
             return (baseVocabulary);
         }
 
         const normalizedSearch = searchValue.toLowerCase();
-        const output: Record<string, Array<VocabularyTerm>> = {};
+        const output: Record<string, Array<SavedVocabularyTerm>> = {};
 
         for (const clr in baseVocabulary) {
             const current = [...baseVocabulary[clr]];
@@ -72,9 +72,9 @@ export const VocabularyTableProvider = ({ children, preparationVocabulary }: Voc
 
         return (output);
     }, [baseVocabulary, searchValue, searchingColumn]);
-    const sortedList: Array<VocabularyTerm> = useMemo(() => {
+    const sortedList: Array<SavedVocabularyTerm> = useMemo(() => {
         const sortDirection = sortingStateRecord[sortingStateIndex];
-        const vocList: Array<VocabularyTerm> = [];
+        const vocList: Array<SavedVocabularyTerm> = [];
         for (const clr in filteredList) {
             const current = filteredList[clr];
 

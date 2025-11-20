@@ -2,6 +2,7 @@ import { SavedFolderStructure } from "@repo/types";
 
 import { FILE_ACTION } from "@/modules/fileActions";
 import { FILES } from "@/modules/files";
+import { getDefaultPdfActions } from "@/modules/pdf";
 import { handleServicesConcurrency } from "@/utils";
 
 const handleFile = async (
@@ -15,14 +16,16 @@ const handleFile = async (
 
     const fileActions = actionsByFileId[item.id] ?? [];
 
-    const actionsRecord = fileActions.reduce<Record<number, any>>((acc, act) => {
-        acc[act.pageIndex] = {
-            elements: act.elementsJson ?? [],
-            references: act.referencesJson ?? [],
-            generatedResources: act.generatedResourcesJson ?? [],
-        };
-        return (acc);
-    }, {});
+    const actionsRecord = fileActions.length > 0
+        ? fileActions.reduce<Record<number, any>>((acc, act) => {
+            acc[act.pageIndex] = {
+                elements: act.elementsJson ?? [],
+                references: act.referencesJson ?? [],
+                generatedResources: act.generatedResourcesJson ?? [],
+            };
+            return (acc);
+        }, {})
+        : getDefaultPdfActions();
 
     return ({
         ...item,

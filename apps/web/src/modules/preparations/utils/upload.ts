@@ -1,13 +1,12 @@
 import { FolderStructure, VocabularyTerm } from "@repo/types";
 
 import { FILE_ACTION } from "@/modules/fileActions";
-import { FILES } from "@/modules/files";
+import { uploadFile } from "@/modules/pdf";
 import { VOCABULARY } from "@/modules/vocabulary";
 import { handleServicesConcurrency } from "@/utils";
 
 import { prepareJobs } from "./prepareJobs";
 
-const runS3 = handleServicesConcurrency(3);
 const runAPI = handleServicesConcurrency(5);
 const runAct = handleServicesConcurrency(5);
 
@@ -18,7 +17,7 @@ type UploadPreparationParams = {
     readonly vocabularyTerms: Array<VocabularyTerm>;
     readonly workspaceId: string;
 };
-export const newUploadPreparation = async ({
+export const uploadPreparation = async ({
     folders,
     preparationId,
     vocabularyTerms,
@@ -29,19 +28,12 @@ export const newUploadPreparation = async ({
 
     // 2) Traiter chaque job via un pool d'API (et sous-pool S3)
     await Promise.all(jobs.map(job => (runAPI(async () => {
-        // a) PUT S3 (pool S3)
-        const s3Res = await runS3(() => FILES.upload(job.s3));
-        if (!s3Res.success) {
-            throw new Error(`S3 upload failed for "${job.s3.fileName}": ${s3Res.message}`);
-        }
+        const fileRes = await uploadFile({
+            ...job.s3,
+            ...job.pdf,
+        });
 
-        // b) Création PdfFile (DB)
-        const pdfRes = await FILES.postPdf({ ...job.pdf, s3Key: s3Res.data.key });
-        if (!pdfRes.success) {
-            throw new Error(`postPdf failed for "${job.s3.fileName}": ${pdfRes.message}`);
-        }
-
-        const { id: fileId } = pdfRes.data;
+        const fileId = fileRes.id;
 
         // c) FileActions (nombreux petits appels => pool dédié)
         if (job.filesActions.length) {

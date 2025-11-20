@@ -229,7 +229,7 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
             <div
                 className="folders-explorer__item folder"
                 onClick={onClick}
-                onDoubleClick={handleEditableEvent(() => onDoubleClick())}
+                onDoubleClick={() => handleEditableEvent(() => onDoubleClick())}
                 style={{ paddingLeft: getPaddingLeft(depth) }}
             >
                 {isOpen

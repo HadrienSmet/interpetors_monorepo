@@ -1,9 +1,15 @@
 import { RefObject, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 
-import { scrollToChild, URL_PARAMETERS } from "@/utils";
+import { FILE_ACTION } from "@/modules/fileActions";
+import { FILES } from "@/modules/files";
+import { PDF_TYPE, uploadFile } from "@/modules/pdf";
+import { handleServicesConcurrency, scrollToChild, URL_PARAMETERS } from "@/utils";
+import { VOCABULARY } from "@/modules/vocabulary";
+import { useWorkspaces } from "@/modules/workspace";
 
 import { usePreparations } from "../../contexts";
+import { patch } from "../../services";
 import { diffPreparations } from "../../utils";
 
 import { CreateButton } from "../createButton";
@@ -18,6 +24,8 @@ const TABS_NAMES = {
 } as const;
 type TabsNames = typeof TABS_NAMES[keyof typeof TABS_NAMES];
 
+const limit = handleServicesConcurrency(4);
+
 export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) => {
     const currentTarget = useRef<TabsNames>(TABS_NAMES.list);
     const listRef = useRef<HTMLDivElement>(null);
@@ -26,6 +34,7 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
 
     const { selectedPreparation, setSelectedPreparation } = usePreparations();
     const [searchParams, setSearchParams] = useSearchParams();
+    const { currentWorkspace } = useWorkspaces();
 
     const scrollTo = (targetRef: RefObject<HTMLDivElement | null>, targetName: TabsNames) => {
         const viewport = viewportRef.current;
@@ -52,9 +61,61 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
         scrollToList();
     };
     const patchPreparation = async (params: SavePreparationParams) => {
-        const preparationDiffs = diffPreparations(params.old!, params);
+        const { old, ...updated } = params;
+        const { files, title, voc: terms } = diffPreparations(old!, updated);
 
-        console.log({ preparationDiffs })
+        const preparationId = selectedPreparation?.id;
+        const workspaceId = currentWorkspace?.id;
+
+        if (!preparationId || !workspaceId) {
+            return;
+        }
+
+        if (title) {
+            // Patch new title
+            await patch({
+                preparationId,
+                title,
+                workspaceId,
+            });
+        }
+        if (terms && terms.length > 0) {
+            // Patch vocabulary terms
+            await VOCABULARY.postBulk({
+                preparationId,
+                terms,
+                workspaceId,
+            });
+        }
+        if (files) {
+            if (files.movedFiles && files.movedFiles.length > 0) {
+                await FILES.patchApi({
+                    body: { files: files.movedFiles },
+                    preparationId,
+                });
+            }
+            if (files.newFiles && files.newFiles.length > 0) {
+                await Promise.all(
+                    files.newFiles.map(newFile => (
+                        uploadFile({
+                            contentType: PDF_TYPE.type,
+                            file: newFile.pdfFile.file,
+                            filePath: newFile.filePath,
+                            name: newFile.pdfFile.name,
+                            preparationId,
+                        })
+                    ))
+                );
+            }
+            if (files.newActions && files.newActions.length > 0) {
+                await Promise.all(files.newActions.map(newAction => limit(() => FILE_ACTION.post(newAction))));
+            }
+            if (files.patchActions && files.patchActions.length > 0) {
+                await Promise.all(
+                    files.patchActions.map(({ fileId, ...body }) => limit(() => FILE_ACTION.patch({ pdfFileId: fileId, body })))
+                );
+            }
+        }
     };
 
     useEffect(() => {

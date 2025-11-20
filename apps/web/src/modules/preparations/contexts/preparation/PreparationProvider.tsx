@@ -1,6 +1,9 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
-import { SavedPreparation } from "../../types";
+import { useFoldersManager } from "@/modules/folders";
+import { usePreparationVocabulary } from "@/modules/vocabulary";
+
+import { ClientPreparation, SavedPreparation } from "../../types";
 
 import { PreparationContext } from "./PreparationContext";
 
@@ -11,14 +14,24 @@ type PreparationProviderProps =
 export const PreparationProvider = ({ children, savedPreparation }: PreparationProviderProps) => {
     const [title, setTitle] = useState("");
 
+    const { foldersStructure } = useFoldersManager();
+    const { preparationVocabulary } = usePreparationVocabulary();
+
     useEffect(() => {
         setTitle(savedPreparation?.title ?? DEFAULT_TITLE);
-    }, [savedPreparation?.title]);
+    }, [savedPreparation]);
+
+    const preparation: ClientPreparation = {
+        id: savedPreparation?.id ?? "",
+        title,
+        folders: foldersStructure,
+        vocabulary: preparationVocabulary,
+    };
 
     const value = {
+        preparation,
         savedPreparation,
         setTitle,
-        title,
     };
 
     return (

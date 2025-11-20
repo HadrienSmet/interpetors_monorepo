@@ -8,13 +8,23 @@ import { CreatePreparationDto } from "./dto";
 @Injectable()
 export class PreparationsService {
     constructor(private readonly prisma: PrismaService) { }
-
-    async create(workspaceId: string, dto: CreatePreparationDto) {
+    async assertPreparation(preparationId: string) {
+        const preparation = await this.prisma.preparation.findUnique({
+            where: { id: preparationId },
+            select: { id: true },
+        });
+        if (!preparation) {
+            throw new NotFoundException(`Preparation ${preparationId} not found`);
+        }
+    }
+    assertTitle(dto: CreatePreparationDto) {
         const title = dto.title?.trim();
         if (!title) {
             throw new BadRequestException("title is required");
         }
-
+        return title;
+    }
+    async assertWorkspace(workspaceId: string) {
         const workspace = await this.prisma.workspace.findUnique({
             where: { id: workspaceId },
             select: { id: true },
@@ -22,6 +32,10 @@ export class PreparationsService {
         if (!workspace) {
             throw new NotFoundException(`Workspace ${workspaceId} not found`);
         }
+    }
+    async create(workspaceId: string, dto: CreatePreparationDto) {
+        const title = this.assertTitle(dto);
+        await this.assertWorkspace(workspaceId);
 
         try {
             const preparation = await this.prisma.preparation.create({
@@ -83,5 +97,29 @@ export class PreparationsService {
         });
 
         return preparations;
+    }
+
+    async patch(workspaceId: string, preparationId: string, dto: CreatePreparationDto) {
+        await this.assertWorkspace(workspaceId);
+        await this.assertPreparation(preparationId);
+
+        const title = this.assertTitle(dto);
+
+        try {
+            const patched = this.prisma.preparation.update({
+                where: { id: preparationId },
+                data: { title },
+                select: {
+                    id: true,
+                    title: true,
+                    workspaceId: true,
+                },
+            });
+
+            return (patched);
+        }
+        catch (error) {
+            throw error;
+        }
     }
 }

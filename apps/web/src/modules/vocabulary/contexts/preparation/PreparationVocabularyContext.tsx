@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-import { ActionColor, VocabularyTerm } from "@repo/types";
+import { ActionColor, SavedVocabularyTerm } from "@repo/types";
 
 import { getContextError } from "@/contexts/utils";
 
@@ -18,7 +18,7 @@ type PreparationVocabularyContextType = {
     readonly addToVocabulary: (word: WordToAdd) => void;
     readonly addTranslation: (params: AddTranslationParams) => void;
     readonly remove: (color: ActionColor, id: string) => void;
-    readonly update: (color: ActionColor, id: string, item: VocabularyTerm) => void;
+    readonly update: (color: ActionColor, id: string, item: SavedVocabularyTerm) => void;
 };
 
 export const PreparationVocabularyContext = createContext<PreparationVocabularyContextType | null>(null);

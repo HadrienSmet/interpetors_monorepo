@@ -1,4 +1,4 @@
-import { FolderStructure, VocabularyTerm } from "@repo/types";
+import { FolderStructure, SavedVocabularyTerm } from "@repo/types";
 
 import { Delta, diffFolderStructures } from "@/modules/folders";
 import { diffVocabulary } from "@/modules/vocabulary";
@@ -8,12 +8,12 @@ import { SavedPreparation } from "../types";
 export type UpdatedPreparation = {
     readonly folders: Array<FolderStructure>;
     readonly title: string;
-    readonly vocabularyTerms: Array<VocabularyTerm>;
+    readonly vocabularyTerms: Array<SavedVocabularyTerm>;
 };
 type Patch = {
     files?: Partial<Delta>;
     title?: string;
-    voc?: Array<VocabularyTerm>;
+    voc?: Array<SavedVocabularyTerm>;
 };
 export const diffPreparations = (savedPreparation: SavedPreparation, updatedPreparation: UpdatedPreparation) => {
     let patch: Patch = {};

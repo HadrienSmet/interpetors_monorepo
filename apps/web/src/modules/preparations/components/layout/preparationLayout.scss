@@ -12,6 +12,7 @@
             align-items: center;
             display: flex;
             gap: var(--space-m);
+            min-width: 200px;
         }
 
         input {

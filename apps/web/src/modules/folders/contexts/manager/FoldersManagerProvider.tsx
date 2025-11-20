@@ -1,11 +1,11 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useMemo, useState } from "react";
 
 import { FolderStructure, PdfFile } from "@repo/types";
 
 import { FileData } from "../../types";
 
-import { getTargetKeys, isPdfFile, browseStructureToActionOnFile, FileVisitor } from "./foldersManager.utils";
-import { NewFoldersManagerContext, NewFoldersManagerContextType } from "./FoldersManagerContext";
+import { getTargetKeys, isPdfFile, browseStructureToActionOnFile, FileVisitor, findFile } from "./foldersManager.utils";
+import { FoldersManagerContext, FoldersManagerContextValue } from "./FoldersManagerContext";
 
 type FoldersManagerProviderProps =
     & { readonly editable?: boolean; }
@@ -13,7 +13,7 @@ type FoldersManagerProviderProps =
 export const FoldersManagerProvider = ({ children, editable = false }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
     const [isEditable, setIsEditable] = useState(editable);
-    const [selectedFile, setSelectedFile] = useState<FileData>({ fileInStructure: null, path: "" });
+    const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);
 
     // ---------- Files methods ----------
     const EMPTY_PAGE_ACTION = { elements: [] as any[] };
@@ -49,12 +49,6 @@ export const FoldersManagerProvider = ({ children, editable = false }: FoldersMa
                                     [pageIndex]: EMPTY_PAGE_ACTION,
                                 },
                             };
-
-                        // si le fichier affiché est celui-ci, on le met aussi à jour dans le state sélectionné
-                        if (selectedFile.fileInStructure && selectedFile.fileInStructure.name === value.name) {
-                            const updated = result[key] as PdfFile;
-                            setSelectedFile((s) => ({ ...s, fileInStructure: updated }));
-                        }
                     } else {
                         // ce n’est pas un fichier: recopier tel quel
                         result[key] = value;
@@ -174,7 +168,6 @@ export const FoldersManagerProvider = ({ children, editable = false }: FoldersMa
             ]);
         };
 
-        setSelectedFile(state => ({ ...state, fileInStructure: file }));
         setFoldersStructure(state => state.map(folder => browseStructureToActionOnFile(folder, visitor)));
     };
 
@@ -345,7 +338,15 @@ export const FoldersManagerProvider = ({ children, editable = false }: FoldersMa
 
     const onDrop = (folder: FolderStructure) => setFoldersStructure(state => [...state, folder]);
 
-    const value: NewFoldersManagerContextType = {
+    const selectedFile: FileData = useMemo(() => {
+        if (!selectedFilePath) {
+            return ({ fileInStructure: null, path: "" });
+        }
+
+        return (findFile(foldersStructure, selectedFilePath));
+    }, [foldersStructure, selectedFilePath]);
+
+    const value: FoldersManagerContextValue = {
         isEditable,
         files: {
             addNewPageActions,
@@ -364,13 +365,13 @@ export const FoldersManagerProvider = ({ children, editable = false }: FoldersMa
         foldersStructure,
         selectedFile,
         setIsEditable,
-        setSelectedFile,
+        setSelectedFilePath,
         setFoldersStructure,
     };
 
     return (
-        <NewFoldersManagerContext.Provider value={value}>
+        <FoldersManagerContext.Provider value={value}>
             {children}
-        </NewFoldersManagerContext.Provider>
+        </FoldersManagerContext.Provider>
     );
 };

@@ -1,6 +1,6 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
-import { ActionColor, VocabularyTerm } from "@repo/types";
+import { ActionColor, SavedVocabularyTerm } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
@@ -29,11 +29,12 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
         // Should be defined by the API
         const termId = word.text;
 
-        const term: VocabularyTerm = {
-            id: termId,
+        const term: SavedVocabularyTerm = {
             color: word.color,
+            id: termId,
             occurrence: {
                 filePath: word.filePath,
+                pdfFileId: word.pdfFileId ?? "",
                 pageIndex: word.pageIndex,
                 text: word.text,
             },
@@ -91,7 +92,7 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
         })
     );
 
-    const update = (color: ActionColor, id: string, item: VocabularyTerm) => (
+    const update = (color: ActionColor, id: string, item: SavedVocabularyTerm) => (
         setPreparationVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
             const groupIndex = getRightGroupIndex(copy, color);

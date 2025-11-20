@@ -1,4 +1,4 @@
-import { VocabularyTerm } from "@repo/types";
+import { SavedVocabularyTerm } from "@repo/types";
 
 const normTranslations = (arr: string[]) => (Array.from(new Set(arr.map(s => s.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b)));
 const sameTranslations = (a: string[], b: string[]) => {
@@ -7,13 +7,13 @@ const sameTranslations = (a: string[], b: string[]) => {
     return (A.every((x, i) => x === B[i]));
 }
 const sameColor = (a: any, b: any) => (JSON.stringify(a) === JSON.stringify(b));
-const sameOccurrence = (a?: VocabularyTerm['occurrence'], b?: VocabularyTerm['occurrence']) => (JSON.stringify(a ?? null) === JSON.stringify(b ?? null));
+const sameOccurrence = (a?: SavedVocabularyTerm['occurrence'], b?: SavedVocabularyTerm['occurrence']) => (JSON.stringify(a ?? null) === JSON.stringify(b ?? null));
 
-export const diffVocabulary = (initial: VocabularyTerm[], current: VocabularyTerm[]) => {
+export const diffVocabulary = (initial: SavedVocabularyTerm[], current: SavedVocabularyTerm[]) => {
     const byIdInitial = new Map(initial.filter(t => t.id).map(t => [t.id!, t]));
     const byIdCurrent = new Map(current.filter(t => t.id).map(t => [t.id!, t]));
 
-    const toAddOrUpdate: VocabularyTerm[] = [];
+    const toAddOrUpdate: SavedVocabularyTerm[] = [];
     const toRemove: { termId: string; }[] = [];
 
     // parcours des termes courants (ajouts/updates)

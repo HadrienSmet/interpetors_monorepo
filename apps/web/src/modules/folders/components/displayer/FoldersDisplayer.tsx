@@ -14,14 +14,12 @@ export enum FOLDERS_TYPES {
     EDITABLE = "editable",
     UNEDITABLE = "uneditable",
 }
-type DropZoneEvents = {
+type FoldersExplorerDefaultProps = {
     readonly onDragEnter: DragEventHandler<HTMLDivElement>;
     readonly onDragLeave: DragEventHandler<HTMLDivElement>;
     readonly onDragOver: DragEventHandler<HTMLDivElement>;
     readonly onDrop: DragEventHandler<HTMLDivElement>;
 };
-type FoldersExplorerDefaultProps =
-    & DropZoneEvents
 type FoldersExplorerProps =
     | { readonly type: FOLDERS_TYPES.UNEDITABLE; }
     | (
@@ -34,11 +32,11 @@ type FoldersExplorerProps =
 export const FoldersDisplayer = (props: FoldersExplorerProps) => {
     const {
         foldersStructure,
-        setSelectedFile,
+        setSelectedFilePath,
     } = useFoldersManager();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const dropZoneAttributes: DropZoneEvents | undefined = props.type === FOLDERS_TYPES.EDITABLE
+    const dropZoneAttributes: FoldersExplorerDefaultProps | undefined = props.type === FOLDERS_TYPES.EDITABLE
         ? props
         : undefined;
 
@@ -50,7 +48,7 @@ export const FoldersDisplayer = (props: FoldersExplorerProps) => {
             const fileInStructure = getPdfFile(folder, `/${path}`);
 
             if (fileInStructure) {
-                setSelectedFile({ fileInStructure, path });
+                setSelectedFilePath(path);
                 break;
             }
         }

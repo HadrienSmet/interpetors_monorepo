@@ -7,16 +7,16 @@ import { PdfFile } from "@repo/types";
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { FileIcon } from "@/modules/files";
-import { useFoldersManager } from "@/modules/folders/contexts";
+import { useFoldersManager } from "@/modules/folders";
 
-import { getPaddingLeft } from "../nodes.utils";
 import { TreeNodeProps } from "../nodes.types";
+import { getPaddingLeft } from "../nodes.utils";
 
-export const handleDynamicEvent = (execute: boolean, fn: (params: any) => void) => (
-    execute
-        ? fn
-        : undefined
-);
+export const handleDynamicEvent = (execute: boolean, fn: () => void) => {
+    if (!execute) return;
+
+    fn();
+};
 export type FileNodeProps =
     & Omit<TreeNodeProps, "node">
     & { readonly node: PdfFile; };
@@ -30,7 +30,7 @@ export const FileNode = ({
     const [newFileName, setNewFileName] = useState(name);
 
     const { setContextMenu } = useContextMenu();
-    const { files, isEditable, selectedFile, setSelectedFile } = useFoldersManager()
+    const { files, isEditable, selectedFile, setSelectedFilePath } = useFoldersManager()
     const { t } = useTranslation();
 
     const items = [
@@ -63,7 +63,7 @@ export const FileNode = ({
     };
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setNewFileName(e.target.value);
-    const onClick = () => setSelectedFile({ fileInStructure: node, path });
+    const onClick = () => setSelectedFilePath(path);
     const onContextMenu = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();

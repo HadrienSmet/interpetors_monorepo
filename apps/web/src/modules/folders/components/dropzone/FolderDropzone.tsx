@@ -2,18 +2,12 @@ import { DragEvent, PropsWithChildren, useState } from "react";
 
 import type { FolderStructure, PdfFile } from "@repo/types";
 
-import { FIRST_PAGE } from "@/modules/files";
-import { PDF_TYPE } from "@/modules/pdf";
+import { getDefaultPdfFile, PDF_TYPE } from "@/modules/pdf";
 
 import { isPdfFile, useFoldersManager } from "../../contexts";
 
 import "./folderDropzone.scss";
 
-const getPdfFile = (file: File): PdfFile => ({
-    actions: { [FIRST_PAGE]: { elements: [] } },
-    file,
-    name: file.name,
-});
 const preventDefault = (e: DragEvent<HTMLDivElement>) => e.preventDefault();
 const setNestedFile = (
     root: FolderStructure,
@@ -58,7 +52,7 @@ const readDirectory = async (
                         setNestedFile(
                             root,
                             pathArray,
-                            getPdfFile(file)
+                            getDefaultPdfFile(file)
                         );
                     }
                     resolve();
@@ -105,7 +99,7 @@ export const FolderDropzone = ({ children }: PropsWithChildren) => {
                     const file = item.getAsFile();
 
                     if (file && file.type === PDF_TYPE.type) {
-                        setNestedFile(newFileTree, [file.name], getPdfFile(file));
+                        setNestedFile(newFileTree, [file.name], getDefaultPdfFile(file));
                     }
                 }
             }

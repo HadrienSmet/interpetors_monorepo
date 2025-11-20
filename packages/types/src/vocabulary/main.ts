@@ -6,8 +6,14 @@ export type VocabularyOccurence = {
     readonly text: string;
 };
 export type VocabularyTerm = {
+    readonly color: ActionColor;
     readonly id: string;
     readonly occurrence: VocabularyOccurence;
-    readonly color: ActionColor;
     readonly translations: Array<string>;
 };
+type SavedVocabularyOccurrence =
+    & VocabularyOccurence
+    & { readonly pdfFileId: string; }
+export type SavedVocabularyTerm =
+    & Omit<VocabularyTerm, "occurrence">
+    & { readonly occurrence: SavedVocabularyOccurrence; };

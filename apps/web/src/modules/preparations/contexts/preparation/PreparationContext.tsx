@@ -2,12 +2,12 @@ import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
-import { SavedPreparation } from "../../types";
+import { ClientPreparation, SavedPreparation } from "../../types";
 
 type PreparationContextValue = {
     readonly savedPreparation: SavedPreparation | undefined;
+    readonly preparation: ClientPreparation;
     readonly setTitle: Dispatch<SetStateAction<string>>;
-    readonly title: string;
 };
 
 export const PreparationContext = createContext<PreparationContextValue | null>(null);

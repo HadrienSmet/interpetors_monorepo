@@ -4,6 +4,6 @@ import "./pdfLoader.scss";
 
 export const PdfEditorLoader = () => (
     <div className="pdf-loader-container">
-        <Loader size="fullScreen" />
+        <Loader />
     </div>
 );

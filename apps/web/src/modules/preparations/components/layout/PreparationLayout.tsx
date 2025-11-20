@@ -1,9 +1,9 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { MdArrowBack, MdSave } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
-import { FolderStructure, VocabularyTerm } from "@repo/types";
+import { FolderStructure, SavedVocabularyTerm } from "@repo/types";
 
 import { Button, InputStyleLess, Loader, Tabs } from "@/components";
 import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager } from "@/modules/folders";
@@ -21,7 +21,7 @@ export type SavePreparationParams = {
     readonly old?: SavedPreparation;
     readonly rootFolderId?: string;
     readonly title: string;
-    readonly vocabularyTerms: Array<VocabularyTerm>;
+    readonly vocabularyTerms: Array<SavedVocabularyTerm>;
 };
 type PreparationLayoutProps = {
     readonly backToList: () => void;
@@ -29,17 +29,20 @@ type PreparationLayoutProps = {
     readonly preparation?: SavedPreparation | undefined;
     readonly savePreparation: (params: SavePreparationParams) => Promise<void>;
 };
-const PreparationLayoutContent = ({ preparation, ...props }: PreparationLayoutProps) => {
+type PreparationLayoutContentProps = Omit<PreparationLayoutProps, "preparation">;
+const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     const [initialTabIndex, setInitialTabIndex] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
 
     const { foldersStructure, setFoldersStructure } = useFoldersManager();
-    const { savedPreparation, setTitle, title } = usePreparation();
+    const { preparation, savedPreparation, setTitle } = usePreparation();
     const [searchParams, setSearchParams] = useSearchParams();
     const { t } = useTranslation();
     const { list: vocabularyTerms } = useVocabularyTable();
 
-    const views = useMemo(() => ([
+    const { title } = preparation;
+
+    const views = [
         {
             content: (
                 <div className="preparation-folders">
@@ -56,8 +59,8 @@ const PreparationLayoutContent = ({ preparation, ...props }: PreparationLayoutPr
             ),
             title: "vocabulary",
         }
-    ]), []);
-    const viewTitles = useMemo(() => views.map(v => String(v.title)), [views]);
+    ];
+    const viewTitles = views.map(v => String(v.title));
 
     const onInputChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
     const onSave = async () => {
@@ -72,13 +75,13 @@ const PreparationLayoutContent = ({ preparation, ...props }: PreparationLayoutPr
 
         setIsSaving(false);
     };
-    const onTabsChange = useCallback((index: number) => {
+    const onTabsChange = (index: number) => {
         setSearchParams(prev => {
             const next = new URLSearchParams(prev);
             next.set(URL_PARAMETERS.view, viewTitles[index]);
             return (next);
         });
-    }, [setSearchParams, viewTitles]);
+    };
 
     useEffect(() => {
         if (preparation) {
@@ -106,11 +109,11 @@ const PreparationLayoutContent = ({ preparation, ...props }: PreparationLayoutPr
                     onChange={onInputChange}
                 />
                 <Button
-                    disabled={title === "" || foldersStructure.length === 0}
+                    disabled={title === "" || foldersStructure.length === 0 || isSaving}
                     onClick={onSave}
                 >
                     {isSaving
-                        ? <Loader />
+                        ? (<Loader size="small" theme="disabled" />)
                         : (
                             <>
                                 <MdSave />

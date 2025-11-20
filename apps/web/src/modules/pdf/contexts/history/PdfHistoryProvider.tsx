@@ -61,10 +61,9 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         shouldUpdateRef.current = true;
         setUserActions(copy);
     };
-    const updateNoteInHistory = (color: ActionColor, id: string, text: string) => setUserActions(state => {
-        const copy = [...state];
-
-        const actionIndex = copy.findIndex(action => {
+    // TODO / TOFIX: Improve that mess
+    const updateNoteInHistory = (color: ActionColor, id: string, text: string) => {
+        const userActionIndex = userActions.findIndex((action: HistoryAction) => {
             if (
                 !action.resourceToGenerate ||
                 action.resourceToGenerate.type !== GENERATED_RESOURCES.NOTE
@@ -82,30 +81,99 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             );
         });
 
-        if (actionIndex === -1) {
-            // No need to update it since got from file structure
-            return (copy);
-        }
+        if (userActionIndex !== -1) {
+            setUserActions(state => {
+                const copy = [...state];
 
-        const currentAction = copy[actionIndex];
+                const currentAction = copy[userActionIndex];
 
-        const updated: HistoryAction = {
-            ...currentAction,
-            resourceToGenerate: {
-                type: GENERATED_RESOURCES.NOTE,
-                element: {
-                    ...(currentAction.resourceToGenerate!.element as Note),
-                    note: text,
-                },
-            },
+                const updated: HistoryAction = {
+                    ...currentAction,
+                    resourceToGenerate: {
+                        type: GENERATED_RESOURCES.NOTE,
+                        element: {
+                            ...(currentAction.resourceToGenerate!.element as Note),
+                            note: text,
+                        },
+                    },
+                };
+
+                copy.splice(userActionIndex, 1, updated);
+
+                shouldUpdateRef.current = true;
+
+                return (copy);
+            });
         };
 
-        copy.splice(actionIndex, 1, updated);
+        const savedIndex = savedElements?.generatedResources?.findIndex(resource => {
+            const currentColor = handleActionColor(resource.color, colorPanel);
+            const noteColor = handleActionColor(color, colorPanel);
 
-        shouldUpdateRef.current = true;
+            return (
+                resource.id === id &&
+                currentColor === noteColor
+            );
+        }) ?? -1;
 
-        return (copy);
-    });
+        if (savedIndex !== -1) {
+            setSavedElements(prev => {
+                if (!prev) {
+                    return (prev);
+                }
+
+                const next = { ...prev };
+
+                if (!next.generatedResources) {
+                    return (next);
+                }
+
+                const current = next.generatedResources[savedIndex];
+                const updated = {
+                    ...current,
+                    note: text,
+                }
+
+                next.generatedResources.splice(savedIndex, 1, updated);
+
+                return (next);
+            });
+
+            if (!selectedFile.fileInStructure) {
+                return;
+            }
+            const updated = { ...selectedFile.fileInStructure };
+
+            const resourceIndex = updated.actions![pageIndex].generatedResources?.findIndex(resource => {
+                const currentColor = handleActionColor(resource.color, colorPanel);
+                const noteColor = handleActionColor(color, colorPanel);
+
+                return (
+                    resource.id === id &&
+                    currentColor === noteColor
+                );
+            }) ?? -1;
+
+            const actions = updated.actions;
+            if (!actions) {
+                return;
+            }
+            const resources = actions[pageIndex].generatedResources;
+            if (!resources) {
+                return;
+            }
+            const current = {
+                ...resources[resourceIndex],
+                note: text
+            };
+
+            resources.splice(resourceIndex, 1, current);
+            // @ts-expect-error
+            actions[pageIndex].generatedResources = resources;
+
+            files.update(updated);
+        }
+    };
 
     // Reseting the history state and saving the elements coming from the folders structure
     useEffect(() => {
@@ -135,6 +203,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         const file = selectedFile.fileInStructure;
         if (!file || !shouldUpdateRef.current || !savedElements) return;
 
+        // TODO / TOFIX: Improve that mess
         const handleUserActions = async () => {
             const currentIndex = Math.max(-1, Math.min(historyIndex, userActions.length - 1));
             const prev = prevIndexRef.current;
@@ -166,6 +235,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                         const { element } = userAction.resourceToGenerate;
                         addToVocabulary({
                             color: element.color,
+                            pdfFileId: selectedFile.fileInStructure!.id,
                             ...element.occurrence,
                         });
                     }
