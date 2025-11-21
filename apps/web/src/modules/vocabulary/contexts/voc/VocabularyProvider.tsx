@@ -109,9 +109,7 @@ export const VocabularyProvider = ({ children, vocabulary: savedVoc }: Vocabular
     );
 
     useEffect(() => {
-        if (savedVoc) {
-            setGroupedVocabulary(savedVoc);
-        }
+        if (savedVoc) setGroupedVocabulary(savedVoc);
     }, [savedVoc]);
 
     const value = {
