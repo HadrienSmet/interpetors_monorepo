@@ -4,7 +4,7 @@ import { UpsertVocabularyBulkDto, UpsertVocabularyTermDto } from "./dto";
 import { VocabularyService } from "./vocabulary.service";
 
 @Controller("workspaces/:workspaceId/preparations/:preparationId/vocabulary")
-export class VocabularyController {
+export class PreparationVocabularyController {
     constructor(private readonly service: VocabularyService) { }
 
     @Get()

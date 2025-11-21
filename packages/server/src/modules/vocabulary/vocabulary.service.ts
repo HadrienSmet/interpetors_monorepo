@@ -11,11 +11,42 @@ type SlimTerm =
         readonly workspaceId: string;
         readonly preparationId: string;
     };
+type TermItem = {
+    id: string;
+    colorJson: Prisma.JsonValue;
+    translations: string[];
+    occurrences: {
+        pdfFileId: string;
+        pageIndex: number;
+        text: string;
+        filePath: string;
+    }[];
+};
 
 @Injectable()
 export class VocabularyService {
     constructor(private readonly prisma: PrismaService) { }
 
+    private formatTerm(term: TermItem) {
+        // tu peux choisir ici quelle occurrence renvoyer :
+        //  soit la première (souvent c’est le cas d’usage)
+        //  soit toutes les occurrences si tu veux un tableau
+        const firstOcc = term.occurrences?.[0];
+
+        return {
+            id: term.id,
+            occurrence: firstOcc
+                ? {
+                    filePath: firstOcc.filePath,
+                    pageIndex: firstOcc.pageIndex,
+                    pdfFileId: firstOcc.pdfFileId,
+                    text: firstOcc.text,
+                }
+                : undefined,
+            color: term.colorJson, // colorJson correspond exactement à ton type ActionColor
+            translations: term.translations,
+        };
+    };
     /** Vérifie que le workspace & la preparation existent et sont cohérents */
     private async assertWorkspaceAndPreparation(workspaceId: string, preparationId: string) {
         const prep = await this.prisma.preparation.findUnique({
@@ -61,28 +92,35 @@ export class VocabularyService {
             orderBy: { termId: "asc" },
         });
 
-        return rows.map((r) => {
-            const { term } = r;
-
-            // tu peux choisir ici quelle occurrence renvoyer :
-            //  soit la première (souvent c’est le cas d’usage)
-            //  soit toutes les occurrences si tu veux un tableau
-            const firstOcc = term.occurrences?.[0];
-
-            return {
-                id: term.id,
-                occurrence: firstOcc
-                    ? {
-                        filePath: firstOcc.filePath,
-                        pageIndex: firstOcc.pageIndex,
-                        pdfFileId: firstOcc.pdfFileId,
-                        text: firstOcc.text,
-                    }
-                    : undefined,
-                color: term.colorJson, // colorJson correspond exactement à ton type ActionColor
-                translations: term.translations,
-            };
+        return rows.map(({ term }) => this.formatTerm(term));
+    }
+    async listForWorkspace(workspaceId: string) {
+        // tous les terms liés au workspace
+        const terms = await this.prisma.vocabularyTerm.findMany({
+            where: {
+                workspaces: {
+                    some: { workspaceId },
+                },
+            },
+            select: {
+                colorJson: true,
+                createdAt: true,
+                id: true,
+                occurrences: {
+                    select: {
+                        filePath: true,
+                        pageIndex: true,
+                        pdfFileId: true,
+                        text: true,
+                    },
+                },
+                translations: true,
+                updatedAt: true,
+            },
+            orderBy: { createdAt: "desc" },
         });
+
+        return terms.map(term => this.formatTerm(term));
     }
 
     /** Création unitaire: crée OU relie un terme puis l"attache à la préparation + au workspace */

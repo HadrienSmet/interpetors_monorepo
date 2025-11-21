@@ -12,3 +12,11 @@ export const getAllFromPreparation = async (workspaceId: string, preparationId: 
 
     return (response);
 };
+export const getAllFromWorkspace = async (workspaceId: string) => {
+    const response = await call<Array<SavedVocabularyTerm>>({
+        method: HTTP_METHODS.GET,
+        route: `workspaces/${workspaceId}/vocabulary`
+    });
+
+    return (response);
+};

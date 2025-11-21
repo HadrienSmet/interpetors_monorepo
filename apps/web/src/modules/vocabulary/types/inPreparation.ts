@@ -12,4 +12,3 @@ export type GroupedVocabulary = {
     readonly colorToUse: ActionColor;
     readonly terms: Array<SavedVocabularyTerm>;
 };
-export type PreparationVocabulary = Array<GroupedVocabulary>;

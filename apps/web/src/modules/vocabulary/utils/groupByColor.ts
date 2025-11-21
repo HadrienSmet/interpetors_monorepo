@@ -1,6 +1,6 @@
 import { ActionColor, ColorKind, SavedVocabularyTerm } from "@repo/types";
 
-import { GroupedVocabulary, PreparationVocabulary } from "../types";
+import { GroupedVocabulary } from "../types";
 
 const makeColorKey = (color: ActionColor): string => {
     if (color.kind === ColorKind.INLINE) {
@@ -14,7 +14,7 @@ const makeColorKey = (color: ActionColor): string => {
 
 export const groupVocabularyByColor = (
     terms: Array<SavedVocabularyTerm> | undefined,
-): PreparationVocabulary | undefined => {
+): Array<GroupedVocabulary> | undefined => {
     if (!terms) return (undefined);
 
     const map = new Map<string, GroupedVocabulary>();

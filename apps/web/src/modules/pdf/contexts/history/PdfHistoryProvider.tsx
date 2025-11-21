@@ -13,7 +13,7 @@ import {
 import { useColorPanel } from "@/modules/colorPanel";
 import { FIRST_PAGE } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
-import { usePreparationVocabulary } from "@/modules/vocabulary";
+import { useVocabulary } from "@/modules/vocabulary";
 import { handleActionColor } from "@/utils";
 
 import { getInterractiveReference } from "../../utils";
@@ -35,7 +35,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const { colorPanel } = useColorPanel();
     const { files, selectedFile } = useFoldersManager();
     const { pageIndex } = usePdfFile();
-    const { addToVocabulary, remove } = usePreparationVocabulary();
+    const { addToVocabulary, remove } = useVocabulary();
 
     const shouldUpdateRef = useRef(false);
     const prevIndexRef = useRef<number>(DEFAULT_INDEX);

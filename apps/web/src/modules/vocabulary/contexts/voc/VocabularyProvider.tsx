@@ -6,20 +6,20 @@ import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
 import { getRgbColor, handleActionColor } from "@/utils";
 
-import { PreparationVocabulary, WordToAdd } from "../../types";
+import { GroupedVocabulary, WordToAdd } from "../../types";
 
-import { AddTranslationParams, PreparationVocabularyContext } from "./PreparationVocabularyContext";
+import { AddTranslationParams, VocabularyContext } from "./VocabularyContext";
 
-type PreparationVocabularyProviderProps =
-    & { readonly preparationVocabulary?: PreparationVocabulary; }
+type VocabularyProviderProps =
+    & { readonly vocabulary?: Array<GroupedVocabulary>; }
     & PropsWithChildren;
-export const PreparationVocabularyProvider = ({ children, preparationVocabulary: savedVoc }: PreparationVocabularyProviderProps) => {
-    const [preparationVocabulary, setPreparationVocabulary] = useState<PreparationVocabulary>([]);
+export const VocabularyProvider = ({ children, vocabulary: savedVoc }: VocabularyProviderProps) => {
+    const [groupedVocabulary, setGroupedVocabulary] = useState<Array<GroupedVocabulary>>([]);
 
     const { colorPanel } = useColorPanel();
     const { currentWorkspace } = useWorkspaces();
 
-    const getRightGroupIndex = (state: PreparationVocabulary, color: ActionColor) => (
+    const getRightGroupIndex = (state: Array<GroupedVocabulary>, color: ActionColor) => (
         state.findIndex(group => (
             getRgbColor(handleActionColor(group.colorToUse, colorPanel)) === getRgbColor(handleActionColor(color, colorPanel))
         ))
@@ -41,7 +41,7 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
             translations: Array(currentWorkspace?.languages.length ?? 0).fill(""),
         };
 
-        setPreparationVocabulary(state => {
+        setGroupedVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
             const groupIndex = getRightGroupIndex(copy, word.color);
 
@@ -59,7 +59,7 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
     };
 
     const addTranslation = (params: AddTranslationParams) => (
-        setPreparationVocabulary(state => {
+        setGroupedVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
             const groupIndex = getRightGroupIndex(copy, params.color);
             if (groupIndex < 0) return (copy);
@@ -80,7 +80,7 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
     );
 
     const remove = (color: ActionColor, id: string) => (
-        setPreparationVocabulary(state => {
+        setGroupedVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
             const groupIndex = getRightGroupIndex(copy, color);
             if (groupIndex < 0) return (copy);
@@ -93,7 +93,7 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
     );
 
     const update = (color: ActionColor, id: string, item: SavedVocabularyTerm) => (
-        setPreparationVocabulary(state => {
+        setGroupedVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
             const groupIndex = getRightGroupIndex(copy, color);
             if (groupIndex < 0) return (copy);
@@ -110,12 +110,12 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
 
     useEffect(() => {
         if (savedVoc) {
-            setPreparationVocabulary(savedVoc)
+            setGroupedVocabulary(savedVoc);
         }
     }, [savedVoc]);
 
     const value = {
-        preparationVocabulary,
+        groupedVocabulary,
         addTranslation,
         addToVocabulary,
         remove,
@@ -123,8 +123,8 @@ export const PreparationVocabularyProvider = ({ children, preparationVocabulary:
     };
 
     return (
-        <PreparationVocabularyContext.Provider value={value}>
+        <VocabularyContext.Provider value={value}>
             {children}
-        </PreparationVocabularyContext.Provider>
+        </VocabularyContext.Provider>
     );
 };

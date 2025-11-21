@@ -1,2 +1,2 @@
-export * from "./preparation";
+export * from "./voc";
 export * from "./table";

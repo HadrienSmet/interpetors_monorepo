@@ -1,6 +1,6 @@
 import { SavedFolderStructure, SavedVocabularyTerm } from "@repo/types";
 
-import { PreparationVocabulary } from "@/modules/vocabulary";
+import { GroupedVocabulary } from "../vocabulary";
 
 export type PreparationItem = {
     readonly createdAt: string;
@@ -19,5 +19,5 @@ export type ClientPreparation = {
     readonly folders: Array<SavedFolderStructure>;
     readonly id: string;
     readonly title: string;
-    readonly vocabulary: PreparationVocabulary;
+    readonly vocabulary: Array<GroupedVocabulary>;
 };

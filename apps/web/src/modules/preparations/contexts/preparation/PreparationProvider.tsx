@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
 import { useFoldersManager } from "@/modules/folders";
-import { usePreparationVocabulary } from "@/modules/vocabulary";
+import { useVocabulary } from "@/modules/vocabulary";
 
 import { ClientPreparation, SavedPreparation } from "../../types";
 
@@ -15,7 +15,7 @@ export const PreparationProvider = ({ children, savedPreparation }: PreparationP
     const [title, setTitle] = useState("");
 
     const { foldersStructure } = useFoldersManager();
-    const { preparationVocabulary } = usePreparationVocabulary();
+    const { groupedVocabulary } = useVocabulary();
 
     useEffect(() => {
         setTitle(savedPreparation?.title ?? DEFAULT_TITLE);
@@ -25,7 +25,7 @@ export const PreparationProvider = ({ children, savedPreparation }: PreparationP
         id: savedPreparation?.id ?? "",
         title,
         folders: foldersStructure,
-        vocabulary: preparationVocabulary,
+        vocabulary: groupedVocabulary,
     };
 
     const value = {

@@ -6,7 +6,7 @@ import { useColorPanel } from "@/modules/colorPanel";
 import { useWorkspaces } from "@/modules/workspace";
 import { getRgbColor, handleActionColor } from "@/utils";
 
-import { PreparationVocabulary } from "../../types";
+import { useVocabulary } from "../voc";
 
 import { SortingIndex, sortingStateRecord, VocabularyTableContext, VocabularyTableContextValue } from "./VocabularyTableContext";
 
@@ -14,16 +14,14 @@ const getItemValue = (voc: VocabularyTerm, key: string, languages: Array<string>
     ? voc.occurrence.text
     : voc.translations[languages.findIndex(lang => lang === key)];
 
-type VocabularyTableProviderProps =
-    & { readonly preparationVocabulary: PreparationVocabulary; }
-    & PropsWithChildren;
-export const VocabularyTableProvider = ({ children, preparationVocabulary }: VocabularyTableProviderProps) => {
+export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
     const [searchingColumn, setSearchingColumn] = useState<string>("sources");
     const [sortingColumn, setSortingColumn] = useState<string | null>(null);
     const [searchValue, setSearchValue] = useState("");
     const [sortingStateIndex, setSortingStateIndex] = useState<SortingIndex>(0);
 
     const { colorPanel } = useColorPanel();
+    const { groupedVocabulary } = useVocabulary();
     const { currentWorkspace } = useWorkspaces();
 
     const languages = useMemo(() => (
@@ -33,7 +31,7 @@ export const VocabularyTableProvider = ({ children, preparationVocabulary }: Voc
     const baseVocabulary: Record<string, Array<SavedVocabularyTerm>> = useMemo(() => {
         const output: Record<string, Array<SavedVocabularyTerm>> = {};
 
-        for (const group of preparationVocabulary) {
+        for (const group of groupedVocabulary) {
             const rgbColor = handleActionColor(group.colorToUse, colorPanel);
             const color = getRgbColor(rgbColor);
 
@@ -41,7 +39,7 @@ export const VocabularyTableProvider = ({ children, preparationVocabulary }: Voc
         }
 
         return (output);
-    }, [preparationVocabulary]);
+    }, [groupedVocabulary]);
     const filteredList: Record<string, Array<SavedVocabularyTerm>> = useMemo(() => {
         if (!searchValue) {
             return (baseVocabulary);

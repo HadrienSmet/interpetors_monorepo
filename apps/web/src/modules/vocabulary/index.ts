@@ -3,3 +3,4 @@ export * from "./contexts";
 export * as VOCABULARY from "./services";
 export * from "./types";
 export * from "./utils";
+export * from "./wrapper";

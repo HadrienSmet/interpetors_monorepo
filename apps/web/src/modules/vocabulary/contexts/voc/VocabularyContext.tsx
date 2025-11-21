@@ -4,7 +4,7 @@ import { ActionColor, SavedVocabularyTerm } from "@repo/types";
 
 import { getContextError } from "@/contexts/utils";
 
-import { PreparationVocabulary, WordToAdd } from "../../types";
+import { GroupedVocabulary, WordToAdd } from "../../types";
 
 export type AddTranslationParams = {
     readonly color: ActionColor;
@@ -12,8 +12,8 @@ export type AddTranslationParams = {
     readonly localeIndex: number;
     readonly translation: string;
 };
-type PreparationVocabularyContextType = {
-    readonly preparationVocabulary: PreparationVocabulary;
+type VocabularyContextType = {
+    readonly groupedVocabulary: Array<GroupedVocabulary>;
 
     readonly addToVocabulary: (word: WordToAdd) => void;
     readonly addTranslation: (params: AddTranslationParams) => void;
@@ -21,13 +21,13 @@ type PreparationVocabularyContextType = {
     readonly update: (color: ActionColor, id: string, item: SavedVocabularyTerm) => void;
 };
 
-export const PreparationVocabularyContext = createContext<PreparationVocabularyContextType | null>(null);
+export const VocabularyContext = createContext<VocabularyContextType | null>(null);
 
-export const usePreparationVocabulary = () => {
-    const ctx = useContext(PreparationVocabularyContext);
+export const useVocabulary = () => {
+    const ctx = useContext(VocabularyContext);
 
     if (!ctx) {
-        throw new Error(getContextError("usePreparationVocabulary", "PreparationVocabularyProvider"));
+        throw new Error(getContextError("useVocabulary", "VocabularyProvider"));
     }
 
     return (ctx);
