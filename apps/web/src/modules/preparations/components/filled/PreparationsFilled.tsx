@@ -1,12 +1,11 @@
 import { RefObject, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 
-import { FILE_ACTION } from "@/modules/fileActions";
 import { FILES } from "@/modules/files";
 import { PDF_TYPE, uploadFile } from "@/modules/pdf";
-import { handleServicesConcurrency, scrollToChild, URL_PARAMETERS } from "@/utils";
 import { VOCABULARY } from "@/modules/vocabulary";
 import { useWorkspaces } from "@/modules/workspace";
+import { scrollToChild, URL_PARAMETERS } from "@/utils";
 
 import { usePreparations } from "../../contexts";
 import { patch } from "../../services";
@@ -23,8 +22,6 @@ const TABS_NAMES = {
     tabs: "tabs",
 } as const;
 type TabsNames = typeof TABS_NAMES[keyof typeof TABS_NAMES];
-
-const limit = handleServicesConcurrency(4);
 
 export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) => {
     const currentTarget = useRef<TabsNames>(TABS_NAMES.list);
@@ -88,16 +85,17 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
             });
         }
         if (files) {
-            if (files.movedFiles && files.movedFiles.length > 0) {
+            if (files.filesToPatch && files.filesToPatch.length > 0) {
                 await FILES.patchApi({
-                    body: { files: files.movedFiles },
+                    body: { files: files.filesToPatch },
                     preparationId,
-                });
+                })
             }
             if (files.newFiles && files.newFiles.length > 0) {
                 await Promise.all(
                     files.newFiles.map(newFile => (
                         uploadFile({
+                            actions: JSON.stringify(newFile.pdfFile.actions),
                             contentType: PDF_TYPE.type,
                             file: newFile.pdfFile.file,
                             filePath: newFile.filePath,
@@ -105,14 +103,6 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                             preparationId,
                         })
                     ))
-                );
-            }
-            if (files.newActions && files.newActions.length > 0) {
-                await Promise.all(files.newActions.map(newAction => limit(() => FILE_ACTION.post(newAction))));
-            }
-            if (files.patchActions && files.patchActions.length > 0) {
-                await Promise.all(
-                    files.patchActions.map(({ fileId, ...body }) => limit(() => FILE_ACTION.patch({ pdfFileId: fileId, body })))
                 );
             }
         }

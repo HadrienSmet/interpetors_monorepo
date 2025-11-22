@@ -1,4 +1,4 @@
-import { PropsWithChildren, useMemo, useState } from "react";
+import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { FolderStructure, PdfFile } from "@repo/types";
 
@@ -8,9 +8,12 @@ import { getTargetKeys, isPdfFile, browseStructureToActionOnFile, FileVisitor, f
 import { FoldersManagerContext, FoldersManagerContextValue } from "./FoldersManagerContext";
 
 type FoldersManagerProviderProps =
-    & { readonly editable?: boolean; }
+    & {
+        readonly editable?: boolean;
+        readonly savedFolders?: Array<FolderStructure>;
+    }
     & PropsWithChildren;
-export const FoldersManagerProvider = ({ children, editable = false }: FoldersManagerProviderProps) => {
+export const FoldersManagerProvider = ({ children, editable = false, savedFolders }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
     const [isEditable, setIsEditable] = useState(editable);
     const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);
@@ -337,6 +340,12 @@ export const FoldersManagerProvider = ({ children, editable = false }: FoldersMa
     };
 
     const onDrop = (folder: FolderStructure) => setFoldersStructure(state => [...state, folder]);
+
+    useEffect(() => {
+        if (savedFolders) {
+            setFoldersStructure(savedFolders);
+        }
+    }, [savedFolders])
 
     const selectedFile: FileData = useMemo(() => {
         if (!selectedFilePath) {

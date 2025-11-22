@@ -4,7 +4,6 @@ import { ConfigModule } from "@nestjs/config";
 import {
     AuthModule,
     ColorPanelModule,
-    FileActionsModule,
     FilesModule,
     NotesModule,
     PreparationsModule,
@@ -20,7 +19,6 @@ import {
     imports: [
         AuthModule,
         ConfigModule.forRoot(),
-        FileActionsModule,
         FilesModule,
         NotesModule,
         PreparationsModule,

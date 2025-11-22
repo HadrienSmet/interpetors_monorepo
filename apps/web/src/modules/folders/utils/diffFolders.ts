@@ -1,39 +1,21 @@
-import { ElementAction, FolderStructure, Note, PdfFile, ReferenceElement } from "@repo/types";
+import { FolderStructure, Note, PdfFile } from "@repo/types";
 
 import { isPdfFile } from "../contexts";
 
-type FilePath = string;
-
-type NewActions = {
-    readonly elements: ElementAction[];
-    readonly fileId: string;
-    readonly generatedResources?: Note[];
-    readonly pageIndex: number;
-    readonly references?: ReferenceElement[];
-};
-type PatchActions = {
-    readonly elements?: ElementAction[];
-    readonly fileId: string;
-    readonly pageIndex: number;
-    readonly references?: ReferenceElement[];
-    readonly generatedResources?: Note[];
-};
 type NewFile = {
-    readonly filePath: FilePath;
+    readonly filePath: string;
     readonly pdfFile: PdfFile;
 };
-type MovedFile = {
-    readonly filePath: string;
+type FileToPatch = {
+    actions?: string;
+    filePath?: string;
     readonly id: string;
 };
 export type Delta = {
-    readonly movedFiles: Array<MovedFile>;
-    readonly newActions: Array<NewActions>;
+    readonly filesToPatch: Array<FileToPatch>;
     readonly newFiles: Array<NewFile>;
-    readonly patchActions: Array<PatchActions>;
 };
 
-// ---------- Implémentation ----------
 
 /** Clé "identité" du fichier. On privilégie la référence File, sinon fallback (name|size|lastModified). */
 const makeFileKey = (pdf: PdfFile): string => {
@@ -55,7 +37,7 @@ const indexStructures = (structures: Array<FolderStructure>) => {
     };
     type Indexed = {
         byKey: Map<string, { path: string; pdf: PdfFile; pages: Map<number, ActionMeta>; }>;
-        pathByKey: Map<string, string>; // pratique pour moves
+        pathByKey: Map<string, string>; // Usefull for moves
     };
 
     const output: Indexed = {
@@ -97,48 +79,26 @@ export const diffFolderStructures = (
     const newIdx = indexStructures(after);
 
     const newFiles: Delta["newFiles"] = [];
-    const movedFiles: Delta["movedFiles"] = [];
-    const newActions: Delta["newActions"] = [];
-    const patchActions: Delta["patchActions"] = [];
+    const filesToPatch: Delta["filesToPatch"] = [];
 
-    // 1) Détecter nouveaux fichiers + fichiers déplacés
-    for (const [key, { path: newPath, pdf }] of newIdx.byKey.entries()) {
+    // 2) Détecter nouvelles actions
+    for (const [key, { path: newPath, pdf: newPdf, pages: newPages }] of newIdx.byKey.entries()) {
+        let hasToPatchFile = false;
+        let fileToPatch: FileToPatch = {
+            id: newPdf.id,
+        };
         const oldPath = oldIdx.pathByKey.get(key);
+        const oldEntry = oldIdx.byKey.get(key);
         const splitted = newPath.split("/");
         splitted.pop();
         const pathWithoutName = splitted.join("/");
 
-        if (!oldPath) {
-            newFiles.push({ filePath: pathWithoutName, pdfFile: pdf });
-        } else if (oldPath !== newPath) {
-            movedFiles.push({ filePath: pathWithoutName, id: pdf.id });
-        }
-    }
-
-    // 2) Détecter nouvelles actions
-    for (const [key, { pdf: newPdf, pages: newPages }] of newIdx.byKey.entries()) {
-        const oldEntry = oldIdx.byKey.get(key);
-
-        // Si c’est un nouveau fichier, toutes ses pages sont “nouvelles” → on reporte tout
-        if (!oldEntry) {
-            for (const [pageIndex, _meta] of newPages.entries()) {
-                const action = newPdf.actions[pageIndex];
-                if (!action) continue;
-                if (
-                    (action.elements?.length ?? 0) > 0 ||
-                    (action.references?.length ?? 0) > 0 ||
-                    (action.generatedResources?.length ?? 0) > 0
-                ) {
-                    newActions.push({
-                        fileId: newPdf.id,
-                        pageIndex,
-                        elements: action.elements ?? [],
-                        references: action.references ?? [],
-                        generatedResources: (action.generatedResources as Note[] | undefined) ?? [],
-                    });
-                }
-            }
+        if (!oldPath || !oldEntry) {
+            newFiles.push({ filePath: pathWithoutName, pdfFile: newPdf });
             continue;
+        } else if (oldPath !== newPath) {
+            hasToPatchFile = true;
+            fileToPatch.filePath = pathWithoutName;
         }
 
         // Sinon, comparer page par page (append only)
@@ -150,14 +110,9 @@ export const diffFolderStructures = (
 
             if (!oldMeta) {
                 // page nouvelle -> tout le contenu est “nouveau”
-                newActions.push({
-                    fileId: newPdf.id,
-                    pageIndex,
-                    elements: actionNew.elements ?? [],
-                    references: actionNew.references ?? [],
-                    generatedResources: (actionNew.generatedResources as Note[] | undefined) ?? [],
-                });
-                continue;
+                hasToPatchFile = true;
+                fileToPatch.actions = JSON.stringify(newPdf.actions);
+                break;
             }
 
             // éléments ajoutés
@@ -165,11 +120,9 @@ export const diffFolderStructures = (
             if (elemsNewLen > oldMeta.elementsLen) {
                 const slice = actionNew.elements!.slice(oldMeta.elementsLen);
                 if (slice.length) {
-                    patchActions.push({
-                        fileId: newPdf.id,
-                        pageIndex,
-                        elements: slice,
-                    });
+                    hasToPatchFile = true;
+                    fileToPatch.actions = JSON.stringify(newPdf.actions);
+                    break;
                 }
             }
 
@@ -178,11 +131,9 @@ export const diffFolderStructures = (
             if (refsNewLen > oldMeta.referencesLen) {
                 const slice = actionNew.references!.slice(oldMeta.referencesLen);
                 if (slice.length) {
-                    patchActions.push({
-                        fileId: newPdf.id,
-                        pageIndex,
-                        references: slice,
-                    });
+                    hasToPatchFile = true;
+                    fileToPatch.actions = JSON.stringify(newPdf.actions);
+                    break;
                 }
             }
 
@@ -191,15 +142,17 @@ export const diffFolderStructures = (
             if (resNewLen > oldMeta.resourcesLen) {
                 const slice = actionNew.generatedResources!.slice(oldMeta.resourcesLen) as Note[];
                 if (slice.length) {
-                    patchActions.push({
-                        fileId: newPdf.id,
-                        pageIndex,
-                        generatedResources: slice,
-                    });
+                    hasToPatchFile = true;
+                    fileToPatch.actions = JSON.stringify(newPdf.actions);
+                    break;
                 }
             }
         }
+
+        if (hasToPatchFile) {
+            filesToPatch.push(fileToPatch);
+        }
     }
 
-    return ({ newFiles, movedFiles, newActions, patchActions });
+    return ({ newFiles, filesToPatch });
 };

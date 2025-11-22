@@ -1,6 +1,5 @@
 import { FolderStructure, VocabularyTerm } from "@repo/types";
 
-import { FILE_ACTION } from "@/modules/fileActions";
 import { FILES } from "@/modules/files";
 import { isPdfFile } from "@/modules/folders";
 import { PDF_TYPE } from "@/modules/pdf";
@@ -9,7 +8,6 @@ type PdfFileJob = Omit<FILES.PostPdfParams, "s3Key">;
 type FlatJob = {
     pdf: PdfFileJob;
     s3: FILES.UploadParams;
-    filesActions: Array<Omit<FILE_ACTION.PostFileActionParams, "fileId">>;
     terms: Array<VocabularyTerm>;
 };
 type Queue = { path: string; node: FolderStructure; };
@@ -40,20 +38,9 @@ export const prepareJobs = (
 
                 const terms = vocabularyTerms.filter(t => t.occurrence.filePath === fullPath);
 
-                const filesActions: Array<Omit<FILE_ACTION.PostFileActionParams, "fileId">> = Object.keys(value.actions).map(pageKey => {
-                    const pageIndex = Number(pageKey);
-                    const fileActions = value.actions[pageIndex];
-
-                    return ({
-                        pageIndex,
-                        elements: fileActions.elements ?? [],
-                        references: fileActions.references ?? [],
-                        generatedResources: fileActions.generatedResources ?? [],
-                    });
-                });
-
                 jobs.push({
                     pdf: {
+                        actions: JSON.stringify(value.actions),
                         filePath,
                         name: value.name,
                         preparationId,
@@ -63,7 +50,6 @@ export const prepareJobs = (
                         file: value.file,
                         fileName: value.name,
                     },
-                    filesActions,
                     terms,
                 });
 

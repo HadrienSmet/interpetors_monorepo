@@ -4,6 +4,7 @@ import { handleServicesConcurrency } from "@/utils";
 const runS3 = handleServicesConcurrency(3);
 
 type UploadFileParams = {
+    readonly actions: string;
     readonly contentType: string;
     readonly file: File;
     readonly filePath: string;
@@ -11,6 +12,7 @@ type UploadFileParams = {
     readonly preparationId: string;
 };
 export const uploadFile = async ({
+    actions,
     contentType,
     file,
     filePath,
@@ -28,7 +30,7 @@ export const uploadFile = async ({
     }
 
     // b) Création PdfFile (DB)
-    const pdfRes = await FILES.postPdf({ filePath, name, preparationId, s3Key: s3Res.data.key });
+    const pdfRes = await FILES.postPdf({ actions, filePath, name, preparationId, s3Key: s3Res.data.key });
     if (!pdfRes.success) {
         throw new Error(`postPdf failed for "${name}": ${pdfRes.message}`);
     }

@@ -22,9 +22,9 @@ export const PreparationProvider = ({ children, savedPreparation }: PreparationP
     }, [savedPreparation]);
 
     const preparation: ClientPreparation = {
+        folders: foldersStructure,
         id: savedPreparation?.id ?? "",
         title,
-        folders: foldersStructure,
         vocabulary: groupedVocabulary,
     };
 

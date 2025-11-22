@@ -1,6 +1,5 @@
 import { FolderStructure, VocabularyTerm } from "@repo/types";
 
-import { FILE_ACTION } from "@/modules/fileActions";
 import { uploadFile } from "@/modules/pdf";
 import { VOCABULARY } from "@/modules/vocabulary";
 import { handleServicesConcurrency } from "@/utils";
@@ -8,7 +7,6 @@ import { handleServicesConcurrency } from "@/utils";
 import { prepareJobs } from "./prepareJobs";
 
 const runAPI = handleServicesConcurrency(5);
-const runAct = handleServicesConcurrency(5);
 
 type UploadPreparationParams = {
     readonly folders: Array<FolderStructure>;
@@ -33,25 +31,13 @@ export const uploadPreparation = async ({
             ...job.pdf,
         });
 
-        const fileId = fileRes.id;
-
-        // c) FileActions (nombreux petits appels => pool dédié)
-        if (job.filesActions.length) {
-            await Promise.all(
-                job.filesActions.map(a =>
-                    runAct(() => FILE_ACTION.post({ ...a, fileId }))
-                )
-            );
-        }
-
-        // d) Vocabulaire (bulk par fichier)
         if (job.terms.length) {
             await VOCABULARY.postBulk({
                 workspaceId,
                 preparationId,
                 terms: job.terms.map(t => ({
                     ...t,
-                    occurrence: { ...t.occurrence, pdfFileId: fileId },
+                    occurrence: { ...t.occurrence, pdfFileId: fileRes.id },
                 })),
             });
         }

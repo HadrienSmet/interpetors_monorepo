@@ -18,7 +18,10 @@ export const PreparationWrapper = ({ children, editable = false, savedPreparatio
     const grouped = useMemo(() => (groupVocabularyByColor(savedPreparation?.vocabulary)), [savedPreparation?.vocabulary]);
 
     return (
-        <FoldersManagerProvider editable={editable}>
+        <FoldersManagerProvider
+            editable={editable}
+            savedFolders={preparation?.folders}
+        >
             <VocabularyWrapper groupedVocabulary={grouped}>
                 <PreparationProvider savedPreparation={preparation}>
                     {children}

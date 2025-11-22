@@ -1,36 +1,18 @@
 import { SavedFolderStructure } from "@repo/types";
 
-import { FILE_ACTION } from "@/modules/fileActions";
 import { FILES } from "@/modules/files";
-import { getDefaultPdfActions } from "@/modules/pdf";
 import { handleServicesConcurrency } from "@/utils";
 
-const handleFile = async (
-    item: FILES.FileApiResponse,
-    actionsByFileId: FILE_ACTION.GetBulkResponse
-) => {
+const handleFile = async (item: FILES.FileApiResponse) => {
     const fileRes = await FILES.getOneS3(item.s3Key, item.name);
     if (!fileRes.success) {
         throw new Error(fileRes.message);
     }
 
-    const fileActions = actionsByFileId[item.id] ?? [];
-
-    const actionsRecord = fileActions.length > 0
-        ? fileActions.reduce<Record<number, any>>((acc, act) => {
-            acc[act.pageIndex] = {
-                elements: act.elementsJson ?? [],
-                references: act.referencesJson ?? [],
-                generatedResources: act.generatedResourcesJson ?? [],
-            };
-            return (acc);
-        }, {})
-        : getDefaultPdfActions();
-
     return ({
         ...item,
+        actions: JSON.parse(item.actions),
         file: fileRes.data,
-        actions: actionsRecord,
     });
 };
 
@@ -45,17 +27,8 @@ export const buildFoldersStructure = async (preparationId: string) => {
     }
 
     const files = pdfFilesResponse.data;
-    const ids = files.map(file => file.id);
 
-    const bulkRes = await FILE_ACTION.getAllBulk(ids);
-    if (!bulkRes.success) {
-        throw new Error(bulkRes.message);
-    }
-
-    const actionsByFileId = bulkRes.data;
-    const hydrated = await Promise.all(
-        files.map(file => limit(() => handleFile(file, actionsByFileId)))
-    );
+    const hydrated = await Promise.all(files.map(file => limit(() => handleFile(file))));
 
     for (const fileData of hydrated) {
         const { id, filePath, name, file, actions } = fileData;
@@ -89,12 +62,7 @@ export const buildFoldersStructure = async (preparationId: string) => {
         }
 
         // insère le PdfFile
-        currentLevel[name] = {
-            id,
-            actions,
-            file,
-            name,
-        };
+        currentLevel[name] = { id, actions, file, name };
     }
 
     return (output);

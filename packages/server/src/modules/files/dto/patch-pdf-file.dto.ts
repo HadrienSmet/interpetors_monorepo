@@ -2,6 +2,9 @@ import { Type } from "class-transformer";
 import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 
 export class PatchPdfFileDto {
+    @IsString()
+    @IsOptional()
+    actions: string;
     @IsOptional()
     @IsString()
     filePath: string;
@@ -11,6 +14,9 @@ export class PatchPdfFileDto {
 }
 
 class PatchedPdfFile {
+    @IsOptional()
+    @IsString()
+    actions: string;
     @IsString()
     @IsNotEmpty()
     id: string;

@@ -14,34 +14,6 @@ datasource db {
 }
 
 /////////////////////
-//      ENUMS
-/////////////////////
-
-enum ColorKind {
-  INLINE
-  PANEL
-}
-
-enum DrawingType {
-  path
-  rectangle
-  text
-}
-
-enum FileTool {
-  highlight
-  note
-  underline
-  vocabulary
-  brush
-}
-
-enum ReferenceType {
-  note
-  vocabulary
-}
-
-/////////////////////
 // Modèles "métier"
 /////////////////////
 
@@ -106,12 +78,11 @@ model PdfFile {
   name     String
   s3Key    String
   filePath  String
+  actions  String
 
   preparationId String
   preparation   Preparation @relation("PreparationFiles", fields: [preparationId], references: [id])
 
-  actions               FileAction[]
-  notes                 Note[]
   vocabularyOccurrences VocabularyOccurrence[]
 
   createdAt DateTime @default(now())
@@ -119,29 +90,6 @@ model PdfFile {
 
   @@index([preparationId])
   @@index([name])
-}
-
-model FileAction {
-  id String @id @default(cuid())
-
-  pdfFileId String
-  pdfFile   PdfFile @relation(fields: [pdfFileId], references: [id])
-
-  pageIndex Int
-
-  // On conserve en JSON : elements (PATH/RECT/TEXT), references (NOTE/VOCABULARY), generatedResources brutes si besoin
-  // Tu peux sérialiser exactement tes types front :
-  // elements: Array<ElementAction>, references: Array<ReferenceElement>, generatedResources?: Array<Note> (ou un sous-ensemble)
-  elementsJson           Json
-  referencesJson         Json?
-  generatedResourcesJson Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Note      Note[]
-
-  @@unique([pdfFileId, pageIndex]) // 1 action aggregée par page
-  @@index([pdfFileId])
 }
 
 /////////////////////
@@ -213,35 +161,4 @@ model VocabularyOccurrence {
   @@unique([pdfFileId, pageIndex, termId])
   @@index([termId])
   @@index([pdfFileId, pageIndex])
-}
-
-/////////////////////
-// Notes (générées)
-/////////////////////
-
-model Note {
-  id        String @id @default(cuid())
-  colorJson Json
-  note      String
-
-  y              Float
-  occurrenceText String
-
-  // Redondance optionnelle du chemin si tu veux coller au front
-  filePath String
-
-  // Rattachement au PDF
-  pdfFileId String
-  pdfFile   PdfFile @relation(fields: [pdfFileId], references: [id])
-  pageIndex Int
-
-  // (facultatif) L’action/page qui a généré la ressource
-  fileActionId String?
-  fileAction   FileAction? @relation(fields: [fileActionId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([pdfFileId])
-  @@index([fileActionId])
 }
