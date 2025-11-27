@@ -1,12 +1,12 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { MdArrowBack, MdSave } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
-import { FolderStructure, SavedVocabularyTerm } from "@repo/types";
+import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/types";
 
 import { Button, InputStyleLess, Loader, Tabs } from "@/components";
-import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager } from "@/modules/folders";
+import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager, useFoldersActions } from "@/modules/folders";
 import { useVocabularyTable, VocabularyTable } from "@/modules/vocabulary";
 import { URL_PARAMETERS } from "@/utils";
 
@@ -18,6 +18,7 @@ import "./preparationLayout.scss";
 
 export type SavePreparationParams = {
     readonly folders: Array<FolderStructure>;
+    readonly foldersActions: FilesActionsStore;
     readonly old?: SavedPreparation;
     readonly rootFolderId?: string;
     readonly title: string;
@@ -34,6 +35,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     const [initialTabIndex, setInitialTabIndex] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
 
+    const { foldersActions } = useFoldersActions();
     const { foldersStructure, setFoldersStructure } = useFoldersManager();
     const { preparation, savedPreparation, setTitle } = usePreparation();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -42,7 +44,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
 
     const { title } = preparation;
 
-    const views = [
+    const views = useMemo(() => [
         {
             content: (
                 <div className="preparation-folders">
@@ -59,7 +61,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
             ),
             title: "vocabulary",
         }
-    ];
+    ], []);
     const viewTitles = views.map(v => String(v.title));
 
     const onInputChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
@@ -68,6 +70,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
 
         await props.savePreparation({
             folders: foldersStructure,
+            foldersActions,
             old: savedPreparation,
             title,
             vocabularyTerms,

@@ -2,7 +2,7 @@ import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react
 import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import { PdfFile } from "@repo/types";
+import { PdfMetadata } from "@repo/types";
 
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
@@ -19,7 +19,7 @@ export const handleDynamicEvent = (execute: boolean, fn: () => void) => {
 };
 export type FileNodeProps =
     & Omit<TreeNodeProps, "node">
-    & { readonly node: PdfFile; };
+    & { readonly node: PdfMetadata; };
 export const FileNode = ({
     depth,
     name,

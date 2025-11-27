@@ -1,2 +1,2 @@
-export * from "./displayer";
+export * from "./actions";
 export * from "./manager";

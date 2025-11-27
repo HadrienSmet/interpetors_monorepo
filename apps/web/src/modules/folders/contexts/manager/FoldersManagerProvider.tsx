@@ -1,10 +1,10 @@
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
-import { FolderStructure, PdfFile } from "@repo/types";
+import { FolderStructure, PdfMetadata } from "@repo/types";
 
 import { FileData } from "../../types";
 
-import { getTargetKeys, isPdfFile, browseStructureToActionOnFile, FileVisitor, findFile } from "./foldersManager.utils";
+import { getTargetKeys, browseStructureToActionOnFile, isPdfMetadata, FileVisitor, findFile } from "./foldersManager.utils";
 import { FoldersManagerContext, FoldersManagerContextValue } from "./FoldersManagerContext";
 
 type FoldersManagerProviderProps =
@@ -19,69 +19,16 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
     const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);
 
     // ---------- Files methods ----------
-    const EMPTY_PAGE_ACTION = { elements: [] as any[] };
-
-    const addNewPageActions = (path: string, pageIndex: number) => {
-        const parts = getTargetKeys(path);
-        if (parts.length === 0) return;
-
-        const addAtPath = (structure: FolderStructure, segs: string[]): FolderStructure => {
-            const [head, ...rest] = segs;
-            if (!head) return (structure);
-
-            const result: FolderStructure = {};
-
-            for (const [key, value] of Object.entries(structure)) {
-                if (key !== head) {
-                    // autre clé: recopier tel quel
-                    result[key] = value;
-                    continue;
-                }
-
-                // On est sur le segment courant du chemin
-                if (rest.length === 0) {
-                    // Dernier segment -> devrait être le fichier
-                    if (isPdfFile(value)) {
-                        const alreadyExists = value.actions[pageIndex] != null;
-                        result[key] = alreadyExists
-                            ? value // rien à faire
-                            : {
-                                ...value,
-                                actions: {
-                                    ...value.actions,
-                                    [pageIndex]: EMPTY_PAGE_ACTION,
-                                },
-                            };
-                    } else {
-                        // ce n’est pas un fichier: recopier tel quel
-                        result[key] = value;
-                    }
-                } else {
-                    // Il reste des segments -> descendre si c'est un dossier
-                    if (!isPdfFile(value)) {
-                        result[key] = addAtPath(value, rest);
-                    } else {
-                        // on attendait un dossier mais on a un fichier: recopier
-                        result[key] = value;
-                    }
-                }
-            }
-
-            return (result);
-        };
-
-        setFoldersStructure((state) => state.map((root) => addAtPath(root, parts)));
-    };
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {
-        const moveFile = (structure: FolderStructure): [FolderStructure, PdfFile | null] => {
+        const moveFile = (structure: FolderStructure): [FolderStructure, PdfMetadata | null] => {
             const result: FolderStructure = {};
-            let fileToMove: PdfFile | null = null;
+            let fileToMove: PdfMetadata | null = null;
 
             for (const [key, value] of Object.entries(structure)) {
-                if (isPdfFile(value) && key === fileName) {
+                if (isPdfMetadata(value) && key === fileName) {
                     fileToMove = value;
                     continue; // Remove it
-                } else if (isPdfFile(value)) {
+                } else if (isPdfMetadata(value)) {
                     result[key] = value;
                 } else {
                     const [newSubStructure, moved] = moveFile(value);
@@ -93,7 +40,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
 
             return ([result, fileToMove]);
         };
-        const insertFile = (structure: FolderStructure, pathParts: Array<string>, fileInStructure: PdfFile): void => {
+        const insertFile = (structure: FolderStructure, pathParts: Array<string>, fileInStructure: PdfMetadata): void => {
             const [head, ...rest] = pathParts;
 
             if (!head) return;
@@ -122,7 +69,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
             })
         ));
     };
-    const deleteFile = (target: PdfFile) => {
+    const deleteFile = (target: PdfMetadata) => {
         const visitor: FileVisitor = (key, value) => {
             if (value === target) return (null);
 
@@ -131,7 +78,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
 
         setFoldersStructure(state => state.map(folder => browseStructureToActionOnFile(folder, visitor)));
     };
-    const renameFile = (target: PdfFile, newName: string) => {
+    const renameFile = (target: PdfMetadata, newName: string) => {
         const visitor: FileVisitor = (key, value) => {
             if (value === target) {
                 const updatedFile = new File([value.file], newName, {
@@ -147,7 +94,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
 
         setFoldersStructure(state => state.map(folder => browseStructureToActionOnFile(folder, visitor)));
     };
-    const updateFile = (file: PdfFile) => {
+    const updateFile = (file: PdfMetadata) => {
         const visitor: FileVisitor = (key, value) => {
             if (value.name !== file.name) {
                 return ([key, value]);
@@ -184,7 +131,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
             let folderToMove: FolderStructure | null = null;
 
             for (const [key, value] of Object.entries(structure)) {
-                if (isPdfFile(value)) {
+                if (isPdfMetadata(value)) {
                     result[key] = value;
                     continue;
                 }
@@ -259,7 +206,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
                     (result[key] as FolderStructure)[folderName] = {};
                 }
 
-                if (!isPdfFile(value)) {
+                if (!isPdfMetadata(value)) {
                     result[key] = create(value, rest);
                     continue;
                 }
@@ -292,7 +239,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
                     continue;
                 }
 
-                if (!isPdfFile(value)) {
+                if (!isPdfMetadata(value)) {
                     result[key] = removeFolder(value, rest);
                     continue;
                 }
@@ -325,7 +272,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
                     continue;
                 }
 
-                if (!isPdfFile(value)) {
+                if (!isPdfMetadata(value)) {
                     result[key] = changeName(value, rest);
                     continue;
                 }
@@ -345,7 +292,7 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
         if (savedFolders) {
             setFoldersStructure(savedFolders);
         }
-    }, [savedFolders])
+    }, [savedFolders]);
 
     const selectedFile: FileData = useMemo(() => {
         if (!selectedFilePath) {
@@ -358,7 +305,6 @@ export const FoldersManagerProvider = ({ children, editable = false, savedFolder
     const value: FoldersManagerContextValue = {
         isEditable,
         files: {
-            addNewPageActions,
             changeDirectory: changeFileDirectory,
             delete: deleteFile,
             rename: renameFile,

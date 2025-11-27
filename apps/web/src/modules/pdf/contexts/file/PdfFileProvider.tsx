@@ -2,7 +2,7 @@ import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
 import { useColorPanel } from "@/modules/colorPanel";
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { sleep } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
@@ -25,15 +25,10 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const renderedPages = useRef(0);
 
     const { colorPanel } = useColorPanel();
+    const { getFileActions } = useFoldersActions();
     const { files, selectedFile } = useFoldersManager();
 
-    const nextPage = () => {
-        const next = pageIndex + 1;
-        if (selectedFile.fileInStructure && (!(next in selectedFile.fileInStructure?.actions))) {
-            files.addNewPageActions(selectedFile.path, next);
-        }
-        setPageIndex(state => Math.min(state + 1, numPages ?? 1));
-    };
+    const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
     const previousPage = () => setPageIndex(state => Math.max(state - 1, 1));
 
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: DocumentCallback): void => (
@@ -46,11 +41,13 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
 
         await sleep(450);
 
-        const pdfFile = selectedFile.fileInStructure;
-        if (!pdfFile || !pdfDoc) {
+        const metadata = selectedFile.fileInStructure;
+        if (!metadata || !pdfDoc) {
             return;
         }
 
+        const fileActions = getFileActions(metadata.id);
+        const pdfFile = { ...metadata, actions: fileActions };
         const updatedFile = await handleSaveChanges(pdfFile, pdfDoc, numPages, colorPanel);
         files.update(updatedFile);
 

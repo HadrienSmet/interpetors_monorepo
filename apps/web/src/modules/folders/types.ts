@@ -1,6 +1,6 @@
-import { PdfFile } from "@repo/types";
+import { PdfMetadata } from "@repo/types";
 
 export type FileData = {
-    readonly fileInStructure: PdfFile | null;
+    readonly fileInStructure: PdfMetadata | null;
     readonly path: string;
 };

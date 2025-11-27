@@ -1,9 +1,10 @@
+import { useMemo } from "react";
 import { Document, Page } from "react-pdf";
 import { useSearchParams } from "react-router";
 
 import { REFERENCE_TYPES } from "@repo/types";
 
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { URL_PARAMETERS, URL_VIEWS } from "@/utils";
 
 import { usePdfFile, usePdfNotes, usePdfTools } from "../../contexts";
@@ -20,6 +21,7 @@ const OPTIONS = {
 } as const;
 
 export const PdfDocument = () => {
+    const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
     const { numPages, onDocumentLoadSuccess, pageIndex, pageRef, setIsPdfRendered } = usePdfFile();
     const { setSelectedNote } = usePdfNotes();
@@ -27,11 +29,12 @@ export const PdfDocument = () => {
     const [_, setSearchParams] = useSearchParams();
 
     const pdfFile = selectedFile.fileInStructure!;
+    const pageActions = useMemo(() => getPageActions(pdfFile.id, pageIndex), [pdfFile.id, pageIndex]);
 
     const displayNoteReferences = (
-        pdfFile.actions[pageIndex] &&
-        pdfFile.actions[pageIndex].references &&
-        pdfFile.actions[pageIndex].references.length > 0
+        pageActions &&
+        pageActions.references &&
+        pageActions.references.length > 0
     );
     const displayPageManager: boolean = (
         numPages !== undefined &&
@@ -74,7 +77,7 @@ export const PdfDocument = () => {
                 />
             </Document>
 
-            {displayNoteReferences && pdfFile.actions[pageIndex].references!
+            {displayNoteReferences && pageActions.references!
                 .map((ref, i) => {
                     if (ref.type === REFERENCE_TYPES.NOTE) {
                         return (

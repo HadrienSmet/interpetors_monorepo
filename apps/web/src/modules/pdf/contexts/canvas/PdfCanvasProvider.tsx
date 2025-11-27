@@ -11,7 +11,7 @@ import {
 
 import { useColorPanel } from "@/modules/colorPanel";
 import { HIGLIGHT_OPACITY, REGULAR_OPACITY, STROKE_SIZE } from "@/modules/files";
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { handleActionColor, rgbToRgba, stringToRgba } from "@/utils";
 
 import {
@@ -37,6 +37,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const drawerContextRef = useRef<CanvasRenderingContext2D>(null);
 
     const { colorPanel } = useColorPanel();
+    const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
     const { displayLoader, isPdfRendered, pageIndex, pageRef } = usePdfFile();
     const { pushAction, version } = usePdfHistory();
@@ -267,6 +268,8 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     useEffect(() => {
         if (!selectedFile.fileInStructure || !isPdfRendered || displayLoader) return;
 
+        const pageActions = getPageActions(selectedFile.fileInStructure.id, pageIndex);
+
         const canvasCtx = canvasContextRef.current;
         const drawerCtx = drawerContextRef.current;
 
@@ -275,13 +278,13 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         }
 
         if (
-            !selectedFile.fileInStructure.actions[pageIndex] ||
-            selectedFile.fileInStructure.actions[pageIndex].elements.length < 1
+            !pageActions ||
+            pageActions.elements.length < 1
         ) {
             return;
         }
 
-        for (const element of selectedFile.fileInStructure.actions[pageIndex].elements) {
+        for (const element of pageActions.elements) {
             switch (element.type) {
                 case DRAWING_TYPES.PATH:
                     drawPathOnMount(convertPathAction(element, colorPanel));
@@ -305,6 +308,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         displayLoader,
         isPdfRendered,
         pageIndex,
+        selectedFile,
         version,
     ]);
 

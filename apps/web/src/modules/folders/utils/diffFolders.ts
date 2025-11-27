@@ -1,6 +1,6 @@
-import { FolderStructure, Note, PdfFile } from "@repo/types";
+import { FilesActionsStore, FolderStructure, Note, PdfFile, PdfMetadata } from "@repo/types";
 
-import { isPdfFile } from "../contexts";
+import { isPdfMetadata } from "../contexts";
 
 type NewFile = {
     readonly filePath: string;
@@ -15,10 +15,14 @@ export type Delta = {
     readonly filesToPatch: Array<FileToPatch>;
     readonly newFiles: Array<NewFile>;
 };
+type DiffFoldersItem = {
+    readonly actions: FilesActionsStore;
+    readonly folders: Array<FolderStructure>;
+};
 
 
 /** Clé "identité" du fichier. On privilégie la référence File, sinon fallback (name|size|lastModified). */
-const makeFileKey = (pdf: PdfFile): string => {
+const makeFileKey = (pdf: PdfMetadata): string => {
     const f = pdf.file;
     const refId = (f as any).__refId ?? undefined;
     if (refId) return (`ref:${refId}`);
@@ -29,7 +33,7 @@ const makeFileKey = (pdf: PdfFile): string => {
 };
 
 /** Aplati un FolderStructure[] en map: fileKey -> infos (chemin, pdf, métadonnées d'actions) */
-const indexStructures = (structures: Array<FolderStructure>) => {
+const indexStructures = (item: DiffFoldersItem) => {
     type ActionMeta = {
         elementsLen: number;
         referencesLen: number;
@@ -48,17 +52,18 @@ const indexStructures = (structures: Array<FolderStructure>) => {
     const walk = (node: FolderStructure, base: string) => {
         for (const [name, value] of Object.entries(node)) {
             const currentPath = base ? `${base}/${name}` : `/${name}`;
-            if (isPdfFile(value)) {
+            if (isPdfMetadata(value)) {
                 const key = makeFileKey(value);
                 const pages = new Map<number, ActionMeta>();
-                for (const [k, action] of Object.entries(value.actions)) {
+                const fileActions = item.actions[value.id];
+                for (const [k, action] of Object.entries(fileActions)) {
                     const idx = Number(k);
                     const elementsLen = action?.elements?.length ?? 0;
                     const referencesLen = action?.references?.length ?? 0;
                     const resourcesLen = action?.generatedResources?.length ?? 0;
                     pages.set(idx, { elementsLen, referencesLen, resourcesLen });
                 }
-                output.byKey.set(key, { path: currentPath, pdf: value, pages });
+                output.byKey.set(key, { path: currentPath, pdf: { ...value, actions: fileActions }, pages });
                 output.pathByKey.set(key, currentPath);
             } else {
                 walk(value as FolderStructure, currentPath);
@@ -66,15 +71,16 @@ const indexStructures = (structures: Array<FolderStructure>) => {
         }
     };
 
-    for (const root of structures) walk(root, "");
+    for (const root of item.folders) walk(root, "");
     return (output);
 };
 
+type DiffFoldersParams = {
+    readonly before: DiffFoldersItem;
+    readonly after: DiffFoldersItem;
+};
 /** Calcule le delta */
-export const diffFolderStructures = (
-    before: Array<FolderStructure>,
-    after: Array<FolderStructure>
-): Delta => {
+export const diffNewFolderStructures = ({ before, after }: DiffFoldersParams): Delta => {
     const oldIdx = indexStructures(before);
     const newIdx = indexStructures(after);
 

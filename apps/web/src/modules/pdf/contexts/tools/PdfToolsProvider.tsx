@@ -23,7 +23,7 @@ import {
 import { useContextMenu } from "@/contexts";
 import { useColorPanel } from "@/modules/colorPanel";
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "@/modules/files";
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { getRgbColor, getRgbFromString, handleActionColor } from "@/utils";
 
 import { usePdfFile } from "../file";
@@ -53,6 +53,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
     const { colorPanel } = useColorPanel();
     const { setContextMenu } = useContextMenu();
+    const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
     const { containerRef, pageIndex, pageRef, setDisplayLoader } = usePdfFile();
     const { pushAction } = usePdfHistory();
@@ -135,7 +136,9 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
                 return (toolColor === elemColor);
             };
-            const noteGroup = pdfFile.actions[pageIndex].generatedResources?.filter(noteFilter);
+
+            const pageActions = getPageActions(pdfFile.id, pageIndex);
+            const noteGroup = pageActions.generatedResources?.filter(noteFilter);
             const occurenceText = currentRange.toString().trim();
 
             if (!noteGroup) return;

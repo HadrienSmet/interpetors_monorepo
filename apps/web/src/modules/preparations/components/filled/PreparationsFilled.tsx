@@ -59,7 +59,10 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
     };
     const patchPreparation = async (params: SavePreparationParams) => {
         const { old, ...updated } = params;
-        const { files, title, voc: terms } = diffPreparations(old!, updated);
+        const { files, title, voc: terms } = diffPreparations({
+            savedPreparation: old!,
+            updatedPreparation: updated,
+        });
 
         const preparationId = selectedPreparation?.id;
         const workspaceId = currentWorkspace?.id;

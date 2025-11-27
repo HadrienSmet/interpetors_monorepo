@@ -7,12 +7,10 @@ import {
     HistoryAction,
     FileAction,
     Note,
-    PdfFile,
 } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
-import { FIRST_PAGE } from "@/modules/files";
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { useVocabulary } from "@/modules/vocabulary";
 import { handleActionColor } from "@/utils";
 
@@ -33,7 +31,8 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     const [version, setVersion] = useState(0);
 
     const { colorPanel } = useColorPanel();
-    const { files, selectedFile } = useFoldersManager();
+    const { getFileActions, getPageActions, updatePageActions } = useFoldersActions();
+    const { selectedFile } = useFoldersManager();
     const { pageIndex } = usePdfFile();
     const { addToVocabulary, remove } = useVocabulary();
 
@@ -57,6 +56,11 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             copy.splice(historyIndex + 1, Infinity, action);
         }
 
+        console.log({
+            ctx: "[PdfHistoryProvider - pushAction]: Updating history index, setting user actions, triggering shouldUpdateRef",
+            historyIndex: copy.length - 1,
+            userActions: copy,
+        });
         setHistoryIndex(copy.length - 1);
         shouldUpdateRef.current = true;
         setUserActions(copy);
@@ -132,7 +136,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                 const updated = {
                     ...current,
                     note: text,
-                }
+                };
 
                 next.generatedResources.splice(savedIndex, 1, updated);
 
@@ -142,9 +146,10 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             if (!selectedFile.fileInStructure) {
                 return;
             }
-            const updated = { ...selectedFile.fileInStructure };
+            const fileId = selectedFile.fileInStructure.id;
+            const pageActions = getPageActions(fileId, pageIndex);
 
-            const resourceIndex = updated.actions![pageIndex].generatedResources?.findIndex(resource => {
+            const resourceIndex = pageActions.generatedResources?.findIndex(resource => {
                 const currentColor = handleActionColor(resource.color, colorPanel);
                 const noteColor = handleActionColor(color, colorPanel);
 
@@ -154,11 +159,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                 );
             }) ?? -1;
 
-            const actions = updated.actions;
-            if (!actions) {
-                return;
-            }
-            const resources = actions[pageIndex].generatedResources;
+            const resources = pageActions.generatedResources;
             if (!resources) {
                 return;
             }
@@ -168,10 +169,8 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             };
 
             resources.splice(resourceIndex, 1, current);
-            // @ts-expect-error
-            actions[pageIndex].generatedResources = resources;
 
-            files.update(updated);
+            updatePageActions(fileId, pageIndex, { ...pageActions, generatedResources: resources});
         }
     };
 
@@ -181,13 +180,19 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         setUserActions([]);
 
         const file = selectedFile.fileInStructure;
-        if (!file || !(pageIndex in file.actions)) {
+        if (!file) {
+            setSavedElements({ elements: [], generatedResources: [], references: [] });
+            prevIndexRef.current = DEFAULT_INDEX;
+            return;
+        }
+        const pageActions = getFileActions(file.id);
+        if (!(pageIndex in pageActions)) {
             setSavedElements({ elements: [], generatedResources: [], references: [] });
             prevIndexRef.current = DEFAULT_INDEX;
             return;
         }
 
-        const { elements = [], generatedResources = [], references = [] } = file.actions[pageIndex];
+        const { elements = [], generatedResources = [], references = [] } = pageActions[pageIndex];
 
         setSavedElements({
             elements: [...elements],
@@ -250,19 +255,12 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
                 }
             }
 
-            const updatedFile: PdfFile = {
-                ...file,
-                actions: {
-                    ...(file.actions ?? {}),
-                    [Math.max(pageIndex, FIRST_PAGE)]: {
-                        elements,
-                        generatedResources: notes,
-                        references,
-                    },
-                },
+            const updated = {
+                elements,
+                generatedResources: notes,
+                references,
             };
-
-            files.update(updatedFile);
+            updatePageActions(file.id, pageIndex, updated);
 
             prevIndexRef.current = currentIndex;
             shouldUpdateRef.current = false;
@@ -271,6 +269,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         };
 
         handleUserActions();
+        // Probably here
     }, [historyIndex, savedElements, userActions, selectedFile.fileInStructure]);
 
 

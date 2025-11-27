@@ -1,6 +1,6 @@
 import { PropsWithChildren, useMemo, useState } from "react";
 
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 
 import { usePdfFile } from "../file";
 
@@ -9,6 +9,7 @@ import { PdfNotesContext } from "./PdfNotesContext";
 export const PdfNotesProvider = ({ children }: PropsWithChildren) => {
     const [id, setSelectedNote] = useState("");
 
+    const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
     const { pageIndex } = usePdfFile();
 
@@ -17,7 +18,8 @@ export const PdfNotesProvider = ({ children }: PropsWithChildren) => {
             return (undefined);
         }
 
-        const output = selectedFile.fileInStructure.actions[pageIndex].generatedResources?.find(note => note.id === id);
+        const fileActions = getPageActions(selectedFile.fileInStructure.id, pageIndex);
+        const output = fileActions.generatedResources?.find(note => note.id === id);
 
         return (output);
     }, [id, selectedFile]);

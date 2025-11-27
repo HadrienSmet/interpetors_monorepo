@@ -1,13 +1,12 @@
-import { PdfFile } from "../files";
+import { PdfMetadata } from "../files";
 
-/** While user on new preparation */
 export type FolderStructure = {
-    [key: string]: PdfFile | FolderStructure;
+    [key: string]: PdfMetadata | FolderStructure;
 };
 /** When retrieving an old preparation from Api */
 export type SavedFolderStructure = {
     [key: string]:
-        | (PdfFile & { readonly id: string; })
+        | (PdfMetadata & { readonly id: string; })
         | SavedFolderStructure;
 };
 export type FlatFolder = {

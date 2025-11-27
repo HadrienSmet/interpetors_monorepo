@@ -4,7 +4,7 @@ import type { FolderStructure, PdfFile } from "@repo/types";
 
 import { getDefaultPdfFile, PDF_TYPE } from "@/modules/pdf";
 
-import { isPdfFile, useFoldersManager } from "../../contexts";
+import { isPdfMetadata, useFoldersManager } from "../../contexts";
 
 import "./folderDropzone.scss";
 
@@ -62,7 +62,7 @@ const readDirectory = async (
     }
 };
 
-const doesPathExist = (structure: FolderStructure, path: string[]): boolean => {
+const newDoesPathExist = (structure: FolderStructure, path: string[]): boolean => {
     if (path.length === 0) return (false);
 
     const [head, ...rest] = path;
@@ -70,16 +70,16 @@ const doesPathExist = (structure: FolderStructure, path: string[]): boolean => {
 
     if (!node) return (false);
     if (rest.length === 0) return (true);
-    if (isPdfFile(node)) return (false);
+    if (isPdfMetadata(node)) return (false);
 
-    return (doesPathExist(node as FolderStructure, rest));
+    return (newDoesPathExist(node as FolderStructure, rest));
 };
 export const FolderDropzone = ({ children }: PropsWithChildren) => {
     const [isDragged, setIsDragged] = useState(false);
 
     const { folders, foldersStructure } = useFoldersManager();
 
-    const doesFolderAlreadyExist = (path: string[]): boolean => foldersStructure.some(structure => doesPathExist(structure, path));
+    const doesFolderAlreadyExist = (path: string[]): boolean => foldersStructure.some(structure => newDoesPathExist(structure, path));
 
     const handleDragEnter = () => setIsDragged(true);
     const handleDragLeave = () => setIsDragged(false);

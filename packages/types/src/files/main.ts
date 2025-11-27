@@ -6,6 +6,11 @@ export type PdfFile = {
     readonly id: string;
     readonly name: string;
 };
+export type PdfMetadata = {
+    readonly file: File;
+    readonly id: string;
+    readonly name: string;
+};
 export type PdfFileApi = {
     readonly createdAt: Date;
     readonly filePath: string;
@@ -14,4 +19,4 @@ export type PdfFileApi = {
     readonly preparationId: string;
     readonly s3Key: string;
     readonly updatedAt: Date;
-}
+};

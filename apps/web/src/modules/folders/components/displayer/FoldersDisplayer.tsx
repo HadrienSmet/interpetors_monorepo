@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router";
 import { FileDisplayer } from "@/modules/files";
 import { URL_PARAMETERS } from "@/utils";
 
-import { getPdfFile, useFoldersManager } from "../../contexts";
+import { getPdfMetadata, useFoldersManager } from "../../contexts";
 
 import { FoldersExplorer } from "../explorer";
 
@@ -45,7 +45,7 @@ export const FoldersDisplayer = (props: FoldersExplorerProps) => {
         if (!path) return;
 
         for (const folder of foldersStructure) {
-            const fileInStructure = getPdfFile(folder, `/${path}`);
+            const fileInStructure = getPdfMetadata(folder, `/${path}`);
 
             if (fileInStructure) {
                 setSelectedFilePath(path);

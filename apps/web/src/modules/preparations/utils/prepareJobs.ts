@@ -1,7 +1,7 @@
-import { FolderStructure, VocabularyTerm } from "@repo/types";
+import { FilesActionsStore, FolderStructure, VocabularyTerm } from "@repo/types";
 
 import { FILES } from "@/modules/files";
-import { isPdfFile } from "@/modules/folders";
+import { isPdfMetadata } from "@/modules/folders";
 import { PDF_TYPE } from "@/modules/pdf";
 
 type PdfFileJob = Omit<FILES.PostPdfParams, "s3Key">;
@@ -21,6 +21,7 @@ const FIRST_LEVEL_PATH = "";
  */
 export const prepareJobs = (
     folders: Array<FolderStructure>,
+    foldersActions: FilesActionsStore,
     preparationId: string,
     vocabularyTerms: Array<VocabularyTerm> = []
 ): Array<FlatJob> => {
@@ -32,15 +33,15 @@ export const prepareJobs = (
         const { path, node } = queue.shift()!;
 
         for (const [name, value] of Object.entries(node)) {
-            if (isPdfFile(value)) {
+            if (isPdfMetadata(value)) {
                 const fullPath = path ? `${path}/${value.name}` : `/${value.name}`;
                 const filePath = path;
 
                 const terms = vocabularyTerms.filter(t => t.occurrence.filePath === fullPath);
-
+                const actions = foldersActions[value.id];
                 jobs.push({
                     pdf: {
-                        actions: JSON.stringify(value.actions),
+                        actions: JSON.stringify(actions),
                         filePath,
                         name: value.name,
                         preparationId,

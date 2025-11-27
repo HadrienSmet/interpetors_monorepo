@@ -22,3 +22,4 @@ export type FileAction = {
     /** Text highlighted on hover */
     readonly references?: Array<ReferenceElement>;
 };
+export type FilesActionsStore = Record<string, Record<number, FileAction>>;

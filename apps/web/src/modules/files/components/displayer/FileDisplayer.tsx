@@ -47,7 +47,7 @@ export const FileDisplayer = () => {
 
     return (
         <div className="file-displayer" style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}>
-            {selectedFile.fileInStructure != null
+            {selectedFile.path != ""
                 ? (<FileToRender />)
                 : (
                     <div className="unselected-file">

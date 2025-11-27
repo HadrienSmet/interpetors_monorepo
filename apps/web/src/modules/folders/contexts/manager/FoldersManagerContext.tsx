@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
-import { FolderStructure, PdfFile } from "@repo/types";
+import { FolderStructure, PdfMetadata } from "@repo/types";
 
 import { getContextError } from "@/contexts/utils";
 
@@ -9,11 +9,10 @@ import { FileData } from "../../types";
 export type FoldersManagerContextValue = {
     readonly isEditable: boolean;
     readonly files: {
-        readonly addNewPageActions: (path: string, pageIndex: number) => void;
         readonly changeDirectory: (fileName: string, targetPath: string) => void;
-        readonly delete: (file: PdfFile) => void;
-        readonly rename: (file: PdfFile, newName: string) => void;
-        readonly update: (file: PdfFile) => void;
+        readonly delete: (file: PdfMetadata) => void;
+        readonly rename: (file: PdfMetadata, newName: string) => void;
+        readonly update: (file: PdfMetadata) => void;
     };
     readonly folders: {
         readonly changeDirectory: (source: string, destination: string) => void;

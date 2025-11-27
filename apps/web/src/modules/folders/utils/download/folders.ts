@@ -15,7 +15,7 @@ export const getPdfDocument = async (file: File) => {
     const pdfDoc = await PDFDocument.load(arrayBuffer);
 
     return (pdfDoc);
-}
+};
 const generatePdfBytes = async (file: PdfFile, colorPanel: ColorPanelType | null): Promise<Uint8Array> => {
     const pdfDoc = await getPdfDocument(file.file);
 
@@ -25,7 +25,6 @@ const generatePdfBytes = async (file: PdfFile, colorPanel: ColorPanelType | null
 
     return (pdfDoc.save());
 };
-
 const addToZip = async (zip: JSZip, folder: FolderStructure, colorPanel: ColorPanelType | null, path = "") => {
     for (const [key, value] of Object.entries(folder)) {
         if ("file" in value) {
@@ -41,7 +40,6 @@ const addToZip = async (zip: JSZip, folder: FolderStructure, colorPanel: ColorPa
         }
     }
 };
-
 export const downloadFolderAsZip = async (structures: Array<FolderStructure>, colorPanel: ColorPanelType | null, zipName = "documents.zip") => {
     const zip = new JSZip();
 

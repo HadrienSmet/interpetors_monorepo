@@ -1,17 +1,18 @@
-import { SavedFolderStructure } from "@repo/types";
+import { FilesActionsStore, SavedFolderStructure } from "@repo/types";
 
 import { FILES } from "@/modules/files";
 import { handleServicesConcurrency } from "@/utils";
 
-const handleFile = async (item: FILES.FileApiResponse) => {
+const handleFile = async ({ actions, ...item }: FILES.FileApiResponse, foldersActions: FilesActionsStore) => {
     const fileRes = await FILES.getOneS3(item.s3Key, item.name);
     if (!fileRes.success) {
         throw new Error(fileRes.message);
     }
 
+    foldersActions[item.id] = JSON.parse(actions);
+
     return ({
         ...item,
-        actions: JSON.parse(item.actions),
         file: fileRes.data,
     });
 };
@@ -19,7 +20,7 @@ const handleFile = async (item: FILES.FileApiResponse) => {
 const limit = handleServicesConcurrency(4);
 
 export const buildFoldersStructure = async (preparationId: string) => {
-    const output: Array<SavedFolderStructure> = [];
+    const foldersStructures: Array<SavedFolderStructure> = [];
 
     const pdfFilesResponse = await FILES.getAllApi(preparationId);
     if (!pdfFilesResponse.success) {
@@ -27,11 +28,12 @@ export const buildFoldersStructure = async (preparationId: string) => {
     }
 
     const files = pdfFilesResponse.data;
+    const foldersActions: FilesActionsStore = {};
 
-    const hydrated = await Promise.all(files.map(file => limit(() => handleFile(file))));
+    const hydrated = await Promise.all(files.map(file => limit(() => handleFile(file, foldersActions))));
 
     for (const fileData of hydrated) {
-        const { id, filePath, name, file, actions } = fileData;
+        const { id, filePath, name, file } = fileData;
         const parts = filePath ? filePath.split("/").filter(Boolean) : [];
 
         let currentLevel: SavedFolderStructure;
@@ -39,15 +41,15 @@ export const buildFoldersStructure = async (preparationId: string) => {
         // Trouve ou crée la racine correspondante
         if (parts.length === 0) {
             // fichier à la racine → nouvelle structure si besoin
-            currentLevel = output[0] ?? {};
-            output[0] = currentLevel;
+            currentLevel = foldersStructures[0] ?? {};
+            foldersStructures[0] = currentLevel;
         } else {
             // essaie de retrouver la racine correspondante sinon crée une nouvelle
             const rootName = parts[0];
-            let root = output.find((f) => rootName in f);
+            let root = foldersStructures.find((f) => rootName in f);
             if (!root) {
                 root = { [rootName]: {} };
-                output.push(root);
+                foldersStructures.push(root);
             }
             currentLevel = root[rootName] as SavedFolderStructure;
 
@@ -62,8 +64,8 @@ export const buildFoldersStructure = async (preparationId: string) => {
         }
 
         // insère le PdfFile
-        currentLevel[name] = { id, actions, file, name };
+        currentLevel[name] = { id, file, name };
     }
 
-    return (output);
+    return ({ foldersActions, foldersStructures });
 };

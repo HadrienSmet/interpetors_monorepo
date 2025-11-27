@@ -33,11 +33,7 @@ const isRetryableError = (err: any): boolean => {
     if (code && prismaRetryables.has(code)) return (true);
 
     // Réseau
-    if (
-        /ECONNRESET|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|socket hang up/i.test(msg)
-    ) return (true);
-
-    return (false);
+    return (/ECONNRESET|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|socket hang up/i.test(msg));
 };
 
 export const retryAsync = async <T>(fn: () => Promise<T>, opts: RetryOptions = {}): Promise<T> => {

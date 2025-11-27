@@ -7,7 +7,7 @@ import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { useCssVariable } from "@/hooks";
 
-import { isPdfFile, useFoldersManager } from "../../../../contexts";
+import { isPdfMetadata, useFoldersManager } from "../../../../contexts";
 
 import { handleDynamicEvent, FileNode } from "../file";
 import { getPaddingLeft } from "../nodes.utils";
@@ -197,7 +197,7 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
         setIsOpen(false);
     }, [collapseSignal]);
 
-    if (isPdfFile(node)) {
+    if (isPdfMetadata(node)) {
         return (
             <FileNode
                 {...props}

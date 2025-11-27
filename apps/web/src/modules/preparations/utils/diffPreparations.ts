@@ -1,12 +1,13 @@
-import { FolderStructure, SavedVocabularyTerm } from "@repo/types";
+import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/types";
 
-import { Delta, diffFolderStructures } from "@/modules/folders";
+import { Delta, diffNewFolderStructures } from "@/modules/folders";
 import { diffVocabulary } from "@/modules/vocabulary";
 
 import { SavedPreparation } from "../types";
 
 export type UpdatedPreparation = {
     readonly folders: Array<FolderStructure>;
+    readonly foldersActions: FilesActionsStore;
     readonly title: string;
     readonly vocabularyTerms: Array<SavedVocabularyTerm>;
 };
@@ -15,7 +16,12 @@ type Patch = {
     title?: string;
     voc?: Array<SavedVocabularyTerm>;
 };
-export const diffPreparations = (savedPreparation: SavedPreparation, updatedPreparation: UpdatedPreparation) => {
+
+type DiffPreparationsParams = {
+    readonly savedPreparation: SavedPreparation;
+    readonly updatedPreparation: UpdatedPreparation;
+};
+export const diffPreparations = ({ savedPreparation, updatedPreparation }: DiffPreparationsParams) => {
     let patch: Patch = {};
 
     if (savedPreparation.title !== updatedPreparation.title) {
@@ -27,7 +33,10 @@ export const diffPreparations = (savedPreparation: SavedPreparation, updatedPrep
         patch.voc = vocDiffs.toAddOrUpdate;
     }
 
-    const foldersDiff = diffFolderStructures(savedPreparation.folders, updatedPreparation.folders);
+    const foldersDiff = diffNewFolderStructures({
+        before: { actions: savedPreparation.foldersActions, folders: savedPreparation.folders },
+        after: { actions: updatedPreparation.foldersActions, folders: updatedPreparation.folders },
+    });
     patch.files = foldersDiff;
 
     return (patch);

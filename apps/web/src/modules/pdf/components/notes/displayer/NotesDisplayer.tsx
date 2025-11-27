@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { Note } from "@repo/types";
 
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { usePdfFile } from "@/modules/pdf";
 
 import { GroupedNotes } from "../grouped";
@@ -10,20 +10,23 @@ import { GroupedNotes } from "../grouped";
 import "./notesDisplayer.scss";
 
 export const NotesDisplayer = () => {
+    const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
     const { pageIndex } = usePdfFile();
 
     const grouped = useMemo(() => {
         const output: Record<string, Array<Note>> = {};
 
-        if (
-            !selectedFile.fileInStructure ||
-            !selectedFile.fileInStructure.actions[pageIndex].generatedResources
-        ) {
+        if (!selectedFile.fileInStructure) {
             return (output);
         }
 
-        for (const note of selectedFile.fileInStructure.actions[pageIndex].generatedResources) {
+        const pageActions = getPageActions(selectedFile.fileInStructure.id, pageIndex);
+        if (!pageActions.generatedResources) {
+            return (output);
+        }
+
+        for (const note of pageActions.generatedResources) {
             if (!(note.y in output)) {
                 output[note.y] = [note];
             } else {

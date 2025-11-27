@@ -44,11 +44,17 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
                 let preparationRecord: SavedPreparation = {
                     ...preparation,
                     folders: [],
+                    foldersActions: {},
                     vocabulary: [],
                 };
 
-                const hydrated = await buildFoldersStructure(preparationId);
-                preparationRecord.folders.push(...hydrated);
+                const { foldersActions, foldersStructures } = await buildFoldersStructure(preparationId);
+                preparationRecord.folders.push(...foldersStructures);
+                //@ts-expect-error
+                preparationRecord.foldersActions = {
+                    ...preparationRecord.foldersActions,
+                    ...foldersActions,
+                }
 
                 const vocabularyResponse = await VOCABULARY.getAllFromPreparation(workspaceId, preparationId);
                 if (!vocabularyResponse.success) {

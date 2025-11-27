@@ -31,7 +31,7 @@ const PreparationsChild = () => {
         )[SCREEN_NAVIGATION_LEVEL]
     ), [location.pathname]);
 
-    const createPreparation = async ({ title, folders, rootFolderId, vocabularyTerms }: SavePreparationParams) => {
+    const createPreparation = async ({ title, folders, foldersActions, rootFolderId, vocabularyTerms }: SavePreparationParams) => {
         const workspaceId = currentWorkspace!.id;
         const prepRes = await PREPARATION.create({
             body: { title },
@@ -44,6 +44,7 @@ const PreparationsChild = () => {
 
         await uploadPreparation({
             folders,
+            foldersActions,
             preparationId: prepRes.data.id,
             rootFolderId: rootFolderId ?? "root",
             vocabularyTerms,

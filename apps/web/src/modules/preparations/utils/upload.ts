@@ -1,4 +1,4 @@
-import { FolderStructure, VocabularyTerm } from "@repo/types";
+import { FilesActionsStore, FolderStructure, VocabularyTerm } from "@repo/types";
 
 import { uploadFile } from "@/modules/pdf";
 import { VOCABULARY } from "@/modules/vocabulary";
@@ -10,6 +10,7 @@ const runAPI = handleServicesConcurrency(5);
 
 type UploadPreparationParams = {
     readonly folders: Array<FolderStructure>;
+    readonly foldersActions: FilesActionsStore;
     readonly preparationId: string;
     readonly rootFolderId?: string;
     readonly vocabularyTerms: Array<VocabularyTerm>;
@@ -17,12 +18,13 @@ type UploadPreparationParams = {
 };
 export const uploadPreparation = async ({
     folders,
+    foldersActions,
     preparationId,
     vocabularyTerms,
     workspaceId,
 }: UploadPreparationParams) => {
     // 1) Aplatir les jobs (un job par PDF)
-    const jobs = prepareJobs(folders, preparationId, vocabularyTerms);
+    const jobs = prepareJobs(folders, foldersActions, preparationId, vocabularyTerms);
 
     // 2) Traiter chaque job via un pool d'API (et sous-pool S3)
     await Promise.all(jobs.map(job => (runAPI(async () => {
