@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { MdArrowBack, MdSave } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
@@ -29,11 +29,14 @@ type PreparationLayoutProps = {
     readonly editable?: boolean;
     readonly preparation?: SavedPreparation | undefined;
     readonly savePreparation: (params: SavePreparationParams) => Promise<void>;
+    readonly scrollableParentRef?: RefObject<HTMLDivElement | null>;
 };
 type PreparationLayoutContentProps = Omit<PreparationLayoutProps, "preparation">;
 const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     const [initialTabIndex, setInitialTabIndex] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
+
+    const tabsViewRef = useRef<HTMLDivElement>(null);
 
     const { foldersActions } = useFoldersActions();
     const { foldersStructure, setFoldersStructure } = useFoldersManager();
@@ -80,6 +83,11 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     };
     const onTabsChange = (index: number) => {
         setSearchParams(prev => {
+            if (props.scrollableParentRef?.current?.scrollLeft === 0) {
+                // Not visible
+                return (prev);
+            }
+
             const next = new URLSearchParams(prev);
             next.set(URL_PARAMETERS.view, viewTitles[index]);
             return (next);
@@ -99,7 +107,10 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     }, [searchParams.toString(), views]);
 
     return (
-        <div className="preparation-tabs-view">
+        <div
+            className="preparation-tabs-view"
+            ref={tabsViewRef}
+        >
             <div className="preparation-header">
                 <button
                     onClick={props.backToList}

@@ -50,10 +50,11 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
             const next = new URLSearchParams(state);
 
             next.delete(URL_PARAMETERS.preparationid);
-            next.delete(URL_PARAMETERS.view)
+            next.delete(URL_PARAMETERS.view);
 
             return (next);
         });
+
         setSelectedPreparation(undefined);
         scrollToList();
     };
@@ -172,6 +173,7 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                         backToList={backToList}
                         preparation={selectedPreparation}
                         savePreparation={patchPreparation}
+                        scrollableParentRef={viewportRef}
                     />
                 </div>
             </div>
