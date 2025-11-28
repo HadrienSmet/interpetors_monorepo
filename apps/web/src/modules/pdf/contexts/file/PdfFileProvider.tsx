@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { PropsWithChildren, RefObject, useEffect, useRef, useState } from "react";
 import { DocumentCallback } from "react-pdf/src/shared/types.js";
 
 import { useColorPanel } from "@/modules/colorPanel";
@@ -11,7 +11,10 @@ import { downloadPdf, handleSaveChanges } from "../../utils";
 
 import { PdfFileContext } from "./PdfFileContext";
 
-export const PdfFileProvider = ({ children }: PropsWithChildren) => {
+type PdfFileProviderProps =
+    & { readonly scrollableParentRef: RefObject<HTMLDivElement | null>; }
+    & PropsWithChildren;
+export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProviderProps) => {
     const [displayLoader, setDisplayLoader] = useState(true);
     const [isPdfRendered, setIsPdfRendered] = useState(false);
     /** Number of pages of the pdf file */
@@ -111,6 +114,7 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         pageRef,
         previousPage,
         renderedPages,
+        scrollableParentRef,
         setDisplayLoader,
         setIsPdfRendered,
     };

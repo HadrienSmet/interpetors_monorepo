@@ -1,3 +1,4 @@
+import { RefObject, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Loader } from "@/components";
@@ -8,8 +9,10 @@ import { SUPPORTED_TYPES } from "../icon";
 
 import "./fileDisplayer.scss";
 
-
-const FileToRender = () => {
+type FileToRenderProps = {
+    readonly fileDisplayerRef: RefObject<HTMLDivElement | null>;
+};
+const FileToRender = (props: FileToRenderProps) => {
     const { t } = useTranslation();
 
     const { selectedFile } = useFoldersManager();
@@ -21,7 +24,7 @@ const FileToRender = () => {
     const { file } = selectedFile.fileInStructure;
 
     if (file.type.startsWith(SUPPORTED_TYPES.PDF)) {
-        return (<PdfEditor />);
+        return (<PdfEditor {...props} />);
     }
     if (file.type.startsWith(SUPPORTED_TYPES.WORD)) {
         return (<p>{t("files.unsupported", { type: "Word" })}</p>);
@@ -42,13 +45,19 @@ const FileToRender = () => {
 
 const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
 export const FileDisplayer = () => {
+    const fileDisplayerRef = useRef(null);
+
     const { selectedFile } = useFoldersManager();
     const { t } = useTranslation();
 
     return (
-        <div className="file-displayer" style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}>
+        <div
+            className="file-displayer"
+            ref={fileDisplayerRef}
+            style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}
+        >
             {selectedFile.path != ""
-                ? (<FileToRender />)
+                ? (<FileToRender fileDisplayerRef={fileDisplayerRef} />)
                 : (
                     <div className="unselected-file">
                         <p>{t("inputs.folders.unselected")}</p>

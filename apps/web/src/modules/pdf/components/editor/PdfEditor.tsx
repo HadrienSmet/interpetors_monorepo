@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { RefObject, useMemo } from "react";
 
 import "@/workers/pdfConfig";
 
@@ -60,8 +60,11 @@ const PdfEditorChild = () => {
     );
 };
 
-export const PdfEditor = () => (
-    <PdfWrapper>
+type PdfEditorProps = {
+    readonly fileDisplayerRef: RefObject<HTMLDivElement | null>;
+};
+export const PdfEditor = (props: PdfEditorProps) => (
+    <PdfWrapper scrollableParentRef={props.fileDisplayerRef}>
         <PdfEditorChild />
     </PdfWrapper>
 );

@@ -56,11 +56,6 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
             copy.splice(historyIndex + 1, Infinity, action);
         }
 
-        console.log({
-            ctx: "[PdfHistoryProvider - pushAction]: Updating history index, setting user actions, triggering shouldUpdateRef",
-            historyIndex: copy.length - 1,
-            userActions: copy,
-        });
         setHistoryIndex(copy.length - 1);
         shouldUpdateRef.current = true;
         setUserActions(copy);

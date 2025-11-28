@@ -15,6 +15,7 @@ type PdfFileContextType = {
     readonly pageRef: RefObject<HTMLDivElement | null>;
     readonly previousPage: () => void;
     readonly renderedPages: RefObject<number>;
+    readonly scrollableParentRef: RefObject<HTMLDivElement | null>;
     readonly setDisplayLoader: Dispatch<SetStateAction<boolean>>;
     // TODO - Logic should be changed since single page
     readonly setIsPdfRendered: Dispatch<SetStateAction<boolean>>;

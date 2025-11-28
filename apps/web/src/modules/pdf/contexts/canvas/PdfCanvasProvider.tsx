@@ -39,7 +39,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const { colorPanel } = useColorPanel();
     const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
-    const { displayLoader, isPdfRendered, pageIndex, pageRef } = usePdfFile();
+    const { displayLoader, isPdfRendered, pageIndex, pageRef, scrollableParentRef } = usePdfFile();
     const { pushAction, version } = usePdfHistory();
     const { color, currentRange, tool } = usePdfTools();
 
@@ -216,21 +216,37 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         ctx.lineWidth = STROKE_SIZE;
         ctx.strokeStyle = colorToUse;
 
+        const getPoints = (e: MouseEvent) => ({
+            x: e.clientX,
+            y: e.clientY + (scrollableParentRef.current?.scrollTop ?? 0),
+        });
+        const getPositions = (e: MouseEvent) => {
+            const { x, y } = getPoints(e);
+
+            return ({
+                x: x - pageDimensions.left,
+                y: y - pageDimensions.top,
+            });
+        };
         const handleMouseDown = (e: MouseEvent) => {
             isDrawing = true;
 
+            const { x: canvasX, y: canvasY } = getPositions(e);
             ctx.beginPath();
-            ctx.moveTo(e.clientX - pageDimensions.left, e.clientY - pageDimensions.top);
+            ctx.moveTo(canvasX, canvasY);
 
-            points.push({ x: e.clientX, y: e.clientY });
+            const { x, y } = getPoints(e);
+            points.push({ x, y });
         };
         const handleMouseMove = (e: MouseEvent) => {
             if (!isDrawing) return;
 
-            ctx.lineTo(e.clientX - pageDimensions.left, e.clientY - pageDimensions.top);
+            const { x: canvasX, y: canvasY } = getPositions(e);
+            ctx.lineTo(canvasX, canvasY);
             ctx.stroke();
 
-            points.push({ x: e.clientX, y: e.clientY });
+            const { x, y } = getPoints(e);
+            points.push({ x, y });
         };
         const handleMouseUp = async () => {
             if (points.length < 2) return;

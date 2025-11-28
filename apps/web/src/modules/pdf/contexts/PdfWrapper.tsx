@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, RefObject } from "react";
 
 import { PdfCanvasProvider } from "./canvas";
 import { PdfFileProvider } from "./file";
@@ -6,8 +6,11 @@ import { PdfHistoryProvider } from "./history";
 import { PdfNotesProvider } from "./notes";
 import { PdfToolsProvider } from "./tools";
 
-export const PdfWrapper = ({ children }: PropsWithChildren) => (
-    <PdfFileProvider>
+type PdfWrapperProps =
+    & { readonly scrollableParentRef: RefObject<HTMLDivElement | null>; }
+    & PropsWithChildren;
+export const PdfWrapper = ({ children, ...props }: PdfWrapperProps) => (
+    <PdfFileProvider {...props}>
         <PdfHistoryProvider>
             <PdfToolsProvider>
                 <PdfCanvasProvider>
