@@ -269,9 +269,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         };
 
         handleUserActions();
-        // Probably here
     }, [historyIndex, savedElements, userActions, selectedFile.fileInStructure]);
-
 
     const isUpToDate = useMemo(() => (
         historyIndex === userActions.length - 1
