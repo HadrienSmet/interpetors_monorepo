@@ -68,3 +68,17 @@ export const retryAsync = async <T>(fn: () => Promise<T>, opts: RetryOptions = {
         }
     }
 };
+
+export const retryOnP1017 = async <T>(fn: () => Promise<T>, retries = 2) => {
+    let lastErr: any;
+    for (let i = 0; i <= retries; i++) {
+        try {
+            return (await fn());
+        } catch (e: any) {
+            lastErr = e;
+            if (e?.code !== "P1017" || i === retries) throw e;
+            await new Promise(r => setTimeout(r, 200 * (i + 1)));
+        }
+    }
+    throw lastErr;
+};

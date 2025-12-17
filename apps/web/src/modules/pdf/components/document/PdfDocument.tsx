@@ -21,7 +21,7 @@ const OPTIONS = {
 } as const;
 
 export const PdfDocument = () => {
-    const { getPageActions } = useFoldersActions();
+    const { foldersActions, getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
     const { numPages, onDocumentLoadSuccess, pageIndex, pageRef, setIsPdfRendered } = usePdfFile();
     const { setSelectedNote } = usePdfNotes();
@@ -29,7 +29,9 @@ export const PdfDocument = () => {
     const [_, setSearchParams] = useSearchParams();
 
     const pdfFile = selectedFile.fileInStructure!;
-    const pageActions = useMemo(() => getPageActions(pdfFile.id, pageIndex), [pdfFile.id, pageIndex]);
+    const pageActions = useMemo(() => (
+        getPageActions(pdfFile.id, pageIndex)
+    ), [foldersActions, pdfFile.id, pageIndex]);
 
     const displayNoteReferences = (
         pageActions &&

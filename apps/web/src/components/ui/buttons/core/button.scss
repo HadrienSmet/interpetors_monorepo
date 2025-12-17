@@ -1,17 +1,22 @@
 .button {
     background-color: var(--clr-txt);
     border-radius: var(--radius-s);
-    border: var(--border-s) solid var(--clr-txt);
     color: var(--clr-bg);
     font-weight: 500;
     letter-spacing: 1.1;
+    outline: none;
     padding: var(--space-m) var(--space-xl);
     transition:
         background-color var(--transition-theme),
         color var(--transition-theme),
         transform 0.18s;
+
+    &:not(:disabled) {
+        border: var(--border-s) solid var(--clr-txt);
+    }
     &:disabled {
         background-color: var(--clr-txt-04);
+        border: var(--border-s) solid  transparent;
         cursor:not-allowed;
     }
     &:hover:not(:disabled) {

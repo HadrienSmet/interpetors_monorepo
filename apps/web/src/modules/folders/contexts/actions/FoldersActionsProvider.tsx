@@ -16,7 +16,7 @@ export const FoldersActionsProvider = ({ children, savedActions }: FoldersAction
     const [foldersActions, setFoldersActions] = useState<FilesActionsStore>({});
 
     const getFileActions: FoldersActionsContextValue["getFileActions"] = (fileId) => (foldersActions[fileId] ?? EMPTY_FILE_ACTIONS);
-    const getPageActions: FoldersActionsContextValue["getPageActions"] = (fileId, pageIndex) => (foldersActions[fileId][pageIndex] ?? EMPTY_PAGE_ACTIONS);
+    const getPageActions: FoldersActionsContextValue["getPageActions"] = (fileId, pageIndex) => (foldersActions[fileId]?.[pageIndex] ?? EMPTY_PAGE_ACTIONS);
     const updatePageActions: FoldersActionsContextValue["updatePageActions"] = (fileId, pageIndex, newAction) => (
         setFoldersActions(state => ({
             ...state,

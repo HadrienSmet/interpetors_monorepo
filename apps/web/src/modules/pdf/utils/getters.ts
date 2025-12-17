@@ -6,6 +6,6 @@ export const getDefaultPdfActions = () => ({ [FIRST_PAGE]: { elements: [] } });
 export const getDefaultPdfFile = (file: File): PdfFile => ({
     actions: getDefaultPdfActions(),
     file,
-    id: "",
+    id: file.name,
     name: file.name,
 });

@@ -10,7 +10,7 @@ import { GroupedNotes } from "../grouped";
 import "./notesDisplayer.scss";
 
 export const NotesDisplayer = () => {
-    const { getPageActions } = useFoldersActions();
+    const { foldersActions, getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
     const { pageIndex } = usePdfFile();
 
@@ -35,7 +35,7 @@ export const NotesDisplayer = () => {
         }
 
         return (output);
-    }, [selectedFile.fileInStructure, pageIndex]);
+    }, [foldersActions, pageIndex, selectedFile.path]);
 
     return (
         <div className="document-notes-displayer">

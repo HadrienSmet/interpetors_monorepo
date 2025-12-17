@@ -29,6 +29,7 @@ export class PreparationsService {
             where: { id: workspaceId },
             select: { id: true },
         });
+
         if (!workspace) {
             throw new NotFoundException(`Workspace ${workspaceId} not found`);
         }

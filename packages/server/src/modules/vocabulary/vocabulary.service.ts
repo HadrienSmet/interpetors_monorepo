@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { Prisma, VocabularyTerm } from "@prisma/client";
 
+import { retryOnP1017 } from "src/common";
+
 import { PrismaService } from "../prisma";
 
 import { CreateVocabularyTermDto, UpsertVocabularyTermDto } from "./dto";
@@ -14,13 +16,13 @@ type SlimTerm =
 type TermItem = {
     id: string;
     colorJson: Prisma.JsonValue;
-    translations: string[];
-    occurrences: {
+    translations: Array<string>;
+    occurrences: Array<{
         pdfFileId: string;
         pageIndex: number;
         text: string;
         filePath: string;
-    }[];
+    }>;
 };
 
 @Injectable()
@@ -28,7 +30,7 @@ export class VocabularyService {
     constructor(private readonly prisma: PrismaService) { }
 
     private formatTerm(term: TermItem) {
-        // tu peux choisir ici quelle occurrence renvoyer :
+        //  tu peux choisir ici quelle occurrence renvoyer :
         //  soit la première (souvent c’est le cas d’usage)
         //  soit toutes les occurrences si tu veux un tableau
         const firstOcc = term.occurrences?.[0];
@@ -58,10 +60,6 @@ export class VocabularyService {
         if (prep.workspaceId !== workspaceId) {
             throw new BadRequestException(`Preparation ${preparationId} does not belong to workspace ${workspaceId}`);
         }
-
-        // Optionnel: vérifier existence workspace explicitement
-        const ws = await this.prisma.workspace.findUnique({ where: { id: workspaceId }, select: { id: true } });
-        if (!ws) throw new NotFoundException(`Workspace ${workspaceId} not found`);
     }
 
     /** Liste des termes liés à une préparation */
@@ -172,7 +170,7 @@ export class VocabularyService {
         preparationId: string,
         items: UpsertVocabularyTermDto[],
     ): Promise<SlimTerm[]> {
-        await this.assertWorkspaceAndPreparation(workspaceId, preparationId);
+        await retryOnP1017(() => this.assertWorkspaceAndPreparation(workspaceId, preparationId));
 
         // dédoublonner côté payload (par termId si présent, sinon par signature de translations)
         const deduped = dedupePayload(items);
@@ -214,7 +212,6 @@ export class VocabularyService {
                             filePath: occurrence.filePath,
                         },
                     });
-
                 }
 
                 await tx.workspaceVocabularyTerm.upsert({
@@ -238,7 +235,7 @@ export class VocabularyService {
             }
 
             return results;
-        });
+        }, { timeout: 120_000 });
     }
 
     /** Détache un terme d’une préparation (sans supprimer le terme global) */

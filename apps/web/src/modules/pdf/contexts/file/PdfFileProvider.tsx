@@ -66,6 +66,9 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
 
     // ------ USE EFFECTS ------
     useEffect(() => {
+        setPageIndex(1);
+    }, [selectedFile.path]);
+    useEffect(() => {
         setIsPdfRendered(false);
     }, [selectedFile.path, pageIndex]);
     // Removes the loader when the pdf is displayed

@@ -44,6 +44,9 @@ export type CallOutput<T> =
 const HEADERS = {
     "Content-Type": "application/json",
 } as const;
+
+const ABORTION_TIMEOUT = 120_000 as const;
+
 export const call = async <T>({ skipRefresh = false, ...params }: CallParams): Promise<CallOutput<T>> => {
     let token = localStorage.getItem(AUTH_STORAGE_KEY);
 
@@ -70,9 +73,15 @@ export const call = async <T>({ skipRefresh = false, ...params }: CallParams): P
         requestInit.body = JSON.stringify(params.body);
     }
 
+    const controller = new AbortController();
+
+    setTimeout(() => controller.abort(), ABORTION_TIMEOUT);
     let response = await fetch(
         `${import.meta.env.VITE_API_URL}/${params.route}`,
-        requestInit
+        {
+            ...requestInit,
+            signal: controller.signal,
+        }
     );
 
     // Checking if can be succeeded with new token
@@ -84,6 +93,7 @@ export const call = async <T>({ skipRefresh = false, ...params }: CallParams): P
                 `${import.meta.env.VITE_API_URL}/${params.route}`,
                 {
                     ...requestInit,
+                    signal: controller.signal,
                     headers: {
                         ...requestInit.headers,
                         Authorization: `Bearer ${token}`,
