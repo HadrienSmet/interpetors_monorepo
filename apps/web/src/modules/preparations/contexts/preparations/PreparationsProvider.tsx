@@ -22,6 +22,16 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
         return (preparations.find(prep => prep.id === selectedPreparationId));
     }, [selectedPreparationId, preparations]);
 
+    const addPreparation = (prep: SavedPreparation) => setPreparations(state => ([...state, prep]));
+    const patchPreparation = (id: string, prep: SavedPreparation) => setPreparations(prev => {
+        const next = [...prev];
+
+        const index = next.findIndex(elem => elem.id === id);
+        next.splice(index, 1, prep);
+
+        return (next);
+    });
+
     useEffect(() => {
         const fetchPreparations = async () => {
             if (!currentWorkspace) {
@@ -73,7 +83,9 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
     }, []);
 
     const value: PreparationsContextValue = {
+        addPreparation,
         isLoading,
+        patchPreparation,
         preparations,
         selectedPreparation,
         setSelectedPreparation,

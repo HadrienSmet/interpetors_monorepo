@@ -9,6 +9,7 @@ import { scrollToChild, URL_PARAMETERS } from "@/utils";
 
 import { usePreparations } from "../../contexts";
 import { patch } from "../../services";
+import { SavedPreparation } from "../../types";
 import { diffPreparations } from "../../utils";
 
 import { CreateButton } from "../createButton";
@@ -29,7 +30,7 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
     const tabsRef = useRef<HTMLDivElement>(null);
     const viewportRef = useRef<HTMLDivElement>(null);
 
-    const { selectedPreparation, setSelectedPreparation } = usePreparations();
+    const { patchPreparation: patchContext, selectedPreparation, setSelectedPreparation } = usePreparations();
     const [searchParams, setSearchParams] = useSearchParams();
     const { currentWorkspace } = useWorkspaces();
 
@@ -110,6 +111,17 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                 );
             }
         }
+
+        if (!old) return;
+
+        const savedPrep: SavedPreparation = {
+            ...updated,
+            createdAt: old.createdAt,
+            id: old.id,
+            vocabulary: updated.vocabularyTerms,
+            updatedAt: new Date().toISOString(),
+        };
+        patchContext(old.id, savedPrep);
     };
 
     useEffect(() => {

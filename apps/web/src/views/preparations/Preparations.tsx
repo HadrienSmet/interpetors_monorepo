@@ -11,6 +11,7 @@ import {
     PreparationsProvider,
     SavePreparationParams,
     usePreparations,
+    SavedPreparation,
 } from "@/modules/preparations";
 import { useWorkspaces } from "@/modules/workspace";
 
@@ -21,7 +22,7 @@ const SCREEN_NAVIGATION_LEVEL = 1 as const;
 const PreparationsChild = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { isLoading, preparations } = usePreparations();
+    const { addPreparation, isLoading, preparations } = usePreparations();
     const { currentWorkspace } = useWorkspaces();
 
     const currentView = useMemo(() => (
@@ -50,6 +51,18 @@ const PreparationsChild = () => {
             vocabularyTerms,
             workspaceId,
         });
+
+        const now = new Date().toISOString();
+        const savedPreparation: SavedPreparation = {
+            createdAt: now,
+            id: prepRes.data.id,
+            folders,
+            foldersActions,
+            title: prepRes.data.title,
+            updatedAt: now,
+            vocabulary: vocabularyTerms,
+        };
+        addPreparation(savedPreparation);
     };
 
     if (isLoading) return (<Loader />);

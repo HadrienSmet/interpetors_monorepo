@@ -34,13 +34,14 @@ export const uploadPreparation = async ({
         });
 
         if (job.terms.length) {
+            const terms = job.terms.map(t => ({
+                ...t,
+                occurrence: { ...t.occurrence, pdfFileId: fileRes.id },
+            }));
             await VOCABULARY.postBulk({
                 workspaceId,
                 preparationId,
-                terms: job.terms.map(t => ({
-                    ...t,
-                    occurrence: { ...t.occurrence, pdfFileId: fileRes.id },
-                })),
+                terms,
             });
         }
     }))));

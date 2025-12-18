@@ -5,8 +5,10 @@ import { getContextError } from "@/contexts/utils";
 import { SavedPreparation } from "../../types";
 
 export type PreparationsContextValue = {
+    readonly addPreparation: (prep: SavedPreparation) => void;
     readonly isLoading: boolean;
-    readonly preparations: Array<SavedPreparation> | null;
+    readonly patchPreparation: (id: string, prep: SavedPreparation) => void;
+    readonly preparations: Array<SavedPreparation>;
     readonly selectedPreparation: SavedPreparation | undefined;
     readonly setSelectedPreparation: Dispatch<SetStateAction<string | undefined>>;
 };

@@ -37,7 +37,15 @@ export const prepareJobs = (
                 const fullPath = path ? `${path}/${value.name}` : `/${value.name}`;
                 const filePath = path;
 
-                const terms = vocabularyTerms.filter(t => t.occurrence.filePath === fullPath);
+                const terms = vocabularyTerms.filter(t => {
+                    const occFilePath = t.occurrence.filePath;
+                    const tPath = occFilePath[0] === "/"
+                        ? occFilePath
+                        // Happens on file at root
+                        : `/${occFilePath}`;
+
+                    return (tPath === fullPath);
+                });
                 const actions = foldersActions[value.id];
                 jobs.push({
                     pdf: {
