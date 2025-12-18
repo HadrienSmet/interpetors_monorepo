@@ -1,8 +1,9 @@
 export const URL_PARAMETERS = {
-    filepath: "filepath",
-    preparationid: "preparationid",
-    term: "term",
-    view: "view",
+    filepath: "fp", // filepath
+    pageIndex: "pi", // pageIndex
+    preparationid: "pid", // preparationid
+    term: "t", // term
+    view: "v", // view
 } as const;
 export const URL_VIEWS = {
     folders: "folders",

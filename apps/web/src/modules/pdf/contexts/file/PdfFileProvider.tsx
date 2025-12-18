@@ -1,9 +1,10 @@
 import { PropsWithChildren, RefObject, useEffect, useRef, useState } from "react";
 import { DocumentCallback } from "react-pdf/src/shared/types.js";
+import { useSearchParams } from "react-router";
 
 import { useColorPanel } from "@/modules/colorPanel";
 import { useFoldersActions, useFoldersManager } from "@/modules/folders";
-import { sleep } from "@/utils";
+import { sleep, URL_PARAMETERS } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
 import { PdfEditorLoader } from "../../components";
@@ -30,6 +31,9 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
     const { colorPanel } = useColorPanel();
     const { getFileActions } = useFoldersActions();
     const { files, selectedFile } = useFoldersManager();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const urlPageIndex = searchParams.get(URL_PARAMETERS.pageIndex);
 
     const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
     const previousPage = () => setPageIndex(state => Math.max(state - 1, 1));
@@ -65,6 +69,26 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
     };
 
     // ------ USE EFFECTS ------
+    // Update url search params on page index change
+    useEffect(() => {
+        setSearchParams(prev => {
+            const prevIndex = prev.get(URL_PARAMETERS.pageIndex);
+            if (!prevIndex || Number(prevIndex) === pageIndex) return (prev);
+
+            const next = new URLSearchParams(prev);
+            next.set(URL_PARAMETERS.pageIndex, pageIndex.toString());
+
+            return (next);
+        });
+    }, [pageIndex]);
+    // Display the right page depending on url -> Example on vocabulary occurence link
+    useEffect(() => {
+        if (!urlPageIndex) return;
+
+        const numPageIndex = Number(urlPageIndex);
+        if (pageIndex === numPageIndex) return;
+        setPageIndex(numPageIndex);
+    }, [pageIndex, urlPageIndex]);
     useEffect(() => {
         setPageIndex(1);
     }, [selectedFile.path]);

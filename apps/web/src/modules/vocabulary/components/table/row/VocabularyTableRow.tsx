@@ -34,9 +34,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
     const vocColorStr = getRgbColor(vocColor);
     const backgroundColor = useMemo(() => {
         if (sortingState !== "NONE") {
-            if (index % 2 === 0) {
-                return ("transparent");
-            }
+            if (index % 2 === 0) return ("transparent");
 
             return (stringToRgba(defaultBg, .1));
         }
@@ -53,6 +51,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
 
         next.set(URL_PARAMETERS.view, URL_VIEWS.folders);
         next.set(URL_PARAMETERS.filepath, pdfVocabulary.occurrence.filePath);
+        next.set(URL_PARAMETERS.pageIndex, pdfVocabulary.occurrence.pageIndex.toString());
         next.delete(URL_PARAMETERS.term);
 
         return (next);

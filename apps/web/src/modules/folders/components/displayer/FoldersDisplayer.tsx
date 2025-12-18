@@ -34,7 +34,7 @@ export const FoldersDisplayer = (props: FoldersExplorerProps) => {
         foldersStructure,
         setSelectedFilePath,
     } = useFoldersManager();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
 
     const dropZoneAttributes: FoldersExplorerDefaultProps | undefined = props.type === FOLDERS_TYPES.EDITABLE
         ? props
@@ -52,14 +52,6 @@ export const FoldersDisplayer = (props: FoldersExplorerProps) => {
                 break;
             }
         }
-
-        setSearchParams(state => {
-            const next = new URLSearchParams(state);
-
-            next.delete(URL_PARAMETERS.filepath);
-
-            return (next);
-        });
     }, [foldersStructure, searchParams]);
 
     return (
