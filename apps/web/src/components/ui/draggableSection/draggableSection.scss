@@ -84,8 +84,8 @@
     .divider {
         background-color: var(--clr-txt-02);
         transition:
-        background-color var(--transition-theme),
-        transform var(--transition-theme);
+            background-color var(--transition-theme),
+            transform var(--transition-theme);
 
         &.column {
             height: 1px;

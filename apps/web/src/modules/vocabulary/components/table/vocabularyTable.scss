@@ -54,6 +54,9 @@
         gap: var(--space-m);
         letter-spacing: 1px;
         padding: var(--space-m) var(--space-xl);
+        transition:
+            background-color var(--transition-theme),
+            color var(--transition-theme);
 
         &:disabled {
             background-color: var(--clr-txt-04);
@@ -70,6 +73,7 @@
         height: 100%;
         position: absolute;
         top: 0;
+        transition: background-color var(--transition-theme);
         width: var(--border-s);
     }
 }

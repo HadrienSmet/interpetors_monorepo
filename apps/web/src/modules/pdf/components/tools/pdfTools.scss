@@ -9,6 +9,7 @@
         justify-content: center;
         left: 0px;
         position: absolute;
+        transition: background-color var(--transition-theme);
         width: 32px;
         z-index: 10;
     }

@@ -39,6 +39,7 @@
                 height: var(--border-s);
                 left: 10%;
                 position: absolute;
+                transition: background-color var(--transition-theme);
                 width: 80%;
             }
         }

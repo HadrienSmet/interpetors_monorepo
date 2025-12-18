@@ -17,6 +17,9 @@
         color: var(--clr-txt);
         cursor: pointer;
         padding: var(--space-m) var(--space-xl);
+        transition:
+            background var(--transition-hover),
+            color var(--transition-theme);
         white-space: nowrap;
 
         &:hover {

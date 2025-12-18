@@ -34,7 +34,10 @@
         display: flex;
         gap: var(--space-m);
         padding: var(--space-s) var(--space-m);
-        transition: background-color var(--transition-theme);
+        transition:
+            background-color var(--transition-theme),
+            border var(--transition-theme),
+            color var(--transition-theme);
 
         &.selected {
             background-color: var(--clr-txt);

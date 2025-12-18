@@ -65,7 +65,9 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 0 0 $radius-rounded $radius-rounded;
         max-height: 0;
         overflow: hidden;
-        transition: max-height $transition-duration $transition-easing;
+        transition:
+            background-color var(--transition-theme),
+            max-height $transition-duration $transition-easing;
     }
     &__header-content {
         flex: 1;

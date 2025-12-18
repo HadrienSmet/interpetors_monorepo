@@ -4,6 +4,8 @@
     color: var(--clr-txt);
     position: relative;
 
+    transition: color var(--transition-theme);
+
     &:focus {
         outline: none;
     }

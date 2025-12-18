@@ -11,6 +11,7 @@
         justify-content: end;
         padding: var(--space-s);
         padding-right: var(--space-m);
+        transition: var(--transition-theme);
 
         input {
             min-width: 0px;

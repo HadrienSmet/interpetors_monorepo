@@ -19,6 +19,7 @@
                     display: flex;
                     height: 28px;
                     justify-content: center;
+                    transition: background-color var(--transition-theme);
                     width: 28px;
                     &:disabled {
                         background-color: var(--clr-disabled);
@@ -58,6 +59,7 @@
                     display: flex;
                     gap: var(--space-l);
                     padding: var(--space-xs) var(--space-m);
+                    transition: var(--transition-theme);
                     &.editing {
                         cursor: pointer;
                     }
@@ -90,6 +92,7 @@
             display: flex;
             justify-content: center;
             padding: var(--space-l) var(--space-s);
+            transition: var(--transition-theme);
         }
     }
 }

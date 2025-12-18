@@ -9,6 +9,7 @@
         position: absolute;
         // TODO: Use attr
         top: 38px;
+        transition: background-color var(--transition-theme);
         width: calc(100% - var(--space-s));
     }
 

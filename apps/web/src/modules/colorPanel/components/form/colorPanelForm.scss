@@ -75,6 +75,8 @@
 		gap: var(--space-s);
 		justify-content: center;
 		padding-block: var(--space-s);
-        transition: background-color var(--transition-theme);
+        transition:
+            background-color var(--transition-theme),
+            color var(--transition-theme);
 	}
 }
