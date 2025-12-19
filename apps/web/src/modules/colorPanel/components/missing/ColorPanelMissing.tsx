@@ -12,16 +12,17 @@ import "./colorPanelMissing.scss";
 
 export const ColorPanelMissing = () => {
     const [isCreating, setIsCreating] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     const { createPanel } = useColorPanel();
     const { t } = useTranslation();
-    // const { currentWorkSpace } = useWorkspaces();
 
     const close = () => setIsCreating(false);
     const open = () => setIsCreating(true);
     const submit = async (colorsRecord: ColorPanelInCreation) => {
+        setIsPending(true);
         await createPanel({ ...colorsRecord, name: colorsRecord.name ?? "Default" });
-        // editWorkSpace({ ...currentWorkSpace!, colorPanel: id });
+        setIsPending(false);
         close();
     };
 
@@ -39,6 +40,7 @@ export const ColorPanelMissing = () => {
             >
                 <ColorPanelForm
                     isOpen={isCreating}
+                    isPending={isPending}
                     onSubmit={submit}
                 />
             </Modal>

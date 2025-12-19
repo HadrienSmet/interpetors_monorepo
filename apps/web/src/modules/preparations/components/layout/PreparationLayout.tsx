@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router";
 
 import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/types";
 
-import { Button, InputStyleLess, Loader, Tabs } from "@/components";
+import { Button, InputStyleLess, Tabs } from "@/components";
 import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager, useFoldersActions } from "@/modules/folders";
 import { useVocabularyTable, VocabularyTable } from "@/modules/vocabulary";
 import { URL_PARAMETERS } from "@/utils";
@@ -124,17 +124,11 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
                 />
                 <Button
                     disabled={title === "" || foldersStructure.length === 0 || isSaving}
+                    isPending={isSaving}
                     onClick={onSave}
                 >
-                    {isSaving
-                        ? (<Loader size="small" theme="disabled" />)
-                        : (
-                            <>
-                                <MdSave />
-                                <p>{t("preparations.save")}</p>
-                            </>
-                        )
-                    }
+                    <MdSave />
+                    <p>{t("preparations.save")}</p>
                 </Button>
             </div>
             <Tabs

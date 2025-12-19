@@ -1,4 +1,4 @@
-import { ChangeEvent, RefObject, useMemo, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, RefObject, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
@@ -17,6 +17,7 @@ type UnAuthFormParams = {
     readonly errorMessage: string | undefined;
     readonly isEmailValid?: boolean | null;
     readonly isPasswordValid?: boolean | null;
+    readonly isPending: boolean;
     readonly onEmailBlur?: () => void;
     readonly onEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
     readonly onPasswordBlur?: () => void;
@@ -40,6 +41,12 @@ const UnAuthForm = (props: UnAuthFormParams) => {
         return (output);
     }, [i18n.language]);
 
+    const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            props.onSubmit();
+        }
+    };
+
     return (
         <div className="unauth-form">
             <h2>{props.title}</h2>
@@ -50,6 +57,7 @@ const UnAuthForm = (props: UnAuthFormParams) => {
                     name="email"
                     onBlur={props.onEmailBlur}
                     onChange={props.onEmailChange}
+                    onKeyDown={onKeyDown}
                     placeholder={t("auth.email.placeholder")}
                     ref={props.emailRef}
                     type="text"
@@ -66,6 +74,7 @@ const UnAuthForm = (props: UnAuthFormParams) => {
                     name="password"
                     onBlur={props.onPasswordBlur}
                     onChange={props.onPasswordChange}
+                    onKeyDown={onKeyDown}
                     placeholder={t("auth.password.placeholder")}
                     ref={props.passwordRef}
                     value={props.password}
@@ -82,6 +91,7 @@ const UnAuthForm = (props: UnAuthFormParams) => {
                 )}
             </div>
             <Button
+                isPending={props.isPending}
                 label={props.submitLabel}
                 onClick={props.onSubmit}
             />
@@ -95,6 +105,7 @@ const UnAuthForm = (props: UnAuthFormParams) => {
 export const Signin = () => {
     const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+    const [isSigningIn, setIsSigningIn] = useState(false);
     const [password, setPassword] = useState("");
 
     const emailRef = useRef<HTMLInputElement>(null);
@@ -115,19 +126,21 @@ export const Signin = () => {
             return;
         }
 
+        setIsSigningIn(true);
         const response = await AUTH.signin({ email, password });
 
         if (!response.success) {
+            setIsSigningIn(false);
             setErrorMessage(response.message);
             return;
         }
 
         const tokens = response.data;
 
-
         localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
         localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
 
+        setIsSigningIn(false);
         auth.signin();
         navigate("/");
     };
@@ -138,6 +151,7 @@ export const Signin = () => {
                 email={email}
                 emailRef={emailRef}
                 errorMessage={errorMessage}
+                isPending={isSigningIn}
                 onEmailChange={(e) => setEmail(e.target.value)}
                 onPasswordChange={(e) => setPassword(e.target.value)}
                 onSubmit={onClick}
@@ -161,6 +175,7 @@ export const Signup = () => {
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const [isEmailValid, setIsEmailValid] = useState<boolean | null>(null);
     const [isPasswordValid, setIsPasswordValid] = useState<boolean | null>(null);
+    const [isSigningUp, setIsSigningUp] = useState(false);
     const [password, setPassword] = useState("");
 
     const emailRef = useRef<HTMLInputElement>(null);
@@ -181,9 +196,11 @@ export const Signup = () => {
             return;
         }
 
+        setIsSigningUp(true);
         const response = await AUTH.signup({ email, password });
 
-        if (!response.success) {;
+        if (!response.success) {
+            setIsSigningUp(false);
             setErrorMessage(response.message);
             return;
         }
@@ -193,6 +210,7 @@ export const Signup = () => {
         localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
         localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
 
+        setIsSigningUp(false);
         signin();
         navigate("/");
     };
@@ -221,6 +239,7 @@ export const Signup = () => {
                 errorMessage={errorMessage}
                 isEmailValid={isEmailValid}
                 isPasswordValid={isPasswordValid}
+                isPending={isSigningUp}
                 onEmailBlur={onEmailBlur}
                 onEmailChange={(e) => setEmail(e.target.value)}
                 onPasswordBlur={onPasswordBlur}

@@ -8,11 +8,11 @@ import { ColorPanelInCreation, ColorPanelType } from "../types";
 type ColorPanelContextType = {
     readonly colorPanel: ColorPanelType | null;
     readonly createPanel: (colorPanel: ColorPanelInCreation) => Promise<void>;
-    readonly deletePanel: (id: string) => void;
-    readonly isLoading: boolean;
+    readonly deletePanel: (id: string) => Promise<void>;
     readonly hasFetched: boolean;
+    readonly isLoading: boolean;
     /** PUT Operation on color panels */
-    readonly updatePanel: (colorPanel: ColorPanelType) => void;
+    readonly updatePanel: (colorPanel: ColorPanelType) => Promise<void>;
 };
 export const ColorPanelContext = createContext<ColorPanelContextType | null>(null);
 

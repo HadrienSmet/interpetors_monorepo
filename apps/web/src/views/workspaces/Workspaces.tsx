@@ -42,6 +42,7 @@ type WorkspaceContainerProps = {
 };
 const WorkspaceContainer = (props: WorkspaceContainerProps) => {
     const [isEditing, setIsEditing] = useState(false);
+    const [isPending, setIsPending] = useState(false);
     const [workspace, setWorkspace] = useState({ ...props.workspace });
 
     const { t } = useTranslation();
@@ -65,11 +66,12 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
         languages: state.languages.filter(language => language !== lng),
     }));
     const onSubmit = async () => {
+        setIsPending(true);
         await updateWorkspace({
             body: workspace,
             id: workspace.id,
         });
-
+        setIsPending(false);
         setIsEditing(false);
     };
     const toggleEdit = () => setIsEditing(state => !state);
@@ -112,6 +114,7 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
                 <p>{t("workspaces.stats.encyclopedy", { count: 0 })}</p>
                 {isEditing && (
                     <Button
+                        isPending={isPending}
                         label="Submit"
                         onClick={onSubmit}
                     />

@@ -68,9 +68,10 @@ const DEFAULT_COLOR = { r: .1, g: .2, b: 1 } as const;
 type ColorPanelFormProps = {
     readonly colorPanel?: ColorPanelType;
     readonly isOpen: boolean;
+    readonly isPending: boolean;
     readonly onSubmit: (colorsRecord: ColorPanelInCreation) => void;
 };
-export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormProps) => {
+export const ColorPanelForm = ({ colorPanel, isOpen, isPending, onSubmit }: ColorPanelFormProps) => {
     const [color, setColor] = useState<RgbColor>(DEFAULT_COLOR);
     const [colorName, setColorName] = useState("");
     const [colorPickerWidth, setColorPickerWidth] = useState(0);
@@ -180,6 +181,7 @@ export const ColorPanelForm = ({ colorPanel, isOpen, onSubmit }: ColorPanelFormP
             </div>
             <Button
                 disabled={colorPanelInCreation.colors.length < 1}
+                isPending={isPending}
                 label={t("actions.confirm")}
                 onClick={() => onSubmit(colorPanelInCreation)}
             />

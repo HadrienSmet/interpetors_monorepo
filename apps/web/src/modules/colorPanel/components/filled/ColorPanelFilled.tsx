@@ -17,6 +17,7 @@ type ColorPanelFilledProps = {
 };
 export const ColorPanelFilled = ({ colorPanel }: ColorPanelFilledProps) => {
     const [isEditing, setIsEditing] = useState(false);
+    const [isPending, setIsPending] = useState(false);
 
     const { deletePanel, updatePanel } = useColorPanel();
     const displayerBg = useCssVariable("--clr-bg-light");
@@ -25,8 +26,10 @@ export const ColorPanelFilled = ({ colorPanel }: ColorPanelFilledProps) => {
     // TODO BACK-END: Should trigger an update in the server for: folders, notes and vocabulary
     const handleDelete = () => deletePanel(colorPanel.id);
     const open = () => setIsEditing(true);
-    const submit = (params: Omit<ColorPanelType, "id">) => {
-        updatePanel({ ...params, id: colorPanel.id });
+    const submit = async (params: Omit<ColorPanelType, "id">) => {
+        setIsPending(true);
+        await updatePanel({ ...params, id: colorPanel.id });
+        setIsPending(false);
         close();
     };
 
@@ -54,6 +57,7 @@ export const ColorPanelFilled = ({ colorPanel }: ColorPanelFilledProps) => {
                 <ColorPanelForm
                     colorPanel={colorPanel}
                     isOpen={isEditing}
+                    isPending={isPending}
                     //@ts-expect-error
                     onSubmit={submit}
                 />

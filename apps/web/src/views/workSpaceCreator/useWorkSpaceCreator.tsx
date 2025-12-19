@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 
-import { CreateWorkspaceParams, useWorkspaces, Workspace } from "@/modules";
+import { CreateWorkspaceParams, useWorkspaces } from "@/modules";
 
 const EMPTY_WORKSPACE: CreateWorkspaceParams = {
     name: "Default",
@@ -13,13 +13,10 @@ export const creationSteps = [
 ] as const;
 export type CreationStep = typeof creationSteps[number]
 
-export type WorkSpaceCreatorState = {
-    readonly workSpace: Workspace;
-    readonly currentStep: CreationStep;
-};
 export const useWorkSpaceCreator = () => {
-    const [workspace, setWorkspace] = useState<CreateWorkspaceParams>({ ...EMPTY_WORKSPACE });
     const [creationStep, setCreationStep] = useState<CreationStep>(creationSteps[0]);
+    const [isPending, setIsPending] = useState(false);
+    const [workspace, setWorkspace] = useState<CreateWorkspaceParams>({ ...EMPTY_WORKSPACE });
 
     const { addNewWorkspace } = useWorkspaces();
 
@@ -31,10 +28,12 @@ export const useWorkSpaceCreator = () => {
         ...state,
         name: e.target.value,
     }));
-    const nextStep = () => {
+    const nextStep = async () => {
         const currentStepIndex = creationSteps.findIndex(step => step === creationStep);
         if (currentStepIndex === (creationSteps.length - 1)) {
-            addNewWorkspace(workspace);
+            setIsPending(true);
+            await addNewWorkspace(workspace);
+            setIsPending(false);
             return;
         }
 
@@ -55,6 +54,7 @@ export const useWorkSpaceCreator = () => {
         creationStep,
         handleNativeLanguage,
         handleTitle,
+        isPending,
         nextStep,
         pushLanguage,
         removeLanguage,

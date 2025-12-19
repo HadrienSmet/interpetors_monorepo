@@ -63,6 +63,7 @@ const WorkspaceCreatorChild = () => {
     const {
         creationStep,
         handleNativeLanguage,
+        isPending,
         nextStep,
         pushLanguage,
         removeLanguage,
@@ -121,6 +122,7 @@ const WorkspaceCreatorChild = () => {
                                 workspace.languages.findIndex(el => el === workspace.nativeLanguage) === -1
                             )
                         }
+                        isPending={isPending}
                         onClick={nextStep}
                     />
                 </div>
