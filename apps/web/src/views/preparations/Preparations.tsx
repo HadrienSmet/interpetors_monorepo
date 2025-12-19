@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import { Loader, NavigationState } from "@/components";
@@ -8,7 +8,6 @@ import {
     PreparationLayout,
     PreparationsEmpty,
     PreparationsFilled,
-    PreparationsProvider,
     SavePreparationParams,
     usePreparations,
     SavedPreparation,
@@ -19,10 +18,10 @@ import "./preparations.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
 
-const PreparationsChild = () => {
+export const Preparations = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { addPreparation, isLoading, preparations } = usePreparations();
+    const { addPreparation, isLoading, preparations, setShouldFetch } = usePreparations();
     const { currentWorkspace } = useWorkspaces();
 
     const currentView = useMemo(() => (
@@ -65,6 +64,10 @@ const PreparationsChild = () => {
         addPreparation(savedPreparation);
     };
 
+    useEffect(() => {
+        setShouldFetch(true);
+    }, []);
+
     if (isLoading) return (<Loader />);
 
     if (currentView === "new") {
@@ -90,8 +93,3 @@ const PreparationsChild = () => {
         </main>
     );
 };
-export const Preparations = () => (
-    <PreparationsProvider>
-        <PreparationsChild />
-    </PreparationsProvider>
-);

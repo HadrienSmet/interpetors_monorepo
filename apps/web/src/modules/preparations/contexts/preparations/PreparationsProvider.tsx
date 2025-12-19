@@ -13,6 +13,7 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
     const [isLoading, setIsLoading] = useState(false);
     const [preparations, setPreparations] = useState<Array<SavedPreparation>>([]);
     const [selectedPreparationId, setSelectedPreparation] = useState<string | undefined>(undefined);
+    const [shouldFetch, setShouldFetch] = useState(false);
 
     const { currentWorkspace } = useWorkspaces();
 
@@ -79,8 +80,10 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
             setIsLoading(false);
         };
 
-        fetchPreparations();
-    }, []);
+        if (shouldFetch) {
+            fetchPreparations();
+        }
+    }, [shouldFetch]);
 
     const value: PreparationsContextValue = {
         addPreparation,
@@ -89,6 +92,7 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
         preparations,
         selectedPreparation,
         setSelectedPreparation,
+        setShouldFetch,
     };
 
     return (

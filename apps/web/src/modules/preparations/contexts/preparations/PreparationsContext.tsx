@@ -11,6 +11,7 @@ export type PreparationsContextValue = {
     readonly preparations: Array<SavedPreparation>;
     readonly selectedPreparation: SavedPreparation | undefined;
     readonly setSelectedPreparation: Dispatch<SetStateAction<string | undefined>>;
+    readonly setShouldFetch: Dispatch<SetStateAction<boolean>>;
 };
 export const PreparationsContext = createContext<PreparationsContextValue | null>(null);
 

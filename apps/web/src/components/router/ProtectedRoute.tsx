@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { Navigate } from "react-router";
 
-import { useAuth, WorkspaceWrapper } from "@/modules";
+import { PreparationsProvider, useAuth, WorkspaceWrapper } from "@/modules";
 
 import { Loader } from "../ui";
 
@@ -17,7 +17,9 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
 
     return (
         <WorkspaceWrapper>
-            {children}
+            <PreparationsProvider>
+                {children}
+            </PreparationsProvider>
         </WorkspaceWrapper>
     );
 };
