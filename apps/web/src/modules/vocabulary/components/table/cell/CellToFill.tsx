@@ -41,8 +41,16 @@ export const CellToFill = (props: CellToFillProps) => {
                 <InputStyleLess
                     onChange={onChange}
                     onKeyDown={onKeyDown}
-                    placeholder={t("vocabulary.placeholders.cell", { word: props.pdfVocabulary.occurrence.text, language: getNativeName(props.locale) })}
-                    style={{ width: "100%" }}
+                    placeholder={t(
+                        "vocabulary.placeholders.cell",
+                        {
+                            language: getNativeName(props.locale),
+                            word: props.pdfVocabulary.occurrence.text,
+                        })}
+                    style={{
+                        textOverflow: "ellipsis",
+                        width: "100%",
+                    }}
                     value={customTranslation}
                 />
             </td>
@@ -53,6 +61,7 @@ export const CellToFill = (props: CellToFillProps) => {
         <td className="vocabulary-table-cell">
             <button
                 onDoubleClick={() => setIsEditing(true)}
+                style={{ maxWidth: "100%" }}
                 title={t("actions.editOnDoubleClick")}
             >
                 {props.pdfVocabulary.translations[props.localeIndex]}

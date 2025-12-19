@@ -4,4 +4,8 @@
     justify-content: center;
     gap: var(--space-m);
     padding-inline: var(--space-s);
+
+    svg {
+        flex-shrink: 0;
+    }
 }

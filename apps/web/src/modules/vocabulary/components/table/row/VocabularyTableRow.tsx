@@ -66,9 +66,16 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                 <button
                     className="vocabulary-table__link"
                     onClick={toFile}
+                    style={{ maxWidth: "100%" }}
+                    title={pdfVocabulary.occurrence.text}
                 >
                     <MdLink />
-                    <em>{pdfVocabulary.occurrence.text}</em>
+                    <em
+                        style={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                        }}
+                    >{pdfVocabulary.occurrence.text}</em>
                 </button>
             </td>
             <CellToFill
