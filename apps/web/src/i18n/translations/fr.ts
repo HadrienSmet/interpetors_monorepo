@@ -9,6 +9,7 @@ export const fr = {
             editOnDoubleClick: "Cliquez deux fois pour éditer",
             save: "Sauvegarder",
             search: "Rechercher",
+            update: "Mettre à jour",
             workspaces: {
                 create: "Créer mon espace de travail",
             },

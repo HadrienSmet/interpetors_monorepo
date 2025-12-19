@@ -115,7 +115,7 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
                 {isEditing && (
                     <Button
                         isPending={isPending}
-                        label="Submit"
+                        label={t("actions.update")}
                         onClick={onSubmit}
                     />
                 )}

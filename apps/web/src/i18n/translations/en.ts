@@ -9,6 +9,7 @@ export const en = {
             editOnDoubleClick: "Double click to edit",
             save: "Save",
             search: "Search",
+            update: "Update",
             workspaces: {
                 create: "Create work space",
             },

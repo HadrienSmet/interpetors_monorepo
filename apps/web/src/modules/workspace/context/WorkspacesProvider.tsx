@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 
 import { useAuth } from "@/modules/auth";
+import { useLocaleNavigate } from "@/utils";
 
 import { create, getAll, remove, update, UpdateParams } from "../services";
 import { Workspace } from "../types";
@@ -17,7 +17,7 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
     const [workspaces, setWorkspaces] = useState<Record<string, Workspace>>({});
 
     const { isAuthenticated } = useAuth();
-    const navigate = useNavigate();
+    const navigate = useLocaleNavigate();
 
     const addNewWorkspace = async (params: CreateWorkspaceParams) => {
         const response = await create(params);

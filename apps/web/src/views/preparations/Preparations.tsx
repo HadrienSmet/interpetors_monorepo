@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 
 import { Loader, NavigationState } from "@/components";
 import {
@@ -13,14 +13,15 @@ import {
     SavedPreparation,
 } from "@/modules/preparations";
 import { useWorkspaces } from "@/modules/workspace";
+import { useLocaleNavigate } from "@/utils";
 
 import "./preparations.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
 
 export const Preparations = () => {
+    const navigate = useLocaleNavigate();
     const location = useLocation();
-    const navigate = useNavigate();
     const { addPreparation, isLoading, preparations, setShouldFetch } = usePreparations();
     const { currentWorkspace } = useWorkspaces();
 

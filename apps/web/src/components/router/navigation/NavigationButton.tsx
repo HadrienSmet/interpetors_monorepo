@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
+
+import { useLocaleNavigate } from "@/utils";
 
 import { NAVIGATION, NavigationItem } from "./navigation.types";
 
@@ -21,9 +23,10 @@ export const NavigationButton = ({
     displayNested,
 }: NavigationButtonProps) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
-    const { t } = useTranslation();
+
+    const navigate = useLocaleNavigate();
     const location = useLocation();
-    const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const navigation = location.pathname
         .split("/")

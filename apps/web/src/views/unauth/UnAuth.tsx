@@ -1,10 +1,11 @@
 import { ChangeEvent, KeyboardEvent, RefObject, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
 import { AUTH, AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth } from "@/modules";
+import { useLocaleNavigate } from "@/utils";
 
 import "./unauth.scss";
 
@@ -112,7 +113,7 @@ export const Signin = () => {
     const passwordRef = useRef<HTMLInputElement>(null);
 
     const auth = useAuth();
-    const navigate = useNavigate();
+    const navigate = useLocaleNavigate();
     const { t } = useTranslation();
 
     const onClick = async () => {
@@ -182,7 +183,7 @@ export const Signup = () => {
     const passwordRef = useRef<HTMLInputElement>(null);
 
     const { signin } = useAuth();
-    const navigate = useNavigate();
+    const navigate = useLocaleNavigate();
     const { t } = useTranslation();
 
     const onClick = async () => {

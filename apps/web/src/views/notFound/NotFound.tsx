@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
 
 import { Button } from "@/components";
+import { useLocaleNavigate } from "@/utils";
 
 import "./notFound.scss";
 
 
 export const NotFound = () => {
-    const navigate = useNavigate();
+    const navigate = useLocaleNavigate();
     const { t } = useTranslation();
 
     return (
@@ -16,7 +16,7 @@ export const NotFound = () => {
             <h1>{t("views.notFound.title")}</h1>
             <Button
                 label={t("views.notFound.buttonLabel")}
-                onClick={() => navigate("/prepare/files")}
+                onClick={() => navigate("/")}
             />
         </div>
     );
