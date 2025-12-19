@@ -1,45 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
-
-import { SavedVocabularyTerm } from "@repo/types";
+import { useEffect } from "react";
 
 import { Loader } from "@/components";
-import { groupVocabularyByColor, VOCABULARY, VocabularyTable, VocabularyWrapper } from "@/modules/vocabulary";
-import { useWorkspaces } from "@/modules/workspace";
+import { useDictionary, VocabularyTable, VocabularyWrapper } from "@/modules/vocabulary";
 
 export const Dictionary = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [terms, setTerms] = useState<Array<SavedVocabularyTerm>>([]);
-
-    const { currentWorkspace } = useWorkspaces();
+    const { groupedTerms, isLoading, setShouldFetch } = useDictionary();
 
     useEffect(() => {
-        const fetchTerms = async () => {
-            if (!currentWorkspace) {
-                return;
-            }
-
-            setIsLoading(true);
-            const response = await VOCABULARY.getAllFromWorkspace(currentWorkspace.id);
-
-            if (!response.success) {
-                setIsLoading(false);
-                throw new Error(response.message);
-            }
-
-            setTerms(response.data);
-            setIsLoading(false);
-        };
-
-        fetchTerms();
+        setShouldFetch(true);
     }, []);
-
-    const grouped = useMemo(() => (groupVocabularyByColor(terms)), [terms]);
 
     if (isLoading) {
         return (<Loader />);
     }
     return (
-        <VocabularyWrapper groupedVocabulary={grouped}>
+        <VocabularyWrapper groupedVocabulary={groupedTerms}>
             <main style={{ overflow: "hidden" }}>
                 <VocabularyTable />
             </main>
