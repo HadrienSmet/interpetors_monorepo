@@ -6,6 +6,7 @@
     &__panel {
         flex: 0 0 100%;
         min-height: 1px;
+        overflow-x: auto;
         scroll-snap-align: start;
     }
     &__tab {
