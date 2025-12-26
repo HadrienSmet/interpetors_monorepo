@@ -28,11 +28,19 @@ export const Preparations = () => {
     const currentView = useMemo(() => (
         (location.pathname
             .split("/")
+            .filter(Boolean)
+            .slice(1)
             .filter(Boolean) as NavigationState
         )[SCREEN_NAVIGATION_LEVEL]
     ), [location.pathname]);
 
-    const createPreparation = async ({ title, folders, foldersActions, rootFolderId, vocabularyTerms }: SavePreparationParams) => {
+    const createPreparation = async ({
+        folders,
+        foldersActions,
+        rootFolderId,
+        title,
+        vocabularyTerms,
+    }: SavePreparationParams) => {
         const workspaceId = currentWorkspace!.id;
         const prepRes = await PREPARATION.create({
             body: { title },
