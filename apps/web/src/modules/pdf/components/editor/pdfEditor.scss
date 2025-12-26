@@ -1,5 +1,7 @@
 .pdf-editor {
     display: flex;
+    flex: 1;
+    overflow-y: auto;
     padding-left: 40px;
     position: relative;
 
@@ -7,6 +9,12 @@
         pointer-events: none;
         position: absolute;
         top: 0;
+    }
+
+    &-container {
+        display: flex;
+        flex: 1;
+        padding: var(--space-m);
     }
 }
 

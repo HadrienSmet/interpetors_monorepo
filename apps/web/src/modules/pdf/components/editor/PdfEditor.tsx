@@ -28,34 +28,36 @@ const PdfEditorChild = () => {
     ), []);
 
     return (
-        <div
-            className="pdf-editor"
-            ref={containerRef}
-        >
+        <div className="pdf-editor-container">
             <PdfTools />
 
-            <div className="document-drawer">
-                <PdfDocument />
+            <div
+                className="pdf-editor"
+                ref={containerRef}
+            >
+                <div className="document-drawer">
+                    <PdfDocument />
 
-                {/** Used to draw on mount */}
-                <canvas
-                    className="on-real-time-displayer"
-                    key="canvas"
-                    ref={canvasRef}
-                    style={canvasStyle}
-                />
-                {/** Used to draw on user action */}
-                <canvas
-                    className="on-real-time-displayer"
-                    key="drawer"
-                    ref={drawerRef}
-                    style={canvasStyle}
-                />
+                    {/** Used to draw on mount */}
+                    <canvas
+                        className="on-real-time-displayer"
+                        key="canvas"
+                        ref={canvasRef}
+                        style={canvasStyle}
+                    />
+                    {/** Used to draw on user action */}
+                    <canvas
+                        className="on-real-time-displayer"
+                        key="drawer"
+                        ref={drawerRef}
+                        style={canvasStyle}
+                    />
+                </div>
+
+                <NotesDisplayer />
+
+                {customCursor && (customCursor)}
             </div>
-
-            <NotesDisplayer />
-
-            {customCursor && (customCursor)}
         </div>
     );
 };

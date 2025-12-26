@@ -23,6 +23,7 @@
         > div {
             height: 100%;
             min-width: 100%;
+            overflow: hidden;
             padding-top: var(--space-l);
         }
     }

@@ -54,7 +54,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
                     <FoldersDisplayer type={FOLDERS_TYPES.UNEDITABLE} />
                 </div>
             ),
-            title: "folders",
+            title: t("folders.label"),
         },
         {
             content: (
@@ -62,7 +62,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
                     <VocabularyTable />
                 </div>
             ),
-            title: "vocabulary",
+            title: t("vocabulary.label"),
         }
     ], []);
     const viewTitles = views.map(v => String(v.title));

@@ -115,6 +115,7 @@ export const fr = {
             download_one: "Télécharger le dossier",
             download_other: "Télécharger les dossiers",
             empty: "Aucuns fichiers dans cette préparation",
+            label: "Dossiers",
         },
         inputs: {
             folders: {
@@ -186,6 +187,7 @@ export const fr = {
         vocabulary: {
             empty: "Pas de vocabulaire généré pour le moment",
             filterLabel: "Colonne sur laquelle appliquer le filtre",
+            label: "Vocabulaire",
             placeholders: {
                 cell: "Traduis {{ word }} ({{ language }})",
                 search: "Rechercher dans le vocabulaire généré",
