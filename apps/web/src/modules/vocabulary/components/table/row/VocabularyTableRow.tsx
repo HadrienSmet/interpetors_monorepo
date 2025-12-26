@@ -49,10 +49,10 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
     const toFile = () => setSearchParams(prev => {
         const next = new URLSearchParams(prev);
 
+        next.delete(URL_PARAMETERS.term);
         next.set(URL_PARAMETERS.view, URL_VIEWS.folders);
         next.set(URL_PARAMETERS.filepath, pdfVocabulary.occurrence.filePath);
         next.set(URL_PARAMETERS.pageIndex, pdfVocabulary.occurrence.pageIndex.toString());
-        next.delete(URL_PARAMETERS.term);
 
         return (next);
     });
@@ -70,12 +70,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                     title={pdfVocabulary.occurrence.text}
                 >
                     <MdLink />
-                    <em
-                        style={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis"
-                        }}
-                    >{pdfVocabulary.occurrence.text}</em>
+                    <em>{pdfVocabulary.occurrence.text}</em>
                 </button>
             </td>
             <CellToFill

@@ -5,6 +5,11 @@
     gap: var(--space-m);
     padding-inline: var(--space-s);
 
+    em {
+        overflow: hidden;
+        padding-right: var(--space-s);
+        text-overflow: ellipsis;
+    }
     svg {
         flex-shrink: 0;
     }

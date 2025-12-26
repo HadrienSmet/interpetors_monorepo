@@ -24,7 +24,7 @@
         transparent;
     border: var(--border-width) solid transparent;
     box-sizing: border-box;
-    filter: blur(var(--blur-value)) contrast(10);
+    filter: blur(1px) contrast(10);
     padding: var(--padding-value);
     width: var(--loader-width);
 
