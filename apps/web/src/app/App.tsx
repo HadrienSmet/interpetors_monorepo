@@ -1,7 +1,9 @@
-import { Router } from "@/components";
 import { ContextMenuProvider, ThemeProvider } from "@/contexts";
 import { useWindowSize } from "@/hooks";
-import { AuthProvider, ColorPanelWrapper, ResizableLayoutProvider } from "@/modules";
+import { AuthProvider } from "@/modules/auth";
+import { ColorPanelWrapper } from "@/modules/colorPanel";
+import { ResizableLayoutProvider } from "@/modules/resizableLayout";
+import { Router } from "@/modules/router";
 
 import "./global.classes.scss";
 import "./global.root.scss";

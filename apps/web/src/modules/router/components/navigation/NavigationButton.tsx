@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
-import { useLocaleNavigate } from "@/utils";
+import { useLocaleNavigate } from "@/modules/router";
 
 import { NAVIGATION, NavigationItem } from "./navigation.types";
 
@@ -35,9 +35,7 @@ export const NavigationButton = ({
         fontSize: `${16 - (2 * depth)}px`,
         paddingLeft: `${8 + (depth * 16)}px`,
     }), [depth]);
-    const isSelected = useMemo(() => (
-        navigation[depth] === id
-    ), [navigation, depth, id]);
+    const isSelected = useMemo(() => (navigation[depth] === id), [navigation, depth, id]);
 
     useEffect(() => {
         if (isSelected) {

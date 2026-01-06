@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 
-import { ContextMenu, Navigation } from "@/components";
+import { ContextMenu } from "@/components";
+import { Navigation } from "@/modules/router";
 
 import { Header } from "./header";
 import { Footer } from "./footer";

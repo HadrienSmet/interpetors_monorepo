@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router";
 
-import { Loader, NavigationState } from "@/components";
+import { Loader } from "@/components";
+import { useAuth } from "@/modules/auth";
 import {
     uploadPreparation,
     PREPARATION,
@@ -12,14 +13,15 @@ import {
     usePreparations,
     SavedPreparation,
 } from "@/modules/preparations";
+import { NavigationState, useLocaleNavigate } from "@/modules/router";
 import { useWorkspaces } from "@/modules/workspace";
-import { useLocaleNavigate } from "@/utils";
 
 import "./preparations.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
 
 export const Preparations = () => {
+    const { userKey } = useAuth();
     const navigate = useLocaleNavigate();
     const location = useLocation();
     const { addPreparation, isLoading, preparations, setShouldFetch } = usePreparations();
@@ -41,6 +43,10 @@ export const Preparations = () => {
         title,
         vocabularyTerms,
     }: SavePreparationParams) => {
+        if (!userKey) {
+            throw new Error("Create preparation impossible - No userKey");
+        }
+
         const workspaceId = currentWorkspace!.id;
         const prepRes = await PREPARATION.create({
             body: { title },
@@ -56,6 +62,7 @@ export const Preparations = () => {
             foldersActions,
             preparationId: prepRes.data.id,
             rootFolderId: rootFolderId ?? "root",
+            userKey,
             vocabularyTerms,
             workspaceId,
         });

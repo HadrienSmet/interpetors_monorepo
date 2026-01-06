@@ -1,18 +1,21 @@
 import { PropsWithChildren } from "react";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 
 import { Loader } from "@/components";
+import { useLocalePath } from "@/modules/router";
 
 import { useWorkspaces, WorkspacesProvider } from "../context";
 
 const WorkspaceWrapperChild = (props: PropsWithChildren) => {
+    const localePath = useLocalePath();
+    const location = useLocation();
     const { currentWorkspace, isReady } = useWorkspaces();
 
     if (!isReady) {
         return (<Loader />);
     }
-    if (currentWorkspace === null) {
-        return (<Navigate to="/workspace" />);
+    if (currentWorkspace === null && location.pathname !== localePath("workspace")) {
+        return (<Navigate to={localePath("workspace")} />);
     }
 
     return (props.children);

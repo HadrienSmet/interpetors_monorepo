@@ -5,5 +5,6 @@ export * from "./folders";
 export * from "./pdf";
 export * from "./preparations";
 export * from "./resizableLayout";
+export * from "./router";
 export * from "./vocabulary";
 export * from "./workspace";

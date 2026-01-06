@@ -65,7 +65,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
             title: t("vocabulary.label"),
         }
     ], []);
-    const viewTitles = views.map(v => String(v.title));
+    const viewTitles = ["folders", "vocabulary"];
 
     const onInputChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
     const onSave = async () => {
@@ -103,7 +103,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
         const path = searchParams.get(URL_PARAMETERS.view);
         if (!path) return;
 
-        setInitialTabIndex(Math.max(views.findIndex(elem => elem.title === path), 0));
+        setInitialTabIndex(Math.max(viewTitles.findIndex(elem => elem === path), 0));
     }, [searchParams.toString(), views]);
 
     return (

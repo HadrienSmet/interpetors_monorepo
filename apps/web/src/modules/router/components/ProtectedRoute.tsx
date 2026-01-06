@@ -1,9 +1,11 @@
 import { PropsWithChildren } from "react";
 import { Navigate } from "react-router";
 
-import { DictionaryProvider, PreparationsProvider, useAuth, WorkspaceWrapper } from "@/modules";
-
-import { Loader } from "../ui";
+import { Loader } from "@/components";
+import { useAuth } from "@/modules/auth";
+import { PreparationsProvider } from "@/modules/preparations";
+import { DictionaryProvider } from "@/modules/vocabulary";
+import { WorkspaceWrapper } from "@/modules/workspace";
 
 export const ProtectedRoute = ({ children }: PropsWithChildren) => {
     const { isAuthenticated, isReady } = useAuth();

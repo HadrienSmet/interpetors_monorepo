@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components";
-import { useLocaleNavigate } from "@/utils";
+import { useLocaleNavigate } from "@/modules/router";
 
 import "./notFound.scss";
 

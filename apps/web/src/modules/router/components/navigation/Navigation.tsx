@@ -2,7 +2,9 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MdExitToApp, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdMenu } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import { ResizableSection, useAuth, useResizableLayout } from "@/modules";
+
+import { useAuth } from "@/modules/auth";
+import { ResizableSection, useResizableLayout } from "@/modules/resizableLayout";
 
 import { NavigationButton } from "./NavigationButton";
 import { NAVIGATION } from "./navigation.types";

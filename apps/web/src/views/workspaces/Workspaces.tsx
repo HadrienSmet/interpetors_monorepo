@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { Button, InputStyleLess, LanguageSelect } from "@/components";
-import { useWorkspaces, Workspace } from "@/modules";
+import { useLocalePath, useWorkspaces, Workspace } from "@/modules";
 import { capitalize, getNativeName } from "@/utils";
 
 import "./workspaces.scss";
@@ -143,6 +143,7 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
 };
 
 export const Workspaces = () => {
+    const localePath = useLocalePath();
     const { t } = useTranslation();
     const { workspaces } = useWorkspaces();
 
@@ -156,7 +157,7 @@ export const Workspaces = () => {
                     />
                 ))}
             </div>
-            <Link to="/workspace">
+            <Link to={localePath("workspace")}>
                 {t("workspaces.new")}
             </Link>
         </div>

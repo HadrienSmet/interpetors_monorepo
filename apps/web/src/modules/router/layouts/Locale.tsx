@@ -12,9 +12,7 @@ export const LocaleLayout = () => {
     }
 
     useEffect(() => {
-        if (i18n.language !== locale) {
-            i18n.changeLanguage(locale);
-        }
+        i18n.changeLanguage(locale);
     }, [locale]);
 
     return (<Outlet />);

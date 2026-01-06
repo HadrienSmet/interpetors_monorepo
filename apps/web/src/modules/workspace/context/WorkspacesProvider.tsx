@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
 import { useAuth } from "@/modules/auth";
-import { useLocaleNavigate } from "@/utils";
+import { useLocaleNavigate } from "@/modules/router";
 
 import { create, getAll, remove, update, UpdateParams } from "../services";
 import { Workspace } from "../types";
@@ -31,7 +31,6 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
                 [workspace.id]: workspace
             }));
             localStorage.setItem(STORAGE_KEY, workspace.id);
-            navigate("/");
         }
     };
     const changeWorkspace = (id: string) => {
@@ -115,24 +114,17 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
         }
     }, [workspaces]);
     useEffect(() => {
-        if (workspaceId && Object.keys(workspaces).length > 0) {
-            setCurrentWorkspace(workspaces[workspaceId] ?? null);
-        }
-    }, [workspaceId, workspaces]);
-    useEffect(() => {
         if (!hasFetch) return;
 
-        const hasValidWorkspace = workspaceId && workspaces[workspaceId];
+        const hasValidWorkspace = (
+            workspaceId !== undefined &&
+            workspaces[workspaceId] !== undefined
+        );
         if (hasValidWorkspace) {
             setCurrentWorkspace(workspaces[workspaceId]);
         }
 
-        // Consider ready when we have fetched and have tried to select a workspace (even null)
-        if (hasFetch) {
-            setTimeout(() => {
-                setIsReady(true);
-            })
-        }
+        setIsReady(true);
     }, [hasFetch, workspaceId, workspaces]);
 
     return (

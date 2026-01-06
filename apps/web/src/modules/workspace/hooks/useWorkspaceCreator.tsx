@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 
-import { CreateWorkspaceParams, useWorkspaces } from "@/modules";
+import { useLocaleNavigate } from "@/modules/router";
+import { CreateWorkspaceParams, useWorkspaces } from "@/modules/workspace";
 
 const EMPTY_WORKSPACE: CreateWorkspaceParams = {
     name: "Default",
@@ -11,13 +12,14 @@ export const creationSteps = [
     "WORK",
     "NATIVE",
 ] as const;
-export type CreationStep = typeof creationSteps[number]
+export type CreationStep = typeof creationSteps[number];
 
 export const useWorkSpaceCreator = () => {
     const [creationStep, setCreationStep] = useState<CreationStep>(creationSteps[0]);
     const [isPending, setIsPending] = useState(false);
     const [workspace, setWorkspace] = useState<CreateWorkspaceParams>({ ...EMPTY_WORKSPACE });
 
+    const navigate = useLocaleNavigate();
     const { addNewWorkspace } = useWorkspaces();
 
     const handleNativeLanguage = (nativeLanguage: string) => setWorkspace(state => ({
@@ -34,6 +36,7 @@ export const useWorkSpaceCreator = () => {
             setIsPending(true);
             await addNewWorkspace(workspace);
             setIsPending(false);
+            navigate("/");
             return;
         }
 

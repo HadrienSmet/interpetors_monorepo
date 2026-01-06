@@ -4,7 +4,11 @@ export const useLocaleNavigate = () => {
     const navigate = useNavigate();
     const { locale } = useParams<{ locale: string }>();
 
-    return (to: string) => {
-        navigate(`/${locale}${to.startsWith("/") ? to : `/${to}`}`);
-    };
+    return ((to: string) => {
+        const pathTo = to.startsWith("/")
+            ? to : `/${to}`;
+        const fullPath = `/${locale}${pathTo}`;
+
+        navigate(fullPath);
+    });
 };

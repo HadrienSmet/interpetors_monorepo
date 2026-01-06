@@ -13,8 +13,9 @@ import {
     Workspaces
 } from "@/views";
 
+import { LocaleLayout } from "../layouts";
+
 import { ProtectedRoute } from "./ProtectedRoute";
-import { LocaleLayout } from "./LocaleLayout";
 
 const PROTECTED_ROUTES = {
     withLayout: [
@@ -38,22 +39,28 @@ export const Router = () => (
     <BrowserRouter>
         <Routes>
 
-            {/* / → /en */}
+            {/*
+                Redirections
+                / → /en
+            */}
             <Route
                 path="/"
                 element={<Navigate to={`/${DEFAULT_LOCALE}`} replace />}
             />
+            <Route
+                path="/signin"
+                element={<Navigate to={`/${DEFAULT_LOCALE}/signin`} replace />}
+            />
+            <Route
+                path="/signup"
+                element={<Navigate to={`/${DEFAULT_LOCALE}/signup`} replace />}
+            />
 
-            {/* /:locale/* */}
+            {/* /:locale */}
             <Route path=":locale" element={<LocaleLayout />}>
 
-                {/* Unprotected */}
+                {/* ---------------- PUBLIC ---------------- */}
                 {UNPROTECTED_ROUTES.map(route => (
-                    <Route key={route.path} {...route} />
-                ))}
-
-                {/* Without layout */}
-                {PROTECTED_ROUTES.withoutLayout.map(route => (
                     <Route
                         key={route.path}
                         path={route.path}
@@ -61,18 +68,34 @@ export const Router = () => (
                     />
                 ))}
 
-                {/* With layout */}
-                <Route element={<Layout />}>
+                {/* -------- PROTECTED (no layout) -------- */}
+                {PROTECTED_ROUTES.withoutLayout.map(route => (
+                    <Route
+                        key={route.path}
+                        path={route.path}
+                        element={
+                            <ProtectedRoute>
+                                {route.element}
+                            </ProtectedRoute>
+                        }
+                    />
+                ))}
+
+                {/* -------- PROTECTED (with layout) ------- */}
+                <Route
+                    element={
+                        <ProtectedRoute>
+                            <Layout />
+                        </ProtectedRoute>
+                    }
+                >
                     <Route index element={<Navigate to="home" replace />} />
+
                     {PROTECTED_ROUTES.withLayout.map(route => (
                         <Route
                             key={route.path}
                             path={route.path}
-                            element={
-                                <ProtectedRoute>
-                                    {route.element}
-                                </ProtectedRoute>
-                            }
+                            element={route.element}
                         />
                     ))}
                 </Route>

@@ -4,8 +4,8 @@ import { Link } from "react-router";
 
 import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
-import { AUTH, AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth } from "@/modules";
-import { useLocaleNavigate } from "@/utils";
+import { AUTH, AUTH_STORAGE_KEY, AuthTokens, CRYPTO_SALT_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth } from "@/modules/auth";
+import { useLocaleNavigate, useLocalePath } from "@/modules/router";
 
 import "./unauth.scss";
 
@@ -103,6 +103,12 @@ const UnAuthForm = (props: UnAuthFormParams) => {
     );
 };
 
+const storeTokens = async (tokens: AuthTokens) => {
+    localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
+    localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
+    localStorage.setItem(CRYPTO_SALT_STORAGE_KEY, tokens.user.cryptoSalt);
+};
+
 export const Signin = () => {
     const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
@@ -114,6 +120,7 @@ export const Signin = () => {
 
     const auth = useAuth();
     const navigate = useLocaleNavigate();
+    const localePath = useLocalePath();
     const { t } = useTranslation();
 
     const onClick = async () => {
@@ -137,12 +144,10 @@ export const Signin = () => {
         }
 
         const tokens = response.data;
-
-        localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
-        localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
+        storeTokens(tokens);
 
         setIsSigningIn(false);
-        auth.signin();
+        auth.signin(password);
         navigate("/");
     };
 
@@ -163,7 +168,7 @@ export const Signin = () => {
             />
             <Link
                 className="unauth-toggler"
-                to="/signup"
+                to={localePath("signup")}
             >
                 <span>{t("auth.toSignup")}</span>
             </Link>
@@ -184,6 +189,7 @@ export const Signup = () => {
 
     const { signin } = useAuth();
     const navigate = useLocaleNavigate();
+    const localePath = useLocalePath();
     const { t } = useTranslation();
 
     const onClick = async () => {
@@ -207,12 +213,10 @@ export const Signup = () => {
         }
 
         const tokens = response.data;
-
-        localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
-        localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
+        storeTokens(tokens);
 
         setIsSigningUp(false);
-        signin();
+        signin(password);
         navigate("/");
     };
     const onEmailBlur = () => {
@@ -253,7 +257,7 @@ export const Signup = () => {
             />
             <Link
                 className="unauth-toggler"
-                to="/signin"
+                to={localePath("signin")}
             >
                 <span>{t("auth.toSignin")}</span>
             </Link>
