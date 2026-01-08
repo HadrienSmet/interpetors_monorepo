@@ -18,13 +18,28 @@ datasource db {
 /////////////////////
 
 model User {
-  colorPanels        ColorPanel[] // custom panels
-  email              String       @unique
-  hashedRefreshToken String?
-  id                 String       @id @default(uuid())
-  password           String
+  id                 String   @id @default(uuid())
+
+  email              String   @unique
   role               String
-  workspaces         Workspace[] // owns
+
+  // Auth
+  passwordHash       String
+  passwordAlgo       String   @default("argon2id")
+
+  // Crypto (client-side encryption)
+  cryptoSalt         String   // base64 (non secret)
+
+  // Session
+  hashedRefreshToken String?
+  refreshTokenAlgo   String @default("argon2")
+
+  // Relations
+  colorPanels        ColorPanel[]
+  workspaces         Workspace[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Workspace {

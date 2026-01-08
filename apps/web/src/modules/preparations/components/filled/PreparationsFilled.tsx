@@ -94,7 +94,7 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                 await FILES.patchApi({
                     body: { files: files.filesToPatch },
                     preparationId,
-                })
+                });
             }
             if (files.newFiles && files.newFiles.length > 0) {
                 await Promise.all(

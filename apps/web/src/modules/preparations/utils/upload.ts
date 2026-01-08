@@ -13,6 +13,7 @@ type UploadPreparationParams = {
     readonly foldersActions: FilesActionsStore;
     readonly preparationId: string;
     readonly rootFolderId?: string;
+    readonly userKey: CryptoKey;
     readonly vocabularyTerms: Array<VocabularyTerm>;
     readonly workspaceId: string;
 };
@@ -20,11 +21,12 @@ export const uploadPreparation = async ({
     folders,
     foldersActions,
     preparationId,
+    userKey,
     vocabularyTerms,
     workspaceId,
 }: UploadPreparationParams) => {
     // 1) Aplatir les jobs (un job par PDF)
-    const jobs = prepareJobs(folders, foldersActions, preparationId, vocabularyTerms);
+    const jobs = await prepareJobs(folders, foldersActions, preparationId, userKey, vocabularyTerms);
 
     // 2) Traiter chaque job via un pool d'API (et sous-pool S3)
     await Promise.all(jobs.map(job => (runAPI(async () => {

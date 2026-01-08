@@ -1,6 +1,8 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
-import { AUTH_STORAGE_KEY, REFRESH_STORAGE_KEY } from "../const";
+import { base64ToUint8Array, deriveKey } from "@/utils";
+
+import { AUTH_STORAGE_KEY, CRYPTO_SALT_STORAGE_KEY, REFRESH_STORAGE_KEY } from "../const";
 import { verifyAccess } from "../services";
 import { refreshAccessToken } from "../utils";
 
@@ -10,14 +12,25 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [hasCheck, setHasCheck] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isReady, setIsReady] = useState(false);
+    const [userKey, setUserKey] = useState<CryptoKey | null>(null);
 
-    const signin = () => {
+    const signin = async (password: string) => {
+        const cryptoSalt = localStorage.getItem(CRYPTO_SALT_STORAGE_KEY);
+
+        if (!cryptoSalt) {
+            throw new Error("No crypto salt stored")
+        }
+        const saltBytes = base64ToUint8Array(cryptoSalt);
+        const key = await deriveKey(password, saltBytes);
+
+        setUserKey(key);
         setIsAuthenticated(true);
     };
     const signout = () => {
         setIsAuthenticated(false);
         localStorage.removeItem(AUTH_STORAGE_KEY);
         localStorage.removeItem(REFRESH_STORAGE_KEY);
+        localStorage.removeItem(CRYPTO_SALT_STORAGE_KEY);
     };
 
     useEffect(() => {
@@ -44,8 +57,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         };
 
         if (!hasCheck) {
-            checkToken()
-                .then(() => setHasCheck(true));
+            checkToken().then(() => setHasCheck(true));
         }
     }, [hasCheck]);
 
@@ -54,6 +66,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         isReady,
         signin,
         signout,
+        userKey,
     };
 
     return (

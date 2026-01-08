@@ -5,8 +5,9 @@ import { getContextError } from "@/contexts/utils";
 type AuthContextType = {
     readonly isAuthenticated: boolean;
     readonly isReady: boolean;
-    readonly signin: () => void;
+    readonly signin: (password: string) => Promise<void>;
     readonly signout: () => void;
+    readonly userKey: CryptoKey | null;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
