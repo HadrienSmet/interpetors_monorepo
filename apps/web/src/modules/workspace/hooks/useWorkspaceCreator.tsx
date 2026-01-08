@@ -34,9 +34,11 @@ export const useWorkSpaceCreator = () => {
         const currentStepIndex = creationSteps.findIndex(step => step === creationStep);
         if (currentStepIndex === (creationSteps.length - 1)) {
             setIsPending(true);
-            await addNewWorkspace(workspace);
+            const res = await addNewWorkspace(workspace);
             setIsPending(false);
-            navigate("/");
+
+            if (res) navigate("/");
+
             return;
         }
 

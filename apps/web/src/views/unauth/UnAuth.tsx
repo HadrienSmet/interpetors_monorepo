@@ -192,7 +192,7 @@ export const Signup = () => {
     const localePath = useLocalePath();
     const { t } = useTranslation();
 
-    const onClick = async () => {
+    const onSubmit = async () => {
         setErrorMessage(undefined);
         if (!isEmailValid) {
             emailRef.current?.focus();
@@ -215,8 +215,8 @@ export const Signup = () => {
         const tokens = response.data;
         storeTokens(tokens);
 
+        await signin(password);
         setIsSigningUp(false);
-        signin(password);
         navigate("/");
     };
     const onEmailBlur = () => {
@@ -249,7 +249,7 @@ export const Signup = () => {
                 onEmailChange={(e) => setEmail(e.target.value)}
                 onPasswordBlur={onPasswordBlur}
                 onPasswordChange={(e) => setPassword(e.target.value)}
-                onSubmit={onClick}
+                onSubmit={onSubmit}
                 password={password}
                 passwordRef={passwordRef}
                 submitLabel={t("auth.signingUp")}

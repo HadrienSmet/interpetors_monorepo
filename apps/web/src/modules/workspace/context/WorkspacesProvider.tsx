@@ -30,7 +30,10 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
                 ...state,
                 [workspace.id]: workspace
             }));
+            setCurrentWorkspace(workspace);
             localStorage.setItem(STORAGE_KEY, workspace.id);
+
+            return (workspace);
         }
     };
     const changeWorkspace = (id: string) => {
@@ -120,6 +123,7 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
             workspaceId !== undefined &&
             workspaces[workspaceId] !== undefined
         );
+
         if (hasValidWorkspace) {
             setCurrentWorkspace(workspaces[workspaceId]);
         }

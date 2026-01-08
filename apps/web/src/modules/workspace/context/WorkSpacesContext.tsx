@@ -11,7 +11,7 @@ export type CreateWorkspaceParams = {
     readonly nativeLanguage: string;
 };
 export type WorkspacesContextType = {
-    readonly addNewWorkspace: (params: CreateWorkspaceParams) => Promise<void>;
+    readonly addNewWorkspace: (params: CreateWorkspaceParams) => Promise<Workspace | undefined>;
     readonly changeWorkspace: (id: string) => void;
     readonly currentWorkspace: Workspace | null;
     readonly isReady: boolean;

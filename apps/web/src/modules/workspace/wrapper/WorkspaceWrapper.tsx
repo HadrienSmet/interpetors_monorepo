@@ -4,9 +4,9 @@ import { Navigate, useLocation } from "react-router";
 import { Loader } from "@/components";
 import { useLocalePath } from "@/modules/router";
 
-import { useWorkspaces, WorkspacesProvider } from "../context";
+import { useWorkspaces } from "../context";
 
-const WorkspaceWrapperChild = (props: PropsWithChildren) => {
+export const WorkspaceWrapper = (props: PropsWithChildren) => {
     const localePath = useLocalePath();
     const location = useLocation();
     const { currentWorkspace, isReady } = useWorkspaces();
@@ -19,14 +19,4 @@ const WorkspaceWrapperChild = (props: PropsWithChildren) => {
     }
 
     return (props.children);
-};
-
-export const WorkspaceWrapper = (props: PropsWithChildren) => {
-    return (
-        <WorkspacesProvider>
-            <WorkspaceWrapperChild>
-                {props.children}
-            </WorkspaceWrapperChild>
-        </WorkspacesProvider>
-    );
 };

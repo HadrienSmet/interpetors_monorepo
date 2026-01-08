@@ -8,7 +8,6 @@ import {
     CreationStep,
     creationSteps,
     useWorkSpaceCreator,
-    WorkspacesProvider,
 } from "@/modules/workspace";
 import { capitalize, getNativeName } from "@/utils";
 
@@ -64,7 +63,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
     );
 };
 
-const WorkspaceCreatorChild = () => {
+export const WorkspaceCreator = () => {
     const {
         creationStep,
         handleNativeLanguage,
@@ -138,8 +137,3 @@ const WorkspaceCreatorChild = () => {
         </main>
     );
 };
-export const WorkspaceCreator = () => (
-    <WorkspacesProvider>
-        <WorkspaceCreatorChild />
-    </WorkspacesProvider>
-);
