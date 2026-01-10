@@ -1,22 +1,19 @@
-import { PropsWithChildren, RefObject, useEffect, useRef, useState } from "react";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { DocumentCallback } from "react-pdf/src/shared/types.js";
 import { useSearchParams } from "react-router";
 
 import { useColorPanel } from "@/modules/colorPanel";
+import { FIRST_PAGE } from "@/modules/files";
 import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { sleep, URL_PARAMETERS } from "@/utils";
 import { PDFDocument } from "@/workers/pdfConfig";
 
-import { PdfEditorLoader } from "../../components";
 import { downloadPdf, handleSaveChanges } from "../../utils";
 
 import { PdfFileContext } from "./PdfFileContext";
 
-type PdfFileProviderProps =
-    & { readonly scrollableParentRef: RefObject<HTMLDivElement | null>; }
-    & PropsWithChildren;
-export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProviderProps) => {
-    const [displayLoader, setDisplayLoader] = useState(true);
+export const PdfFileProvider = ({ children }: PropsWithChildren) => {
+    const [displayLoader, setDisplayLoader] = useState(false);
     const [isPdfRendered, setIsPdfRendered] = useState(false);
     /** Number of pages of the pdf file */
     const [numPages, setNumPages] = useState<number>(-1);
@@ -27,6 +24,7 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
     const containerRef = useRef<HTMLDivElement>(null);
     const pageRef = useRef<HTMLDivElement | null>(null);
     const renderedPages = useRef(0);
+    const scrollableParentRef = useRef<HTMLDivElement | null>(null);
 
     const { colorPanel } = useColorPanel();
     const { getFileActions } = useFoldersActions();
@@ -35,8 +33,24 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
 
     const urlPageIndex = searchParams.get(URL_PARAMETERS.pageIndex);
 
-    const nextPage = () => setPageIndex(state => Math.min(state + 1, numPages ?? 1));
-    const previousPage = () => setPageIndex(state => Math.max(state - 1, 1));
+    const nextPage = () => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+
+            next.set(URL_PARAMETERS.pageIndex, Math.min(pageIndex + 1, numPages ?? 1).toString());
+
+            return (next);
+        });
+    };
+    const previousPage = () => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+
+            next.set(URL_PARAMETERS.pageIndex, Math.max(pageIndex - 1, 1).toString());
+
+            return (next);
+        });
+    };
 
     const onDocumentLoadSuccess = ({ numPages: nextNumPages }: DocumentCallback): void => (
         setNumPages(nextNumPages)
@@ -69,29 +83,30 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
     };
 
     // ------ USE EFFECTS ------
-    // Update url search params on page index change
     useEffect(() => {
+        if (selectedFile.path === "") {
+            return;
+        }
         setSearchParams(prev => {
-            const prevIndex = prev.get(URL_PARAMETERS.pageIndex);
-            if (!prevIndex || Number(prevIndex) === pageIndex) return (prev);
-
             const next = new URLSearchParams(prev);
-            next.set(URL_PARAMETERS.pageIndex, pageIndex.toString());
+
+            next.set(URL_PARAMETERS.pageIndex, `${FIRST_PAGE}`);
+            next.set(URL_PARAMETERS.filepath, selectedFile.path);
 
             return (next);
         });
-    }, [pageIndex]);
+    }, [selectedFile.path]);
     // Display the right page depending on url -> Example on vocabulary occurence link
     useEffect(() => {
         if (!urlPageIndex) return;
 
         const numPageIndex = Number(urlPageIndex);
+
+        if (!Number.isFinite(numPageIndex)) return;
         if (pageIndex === numPageIndex) return;
+
         setPageIndex(numPageIndex);
     }, [pageIndex, urlPageIndex]);
-    useEffect(() => {
-        setPageIndex(1);
-    }, [selectedFile.path]);
     useEffect(() => {
         setIsPdfRendered(false);
     }, [selectedFile.path, pageIndex]);
@@ -104,7 +119,10 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
                 setDisplayLoader(false);
             }, randomTimeout);
         }
-    }, [isPdfRendered]);
+        if (selectedFile.path !== "") {
+            setDisplayLoader(true);
+        }
+    }, [isPdfRendered, selectedFile.path]);
     // Stores the pdf file as a PDFDocument that we will be able to edit
     // And resets all the indicators used to know if the pdf is rendered when pdf file changes
     useEffect(() => {
@@ -142,13 +160,11 @@ export const PdfFileProvider = ({ children, scrollableParentRef }: PdfFileProvid
         previousPage,
         renderedPages,
         scrollableParentRef,
-        setDisplayLoader,
         setIsPdfRendered,
     };
 
     return (
         <PdfFileContext.Provider value={value}>
-            {displayLoader && (<PdfEditorLoader />)}
             {children}
         </PdfFileContext.Provider>
     );

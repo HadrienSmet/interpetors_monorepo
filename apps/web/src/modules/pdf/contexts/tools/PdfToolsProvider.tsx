@@ -55,7 +55,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const { setContextMenu } = useContextMenu();
     const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
-    const { containerRef, pageIndex, pageRef, setDisplayLoader } = usePdfFile();
+    const { containerRef, pageIndex, pageRef } = usePdfFile();
     const { pushAction } = usePdfHistory();
     const { t } = useTranslation();
 
@@ -79,8 +79,6 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
         const pageDimensions = pageRef.current.getBoundingClientRect();
 
-        setDisplayLoader(true);
-
         const rects = range.getClientRects();
         const rectsArray = Array.from(rects);
         const userAction: ElementAction = {
@@ -97,7 +95,6 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
         pushAction({ elements: [userAction] });
         setCurrentRange(undefined);
-        setDisplayLoader(false);
         removeSelection();
     };
 
@@ -112,8 +109,6 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         ) {
             return;
         }
-
-        setDisplayLoader(true);
 
         const pageDimensions = pageRef.current.getBoundingClientRect();
         const rects = currentRange.getClientRects();
@@ -234,7 +229,6 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         pushAction(historyAction);
         setCurrentRange(undefined);
         setTool(null);
-        setDisplayLoader(false);
     };
 
     // Responsible to store the text selection

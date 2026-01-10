@@ -90,6 +90,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
 
             const next = new URLSearchParams(prev);
             next.set(URL_PARAMETERS.view, viewTitles[index]);
+
             return (next);
         });
     };

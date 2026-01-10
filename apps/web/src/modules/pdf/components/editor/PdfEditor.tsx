@@ -1,9 +1,8 @@
-import { RefObject, useMemo } from "react";
+import { useMemo } from "react";
 
 import "@/workers/pdfConfig";
 
 import {
-    PdfWrapper,
     usePdfCanvas,
     usePdfFile,
     usePdfTools,
@@ -11,14 +10,15 @@ import {
 import { PDF_WIDTH } from "../../utils";
 
 import { PdfDocument } from "../document";
+import { PdfEditorLoader } from "../loader";
 import { NotesDisplayer } from "../notes";
 import { PdfTools } from "../tools";
 
 import "./pdfEditor.scss";
 
-const PdfEditorChild = () => {
+export const PdfEditor = () => {
     const { canvasRef, drawerRef } = usePdfCanvas();
-    const { containerRef } = usePdfFile();
+    const { containerRef, displayLoader } = usePdfFile();
     const { customCursor } = usePdfTools();
 
     const canvasStyle = useMemo(() => (
@@ -30,6 +30,8 @@ const PdfEditorChild = () => {
     return (
         <div className="pdf-editor-container">
             <PdfTools />
+
+            {displayLoader && (<PdfEditorLoader />)}
 
             <div
                 className="pdf-editor"
@@ -61,12 +63,3 @@ const PdfEditorChild = () => {
         </div>
     );
 };
-
-type PdfEditorProps = {
-    readonly fileDisplayerRef: RefObject<HTMLDivElement | null>;
-};
-export const PdfEditor = (props: PdfEditorProps) => (
-    <PdfWrapper scrollableParentRef={props.fileDisplayerRef}>
-        <PdfEditorChild />
-    </PdfWrapper>
-);

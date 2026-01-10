@@ -5,6 +5,7 @@ import { groupVocabularyByColor, VocabularyWrapper } from "@/modules/vocabulary"
 
 import { PreparationProvider } from "../../contexts";
 import { SavedPreparation } from "../../types";
+import { PdfWrapper } from "@/modules/pdf";
 
 type PreparationWrapperProps =
     & {
@@ -21,11 +22,13 @@ export const PreparationWrapper = ({ children, editable = false, savedPreparatio
             savedFolders={savedPreparation?.folders}
         >
             <FoldersActionsProvider savedActions={savedPreparation?.foldersActions}>
-                <VocabularyWrapper groupedVocabulary={grouped}>
-                    <PreparationProvider savedPreparation={savedPreparation}>
-                        {children}
-                    </PreparationProvider>
-                </VocabularyWrapper>
+                    <VocabularyWrapper groupedVocabulary={grouped}>
+                        <PreparationProvider savedPreparation={savedPreparation}>
+                            <PdfWrapper>
+                                {children}
+                            </PdfWrapper>
+                        </PreparationProvider>
+                    </VocabularyWrapper>
             </FoldersActionsProvider>
         </FoldersManagerProvider>
     );

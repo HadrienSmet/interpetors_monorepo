@@ -46,16 +46,18 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const rgbColor = handleActionColor(color, colorPanel);
     const getColorToUse = (opacity: number) => rgbToRgba(rgbColor, opacity);
 
-    useCanvasResizeObserver(
-        pageRef,
+    useCanvasResizeObserver({
+        canvasContextRef,
         canvasRef,
-        canvasContextRef
-    );
-    useCanvasResizeObserver(
+        isPdfRendered,
         pageRef,
-        drawerRef,
-        drawerContextRef
-    );
+    });
+    useCanvasResizeObserver({
+        canvasContextRef: drawerContextRef,
+        canvasRef: drawerRef,
+        isPdfRendered,
+        pageRef,
+    });
 
     const clear = () => {
         const canvas = canvasRef.current;

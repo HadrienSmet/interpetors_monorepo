@@ -1,15 +1,13 @@
 import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react";
 import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router";
 
 import { PdfMetadata } from "@repo/types";
 
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
-import { FileIcon, FIRST_PAGE } from "@/modules/files";
+import { FileIcon } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
-import { URL_PARAMETERS } from "@/utils";
 
 import { TreeNodeProps } from "../nodes.types";
 import { getPaddingLeft } from "../nodes.utils";
@@ -32,7 +30,6 @@ export const FileNode = ({
     const [newFileName, setNewFileName] = useState(name);
 
     const { setContextMenu } = useContextMenu();
-    const [_, setSearchParams] = useSearchParams();
     const { files, isEditable, selectedFile, setSelectedFilePath } = useFoldersManager()
     const { t } = useTranslation();
 
@@ -66,17 +63,7 @@ export const FileNode = ({
     };
 
     const onChange = (e: ChangeEvent<HTMLInputElement>) => setNewFileName(e.target.value);
-    const onClick = () => {
-        setSearchParams(prev => {
-            const next = new URLSearchParams(prev);
-
-            next.set(URL_PARAMETERS.filepath, path);
-            next.set(URL_PARAMETERS.pageIndex, FIRST_PAGE.toString());
-
-            return (next);
-        });
-        setSelectedFilePath(path);
-    };
+    const onClick = () => setSelectedFilePath(path);
     const onContextMenu = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();

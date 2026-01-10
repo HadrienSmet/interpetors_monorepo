@@ -42,6 +42,7 @@ export const PdfDocument = () => {
         numPages !== undefined &&
         numPages > 1
     );
+    const options = useMemo(() => OPTIONS, []);
 
     const onLoadError = (error: Error) => console.error("An error occured while loading document", error);
     const onRenderError = (error: Error) => console.error("An error occured while loading page", error);
@@ -67,7 +68,7 @@ export const PdfDocument = () => {
                 onLoadError={onLoadError}
                 onLoadSuccess={onDocumentLoadSuccess}
                 onContextMenu={onContextMenu}
-                options={OPTIONS}
+                options={options}
             >
                 <Page
                     className={`pdf-page ${tool !== null ? "tooling" : ""}`}

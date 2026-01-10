@@ -1,18 +1,14 @@
-import { RefObject, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Loader } from "@/components";
 import { useFoldersManager } from "@/modules/folders";
-import { PdfEditor } from "@/modules/pdf";
+import { PdfEditor, usePdfFile } from "@/modules/pdf";
 
 import { SUPPORTED_TYPES } from "../icon";
 
 import "./fileDisplayer.scss";
 
-type FileToRenderProps = {
-    readonly fileDisplayerRef: RefObject<HTMLDivElement | null>;
-};
-const FileToRender = (props: FileToRenderProps) => {
+const FileToRender = () => {
     const { t } = useTranslation();
 
     const { selectedFile } = useFoldersManager();
@@ -24,7 +20,7 @@ const FileToRender = (props: FileToRenderProps) => {
     const { file } = selectedFile.fileInStructure;
 
     if (file.type.startsWith(SUPPORTED_TYPES.PDF)) {
-        return (<PdfEditor {...props} />);
+        return (<PdfEditor />);
     }
     if (file.type.startsWith(SUPPORTED_TYPES.WORD)) {
         return (<p>{t("files.unsupported", { type: "Word" })}</p>);
@@ -45,19 +41,18 @@ const FileToRender = (props: FileToRenderProps) => {
 
 const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
 export const FileDisplayer = () => {
-    const fileDisplayerRef = useRef(null);
-
     const { selectedFile } = useFoldersManager();
+    const { scrollableParentRef } = usePdfFile();
     const { t } = useTranslation();
 
     return (
         <div
             className="file-displayer"
-            ref={fileDisplayerRef}
+            ref={scrollableParentRef}
             style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}
         >
-            {selectedFile.path != ""
-                ? (<FileToRender fileDisplayerRef={fileDisplayerRef} />)
+            {selectedFile.path !== ""
+                ? (<FileToRender />)
                 : (
                     <div className="unselected-file">
                         <p>{t("inputs.folders.unselected")}</p>

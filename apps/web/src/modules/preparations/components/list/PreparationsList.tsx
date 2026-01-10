@@ -22,11 +22,13 @@ export const PreparationsList = ({ preparations }: PreparationsFilledProps) => {
                     <div
                         className="preparation-content"
                         onClick={() => {
-                            setSearchParams(state => {
-                                state.set(URL_PARAMETERS.preparationid, prep.id);
-                                state.set(URL_PARAMETERS.view, URL_VIEWS.folders);
+                            setSearchParams(prev => {
+                                const next = new URLSearchParams(prev);
 
-                                return (state);
+                                next.set(URL_PARAMETERS.preparationid, prep.id);
+                                next.set(URL_PARAMETERS.view, URL_VIEWS.folders);
+
+                                return (next);
                             });
                         }}
                     >

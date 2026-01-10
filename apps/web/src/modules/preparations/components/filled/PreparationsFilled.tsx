@@ -47,8 +47,8 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
     const scrollToTabs = () => scrollTo(tabsRef, TABS_NAMES.tabs);
 
     const backToList = () => {
-        setSearchParams(state => {
-            const next = new URLSearchParams(state);
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
 
             next.delete(URL_PARAMETERS.preparationid);
             next.delete(URL_PARAMETERS.view);
