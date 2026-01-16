@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router";
 
 import { Loader } from "@/components";
+import { useAuth } from "@/modules/auth";
 import {
     PreparationLayout,
     PreparationsEmpty,
@@ -15,6 +16,7 @@ import "./preparations.scss";
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
 
 export const Preparations = () => {
+    const { userKey } = useAuth();
     const navigate = useLocaleNavigate();
     const location = useLocation();
     const { isLoading, preparations, setShouldFetch } = usePreparations();
@@ -29,10 +31,12 @@ export const Preparations = () => {
     ), [location.pathname]);
 
     useEffect(() => {
-        setShouldFetch(true);
-    }, []);
+        if (!userKey) return;
 
-    if (isLoading) return (<Loader />);
+        setShouldFetch(true);
+    }, [userKey]);
+
+    if (isLoading || !userKey) return (<Loader />);
 
     if (currentView === "new") {
         return (
