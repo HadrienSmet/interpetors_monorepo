@@ -14,10 +14,10 @@
         appearance: none;
         background: transparent;
         border: 0;
-        border-radius: var(--radius-s);
         box-shadow: var(--shadow-default) var(--clr-txt-02);
         color: var(--clr-txt);
         cursor: pointer;
+        flex: 1;
         padding: var(--space-m) var(--space-xl);
         transition:
             background var(--transition-hover),
@@ -29,17 +29,16 @@
         }
 
         &.is-active {
-            background: var(--clr-txt);
+            background: var(--clr-txt-06);
             color: var(--clr-bg);
         }
     }
     &__tabbar {
         align-items: center;
         display: flex;
-        gap: var(--space-xl);
         overflow-x: auto;
         overflow-y: hidden;
-        padding: var(--space-l);
+        padding-top: var(--space-l);
     }
     &__track {
         display: flex;

@@ -1,13 +1,39 @@
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
+import { SavedVocabularyTerm } from "@repo/types";
+
+import { useAuth } from "@/modules/auth";
 import { buildFoldersStructure } from "@/modules/folders";
 import { VOCABULARY } from "@/modules/vocabulary";
 import { useWorkspaces } from "@/modules/workspace";
+import { decryptString, EncryptedResource, safeJsonParse } from "@/utils";
 
 import { getAll } from "../../services";
 import { SavedPreparation } from "../../types";
 
 import { PreparationsContext, PreparationsContextValue } from "./PreparationsContext";
+
+export const decryptVocabularyTerms = async (
+    userKey: CryptoKey,
+    terms: SavedVocabularyTerm[]
+): Promise<SavedVocabularyTerm[]> => {
+    const output: SavedVocabularyTerm[] = [];
+
+    for (const term of terms) {
+        const encrypted = safeJsonParse<EncryptedResource>(term.occurrence.text);
+        const decryptedText = await decryptString(userKey, encrypted);
+
+        output.push({
+            ...term,
+            occurrence: {
+                ...term.occurrence,
+                text: decryptedText,
+            },
+        });
+    }
+
+    return (output);
+};
 
 export const PreparationsProvider = ({ children }: PropsWithChildren) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +41,7 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
     const [selectedPreparationId, setSelectedPreparation] = useState<string | undefined>(undefined);
     const [shouldFetch, setShouldFetch] = useState(false);
 
+    const { userKey } = useAuth();
     const { currentWorkspace } = useWorkspaces();
 
     const selectedPreparation = useMemo(() => {
@@ -35,9 +62,7 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         const fetchPreparations = async () => {
-            if (!currentWorkspace) {
-                return;
-            }
+            if (!currentWorkspace || !userKey) return;
 
             setIsLoading(true);
             const { id: workspaceId } = currentWorkspace;
@@ -59,19 +84,19 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
                     vocabulary: [],
                 };
 
-                const { foldersActions, foldersStructures } = await buildFoldersStructure(preparationId);
+                const { foldersActions, foldersStructures } = await buildFoldersStructure(preparationId, userKey);
                 preparationRecord.folders.push(...foldersStructures);
                 //@ts-expect-error
                 preparationRecord.foldersActions = {
                     ...preparationRecord.foldersActions,
                     ...foldersActions,
-                }
+                };
 
                 const vocabularyResponse = await VOCABULARY.getAllFromPreparation(workspaceId, preparationId);
-                if (!vocabularyResponse.success) {
-                    throw new Error(vocabularyResponse.message);
-                }
-                preparationRecord.vocabulary.push(...vocabularyResponse.data);
+                if (!vocabularyResponse.success) throw new Error(vocabularyResponse.message);
+
+                const decryptedVocabulary = await decryptVocabularyTerms(userKey, vocabularyResponse.data);
+                preparationRecord.vocabulary.push(...decryptedVocabulary);
 
                 savedPreparations.push(preparationRecord);
             }

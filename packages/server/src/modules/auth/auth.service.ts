@@ -3,9 +3,11 @@ import { JwtService } from "@nestjs/jwt";
 import * as argon2 from "argon2";
 import { randomBytes } from "crypto";
 
+import { sleep } from "src/common";
+
 import { PrismaService } from "../prisma";
 
-import { SigninDto, SignupDto } from "./dto";
+import { SigninDto, SignupDto, UnlockDto } from "./dto";
 
 type SignToken = {
     readonly access_token: string;
@@ -25,7 +27,7 @@ export class AuthService {
         });
 
         if (alreadyExists) {
-            throw new ForbiddenException("exists");
+            throw new ForbiddenException("User already exists");
         }
 
         const cryptoSalt = randomBytes(16).toString("base64");
@@ -60,13 +62,14 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new ForbiddenException("credentials");
+            throw new ForbiddenException("Wrong credentials");
         }
 
-        const isPasswordValid = await argon2.verify(dto.password, user.passwordHash);
+        const isPasswordValid = await argon2.verify(user.passwordHash, dto.password);
 
         if (!isPasswordValid) {
-            throw new ForbiddenException("credentials");
+            await sleep(2000); // Prevent brut force
+            throw new ForbiddenException("Wrong credentials");
         }
 
         const tokens = await this.generateTokens(user.id, user.email);
@@ -80,6 +83,24 @@ export class AuthService {
                 id: user.id,
             },
         };;
+    }
+
+    async unlock(dto: UnlockDto) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: dto.userId }
+        });
+
+        if (!user) {
+            throw new ForbiddenException("User not found");
+        }
+
+        const isPasswordValid = await argon2.verify(user.passwordHash, dto.password);
+        if (!isPasswordValid) {
+            await sleep(2000); // Prevent brut force
+            throw new Error("Wrong credentials");
+        }
+
+        return { isPasswordValid };
     }
 
     async refreshTokens(userId: string, refreshToken: string) {
@@ -103,7 +124,14 @@ export class AuthService {
         const tokens = await this.generateTokens(user.id, user.email);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
-        return tokens;
+        return {
+            ...tokens,
+            user: {
+                cryptoSalt: user.cryptoSalt,
+                email: user.email,
+                id: user.id,
+            },
+        };
     }
 
     async updateRefreshToken(userId: string, refreshToken: string) {

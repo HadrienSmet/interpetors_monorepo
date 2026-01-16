@@ -2,30 +2,22 @@ import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router";
 
 import { Loader } from "@/components";
-import { useAuth } from "@/modules/auth";
 import {
-    uploadPreparation,
-    PREPARATION,
     PreparationLayout,
     PreparationsEmpty,
     PreparationsFilled,
-    SavePreparationParams,
     usePreparations,
-    SavedPreparation,
 } from "@/modules/preparations";
 import { NavigationState, useLocaleNavigate } from "@/modules/router";
-import { useWorkspaces } from "@/modules/workspace";
 
 import "./preparations.scss";
 
 const SCREEN_NAVIGATION_LEVEL = 1 as const;
 
 export const Preparations = () => {
-    const { userKey } = useAuth();
     const navigate = useLocaleNavigate();
     const location = useLocation();
-    const { addPreparation, isLoading, preparations, setShouldFetch } = usePreparations();
-    const { currentWorkspace } = useWorkspaces();
+    const { isLoading, preparations, setShouldFetch } = usePreparations();
 
     const currentView = useMemo(() => (
         (location.pathname
@@ -35,50 +27,6 @@ export const Preparations = () => {
             .filter(Boolean) as NavigationState
         )[SCREEN_NAVIGATION_LEVEL]
     ), [location.pathname]);
-
-    const createPreparation = async ({
-        folders,
-        foldersActions,
-        rootFolderId,
-        title,
-        vocabularyTerms,
-    }: SavePreparationParams) => {
-        if (!userKey) {
-            throw new Error("Create preparation impossible - No userKey");
-        }
-
-        const workspaceId = currentWorkspace!.id;
-        const prepRes = await PREPARATION.create({
-            body: { title },
-            workspaceId,
-        });
-
-        if (!prepRes.success) {
-            throw new Error("An error occured while creating preparation");
-        }
-
-        await uploadPreparation({
-            folders,
-            foldersActions,
-            preparationId: prepRes.data.id,
-            rootFolderId: rootFolderId ?? "root",
-            userKey,
-            vocabularyTerms,
-            workspaceId,
-        });
-
-        const now = new Date().toISOString();
-        const savedPreparation: SavedPreparation = {
-            createdAt: now,
-            id: prepRes.data.id,
-            folders,
-            foldersActions,
-            title: prepRes.data.title,
-            updatedAt: now,
-            vocabulary: vocabularyTerms,
-        };
-        addPreparation(savedPreparation);
-    };
 
     useEffect(() => {
         setShouldFetch(true);
@@ -92,7 +40,6 @@ export const Preparations = () => {
                 backToList={() => navigate("/preparations")}
                 editable
                 preparation={undefined}
-                savePreparation={createPreparation}
             />
         );
     }

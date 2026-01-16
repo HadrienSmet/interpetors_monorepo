@@ -31,7 +31,6 @@
         position: relative;
 
         .tabs__tabbar {
-            padding-left: var(--space-l);
             position: relative;
             &::after {
                 background-color: var(--clr-txt-01);

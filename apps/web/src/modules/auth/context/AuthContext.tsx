@@ -4,9 +4,11 @@ import { getContextError } from "@/contexts/utils";
 
 type AuthContextType = {
     readonly isAuthenticated: boolean;
+    readonly isLocked: boolean;
     readonly isReady: boolean;
     readonly signin: (password: string) => Promise<void>;
     readonly signout: () => void;
+    readonly unlock: (password: string) => Promise<boolean>;
     readonly userKey: CryptoKey | null;
 };
 

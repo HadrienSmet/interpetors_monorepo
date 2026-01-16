@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
-import { AUTH, AUTH_STORAGE_KEY, AuthTokens, CRYPTO_SALT_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth } from "@/modules/auth";
+import { AUTH, AUTH_STORAGE_KEY, AuthTokens, CRYPTO_SALT_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth, USER_ID_STORAGE_KEY } from "@/modules/auth";
 import { useLocaleNavigate, useLocalePath } from "@/modules/router";
 
 import "./unauth.scss";
@@ -107,6 +107,7 @@ const storeTokens = async (tokens: AuthTokens) => {
     localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
     localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
     localStorage.setItem(CRYPTO_SALT_STORAGE_KEY, tokens.user.cryptoSalt);
+    localStorage.setItem(USER_ID_STORAGE_KEY, tokens.user.id);
 };
 
 export const Signin = () => {

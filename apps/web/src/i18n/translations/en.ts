@@ -26,6 +26,10 @@ export const en = {
                 credentials: "Wrong credentials",
                 exists: "An other account already uses that email adress",
             },
+            locked: {
+                explanations: "To ensure the safety of your data, please provide your password to unlock the sessions.",
+                title: "Session locked",
+            },
             password: {
                 label: "Password",
                 placeholder: "********",
@@ -129,12 +133,12 @@ export const en = {
             buttons: {
                 dictionary: "Dictionary",
                 files: "Source folders",
-                home: "My work space",
+                home: "My workspace",
                 preparations: "My preparations",
                 prepare: "New preparation",
                 manager: "Manager",
                 vocabulary: "Vocabulary",
-                workspaces: "All my work spaces",
+                workspaces: "My workspaces",
             },
         },
         notes: {

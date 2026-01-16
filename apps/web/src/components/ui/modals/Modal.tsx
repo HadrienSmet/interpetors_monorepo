@@ -6,12 +6,14 @@ import "./modal.scss";
 type ModalProps =
     & {
         readonly isOpen: boolean;
+        readonly minWidth?: string;
         readonly onClose: () => void;
+        readonly persistant?: boolean;
         readonly width?: string;
     }
     & PropsWithChildren;
 
-export const Modal = ({ isOpen, onClose, children, width = "75%" }: ModalProps) => {
+export const Modal = ({ children, isOpen, minWidth = undefined, onClose, persistant = false, width = "75%" }: ModalProps) => {
     const portalRoot = document.getElementById("portals");
 
     useEffect(() => {
@@ -30,17 +32,17 @@ export const Modal = ({ isOpen, onClose, children, width = "75%" }: ModalProps) 
         };
     }, [isOpen, onClose]);
 
-    if (!isOpen || !portalRoot) return null;
+    if (!isOpen || !portalRoot) return (null);
 
     return createPortal(
         <div
             className="modal-overlay"
-            onClick={onClose}
+            onClick={persistant ? () => null : onClose}
         >
             <div
                 className="modal"
                 onClick={(e) => e.stopPropagation()}
-                style={{ width }}
+                style={{ minWidth, width }}
             >
                 {children}
             </div>

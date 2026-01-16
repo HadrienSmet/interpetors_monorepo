@@ -1,6 +1,6 @@
-import { toArrayBuffer } from "../binary";
-
 import { encoder } from "./constants";
+
+export const toArrayBuffer = (u8: Uint8Array): ArrayBuffer => (new Uint8Array(u8).buffer);
 
 export const deriveKey = async (
     password: string,
@@ -10,7 +10,7 @@ export const deriveKey = async (
 
     const baseKey = await crypto.subtle.importKey(
         "raw",
-        toArrayBuffer(passwordBytes),
+        passwordBytes,
         { name: "PBKDF2" },
         false,
         ["deriveKey"]

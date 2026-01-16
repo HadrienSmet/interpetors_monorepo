@@ -39,15 +39,19 @@ export const prepareJobs = async (
                 const fullPath = path ? `${path}/${value.name}` : `/${value.name}`;
                 const filePath = path;
 
+                const handleFirstPathChar = (path: string) => (
+                    path[0] === "/"
+                        ? path
+                        // Happens on file at root
+                        : `/${path}`
+                );
+
                 const getTems = async (voc: Array<VocabularyTerm>) => {
                     const filtered = voc.filter(t => {
-                        const occFilePath = t.occurrence.filePath;
-                        const tPath = occFilePath[0] === "/"
-                            ? occFilePath
-                            // Happens on file at root
-                            : `/${occFilePath}`;
+                        const occFilePath = handleFirstPathChar(t.occurrence.filePath);
+                        const safePath = handleFirstPathChar(fullPath)
 
-                        return (tPath === fullPath);
+                        return (occFilePath === safePath);
                     });
 
                     const output: Array<VocabularyTerm> = [];
@@ -64,8 +68,9 @@ export const prepareJobs = async (
 
                     return (output);
                 };
+
                 const terms = await getTems(vocabularyTerms);
-                const actions = foldersActions[value.id];
+                const actions = foldersActions[value.id] ?? {};
                 const encryptedActions = await encryptJson(userKey, actions);
 
                 jobs.push({

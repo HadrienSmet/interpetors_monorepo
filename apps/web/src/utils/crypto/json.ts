@@ -1,5 +1,3 @@
-import { toArrayBuffer } from "../binary";
-
 import { decoder, encoder } from "./constants";
 import { EncryptedResource } from "./types";
 
@@ -7,8 +5,9 @@ export const encryptJson = async <T>(
     key: CryptoKey,
     data: T
 ): Promise<EncryptedResource> => {
-    const iv = crypto.getRandomValues(new Uint8Array(12));
     const encoded = encoder.encode(JSON.stringify(data));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
 
     const encrypted = await crypto.subtle.encrypt(
         {
@@ -16,7 +15,7 @@ export const encryptJson = async <T>(
             iv,
         },
         key,
-        toArrayBuffer(encoded)
+        encoded
     );
 
     return ({

@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import { Loader } from "@/components";
 import { useFoldersManager } from "@/modules/folders";
@@ -41,7 +41,7 @@ const FileToRender = () => {
 
 const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
 export const FileDisplayer = () => {
-    const { selectedFile } = useFoldersManager();
+    const { foldersStructure, selectedFile } = useFoldersManager();
     const { scrollableParentRef } = usePdfFile();
     const { t } = useTranslation();
 
@@ -53,10 +53,17 @@ export const FileDisplayer = () => {
         >
             {selectedFile.path !== ""
                 ? (<FileToRender />)
-                : (
-                    <div className="unselected-file">
-                        <p>{t("inputs.folders.unselected")}</p>
-                    </div>
+                : (foldersStructure.length === 0
+                    ? (
+                        <div className="unselected-file">
+                            <Trans i18nKey="inputs.folders.empty" components={{ default: <p /> }} />
+                        </div>
+                    )
+                    : (
+                        <div className="unselected-file">
+                            <p>{t("inputs.folders.unselected")}</p>
+                        </div>
+                    )
                 )
             }
         </div>

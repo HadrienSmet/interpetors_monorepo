@@ -9,14 +9,19 @@ import {
     MdDownload,
     MdEdit,
     MdFormatColorFill,
+    MdSave,
     MdTranslate,
 } from "react-icons/md";
 
 import { ColorKind, FILE_TOOLS, RgbColor } from "@repo/types";
 
-import { DraggableSection, useDraggableSection } from "@/components";
+import { DraggableSection, Loader, useDraggableSection } from "@/components";
+import { useAuth } from "@/modules/auth";
 import { ColorPicker, ColorSwatch, useColorPanel } from "@/modules/colorPanel";
-import { useFoldersManager } from "@/modules/folders";
+import { useFoldersActions, useFoldersManager } from "@/modules/folders";
+import { PREPARATION, SavedPreparation, SavePreparationParams, uploadPreparation, usePreparation, usePreparations } from "@/modules/preparations";
+import { useVocabularyTable } from "@/modules/vocabulary";
+import { useWorkspaces } from "@/modules/workspace";
 import { getRgbColor, handleActionColor } from "@/utils";
 
 import { usePdfFile, usePdfTools } from "../../contexts";
@@ -64,12 +69,20 @@ const TOOLS_BUTTONS: Array<ToolButtonItem> = [
 
 const PdfToolsChild = () => {
     const [isPickingColor, setIsPickingColor] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
+    const { userKey } = useAuth();
     const { colorPanel } = useColorPanel();
     const { dynamicClass, isLandscape, isLeftSide, isOpen, isTopSide } = useDraggableSection();
+    const { foldersActions } = useFoldersActions();
+    const { foldersStructure } = useFoldersManager();
     const { downloadPdfFile } = usePdfFile();
     const { color, setColor } = usePdfTools();
+    const { preparation, savedPreparation } = usePreparation();
+    const { addPreparation } = usePreparations();
     const { t } = useTranslation();
+    const { list: vocabularyTerms } = useVocabularyTable();
+    const { currentWorkspace } = useWorkspaces();
 
     const rgbColor = useMemo(() => handleActionColor(color, colorPanel), [color, colorPanel]);
     const colorPickerBg = useMemo(() => getRgbColor(rgbColor), [color, colorPanel]);
@@ -80,6 +93,59 @@ const PdfToolsChild = () => {
         kind: ColorKind.PANEL,
         lastValue: colorSwatch.value,
         value: colorSwatch.id,
+    });
+    const createPreparation = async ({
+        folders,
+        foldersActions,
+        rootFolderId,
+        title,
+        vocabularyTerms,
+    }: SavePreparationParams) => {
+        if (!userKey) {
+            throw new Error("Create preparation impossible - No userKey");
+        }
+
+        setIsSaving(true);
+        const workspaceId = currentWorkspace!.id;
+        const prepRes = await PREPARATION.create({
+            body: { title },
+            workspaceId,
+        });
+
+        if (!prepRes.success) {
+            throw new Error("An error occured while creating preparation");
+        }
+
+        await uploadPreparation({
+            folders,
+            foldersActions,
+            preparationId: prepRes.data.id,
+            rootFolderId: rootFolderId ?? "root",
+            userKey,
+            vocabularyTerms,
+            workspaceId,
+        });
+
+        const now = new Date().toISOString();
+        const savedPreparation: SavedPreparation = {
+            createdAt: now,
+            id: prepRes.data.id,
+            folders,
+            foldersActions,
+            title: prepRes.data.title,
+            updatedAt: now,
+            vocabulary: vocabularyTerms,
+        };
+
+        addPreparation(savedPreparation);
+        setIsSaving(false);
+    };
+    const onSave = () => createPreparation({
+        folders: foldersStructure,
+        foldersActions,
+        old: savedPreparation,
+        title: preparation.title,
+        vocabularyTerms,
     });
 
     // Cleaning the state on closing panel tools
@@ -109,6 +175,15 @@ const PdfToolsChild = () => {
                     title={t("actions.download")}
                 >
                     <MdDownload />
+                </button>
+                <button
+                    onClick={onSave}
+                    title={t("actions.save")}
+                >
+                    {isSaving
+                        ? (<Loader size="small" />)
+                        : (<MdSave />)
+                    }
                 </button>
                 <button
                     onClick={togglePickingColor}

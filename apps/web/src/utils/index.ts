@@ -3,6 +3,7 @@ export * from "./colors";
 export * from "./commons";
 export * from "./crypto";
 export * from "./date";
+export * from "./json";
 export * from "./languages";
 export * from "./services";
 export * from "./string";

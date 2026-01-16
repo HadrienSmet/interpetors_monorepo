@@ -22,12 +22,11 @@ export const decryptBinary = async (
     key: CryptoKey,
     encrypted: EncryptedBinary
 ): Promise<ArrayBuffer> => {
-    // Copie "safe" -> ArrayBuffer garanti (TS + runtime)
     const iv = new Uint8Array(encrypted.iv);
     const payload = new Uint8Array(encrypted.payload);
 
     return (crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: iv.buffer },
+        { name: "AES-GCM", iv },
         key,
         payload
     ));

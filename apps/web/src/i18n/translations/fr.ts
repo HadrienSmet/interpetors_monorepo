@@ -26,6 +26,10 @@ export const fr = {
                 credentials: "Identifiants incorrects",
                 exists: "Un autre compte utilise déjà cette addresse email.",
             },
+            locked: {
+                explanations: "Afin de garantir la sécurité de vos données, veuillez entrer votre mot de passe pour débloquer votre session.",
+                title: "Session bloquée",
+            },
             password: {
                 label: "Mot de passe",
                 placeholder: "********",
@@ -134,7 +138,7 @@ export const fr = {
                 preparations: "Mes préparations",
                 prepare: "Nouvelle préparation",
                 vocabulary: "Vocabulaire",
-                workspaces: "Tous mes espaces de travail",
+                workspaces: "Mes espaces de travail",
             },
         },
         notes: {

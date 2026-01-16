@@ -1,25 +1,39 @@
-import { FilesActionsStore, SavedFolderStructure } from "@repo/types";
+import { FileAction, FilesActionsStore, SavedFolderStructure } from "@repo/types";
 
 import { FILES } from "@/modules/files";
-import { handleServicesConcurrency } from "@/utils";
+import {
+    decryptJson,
+    decryptPdfFile,
+    handleServicesConcurrency,
+    safeJsonParse,
+    EncryptedResource,
+} from "@/utils";
 
-const handleFile = async ({ actions, ...item }: FILES.FileApiResponse, foldersActions: FilesActionsStore) => {
+const handleFile = async (
+    { actions, ...item }: FILES.FileApiResponse,
+    foldersActions: FilesActionsStore,
+    userKey: CryptoKey
+) => {
     const fileRes = await FILES.getOneS3(item.s3Key, item.name);
     if (!fileRes.success) {
         throw new Error(fileRes.message);
     }
 
-    foldersActions[item.id] = JSON.parse(actions);
+    const decryptedPdf = await decryptPdfFile(fileRes.data, userKey);
+    const encryptedActions = safeJsonParse<EncryptedResource>(actions);
+    const decryptedActions = await decryptJson<Record<number, FileAction>>(userKey, encryptedActions);
+
+    foldersActions[item.id] = decryptedActions;
 
     return ({
         ...item,
-        file: fileRes.data,
+        file: decryptedPdf,
     });
 };
 
 const limit = handleServicesConcurrency(4);
 
-export const buildFoldersStructure = async (preparationId: string) => {
+export const buildFoldersStructure = async (preparationId: string, userKey: CryptoKey) => {
     const foldersStructures: Array<SavedFolderStructure> = [];
 
     const pdfFilesResponse = await FILES.getAllApi(preparationId);
@@ -30,7 +44,7 @@ export const buildFoldersStructure = async (preparationId: string) => {
     const files = pdfFilesResponse.data;
     const foldersActions: FilesActionsStore = {};
 
-    const hydrated = await Promise.all(files.map(file => limit(() => handleFile(file, foldersActions))));
+    const hydrated = await Promise.all(files.map(file => limit(() => handleFile(file, foldersActions, userKey))));
 
     for (const fileData of hydrated) {
         const { id, filePath, name, file } = fileData;
@@ -46,7 +60,7 @@ export const buildFoldersStructure = async (preparationId: string) => {
         } else {
             // essaie de retrouver la racine correspondante sinon crée une nouvelle
             const rootName = parts[0];
-            let root = foldersStructures.find((f) => rootName in f);
+            let root = foldersStructures.find((savedFolderStructure) => rootName in savedFolderStructure);
             if (!root) {
                 root = { [rootName]: {} };
                 foldersStructures.push(root);

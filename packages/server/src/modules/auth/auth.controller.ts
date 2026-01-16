@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard, RefreshTokenGuard } from "src/common";
 
 import { AuthService } from "./auth.service";
-import { SigninDto, SignupDto } from "./dto";
+import { SigninDto, SignupDto, UnlockDto } from "./dto";
 
 @Controller("auth")
 export class AuthController {
@@ -26,6 +26,10 @@ export class AuthController {
     @Post("signin")
     signin(@Body() dto: SigninDto) {
         return this.authService.signin(dto);
+    }
+    @Post("unlock")
+    unklock(@Body() dto: UnlockDto) {
+        return this.authService.unlock(dto);
     }
     @Get("verify")
     @UseGuards(JwtAuthGuard)

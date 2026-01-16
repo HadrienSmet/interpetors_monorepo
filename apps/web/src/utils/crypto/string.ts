@@ -1,5 +1,3 @@
-import { toArrayBuffer } from "../binary";
-
 import { encoder, decoder } from "./constants";
 import { EncryptedResource } from "./types";
 
@@ -17,7 +15,7 @@ export const encryptString = async (
             iv,
         },
         key,
-        toArrayBuffer(encoded)
+        encoded
     );
 
     return ({

@@ -2,7 +2,7 @@ import { PropsWithChildren } from "react";
 import { Navigate } from "react-router";
 
 import { Loader } from "@/components";
-import { useAuth } from "@/modules/auth";
+import { UnlockLayout, useAuth } from "@/modules/auth";
 import { PreparationsProvider } from "@/modules/preparations";
 import { DictionaryProvider } from "@/modules/vocabulary";
 import { WorkspacesProvider, WorkspaceWrapper } from "@/modules/workspace";
@@ -22,6 +22,7 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
             <WorkspaceWrapper>
                 <PreparationsProvider>
                     <DictionaryProvider>
+                        <UnlockLayout />
                         {children}
                     </DictionaryProvider>
                 </PreparationsProvider>

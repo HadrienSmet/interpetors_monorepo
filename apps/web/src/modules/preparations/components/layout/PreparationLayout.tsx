@@ -1,13 +1,13 @@
 import { ChangeEvent, RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { MdArrowBack, MdSave } from "react-icons/md";
+import { MdArrowBack } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
 import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/types";
 
-import { Button, InputStyleLess, Tabs } from "@/components";
-import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager, useFoldersActions } from "@/modules/folders";
-import { useVocabularyTable, VocabularyTable } from "@/modules/vocabulary";
+import { InputStyleLess, Tabs } from "@/components";
+import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager } from "@/modules/folders";
+import { VocabularyTable } from "@/modules/vocabulary";
 import { URL_PARAMETERS } from "@/utils";
 
 import { usePreparation } from "../../contexts";
@@ -28,22 +28,18 @@ type PreparationLayoutProps = {
     readonly backToList: () => void;
     readonly editable?: boolean;
     readonly preparation?: SavedPreparation | undefined;
-    readonly savePreparation: (params: SavePreparationParams) => Promise<void>;
     readonly scrollableParentRef?: RefObject<HTMLDivElement | null>;
 };
 type PreparationLayoutContentProps = Omit<PreparationLayoutProps, "preparation">;
 const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     const [initialTabIndex, setInitialTabIndex] = useState(0);
-    const [isSaving, setIsSaving] = useState(false);
 
     const tabsViewRef = useRef<HTMLDivElement>(null);
 
-    const { foldersActions } = useFoldersActions();
-    const { foldersStructure, setFoldersStructure } = useFoldersManager();
-    const { preparation, savedPreparation, setTitle } = usePreparation();
+    const { setFoldersStructure } = useFoldersManager();
+    const { preparation, setTitle } = usePreparation();
     const [searchParams, setSearchParams] = useSearchParams();
     const { t } = useTranslation();
-    const { list: vocabularyTerms } = useVocabularyTable();
 
     const { title } = preparation;
 
@@ -68,19 +64,6 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     const viewTitles = ["folders", "vocabulary"];
 
     const onInputChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
-    const onSave = async () => {
-        setIsSaving(true);
-
-        await props.savePreparation({
-            folders: foldersStructure,
-            foldersActions,
-            old: savedPreparation,
-            title,
-            vocabularyTerms,
-        });
-
-        setIsSaving(false);
-    };
     const onTabsChange = (index: number) => {
         setSearchParams(prev => {
             if (props.scrollableParentRef?.current?.scrollLeft === 0) {
@@ -120,17 +103,9 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
                     <MdArrowBack size={24} />
                 </button>
                 <InputStyleLess
-                    value={title}
                     onChange={onInputChange}
+                    value={title}
                 />
-                <Button
-                    disabled={title === "" || foldersStructure.length === 0 || isSaving}
-                    isPending={isSaving}
-                    onClick={onSave}
-                >
-                    <MdSave />
-                    <p>{t("preparations.save")}</p>
-                </Button>
             </div>
             <Tabs
                 initialIndex={initialTabIndex}
