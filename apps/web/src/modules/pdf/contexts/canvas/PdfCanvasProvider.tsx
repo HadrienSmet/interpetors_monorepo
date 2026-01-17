@@ -281,7 +281,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             pageRef.current?.removeEventListener("mousemove", handleMouseMove);
             pageRef.current?.removeEventListener("mouseup", handleMouseUp);
         };
-    }, [color, isPdfRendered, selectedFile.fileInStructure, tool]);
+    }, [color, isPdfRendered, pushAction, selectedFile.fileInStructure, tool]);
     // Responsible to draw the canvas elements from file update / page change
     useEffect(() => {
         if (!selectedFile.fileInStructure || !isPdfRendered || displayLoader) return;
