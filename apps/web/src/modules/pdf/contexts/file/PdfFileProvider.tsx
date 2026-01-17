@@ -24,7 +24,6 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const pageRef = useRef<HTMLDivElement | null>(null);
     const renderedPages = useRef(0);
-    const scrollableParentRef = useRef<HTMLDivElement | null>(null);
 
     const { colorPanel } = useColorPanel();
     const { getFileActions } = useFoldersActions();
@@ -159,7 +158,6 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
         pageRef,
         previousPage,
         renderedPages,
-        scrollableParentRef,
         setIsPdfRendered,
     };
 

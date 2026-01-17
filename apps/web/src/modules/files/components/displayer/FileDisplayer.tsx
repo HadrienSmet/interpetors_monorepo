@@ -2,7 +2,7 @@ import { Trans, useTranslation } from "react-i18next";
 
 import { Loader } from "@/components";
 import { useFoldersManager } from "@/modules/folders";
-import { PdfEditor, usePdfFile } from "@/modules/pdf";
+import { PdfEditor } from "@/modules/pdf";
 
 import { SUPPORTED_TYPES } from "../icon";
 
@@ -42,13 +42,11 @@ const FileToRender = () => {
 const FILE_DISPLAYER_MIN_WIDTH = 620 as const;
 export const FileDisplayer = () => {
     const { foldersStructure, selectedFile } = useFoldersManager();
-    const { scrollableParentRef } = usePdfFile();
     const { t } = useTranslation();
 
     return (
         <div
             className="file-displayer"
-            ref={scrollableParentRef}
             style={{ minWidth: FILE_DISPLAYER_MIN_WIDTH }}
         >
             {selectedFile.path !== ""

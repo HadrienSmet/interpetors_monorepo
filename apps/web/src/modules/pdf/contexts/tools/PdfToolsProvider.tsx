@@ -40,6 +40,8 @@ const NEW_DEFAULT_COLOR: ActionColor = {
         b: 0,
     },
 };
+/** Padding left value of the pdf-editor tag */
+const PDF_EDITOR_PADDING_LEFT = 40 as const;
 export const getNoteId = (color: string, index: number | string) => (
     `${Object.values(getRgbFromString(color)).join("-")}-${index}`
 );
@@ -278,15 +280,29 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     // Handles the custom cursor
     useEffect(() => {
         const container = containerRef.current;
-        if (!container) return;
+        if (!container || !pageRef.current) return;
+
+        const pageDimensions = pageRef.current.getBoundingClientRect();
+        const getPoints = (e: MouseEvent) => ({
+            x: e.clientX,
+            y: e.clientY + (containerRef.current?.scrollTop ?? 0),
+        });
+        const getPositions = (e: MouseEvent) => {
+            const { x, y } = getPoints(e);
+
+            return ({
+                x: x - pageDimensions.left + PDF_EDITOR_PADDING_LEFT,
+                y: y - pageDimensions.top,
+            });
+        };
 
         const handleMouseMove = (e: MouseEvent) => {
-            const { top: containerTop, left: containerLeft } = container.getBoundingClientRect();
+            const { x, y } = getPositions(e);
 
             setCustomCursor(
                 <CustomCursor
                     color={getRgbColor(rgbColor)}
-                    position={{ x: e.clientX - containerLeft, y: e.clientY - containerTop }}
+                    position={{ x, y }}
                     tool={tool!}
                 />
             );

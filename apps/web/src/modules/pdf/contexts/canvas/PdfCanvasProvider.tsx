@@ -39,7 +39,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     const { colorPanel } = useColorPanel();
     const { getPageActions } = useFoldersActions();
     const { selectedFile } = useFoldersManager();
-    const { displayLoader, isPdfRendered, pageIndex, pageRef, scrollableParentRef } = usePdfFile();
+    const { containerRef, displayLoader, isPdfRendered, pageIndex, pageRef } = usePdfFile();
     const { pushAction, version } = usePdfHistory();
     const { color, currentRange, tool } = usePdfTools();
 
@@ -220,7 +220,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
 
         const getPoints = (e: MouseEvent) => ({
             x: e.clientX,
-            y: e.clientY + (scrollableParentRef.current?.scrollTop ?? 0),
+            y: e.clientY + (containerRef.current?.scrollTop ?? 0),
         });
         const getPositions = (e: MouseEvent) => {
             const { x, y } = getPoints(e);
