@@ -40,6 +40,7 @@ const NEW_DEFAULT_COLOR: ActionColor = {
         b: 0,
     },
 };
+const PDF_DOCUMENT_BORDER_TOP = 1 as const;
 /** Padding left value of the pdf-editor tag */
 const PDF_EDITOR_PADDING_LEFT = 40 as const;
 export const getNoteId = (color: string, index: number | string) => (
@@ -292,7 +293,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
             return ({
                 x: x - pageDimensions.left + PDF_EDITOR_PADDING_LEFT,
-                y: y - pageDimensions.top,
+                y: y - pageDimensions.top - PDF_DOCUMENT_BORDER_TOP,
             });
         };
 
