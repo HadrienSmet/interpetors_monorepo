@@ -1,19 +1,12 @@
 import { RefObject, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 
-import { FILES } from "@/modules/files";
-import { PDF_TYPE, uploadFile } from "@/modules/pdf";
-import { VOCABULARY } from "@/modules/vocabulary";
-import { useWorkspaces } from "@/modules/workspace";
 import { scrollToChild, URL_PARAMETERS } from "@/utils";
 
 import { usePreparations } from "../../contexts";
-import { patch } from "../../services";
-import { SavedPreparation } from "../../types";
-import { diffPreparations } from "../../utils";
 
 import { CreateButton } from "../createButton";
-import { PreparationLayout, SavePreparationParams } from "../layout";
+import { PreparationLayout } from "../layout";
 import { PreparationsFilledProps, PreparationsList } from "../list";
 
 import "./preparationsFilled.scss";
@@ -30,9 +23,8 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
     const tabsRef = useRef<HTMLDivElement>(null);
     const viewportRef = useRef<HTMLDivElement>(null);
 
-    const { patchPreparation: patchContext, selectedPreparation, setSelectedPreparation } = usePreparations();
+    const { selectedPreparation, setSelectedPreparation } = usePreparations();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { currentWorkspace } = useWorkspaces();
 
     const scrollTo = (targetRef: RefObject<HTMLDivElement | null>, targetName: TabsNames) => {
         const viewport = viewportRef.current;
@@ -58,70 +50,6 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
 
         setSelectedPreparation(undefined);
         scrollToList();
-    };
-    const patchPreparation = async (params: SavePreparationParams) => {
-        const { old, ...updated } = params;
-        const { files, title, voc: terms } = diffPreparations({
-            savedPreparation: old!,
-            updatedPreparation: updated,
-        });
-
-        const preparationId = selectedPreparation?.id;
-        const workspaceId = currentWorkspace?.id;
-
-        if (!preparationId || !workspaceId) {
-            return;
-        }
-
-        if (title) {
-            // Patch new title
-            await patch({
-                preparationId,
-                title,
-                workspaceId,
-            });
-        }
-        if (terms && terms.length > 0) {
-            // Patch vocabulary terms
-            await VOCABULARY.postBulk({
-                preparationId,
-                terms,
-                workspaceId,
-            });
-        }
-        if (files) {
-            if (files.filesToPatch && files.filesToPatch.length > 0) {
-                await FILES.patchApi({
-                    body: { files: files.filesToPatch },
-                    preparationId,
-                });
-            }
-            if (files.newFiles && files.newFiles.length > 0) {
-                await Promise.all(
-                    files.newFiles.map(newFile => (
-                        uploadFile({
-                            actions: JSON.stringify(newFile.pdfFile.actions),
-                            contentType: PDF_TYPE.type,
-                            file: newFile.pdfFile.file,
-                            filePath: newFile.filePath,
-                            name: newFile.pdfFile.name,
-                            preparationId,
-                        })
-                    ))
-                );
-            }
-        }
-
-        if (!old) return;
-
-        const savedPrep: SavedPreparation = {
-            ...updated,
-            createdAt: old.createdAt,
-            id: old.id,
-            vocabulary: updated.vocabularyTerms,
-            updatedAt: new Date().toISOString(),
-        };
-        patchContext(old.id, savedPrep);
     };
 
     useEffect(() => {
@@ -184,7 +112,8 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                     <PreparationLayout
                         backToList={backToList}
                         preparation={selectedPreparation}
-                        savePreparation={patchPreparation}
+                        // TODO Fix
+                        // savePreparation={patchPreparation}
                         scrollableParentRef={viewportRef}
                     />
                 </div>

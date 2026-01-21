@@ -1,12 +1,25 @@
 import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
+import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/types";
+
 import { getContextError } from "@/contexts/utils";
 
 import { ClientPreparation, SavedPreparation } from "../../types";
 
+export type SavePreparationParams = {
+    readonly folders: Array<FolderStructure>;
+    readonly foldersActions: FilesActionsStore;
+    readonly old?: SavedPreparation;
+    readonly rootFolderId?: string;
+    readonly title: string;
+    readonly vocabularyTerms: Array<SavedVocabularyTerm>;
+};
 type PreparationContextValue = {
-    readonly savedPreparation: SavedPreparation | undefined;
+    readonly createPreparation: (params: SavePreparationParams) => Promise<void>;
+    readonly isSaving: boolean;
+    readonly patchPreparation: (params: SavePreparationParams) => Promise<void>;
     readonly preparation: ClientPreparation;
+    readonly savedPreparation: SavedPreparation | undefined;
     readonly setTitle: Dispatch<SetStateAction<string>>;
 };
 

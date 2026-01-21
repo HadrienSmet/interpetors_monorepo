@@ -3,8 +3,6 @@ import { MdArrowBack } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
-import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/types";
-
 import { InputStyleLess, Tabs } from "@/components";
 import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager } from "@/modules/folders";
 import { VocabularyTable } from "@/modules/vocabulary";
@@ -16,14 +14,6 @@ import { PreparationWrapper } from "../../wrappers";
 
 import "./preparationLayout.scss";
 
-export type SavePreparationParams = {
-    readonly folders: Array<FolderStructure>;
-    readonly foldersActions: FilesActionsStore;
-    readonly old?: SavedPreparation;
-    readonly rootFolderId?: string;
-    readonly title: string;
-    readonly vocabularyTerms: Array<SavedVocabularyTerm>;
-};
 type PreparationLayoutProps = {
     readonly backToList: () => void;
     readonly editable?: boolean;
