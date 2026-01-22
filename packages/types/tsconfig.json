@@ -1,15 +1,16 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "composite": true,
-    "rootDir": "src",
-    "outDir": "dist",
-    "declaration": true,
-    "emitDeclarationOnly": false,
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "target": "ES2020",
-    "skipLibCheck": true
-  },
-  "include": ["src"]
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"composite": true,
+		"rootDir": "src",
+		"outDir": "dist",
+		"declaration": true,
+		"emitDeclarationOnly": false,
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": false,
+		"target": "ES2020",
+		"skipLibCheck": true
+	},
+	"include": ["src"]
 }
