@@ -1,12 +1,10 @@
-import { FileAction, FilesActionsStore, SavedFolderStructure } from "@repo/types";
+import { FilesActionsStore, SavedFolderStructure } from "@repo/types";
 
 import { FILES } from "@/modules/files";
 import {
-    decryptJson,
     decryptPdfFile,
     handleServicesConcurrency,
-    safeJsonParse,
-    EncryptedResource,
+	decryptActions,
 } from "@/utils";
 
 const handleFile = async (
@@ -19,9 +17,8 @@ const handleFile = async (
         throw new Error(fileRes.message);
     }
 
+	const decryptedActions = await decryptActions(userKey, actions);
     const decryptedPdf = await decryptPdfFile(fileRes.data, userKey);
-    const encryptedActions = safeJsonParse<EncryptedResource>(actions);
-    const decryptedActions = await decryptJson<Record<number, FileAction>>(userKey, encryptedActions);
 
     foldersActions[item.id] = decryptedActions;
 

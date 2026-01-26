@@ -1,6 +1,6 @@
 import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/types";
 
-import { Delta, diffNewFolderStructures } from "@/modules/folders";
+import { Delta, diffFolderStructures } from "@/modules/folders";
 import { diffVocabulary } from "@/modules/vocabulary";
 
 import { SavedPreparation } from "../types";
@@ -22,7 +22,7 @@ type DiffPreparationsParams = {
     readonly updatedPreparation: UpdatedPreparation;
 };
 export const diffPreparations = ({ savedPreparation, updatedPreparation }: DiffPreparationsParams) => {
-    let patch: Patch = {};
+    const patch: Patch = {};
 
     if (savedPreparation.title !== updatedPreparation.title) {
         patch.title = updatedPreparation.title;
@@ -33,7 +33,7 @@ export const diffPreparations = ({ savedPreparation, updatedPreparation }: DiffP
         patch.voc = vocDiffs.toAddOrUpdate;
     }
 
-    const foldersDiff = diffNewFolderStructures({
+    const foldersDiff = diffFolderStructures({
         before: { actions: savedPreparation.foldersActions, folders: savedPreparation.folders },
         after: { actions: updatedPreparation.foldersActions, folders: updatedPreparation.folders },
     });

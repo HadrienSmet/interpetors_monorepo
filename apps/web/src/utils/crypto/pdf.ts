@@ -1,4 +1,4 @@
-import { decryptBinary, encryptBinary } from "./binary";
+import { decryptBinary, encryptBinary } from "./core";
 
 export const encryptPdfFile = async (file: File, key: CryptoKey): Promise<File> => {
     const buffer = await file.arrayBuffer();

@@ -9,11 +9,11 @@ import { FoldersManagerContext, FoldersManagerContextValue } from "./FoldersMana
 
 type FoldersManagerProviderProps =
     & {
-        readonly editable?: boolean;
+        readonly editable: boolean;
         readonly savedFolders?: Array<FolderStructure>;
     }
     & PropsWithChildren;
-export const FoldersManagerProvider = ({ children, editable = false, savedFolders }: FoldersManagerProviderProps) => {
+export const FoldersManagerProvider = ({ children, editable, savedFolders }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
     const [isEditable, setIsEditable] = useState(editable);
     const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);

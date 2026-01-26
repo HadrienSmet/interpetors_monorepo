@@ -1,39 +1,15 @@
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
-import { SavedVocabularyTerm } from "@repo/types";
-
 import { useAuth } from "@/modules/auth";
 import { buildFoldersStructure } from "@/modules/folders";
 import { VOCABULARY } from "@/modules/vocabulary";
 import { useWorkspaces } from "@/modules/workspace";
-import { decryptString, EncryptedResource, safeJsonParse } from "@/utils";
+import { decryptVocabularyTerms } from "@/utils";
 
 import { getAll } from "../../services";
 import { SavedPreparation } from "../../types";
 
 import { PreparationsContext, PreparationsContextValue } from "./PreparationsContext";
-
-export const decryptVocabularyTerms = async (
-    userKey: CryptoKey,
-    terms: SavedVocabularyTerm[]
-): Promise<SavedVocabularyTerm[]> => {
-    const output: SavedVocabularyTerm[] = [];
-
-    for (const term of terms) {
-        const encrypted = safeJsonParse<EncryptedResource>(term.occurrence.text);
-        const decryptedText = await decryptString(userKey, encrypted);
-
-        output.push({
-            ...term,
-            occurrence: {
-                ...term.occurrence,
-                text: decryptedText,
-            },
-        });
-    }
-
-    return (output);
-};
 
 export const PreparationsProvider = ({ children }: PropsWithChildren) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +53,7 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
 
             for (const preparation of preparationsResponse.data) {
                 const { id: preparationId } = preparation;
-                let preparationRecord: SavedPreparation = {
+                const preparationRecord: SavedPreparation = {
                     ...preparation,
                     folders: [],
                     foldersActions: {},

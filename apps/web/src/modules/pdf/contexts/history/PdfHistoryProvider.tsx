@@ -4,8 +4,8 @@ import {
     GENERATED_RESOURCES,
 
     ActionColor,
-    HistoryAction,
     FileAction,
+    HistoryAction,
     Note,
 } from "@repo/types";
 
@@ -48,7 +48,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         setHistoryIndex(state => Math.min(userActions.length, state + 1));
     };
     const pushAction = (action: HistoryAction) => {
-        let copy = [...userActions];
+        const copy = [...userActions];
 
         if (copy.length === 0) {
             copy.push(action);
@@ -63,10 +63,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
     // TODO / TOFIX: Improve that mess
     const updateNoteInHistory = (color: ActionColor, id: string, text: string) => {
         const userActionIndex = userActions.findIndex((action: HistoryAction) => {
-            if (
-                !action.resourceToGenerate ||
-                action.resourceToGenerate.type !== GENERATED_RESOURCES.NOTE
-            ) {
+            if (action.resourceToGenerate?.type !== GENERATED_RESOURCES.NOTE) {
                 return (false);
             }
 
@@ -204,7 +201,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
         if (!file || !shouldUpdateRef.current || !savedElements) return;
 
         // TODO / TOFIX: Improve that mess
-        const handleUserActions = async () => {
+        const handleUserActions = () => {
             const currentIndex = Math.max(-1, Math.min(historyIndex, userActions.length - 1));
             const prev = prevIndexRef.current;
             const indexToUse = currentIndex + 1;

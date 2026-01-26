@@ -3,7 +3,7 @@ import { FilesActionsStore, FolderStructure, VocabularyTerm } from "@repo/types"
 import { FILES } from "@/modules/files";
 import { isPdfMetadata } from "@/modules/folders";
 import { PDF_TYPE } from "@/modules/pdf";
-import { encryptJson, encryptPdfFile, encryptString } from "@/utils";
+import { encryptActions, encryptPdfFile, encryptVocabularyTerms } from "@/utils";
 
 type PdfFileJob = Omit<FILES.PostPdfParams, "s3Key">;
 type FlatJob = {
@@ -14,6 +14,13 @@ type FlatJob = {
 type Queue = { path: string; node: FolderStructure; };
 
 const FIRST_LEVEL_PATH = "";
+
+const handleFirstPathChar = (path: string) => (
+	path.startsWith("/")
+        ? path
+        // Happens on file at root
+        : `/${path}`
+);
 
 /**
  * Flatten Array<FolderStructure> into a list of jobs to:
@@ -39,13 +46,6 @@ export const prepareJobs = async (
                 const fullPath = path ? `${path}/${value.name}` : `/${value.name}`;
                 const filePath = path;
 
-                const handleFirstPathChar = (path: string) => (
-                    path[0] === "/"
-                        ? path
-                        // Happens on file at root
-                        : `/${path}`
-                );
-
                 const getTems = async (voc: Array<VocabularyTerm>) => {
                     const filtered = voc.filter(t => {
                         const occFilePath = handleFirstPathChar(t.occurrence.filePath);
@@ -54,35 +54,25 @@ export const prepareJobs = async (
                         return (occFilePath === safePath);
                     });
 
-                    const output: Array<VocabularyTerm> = [];
-                    for (const t of filtered) {
-                        const encryptedRef = await encryptString(userKey, t.occurrence.text);
-                        output.push({
-                            ...t,
-                            occurrence: {
-                                ...t.occurrence,
-                                text: JSON.stringify(encryptedRef),
-                            },
-                        });
-                    }
+					const encrypted = await encryptVocabularyTerms(userKey, filtered);
 
-                    return (output);
+					return (encrypted);
                 };
 
                 const terms = await getTems(vocabularyTerms);
-                const actions = foldersActions[value.id] ?? {};
-                const encryptedActions = await encryptJson(userKey, actions);
+				const actions = await encryptActions(userKey, foldersActions[value.id] ?? {});
+				const file = await encryptPdfFile(value.file, userKey);
 
                 jobs.push({
                     pdf: {
-                        actions: JSON.stringify(encryptedActions),
+                        actions,
                         filePath,
                         name: value.name,
                         preparationId,
                     },
                     s3: {
                         contentType: PDF_TYPE.type,
-                        file: await encryptPdfFile(value.file, userKey),
+                        file,
                         fileName: value.name,
                     },
                     terms,

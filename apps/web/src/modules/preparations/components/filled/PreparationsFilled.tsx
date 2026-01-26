@@ -112,8 +112,6 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                     <PreparationLayout
                         backToList={backToList}
                         preparation={selectedPreparation}
-                        // TODO Fix
-                        // savePreparation={patchPreparation}
                         scrollableParentRef={viewportRef}
                     />
                 </div>

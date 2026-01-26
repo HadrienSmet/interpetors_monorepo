@@ -1,4 +1,4 @@
-import { encoder } from "./constants";
+import { encoder } from "./core";
 
 export const toArrayBuffer = (u8: Uint8Array): ArrayBuffer => (new Uint8Array(u8).buffer);
 

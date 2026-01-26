@@ -1,13 +1,12 @@
-import { encoder, decoder } from "./constants";
+import { decoder, encoder } from "./constants";
 import { EncryptedResource } from "./types";
 
-
-export const encryptString = async (
+export const encryptJson = async <T>(
     key: CryptoKey,
-    value: string
+    data: T
 ): Promise<EncryptedResource> => {
+    const encoded = encoder.encode(JSON.stringify(data));
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encoded = encoder.encode(value);
 
     const encrypted = await crypto.subtle.encrypt(
         {
@@ -24,10 +23,10 @@ export const encryptString = async (
     });
 };
 
-export const decryptString = async (
+export const decryptJson = async <T>(
     key: CryptoKey,
     encrypted: EncryptedResource
-): Promise<string> => {
+): Promise<T> => {
     const decrypted = await crypto.subtle.decrypt(
         {
             name: "AES-GCM",
@@ -36,6 +35,8 @@ export const decryptString = async (
         key,
         new Uint8Array(encrypted.payload).buffer
     );
+	const decoded = decoder.decode(decrypted);
+	const parsed = JSON.parse(decoded);
 
-    return (decoder.decode(decrypted));
+    return (parsed as T);
 };

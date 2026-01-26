@@ -2,7 +2,9 @@ import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { SavedVocabularyTerm } from "@repo/types";
 
+import { useAuth } from "@/modules/auth";
 import { useWorkspaces } from "@/modules/workspace";
+import { decryptVocabularyTerms } from "@/utils";
 
 import { getAllFromWorkspace } from "../../services";
 import { groupVocabularyByColor } from "../../utils";
@@ -14,11 +16,12 @@ export const DictionaryProvider = ({ children }: PropsWithChildren) => {
     const [shouldFetch, setShouldFetch] = useState(false);
     const [terms, setTerms] = useState<Array<SavedVocabularyTerm>>([]);
 
+	const { userKey } = useAuth();
     const { currentWorkspace } = useWorkspaces();
 
     useEffect(() => {
         const fetchTerms = async () => {
-            if (!currentWorkspace) {
+            if (!currentWorkspace || !userKey) {
                 return;
             }
 
@@ -30,7 +33,8 @@ export const DictionaryProvider = ({ children }: PropsWithChildren) => {
                 throw new Error(response.message);
             }
 
-            setTerms(response.data);
+			const decryptedVocabulary = await decryptVocabularyTerms(userKey, response.data);
+            setTerms(decryptedVocabulary);
             setIsLoading(false);
         };
 

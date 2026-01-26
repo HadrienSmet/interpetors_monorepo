@@ -74,7 +74,7 @@ const PdfToolsChild = () => {
     const { foldersStructure } = useFoldersManager();
     const { downloadPdfFile } = usePdfFile();
     const { color, setColor } = usePdfTools();
-    const { createPreparation, isSaving, preparation, savedPreparation } = usePreparation();
+    const { createPreparation, isSaving, patchPreparation, preparation, savedPreparation } = usePreparation();
     const { t } = useTranslation();
     const { list: vocabularyTerms } = useVocabularyTable();
 
@@ -88,13 +88,20 @@ const PdfToolsChild = () => {
         lastValue: colorSwatch.value,
         value: colorSwatch.id,
     });
-    const onSave = () => createPreparation({
-        folders: foldersStructure,
-        foldersActions,
-        old: savedPreparation,
-        title: preparation.title,
-        vocabularyTerms,
-    });
+    const onSave = () => savedPreparation 
+		? patchPreparation({
+			folders: foldersStructure,
+			foldersActions,
+			old: savedPreparation,
+			title: preparation.title,
+			vocabularyTerms,
+		}) 
+		: createPreparation({
+			folders: foldersStructure,
+			foldersActions,
+			title: preparation.title,
+			vocabularyTerms,
+		});
 
     // Cleaning the state on closing panel tools
     useEffect(() => {
@@ -156,7 +163,6 @@ const PdfToolsChild = () => {
                 />
             </div>
         </div>
-
     );
 };
 

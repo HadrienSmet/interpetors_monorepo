@@ -23,14 +23,15 @@ export const patchOneApi = async ({ body, fileId, preparationId }: PatchOneApiPa
     return (response);
 };
 
-type PatchApiItem = {
-    readonly filePath?: string;
+export type FileToPatch = {
+    actions?: string;
+    filePath?: string;
     readonly id: string;
-    readonly name?: string;
+	name?: string;
 };
 type PatchApiParams = {
     readonly preparationId: string;
-    readonly body: { files: Array<PatchApiItem> };
+    readonly body: { files: Array<FileToPatch> };
 };
 export const patchApi = async ({ body, preparationId }: PatchApiParams) => {
     const response = await call<Array<PdfFileApi>>({

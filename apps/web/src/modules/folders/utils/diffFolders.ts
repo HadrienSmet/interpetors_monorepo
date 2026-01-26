@@ -1,15 +1,12 @@
-import { FilesActionsStore, FolderStructure, Note, PdfFile, PdfMetadata } from "@repo/types";
+import { FilesActionsStore, FolderStructure, PdfFile, PdfMetadata } from "@repo/types";
+
+import { FileToPatch } from "@/modules/files/services";
 
 import { isPdfMetadata } from "../contexts";
 
 type NewFile = {
     readonly filePath: string;
     readonly pdfFile: PdfFile;
-};
-type FileToPatch = {
-    actions?: string;
-    filePath?: string;
-    readonly id: string;
 };
 export type Delta = {
     readonly filesToPatch: Array<FileToPatch>;
@@ -66,7 +63,7 @@ const indexStructures = (item: DiffFoldersItem) => {
                 output.byKey.set(key, { path: currentPath, pdf: { ...value, actions: fileActions }, pages });
                 output.pathByKey.set(key, currentPath);
             } else {
-                walk(value as FolderStructure, currentPath);
+                walk(value, currentPath);
             }
         }
     };
@@ -80,7 +77,7 @@ type DiffFoldersParams = {
     readonly after: DiffFoldersItem;
 };
 /** Calcule le delta */
-export const diffNewFolderStructures = ({ before, after }: DiffFoldersParams): Delta => {
+export const diffFolderStructures = ({ before, after }: DiffFoldersParams): Delta => {
     const oldIdx = indexStructures(before);
     const newIdx = indexStructures(after);
 
@@ -90,9 +87,7 @@ export const diffNewFolderStructures = ({ before, after }: DiffFoldersParams): D
     // 2) Détecter nouvelles actions
     for (const [key, { path: newPath, pdf: newPdf, pages: newPages }] of newIdx.byKey.entries()) {
         let hasToPatchFile = false;
-        let fileToPatch: FileToPatch = {
-            id: newPdf.id,
-        };
+        const fileToPatch: FileToPatch = { id: newPdf.id };
         const oldPath = oldIdx.pathByKey.get(key);
         const oldEntry = oldIdx.byKey.get(key);
         const splitted = newPath.split("/");
@@ -108,7 +103,7 @@ export const diffNewFolderStructures = ({ before, after }: DiffFoldersParams): D
         }
 
         // Sinon, comparer page par page (append only)
-        for (const [pageIndex, _] of newPages.entries()) {
+        for (const [pageIndex] of newPages.entries()) {
             const oldMeta = oldEntry.pages.get(pageIndex);
             const actionNew = newPdf.actions[pageIndex];
 
@@ -124,7 +119,7 @@ export const diffNewFolderStructures = ({ before, after }: DiffFoldersParams): D
             // éléments ajoutés
             const elemsNewLen = actionNew.elements?.length ?? 0;
             if (elemsNewLen > oldMeta.elementsLen) {
-                const slice = actionNew.elements!.slice(oldMeta.elementsLen);
+                const slice = actionNew.elements.slice(oldMeta.elementsLen);
                 if (slice.length) {
                     hasToPatchFile = true;
                     fileToPatch.actions = JSON.stringify(newPdf.actions);
@@ -145,8 +140,9 @@ export const diffNewFolderStructures = ({ before, after }: DiffFoldersParams): D
 
             // ressources (notes) ajoutées
             const resNewLen = actionNew.generatedResources?.length ?? 0;
+			// Will be here
             if (resNewLen > oldMeta.resourcesLen) {
-                const slice = actionNew.generatedResources!.slice(oldMeta.resourcesLen) as Note[];
+                const slice = actionNew.generatedResources!.slice(oldMeta.resourcesLen);
                 if (slice.length) {
                     hasToPatchFile = true;
                     fileToPatch.actions = JSON.stringify(newPdf.actions);

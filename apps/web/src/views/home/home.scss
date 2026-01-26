@@ -1,5 +1,6 @@
 .home {
     gap: var(--space-h);
+	overflow: hidden;
     padding: var(--space-l) var(--space-xh);
 
     &-subtitle {

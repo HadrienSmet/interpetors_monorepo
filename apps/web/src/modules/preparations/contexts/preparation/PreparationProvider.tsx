@@ -1,11 +1,14 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
+import { SavedVocabularyTerm } from "@repo/types";
+
 import { useAuth } from "@/modules/auth";
 import { FILES } from "@/modules/files";
 import { useFoldersManager } from "@/modules/folders";
 import { PDF_TYPE, uploadFile } from "@/modules/pdf";
 import { useVocabulary, VOCABULARY } from "@/modules/vocabulary";
 import { useWorkspaces } from "@/modules/workspace";
+import { encryptActions, encryptPdfFile, encryptVocabularyTerms, safeJsonParse } from "@/utils";
 
 import { create, patch } from "../../services";
 import { ClientPreparation, SavedPreparation } from "../../types";
@@ -85,10 +88,9 @@ export const PreparationProvider = ({ children, savedPreparation }: PreparationP
         const preparationId = selectedPreparation?.id;
         const workspaceId = currentWorkspace?.id;
 
-        if (!preparationId || !workspaceId) {
-            return;
-        }
+        if (!preparationId || !userKey || !workspaceId) return;
 
+		setIsSaving(true);
         if (title) {
             // Patch new title
             await patch({
@@ -98,35 +100,53 @@ export const PreparationProvider = ({ children, savedPreparation }: PreparationP
             });
         }
         if (terms && terms.length > 0) {
+			const encryptedTerms = await encryptVocabularyTerms(userKey, terms) as Array<SavedVocabularyTerm>;
             // Patch vocabulary terms
             await VOCABULARY.postBulk({
                 preparationId,
-                terms,
+                terms: encryptedTerms,
                 workspaceId,
             });
         }
         if (files) {
             if (files.filesToPatch && files.filesToPatch.length > 0) {
+				const encryptedFilesToPatch: Array<FILES.FileToPatch> = [];
+				for (const fileToPatch of files.filesToPatch) {
+					const actions = await encryptActions(userKey, safeJsonParse(fileToPatch.actions ?? "{}"));
+
+					encryptedFilesToPatch.push({
+						...fileToPatch,
+						actions,
+					});
+				}
+
                 await FILES.patchApi({
-                    body: { files: files.filesToPatch },
+                    body: { files: encryptedFilesToPatch },
                     preparationId,
                 });
             }
             if (files.newFiles && files.newFiles.length > 0) {
-                await Promise.all(
-                    files.newFiles.map(newFile => (
-                        uploadFile({
-                            actions: JSON.stringify(newFile.pdfFile.actions),
-                            contentType: PDF_TYPE.type,
-                            file: newFile.pdfFile.file,
-                            filePath: newFile.filePath,
-                            name: newFile.pdfFile.name,
-                            preparationId,
-                        })
-                    ))
+				await Promise.all(
+					files.newFiles.map(async newFile => {
+						const actions = await encryptActions(userKey, newFile.pdfFile.actions);
+						const encryptedFile = await encryptPdfFile(newFile.pdfFile.file, userKey);
+
+						return (
+							uploadFile({
+								actions,
+								contentType: PDF_TYPE.type,
+								file: encryptedFile,
+								filePath: newFile.filePath,
+								name: newFile.pdfFile.name,
+								preparationId,
+							})
+						);
+					})
                 );
             }
         };
+
+		setIsSaving(false);
 
         if (!old) return;
 
