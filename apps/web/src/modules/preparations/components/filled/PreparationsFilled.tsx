@@ -23,7 +23,7 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
     const tabsRef = useRef<HTMLDivElement>(null);
     const viewportRef = useRef<HTMLDivElement>(null);
 
-    const { selectedPreparation, setSelectedPreparation } = usePreparations();
+    const { setSelectedPreparation } = usePreparations();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const scrollTo = (targetRef: RefObject<HTMLDivElement | null>, targetName: TabsNames) => {
@@ -111,7 +111,6 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                 >
                     <PreparationLayout
                         backToList={backToList}
-                        preparation={selectedPreparation}
                         scrollableParentRef={viewportRef}
                     />
                 </div>

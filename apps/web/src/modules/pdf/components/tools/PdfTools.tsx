@@ -18,7 +18,7 @@ import { ColorKind, FILE_TOOLS, RgbColor } from "@repo/types";
 import { DraggableSection, Loader, useDraggableSection } from "@/components";
 import { ColorPicker, ColorSwatch, useColorPanel } from "@/modules/colorPanel";
 import { useFoldersActions, useFoldersManager } from "@/modules/folders";
-import { usePreparation } from "@/modules/preparations";
+import { usePreparation, usePreparations } from "@/modules/preparations";
 import { useVocabularyTable } from "@/modules/vocabulary";
 import { getRgbColor, handleActionColor } from "@/utils";
 
@@ -74,7 +74,8 @@ const PdfToolsChild = () => {
     const { foldersStructure } = useFoldersManager();
     const { downloadPdfFile } = usePdfFile();
     const { color, setColor } = usePdfTools();
-    const { createPreparation, isSaving, patchPreparation, preparation, savedPreparation } = usePreparation();
+    const { createPreparation, isNew, isSaving, patchPreparation, preparation } = usePreparation();
+	const { selectedPreparation } = usePreparations();
     const { t } = useTranslation();
     const { list: vocabularyTerms } = useVocabularyTable();
 
@@ -88,17 +89,17 @@ const PdfToolsChild = () => {
         lastValue: colorSwatch.value,
         value: colorSwatch.id,
     });
-    const onSave = () => savedPreparation 
-		? patchPreparation({
+    const onSave = () => isNew 
+		? createPreparation({
 			folders: foldersStructure,
 			foldersActions,
-			old: savedPreparation,
 			title: preparation.title,
 			vocabularyTerms,
-		}) 
-		: createPreparation({
+		})
+		: patchPreparation({
 			folders: foldersStructure,
 			foldersActions,
+			old: selectedPreparation,
 			title: preparation.title,
 			vocabularyTerms,
 		});

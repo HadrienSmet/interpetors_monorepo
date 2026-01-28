@@ -1,17 +1,21 @@
 import { SavedVocabularyTerm } from "@repo/types";
 
-const normTranslations = (arr: string[]) => (Array.from(new Set(arr.map(s => s.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b)));
+const normTranslations = (arr: string[]) => (Array.from(new Set(arr.map(s => s.trim()).filter(Boolean))));
 const sameTranslations = (a: string[], b: string[]) => {
-    const A = normTranslations(a), B = normTranslations(b);
+    const A = normTranslations(a).sort((a, b) => a.localeCompare(b)), 
+		B = normTranslations(b).sort((a, b) => a.localeCompare(b));
+
     if (A.length !== B.length) return (false);
     return (A.every((x, i) => x === B[i]));
 }
 const sameColor = (a: any, b: any) => (JSON.stringify(a) === JSON.stringify(b));
-const sameOccurrence = (a?: SavedVocabularyTerm['occurrence'], b?: SavedVocabularyTerm['occurrence']) => (JSON.stringify(a ?? null) === JSON.stringify(b ?? null));
+const sameOccurrence = (a?: SavedVocabularyTerm['occurrence'], b?: SavedVocabularyTerm['occurrence']) => (
+	JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
+);
 
 export const diffVocabulary = (initial: SavedVocabularyTerm[], current: SavedVocabularyTerm[]) => {
-    const byIdInitial = new Map(initial.filter(t => t.id).map(t => [t.id!, t]));
-    const byIdCurrent = new Map(current.filter(t => t.id).map(t => [t.id!, t]));
+    const byIdInitial = new Map(initial.filter(t => t.id).map(t => [t.id, t]));
+    const byIdCurrent = new Map(current.filter(t => t.id).map(t => [t.id, t]));
 
     const toAddOrUpdate: SavedVocabularyTerm[] = [];
     const toRemove: { termId: string; }[] = [];
@@ -29,9 +33,11 @@ export const diffVocabulary = (initial: SavedVocabularyTerm[], current: SavedVoc
             toAddOrUpdate.push({ ...t, translations: normTranslations(t.translations) });
             continue;
         }
-        if (!sameTranslations(prev.translations, t.translations)
-            || !sameColor(prev.color, t.color)
-            || !sameOccurrence(prev.occurrence, t.occurrence)) {
+        if (
+			!sameTranslations(prev.translations, t.translations) || 
+			!sameColor(prev.color, t.color) || 
+			!sameOccurrence(prev.occurrence, t.occurrence)
+		) {
             toAddOrUpdate.push({ ...t, translations: normTranslations(t.translations) });
         }
     }

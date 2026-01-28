@@ -66,6 +66,14 @@ export default tseslint.config(
 			"@typescript-eslint/no-misused-promises": "off",
 			"@typescript-eslint/no-unsafe-assignment": "off",
 			"@typescript-eslint/no-unsafe-member-access": "off",
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{
+					argsIgnorePattern: "^_",
+					varsIgnorePattern: "^_",
+					caughtErrorsIgnorePattern: "^_",
+				},
+			],
 		},
 	},
 );

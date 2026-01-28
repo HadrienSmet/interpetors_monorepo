@@ -8,7 +8,6 @@ export type FoldersActionsContextValue = {
     readonly foldersActions: FilesActionsStore;
     readonly getFileActions: (fileId: string) => Record<number, FileAction>;
     readonly getPageActions: (fileId: string, pageIndex: number) => FileAction;
-    readonly savedActions: FilesActionsStore;
     readonly updatePageActions: (fileId: string, pageIndex: number, newAction: FileAction) => void;
 };
 export const FoldersActionsContext = createContext<FoldersActionsContextValue | null>(null);

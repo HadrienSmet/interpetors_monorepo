@@ -5,7 +5,7 @@ import { retryOnP1017 } from "src/common";
 
 import { PrismaService } from "../prisma";
 
-import { CreateVocabularyTermDto, UpsertVocabularyTermDto } from "./dto";
+import { UpsertVocabularyTermDto } from "./dto";
 
 type SlimTerm =
     & Pick<VocabularyTerm, "id" | "translations" | "colorJson" | "createdAt" | "updatedAt">
@@ -264,7 +264,7 @@ function dedupeTranslations(translations: string[]): string[] {
 }
 
 function signatureFromItem(item: UpsertVocabularyTermDto): string | null {
-    if (item.termId) return `id:${item.termId}`;
+    if (item.id) return `id:${item.id}`;
     const tr = dedupeTranslations(item.translations);
     if (tr.length === 0) return null;
     // signature simple basée sur translations + colorJson (optionnel)
@@ -287,21 +287,21 @@ function dedupePayload(items: UpsertVocabularyTermDto[]): UpsertVocabularyTermDt
 /** Upsert "terme" lui-même (hors liens) */
 async function upsertTerm(
     tx: Prisma.TransactionClient,
-    dto: UpsertVocabularyTermDto | CreateVocabularyTermDto,
+    dto: UpsertVocabularyTermDto,
 ) {
     // Si un termId est fourni on considère que c’est ce terme que l’on met à jour (pas d’unicité sur translations globalement)
     const translations = dedupeTranslations(dto.translations);
-    if ("termId" in dto && dto.termId) {
+    if ("id" in dto && dto.id) {
         // Update minimal (ou no-op)
         return tx.vocabularyTerm.update({
-            where: { id: dto.termId },
+            where: { id: dto.id },
             data: {
                 colorJson: dto.colorJson,
                 translations,
             },
         }).catch((err) => {
             if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
-                throw new NotFoundException(`VocabularyTerm ${dto.termId} not found`);
+                throw new NotFoundException(`VocabularyTerm ${dto.id} not found`);
             }
             throw err;
         });

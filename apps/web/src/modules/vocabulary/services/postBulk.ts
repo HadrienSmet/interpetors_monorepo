@@ -6,7 +6,7 @@ import { getRoute } from "./const";
 
 type PostBulkParams = {
     readonly preparationId: string;
-    readonly terms: Array<SavedVocabularyTerm>;
+    readonly terms: Array<Omit<SavedVocabularyTerm, "id"> & { readonly id?: string; }>;
     readonly workspaceId: string;
 };
 export const postBulk = async (params: PostBulkParams) => {
@@ -19,6 +19,7 @@ export const postBulk = async (params: PostBulkParams) => {
     const body = {
         terms: terms.map(term => ({
             colorJson: term.color,
+			id: term.id,
             occurrence: term.occurrence,
             translations: term.translations,
         })),

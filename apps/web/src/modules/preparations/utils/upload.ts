@@ -38,6 +38,7 @@ export const uploadPreparation = async ({
         if (job.terms.length) {
             const terms = job.terms.map(t => ({
                 ...t,
+				id: undefined,
                 occurrence: { ...t.occurrence, pdfFileId: fileRes.id },
             }));
             await VOCABULARY.postBulk({

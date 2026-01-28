@@ -3,17 +3,17 @@ import { PropsWithChildren, useEffect, useState } from "react";
 import { FilesActionsStore } from "@repo/types";
 
 import { FIRST_PAGE } from "@/modules/files/utils";
+import { usePreparations } from "@/modules/preparations";
 
 import { FoldersActionsContext, FoldersActionsContextValue } from "./FoldersActionsContext";
 
 const EMPTY_PAGE_ACTIONS = { elements: [], references: [], generatedResources: [] } as const;
 const EMPTY_FILE_ACTIONS = { [FIRST_PAGE]: EMPTY_PAGE_ACTIONS } as const;
 
-type FoldersActionsProviderProps =
-    & { readonly savedActions?: FilesActionsStore; }
-    & PropsWithChildren;
-export const FoldersActionsProvider = ({ children, savedActions }: FoldersActionsProviderProps) => {
+export const FoldersActionsProvider = ({ children }: PropsWithChildren) => {
     const [foldersActions, setFoldersActions] = useState<FilesActionsStore>({});
+
+	const { selectedPreparation } = usePreparations();
 
     const getFileActions: FoldersActionsContextValue["getFileActions"] = (fileId) => (foldersActions[fileId] ?? EMPTY_FILE_ACTIONS);
     const getPageActions: FoldersActionsContextValue["getPageActions"] = (fileId, pageIndex) => (foldersActions[fileId]?.[pageIndex] ?? EMPTY_PAGE_ACTIONS);
@@ -28,16 +28,15 @@ export const FoldersActionsProvider = ({ children, savedActions }: FoldersAction
     );
 
     useEffect(() => {
-        if (savedActions) {
-            setFoldersActions(savedActions);
+        if (selectedPreparation) {
+            setFoldersActions(selectedPreparation.foldersActions);
         }
-    }, [savedActions]);
+    }, [selectedPreparation]);
 
     const value = {
         foldersActions,
         getFileActions,
         getPageActions,
-        savedActions: savedActions ?? {},
         updatePageActions,
     };
 

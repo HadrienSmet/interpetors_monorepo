@@ -2,21 +2,22 @@ import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { FolderStructure, PdfMetadata } from "@repo/types";
 
+import { usePreparations } from "@/modules/preparations";
+
 import { FileData } from "../../types";
 
 import { getTargetKeys, browseStructureToActionOnFile, isPdfMetadata, FileVisitor, findFile } from "./foldersManager.utils";
 import { FoldersManagerContext, FoldersManagerContextValue } from "./FoldersManagerContext";
 
 type FoldersManagerProviderProps =
-    & {
-        readonly editable: boolean;
-        readonly savedFolders?: Array<FolderStructure>;
-    }
+    & { readonly editable: boolean; }
     & PropsWithChildren;
-export const FoldersManagerProvider = ({ children, editable, savedFolders }: FoldersManagerProviderProps) => {
+export const FoldersManagerProvider = ({ children, editable }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
     const [isEditable, setIsEditable] = useState(editable);
     const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);
+
+	const { selectedPreparation } = usePreparations();
 
     // ---------- Files methods ----------
     const changeFileDirectory = (fileName: string, targetFullPath: string) => {
@@ -289,10 +290,10 @@ export const FoldersManagerProvider = ({ children, editable, savedFolders }: Fol
     const onDrop = (folder: FolderStructure) => setFoldersStructure(state => [...state, folder]);
 
     useEffect(() => {
-        if (savedFolders) {
-            setFoldersStructure(savedFolders);
+        if (selectedPreparation) {
+            setFoldersStructure(selectedPreparation.folders);
         }
-    }, [savedFolders]);
+    }, [selectedPreparation]);
 
     const selectedFile: FileData = useMemo(() => {
         if (!selectedFilePath) {

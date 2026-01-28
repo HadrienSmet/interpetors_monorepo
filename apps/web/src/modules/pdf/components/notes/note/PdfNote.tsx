@@ -8,6 +8,7 @@ import { usePdfHistory, usePdfNotes } from "@/modules/pdf";
 import { getRgbColor, handleActionColor } from "@/utils";
 
 import "./pdfNote.scss";
+import { useFoldersManager } from "@/modules/folders";
 
 type PdfNoteProps = {
     readonly note: Note;
@@ -18,6 +19,7 @@ export const PdfNote = ({ note }: PdfNoteProps) => {
     const [noteContent, setNoteContent] = useState("");
 
     const { colorPanel } = useColorPanel();
+	const { isEditable } = useFoldersManager();
     const { updateNoteInHistory } = usePdfHistory();
     const { selectedNote, setSelectedNote } = usePdfNotes();
     const { t } = useTranslation();
@@ -37,6 +39,9 @@ export const PdfNote = ({ note }: PdfNoteProps) => {
     const updateNote = () => updateNoteInHistory(note.color, note.id, noteContent);
 
     const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => setNoteContent(e.target.value);
+	const onDoubleClick = () => {
+		if (isEditable) setIsUpdating(true);
+	};
     const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter") {
             updateNote();
@@ -86,7 +91,7 @@ export const PdfNote = ({ note }: PdfNoteProps) => {
                     <button
                         className={isReading ? "" : "cropping"}
                         onClick={toggleReadMode}
-                        onDoubleClick={() => setIsUpdating(true)}
+                        onDoubleClick={onDoubleClick}
                         title={`${t("notes.readOnClick")}\n${t("actions.editOnDoubleClick")}`}
                     >
                         {note.note}

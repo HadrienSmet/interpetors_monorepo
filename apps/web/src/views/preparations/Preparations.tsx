@@ -43,7 +43,7 @@ export const Preparations = () => {
             <PreparationLayout
                 backToList={() => navigate("/preparations")}
                 editable
-                preparation={undefined}
+				isNew
             />
         );
     }

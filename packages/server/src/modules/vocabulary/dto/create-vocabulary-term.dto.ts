@@ -29,11 +29,12 @@ export class CreateVocabularyTermDto {
 export class UpsertVocabularyTermDto extends CreateVocabularyTermDto {
     @IsOptional()
     @IsString()
-    termId?: string; // si fourni: on met à jour/relie ce terme existant
+    id?: string; // si fourni: on met à jour/relie ce terme existant
 
     @IsOptional()
     @ValidateNested()
     @Type(() => OccurrenceDto)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     @Transform(({ value, obj }) => value ?? obj?.occurence ?? undefined)
     occurrence?: OccurrenceDto;
 }

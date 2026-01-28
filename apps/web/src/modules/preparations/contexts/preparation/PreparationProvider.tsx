@@ -19,10 +19,11 @@ import { usePreparations } from "../preparations";
 import { PreparationContext, SavePreparationParams } from "./PreparationContext";
 
 export const DEFAULT_TITLE = "Default title";
-type PreparationProviderProps =
-    & PropsWithChildren
-    & { readonly savedPreparation?: SavedPreparation; };
-export const PreparationProvider = ({ children, savedPreparation }: PreparationProviderProps) => {
+
+type PreparationProviderProps = 
+	& { readonly isNew: boolean; }
+	& PropsWithChildren
+export const PreparationProvider = ({ children, isNew }: PreparationProviderProps) => {
     const [isSaving, setIsSaving] = useState(false);
     const [title, setTitle] = useState("");
 
@@ -161,22 +162,22 @@ export const PreparationProvider = ({ children, savedPreparation }: PreparationP
     };
 
     useEffect(() => {
-        setTitle(savedPreparation?.title ?? DEFAULT_TITLE);
-    }, [savedPreparation]);
+        setTitle(selectedPreparation?.title ?? DEFAULT_TITLE);
+    }, [selectedPreparation]);
 
     const preparation: ClientPreparation = {
         folders: foldersStructure,
-        id: savedPreparation?.id ?? "",
+        id: selectedPreparation?.id ?? "",
         title,
         vocabulary: groupedVocabulary,
     };
 
     const value = {
         createPreparation,
+		isNew,
         isSaving,
         patchPreparation,
         preparation,
-        savedPreparation,
         setTitle,
     };
 

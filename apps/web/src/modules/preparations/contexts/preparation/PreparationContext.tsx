@@ -16,10 +16,10 @@ export type SavePreparationParams = {
 };
 type PreparationContextValue = {
     readonly createPreparation: (params: SavePreparationParams) => Promise<void>;
+	readonly isNew: boolean;
     readonly isSaving: boolean;
     readonly patchPreparation: (params: SavePreparationParams) => Promise<void>;
     readonly preparation: ClientPreparation;
-    readonly savedPreparation: SavedPreparation | undefined;
     readonly setTitle: Dispatch<SetStateAction<string>>;
 };
 

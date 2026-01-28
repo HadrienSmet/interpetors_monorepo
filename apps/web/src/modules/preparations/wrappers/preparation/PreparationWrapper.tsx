@@ -4,26 +4,24 @@ import { FoldersActionsProvider, FoldersManagerProvider } from "@/modules/folder
 import { PdfWrapper } from "@/modules/pdf";
 import { groupVocabularyByColor, VocabularyWrapper } from "@/modules/vocabulary";
 
-import { PreparationProvider } from "../../contexts";
-import { SavedPreparation } from "../../types";
+import { PreparationProvider, usePreparations } from "../../contexts";
 
 type PreparationWrapperProps =
     & {
         readonly editable?: boolean;
-        readonly savedPreparation?: SavedPreparation;
+		readonly isNew: boolean;
     }
     & PropsWithChildren;
-export const PreparationWrapper = ({ children, editable = false, savedPreparation }: PreparationWrapperProps) => {
-    const grouped = useMemo(() => (groupVocabularyByColor(savedPreparation?.vocabulary)), [savedPreparation?.vocabulary]);
+export const PreparationWrapper = ({ children, editable = false, isNew }: PreparationWrapperProps) => {
+	const { selectedPreparation } = usePreparations();
+	
+    const grouped = useMemo(() => (groupVocabularyByColor(selectedPreparation?.vocabulary)), [selectedPreparation?.vocabulary]);
  
     return (
-        <FoldersManagerProvider
-            editable={editable}
-            savedFolders={savedPreparation?.folders}
-        >
-            <FoldersActionsProvider savedActions={savedPreparation?.foldersActions}>
+        <FoldersManagerProvider editable={editable}>
+            <FoldersActionsProvider>
                     <VocabularyWrapper groupedVocabulary={grouped}>
-                        <PreparationProvider savedPreparation={savedPreparation}>
+                        <PreparationProvider isNew={isNew}>
                             <PdfWrapper>
                                 {children}
                             </PdfWrapper>

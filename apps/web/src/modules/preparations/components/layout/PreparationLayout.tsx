@@ -9,7 +9,6 @@ import { VocabularyTable } from "@/modules/vocabulary";
 import { URL_PARAMETERS } from "@/utils";
 
 import { usePreparation } from "../../contexts";
-import { SavedPreparation } from "../../types";
 import { PreparationWrapper } from "../../wrappers";
 
 import "./preparationLayout.scss";
@@ -17,7 +16,7 @@ import "./preparationLayout.scss";
 type PreparationLayoutProps = {
     readonly backToList: () => void;
     readonly editable?: boolean;
-    readonly preparation?: SavedPreparation | undefined;
+	readonly isNew?: boolean;
     readonly scrollableParentRef?: RefObject<HTMLDivElement | null>;
 };
 type PreparationLayoutContentProps = Omit<PreparationLayoutProps, "preparation">;
@@ -106,10 +105,10 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
     );
 };
 
-export const PreparationLayout = (props: PreparationLayoutProps) => (
+export const PreparationLayout = ({ isNew = false, ...props }: PreparationLayoutProps) => (
     <PreparationWrapper
         editable={props.editable}
-        savedPreparation={props.preparation}
+		isNew={isNew}
     >
         <FolderDropzone>
             <PreparationLayoutContent {...props} />
