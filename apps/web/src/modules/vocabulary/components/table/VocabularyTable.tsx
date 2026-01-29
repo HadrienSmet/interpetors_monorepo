@@ -5,7 +5,10 @@ import { VocabularyTableRow } from "./row";
 import { VocabularyTableTools } from "./tools";
 import "./vocabularyTable.scss";
 
-export const VocabularyTable= () => {
+type VocabularyTableProps = {
+	readonly isEditable?: boolean;
+};
+export const VocabularyTable= ({ isEditable = false }: VocabularyTableProps) => {
     const { list } = useVocabularyTable();
 
     return (
@@ -17,6 +20,7 @@ export const VocabularyTable= () => {
                     {list.map((elem, index) => (
                         <VocabularyTableRow
                             index={index}
+							isEditable={isEditable}
                             key={`${elem.id}`}
                             pdfVocabulary={elem}
                         />

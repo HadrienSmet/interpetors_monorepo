@@ -25,7 +25,7 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
 
     const tabsViewRef = useRef<HTMLDivElement>(null);
 
-    const { setFoldersStructure } = useFoldersManager();
+    const { isEditable, setFoldersStructure } = useFoldersManager();
     const { preparation, setTitle } = usePreparation();
     const [searchParams, setSearchParams] = useSearchParams();
     const { t } = useTranslation();
@@ -44,12 +44,12 @@ const PreparationLayoutContent = (props: PreparationLayoutContentProps) => {
         {
             content: (
                 <div className="preparation-vocabulary">
-                    <VocabularyTable />
+                    <VocabularyTable isEditable={isEditable} />
                 </div>
             ),
             title: t("vocabulary.label"),
         }
-    ], []);
+    ], [isEditable]);
     const viewTitles = ["folders", "vocabulary"];
 
     const onInputChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);

@@ -16,10 +16,11 @@ import { CellToFill } from "../cell";
 import "./vocabularyTableRow.scss";
 
 type VocabularyTableRowProps = {
-    readonly index: number;
+	readonly index: number;
+	readonly isEditable: boolean;
     readonly pdfVocabulary: VocabularyTerm;
 };
-export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowProps) => {
+export const VocabularyTableRow = ({ index, isEditable, pdfVocabulary }: VocabularyTableRowProps) => {
     const { colorPanel } = useColorPanel();
     const defaultBg = useCssVariable("--clr-txt");
     const [_, setSearchParams] = useSearchParams();
@@ -74,6 +75,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                 </button>
             </td>
             <CellToFill
+				isEditable={isEditable}
                 locale={nativeLanguage}
                 localeIndex={0}
                 pdfVocabulary={pdfVocabulary}
@@ -82,6 +84,7 @@ export const VocabularyTableRow = ({ index, pdfVocabulary }: VocabularyTableRowP
                 .filter(lng => lng !== nativeLanguage)
                 .map(lng => (
                     <CellToFill
+						isEditable={isEditable}
                         key={`cell-to-fill-${lng}-${pdfVocabulary.occurrence.text}`}
                         locale={lng}
                         localeIndex={currentWorkspace!.languages
