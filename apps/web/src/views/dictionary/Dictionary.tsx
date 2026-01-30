@@ -14,7 +14,7 @@ export const Dictionary = () => {
         setShouldFetch(true);
     }, [userKey]);
 
-    if (isLoading) {
+    if (isLoading || !userKey) {
         return (<Loader />);
     }
     return (
