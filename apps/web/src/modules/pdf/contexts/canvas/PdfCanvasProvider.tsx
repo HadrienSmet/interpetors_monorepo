@@ -250,7 +250,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             const { x, y } = getPoints(e);
             points.push({ x, y });
         };
-        const handleMouseUp = async () => {
+        const handleMouseUp = () => {
             if (points.length < 2) return;
 
             const element: PathActionElement = {
@@ -307,11 +307,12 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
                 case DRAWING_TYPES.PATH:
                     drawPathOnMount(convertPathAction(element, colorPanel));
                     break;
-                case DRAWING_TYPES.RECT:
-                    const rectElements = convertRectAction(element, colorPanel);
+                case DRAWING_TYPES.RECT: { 
+					const rectElements = convertRectAction(element, colorPanel);
 
                     rectElements.forEach(rect => drawRectOnMount(rect));
-                    break;
+                    break; 
+				}
                 case DRAWING_TYPES.TEXT:
                     drawTextOnMount(convertTextAction(element, colorPanel));
                     break;

@@ -40,10 +40,7 @@ const NEW_DEFAULT_COLOR: ActionColor = {
         b: 0,
     },
 };
-const PDF_DOCUMENT_BORDER_TOP = 1 as const;
-/** Padding left value of the pdf-editor tag */
-const PDF_EDITOR_PADDING_LEFT = 40 as const;
-export const getNoteId = (color: string, index: number | string) => (
+const getNoteId = (color: string, index: number | string) => (
     `${Object.values(getRgbFromString(color)).join("-")}-${index}`
 );
 
@@ -70,7 +67,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const removeSelection = () => window.getSelection()?.removeAllRanges();
     // ------ HANDLERS ------
     /** Updates the pdf file and clean the tools */
-    const handleSelection = async (tool: FileTool) => {
+    const handleSelection = (tool: FileTool) => {
         if (!pageRef.current) {
             return;
         }
@@ -101,7 +98,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         removeSelection();
     };
 
-    const handleInteractiveSelection = async (tool: FileTool) => {
+    const handleInteractiveSelection = (tool: FileTool) => {
         if (
             !currentRange ||
             (
@@ -279,50 +276,63 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         };
     }, [color, currentRange, filePath, pdfFile, tool]);
     // Handles the custom cursor
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container || !pageRef.current) return;
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) return;
 
-        const pageDimensions = pageRef.current.getBoundingClientRect();
-        const getPoints = (e: MouseEvent) => ({
-            x: e.clientX,
-            y: e.clientY + (containerRef.current?.scrollTop ?? 0),
-        });
-        const getPositions = (e: MouseEvent) => {
-            const { x, y } = getPoints(e);
+		// On garde la dernière position souris en coords viewport
+		const lastClientPos = { x: 0, y: 0 };
+		let hasMouse = false;
 
-            return ({
-                x: x - pageDimensions.left + PDF_EDITOR_PADDING_LEFT,
-                y: y - pageDimensions.top - PDF_DOCUMENT_BORDER_TOP,
-            });
-        };
+		const updateCursorFromClient = (clientX: number, clientY: number) => {
+			const rect = container.getBoundingClientRect();
 
-        const handleMouseMove = (e: MouseEvent) => {
-            const { x, y } = getPositions(e);
+			// IMPORTANT:
+			// - clientX/clientY : coords viewport
+			// - custom cursor has position:absolute in scrollable container
+			// => Have to add scrollTop/scrollLeft
+			const x = clientX - rect.left + container.scrollLeft;
+			const y = clientY - rect.top + container.scrollTop;
 
-            setCustomCursor(
-                <CustomCursor
-                    color={getRgbColor(rgbColor)}
-                    position={{ x, y }}
-                    tool={tool!}
-                />
-            );
-        };
+			setCustomCursor(
+				<CustomCursor
+					color={getRgbColor(rgbColor)}
+					position={{ x, y }}
+					tool={tool!}
+				/>
+			);
+		};
 
-        if (tool) {
-            container.style.cursor = "none";
-            document.addEventListener("mousemove", handleMouseMove);
-        } else {
-            container.style.cursor = "auto";
-            setCustomCursor(null);
-        }
+		const onMouseMove = (e: MouseEvent) => {
+			hasMouse = true;
+			lastClientPos.x = e.clientX;
+			lastClientPos.y = e.clientY;
+			updateCursorFromClient(e.clientX, e.clientY);
+		};
 
-        return () => {
-            container.style.cursor = "auto";
-            setCustomCursor(null);
-            document.removeEventListener("mousemove", handleMouseMove);
-        };
-    }, [color, tool]);
+		const onScroll = () => {
+			// On scroll without moving mouse => replaying last position
+			if (!hasMouse) return;
+			updateCursorFromClient(lastClientPos.x, lastClientPos.y);
+		};
+
+		if (tool) {
+			container.style.cursor = "none";
+
+			container.addEventListener("mousemove", onMouseMove);
+			container.addEventListener("scroll", onScroll, { passive: true });
+		} else {
+			container.style.cursor = "auto";
+			setCustomCursor(null);
+		}
+
+		return () => {
+			container.style.cursor = "auto";
+			setCustomCursor(null);
+			container.removeEventListener("mousemove", onMouseMove);
+			container.removeEventListener("scroll", onScroll);
+		};
+	}, [tool, rgbColor]);
 
     const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
         [TOOLS_ON_SELECTION.UNDERLINE]: {
