@@ -2,15 +2,23 @@ import { FilesActionsStore, FolderStructure, SavedVocabularyTerm } from "@repo/t
 
 import { GroupedVocabulary } from "../vocabulary";
 
-export type PreparationItem = {
+type PreparationBase = {
     readonly createdAt: string;
     readonly id: string;
     readonly title: string;
     readonly updatedAt: string;
 };
+export type PreparationOverview =
+	& PreparationBase
+	& {
+		readonly _count: {
+			readonly pdfFiles: number;
+			readonly vocabularyTerms: number;
+		};
+	};
 
 export type SavedPreparation =
-    & PreparationItem
+    & PreparationBase
     & {
         readonly folders: Array<FolderStructure>;
         readonly foldersActions: FilesActionsStore;

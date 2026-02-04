@@ -106,21 +106,16 @@ export class PreparationsService {
 
         const title = this.assertTitle(dto);
 
-        try {
-            const patched = this.prisma.preparation.update({
-                where: { id: preparationId },
-                data: { title },
-                select: {
-                    id: true,
-                    title: true,
-                    workspaceId: true,
-                },
-            });
+		const patched = this.prisma.preparation.update({
+			where: { id: preparationId },
+			data: { title },
+			select: {
+				id: true,
+				title: true,
+				workspaceId: true,
+			},
+		});
 
-            return (patched);
-        }
-        catch (error) {
-            throw error;
-        }
+		return (patched);
     }
 }

@@ -160,7 +160,7 @@ export const fr = {
             new: "Créer une préparation",
             save: "Sauver la préparation",
             stats: {
-                folders: "<default><strong>{{amount}}</strong> dossiers</default>",
+                files: "<default><strong>{{amount}}</strong> fichiers</default>",
                 terms: "<default><strong>{{amount}}</strong> termes de vocabulaires</default>",
             },
         },

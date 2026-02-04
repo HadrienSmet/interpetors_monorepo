@@ -14,7 +14,7 @@ type PreparationWrapperProps =
     & PropsWithChildren;
 export const PreparationWrapper = ({ children, editable = false, isNew }: PreparationWrapperProps) => {
 	const { selectedPreparation } = usePreparations();
-	
+
     const grouped = useMemo(() => (groupVocabularyByColor(selectedPreparation?.vocabulary)), [selectedPreparation?.vocabulary]);
  
     return (

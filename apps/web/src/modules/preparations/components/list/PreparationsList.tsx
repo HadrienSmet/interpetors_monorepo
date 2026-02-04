@@ -4,20 +4,18 @@ import { useSearchParams } from "react-router";
 import { Accordion } from "@/components";
 import { formatDate, URL_PARAMETERS, URL_VIEWS } from "@/utils";
 
-import { SavedPreparation } from "../../types";
+import { usePreparations } from "../../contexts";
 
 import "./preparationsList.scss";
 
-export type PreparationsFilledProps = {
-    readonly preparations: Array<SavedPreparation>;
-};
-export const PreparationsList = ({ preparations }: PreparationsFilledProps) => {
+export const PreparationsList = () => {
+	const { preparationsOverview } = usePreparations();
     const [_, setSearchParams] = useSearchParams();
     const { t } = useTranslation();
 
     return (
         <div className="preparations-list">
-            <Accordion items={preparations.map(prep => ({
+            <Accordion items={Object.values(preparationsOverview).map(prep => ({
                 content: (
                     <div
                         className="preparation-content"
@@ -40,15 +38,15 @@ export const PreparationsList = ({ preparations }: PreparationsFilledProps) => {
                                     strong: <strong />,
                                 }}
                                 i18nKey={"preparations.stats.terms"}
-                                values={{ amount: prep.vocabulary.length }}
+                                values={{ amount: prep._count.vocabularyTerms }}
                             />
                             <Trans
                                 components={{
                                     default: <p />,
                                     strong: <strong />,
                                 }}
-                                i18nKey={"preparations.stats.folders"}
-                                values={{ amount: Object.keys(prep.folders).length }}
+                                i18nKey={"preparations.stats.files"}
+                                values={{ amount: prep._count.pdfFiles }}
                             />
                         </ul>
                     </div>

@@ -7,7 +7,7 @@ import { usePreparations } from "../../contexts";
 
 import { CreateButton } from "../createButton";
 import { PreparationLayout } from "../layout";
-import { PreparationsFilledProps, PreparationsList } from "../list";
+import { PreparationsList } from "../list";
 
 import "./preparationsFilled.scss";
 
@@ -17,7 +17,7 @@ const TABS_NAMES = {
 } as const;
 type TabsNames = typeof TABS_NAMES[keyof typeof TABS_NAMES];
 
-export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) => {
+export const PreparationsFilled = () => {
     const currentTarget = useRef<TabsNames>(TABS_NAMES.list);
     const listRef = useRef<HTMLDivElement>(null);
     const tabsRef = useRef<HTMLDivElement>(null);
@@ -100,9 +100,7 @@ export const PreparationsFilled = ({ preparations }: PreparationsFilledProps) =>
                     className="preparations-list-container"
                     ref={listRef}
                 >
-                    <PreparationsList
-                        preparations={preparations}
-                    />
+                    <PreparationsList />
                     <CreateButton />
                 </div>
                 <div

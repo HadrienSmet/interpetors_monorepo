@@ -19,7 +19,7 @@ export const Preparations = () => {
     const { userKey } = useAuth();
     const navigate = useLocaleNavigate();
     const location = useLocation();
-    const { isLoading, preparations, setShouldFetch } = usePreparations();
+    const { isLoading, preparationsOverview, setShouldFetch } = usePreparations();
 
     const currentView = useMemo(() => (
         (location.pathname
@@ -53,9 +53,9 @@ export const Preparations = () => {
             style={{ overflow: "hidden" }}
             className="preparations-view"
         >
-            {(!preparations || preparations.length === 0)
+            {(!preparationsOverview || Object.keys(preparationsOverview).length === 0)
                 ? (<PreparationsEmpty />)
-                : (<PreparationsFilled preparations={preparations} />)
+                : (<PreparationsFilled />)
             }
         </main>
     );

@@ -7,13 +7,14 @@ import { useWorkspaces } from "@/modules/workspace";
 import { decryptVocabularyTerms } from "@/utils";
 
 import { getAll } from "../../services";
-import { SavedPreparation } from "../../types";
+import { PreparationOverview, SavedPreparation } from "../../types";
 
 import { PreparationsContext, PreparationsContextValue } from "./PreparationsContext";
 
 export const PreparationsProvider = ({ children }: PropsWithChildren) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [preparations, setPreparations] = useState<Array<SavedPreparation>>([]);
+	const [preparationsOverview, setPreparationsOverview] = useState<Record<string, PreparationOverview>>({});
+	const [preparationsRecord, setPreparationsRecord] = useState<Record<string, SavedPreparation>>({});
     const [selectedPreparationId, setSelectedPreparation] = useState<string | undefined>(undefined);
     const [shouldFetch, setShouldFetch] = useState(false);
 
@@ -21,21 +22,56 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
     const { currentWorkspace } = useWorkspaces();
 
     const selectedPreparation = useMemo(() => {
-        if (!selectedPreparationId || !preparations) return;
+        if (selectedPreparationId === undefined || Object.keys(preparationsRecord).length === 0) return;
 
-        return (preparations.find(prep => prep.id === selectedPreparationId));
-    }, [selectedPreparationId, preparations]);
+        return (preparationsRecord[selectedPreparationId]);
+    }, [selectedPreparationId, Object.keys(preparationsRecord).length]);
 
-    const addPreparation = (prep: SavedPreparation) => setPreparations(state => ([...state, prep]));
-    const patchPreparation = (id: string, prep: SavedPreparation) => setPreparations(prev => {
-        const next = [...prev];
+    const addPreparation = (prep: SavedPreparation) => setPreparationsRecord(state => ({
+		...state,
+		[prep.id]: prep,
+	}));
+    const patchPreparation = (id: string, prep: SavedPreparation) => setPreparationsRecord(prev => ({
+        ...prev,
+		[id]: prep,
+    }));
 
-        const index = next.findIndex(elem => elem.id === id);
-        next.splice(index, 1, prep);
+	useEffect(() => {
+		const fetchSelectedPreparation = async () => {
+			if (!currentWorkspace || !selectedPreparationId || !userKey) return;
 
-        return (next);
-    });
-
+			setIsLoading(true);
+			const current = preparationsOverview[selectedPreparationId];
+			const preparationRecord: SavedPreparation = {
+				...current,
+				folders: [],
+				foldersActions: {},
+				vocabulary: [],
+			};
+	
+			const { foldersActions, foldersStructures } = await buildFoldersStructure(selectedPreparationId, userKey);
+			preparationRecord.folders.push(...foldersStructures);
+			//@ts-expect-error
+			preparationRecord.foldersActions = {
+				...preparationRecord.foldersActions,
+				...foldersActions,
+			};
+	
+			const vocabularyResponse = await VOCABULARY.getAllFromPreparation(currentWorkspace.id, selectedPreparationId);
+			if (!vocabularyResponse.success) throw new Error(vocabularyResponse.message);
+	
+			const decryptedVocabulary = await decryptVocabularyTerms(userKey, vocabularyResponse.data);
+			preparationRecord.vocabulary.push(...decryptedVocabulary);
+			setPreparationsRecord(state => ({
+				...state,
+				[preparationRecord.id]: preparationRecord,
+			}));
+			setIsLoading(false);
+		};
+		if (selectedPreparationId && !(selectedPreparationId in preparationsRecord)) {
+			fetchSelectedPreparation();
+		}
+	}, [preparationsRecord, selectedPreparationId]);
     useEffect(() => {
         const fetchPreparations = async () => {
             if (!currentWorkspace || !userKey) return;
@@ -49,35 +85,11 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
                 return;
             }
 
-            const savedPreparations: Array<SavedPreparation> = [];
-
-            for (const preparation of preparationsResponse.data) {
-                const { id: preparationId } = preparation;
-                const preparationRecord: SavedPreparation = {
-                    ...preparation,
-                    folders: [],
-                    foldersActions: {},
-                    vocabulary: [],
-                };
-
-                const { foldersActions, foldersStructures } = await buildFoldersStructure(preparationId, userKey);
-                preparationRecord.folders.push(...foldersStructures);
-                //@ts-expect-error
-                preparationRecord.foldersActions = {
-                    ...preparationRecord.foldersActions,
-                    ...foldersActions,
-                };
-
-                const vocabularyResponse = await VOCABULARY.getAllFromPreparation(workspaceId, preparationId);
-                if (!vocabularyResponse.success) throw new Error(vocabularyResponse.message);
-
-                const decryptedVocabulary = await decryptVocabularyTerms(userKey, vocabularyResponse.data);
-                preparationRecord.vocabulary.push(...decryptedVocabulary);
-
-                savedPreparations.push(preparationRecord);
-            }
-
-            setPreparations(savedPreparations);
+			const preparationsRec: Record<string, PreparationOverview> = {};
+			for (const prep of preparationsResponse.data) {
+				preparationsRec[prep.id] = prep;
+			}
+			setPreparationsOverview(preparationsRec);
             setIsLoading(false);
         };
 
@@ -90,7 +102,8 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
         addPreparation,
         isLoading,
         patchPreparation,
-        preparations,
+		preparationsOverview,
+		preparationsRecord,
         selectedPreparation,
         setSelectedPreparation,
         setShouldFetch,
