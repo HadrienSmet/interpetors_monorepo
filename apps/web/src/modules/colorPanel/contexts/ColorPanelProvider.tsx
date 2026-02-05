@@ -1,18 +1,19 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
+import { LOCAL_STORAGE } from "@/utils";
+
 import { create, getOne, patch, remove } from "../service";
 import { ColorPanelInCreation, ColorPanelType } from "../types";
 
 import { ColorPanelContext } from "./ColorPanelContext";
 
-const STORAGE_KEY = "colorPanelId";
 export const ColorPanelProvider = (props: PropsWithChildren) => {
     const [colorPanel, setColorPanel] = useState<ColorPanelType | null>(null);
     const [hasFetched, setHasFetched] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        const storedItem = localStorage.getItem(STORAGE_KEY);
+        const storedItem = localStorage.getItem(LOCAL_STORAGE.coloPanel);
 
         if (!storedItem) {
             setHasFetched(true);
@@ -46,7 +47,7 @@ export const ColorPanelProvider = (props: PropsWithChildren) => {
 
         const { data } = response;
 
-        localStorage.setItem(STORAGE_KEY, data.id);
+        localStorage.setItem(LOCAL_STORAGE.coloPanel, data.id);
 
         setColorPanel(data);
         setIsLoading(false);
@@ -57,7 +58,7 @@ export const ColorPanelProvider = (props: PropsWithChildren) => {
 
         if (response.success) {
             setColorPanel(null);
-            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(LOCAL_STORAGE.coloPanel);
         }
 
         setIsLoading(false);

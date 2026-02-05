@@ -4,12 +4,13 @@ import { Link } from "react-router";
 
 import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
-import { AUTH, AUTH_STORAGE_KEY, AuthTokens, CRYPTO_SALT_STORAGE_KEY, REFRESH_STORAGE_KEY, useAuth, USER_ID_STORAGE_KEY } from "@/modules/auth";
+import { AUTH, AuthTokens, useAuth } from "@/modules/auth";
 import { useLocaleNavigate, useLocalePath } from "@/modules/router";
+import { LOCAL_STORAGE } from "@/utils";
 
 import "./unauth.scss";
 
-const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 type UnAuthFormParams = {
@@ -103,11 +104,11 @@ const UnAuthForm = (props: UnAuthFormParams) => {
     );
 };
 
-const storeTokens = async (tokens: AuthTokens) => {
-    localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
-    localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
-    localStorage.setItem(CRYPTO_SALT_STORAGE_KEY, tokens.user.cryptoSalt);
-    localStorage.setItem(USER_ID_STORAGE_KEY, tokens.user.id);
+const storeTokens = (tokens: AuthTokens) => {
+    localStorage.setItem(LOCAL_STORAGE.cryptoSalt, tokens.user.cryptoSalt);
+    localStorage.setItem(LOCAL_STORAGE.refresh, tokens.refresh_token);
+    localStorage.setItem(LOCAL_STORAGE.token, tokens.access_token);
+    localStorage.setItem(LOCAL_STORAGE.userId, tokens.user.id);
 };
 
 export const Signin = () => {
@@ -147,8 +148,8 @@ export const Signin = () => {
         const tokens = response.data;
         storeTokens(tokens);
 
+        await auth.signin(password);
         setIsSigningIn(false);
-        auth.signin(password);
         navigate("/");
     };
 
@@ -221,7 +222,7 @@ export const Signup = () => {
         navigate("/");
     };
     const onEmailBlur = () => {
-        if (email.match(EMAIL_REGEX)) {
+        if (EMAIL_REGEX.exec(email)) {
             setIsEmailValid(true);
             return;
         }
@@ -229,7 +230,7 @@ export const Signup = () => {
         setIsEmailValid(false);
     };
     const onPasswordBlur = () => {
-        if (password.match(PWD_REGEX)) {
+        if (PWD_REGEX.exec(password)) {
             setIsPasswordValid(true);
             return;
         }

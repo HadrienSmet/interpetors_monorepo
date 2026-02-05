@@ -2,13 +2,13 @@ import { PropsWithChildren, useEffect, useState } from "react";
 
 import { useAuth } from "@/modules/auth";
 import { useLocaleNavigate } from "@/modules/router";
+import { LOCAL_STORAGE } from "@/utils";
 
 import { create, getAll, remove, update, UpdateParams } from "../services";
 import { Workspace } from "../types";
 
 import { CreateWorkspaceParams, WorkspacesContext } from "./WorkspacesContext";
 
-const STORAGE_KEY = "workspaceId";
 export const WorkspacesProvider = (props: PropsWithChildren) => {
     const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
     const [hasFetch, setHasFetch] = useState(false);
@@ -26,19 +26,16 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
             const workspace = response.data;
 
             setWorkspaceId(workspace.id);
-            setWorkspaces(state => ({
-                ...state,
-                [workspace.id]: workspace
-            }));
+            setWorkspaces(state => ({ ...state, [workspace.id]: workspace }));
             setCurrentWorkspace(workspace);
-            localStorage.setItem(STORAGE_KEY, workspace.id);
+            localStorage.setItem(LOCAL_STORAGE.workspace, workspace.id);
 
             return (workspace);
         }
     };
     const changeWorkspace = (id: string) => {
         setWorkspaceId(id);
-        localStorage.setItem(STORAGE_KEY, id);
+        localStorage.setItem(LOCAL_STORAGE.workspace, id);
         navigate("/");
     };
     const removeWorkspace = async (id: string) => {
@@ -82,7 +79,7 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
                 if (response.success) {
                     const { data } = response;
 
-                    let record: Record<string, any> = {};
+                    const record: Record<string, any> = {};
                     for (const workspace of data) {
                         record[workspace.id] = workspace;
                     }
@@ -101,7 +98,7 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
 
     // Retrieves the value stored locaclly to set it as current workspace
     useEffect(() => {
-        const storedItem = localStorage.getItem(STORAGE_KEY);
+        const storedItem = localStorage.getItem(LOCAL_STORAGE.workspace);
 
         if (!storedItem) {
             return;
@@ -113,7 +110,7 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
         const workspacesKeys = Object.keys(workspaces);
         if (workspacesKeys.length > 0 && !workspaceId) {
             setWorkspaceId(workspacesKeys[0]);
-            localStorage.setItem(STORAGE_KEY, workspacesKeys[0]);
+            localStorage.setItem(LOCAL_STORAGE.workspace, workspacesKeys[0]);
         }
     }, [workspaces]);
     useEffect(() => {

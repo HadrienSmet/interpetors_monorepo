@@ -1,15 +1,16 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
+import { LOCAL_STORAGE } from "@/utils";
+
 import { THEME, Theme, ThemeContext } from "./ThemeContext";
 
 const DOCUMENT_ATTRIBUTE = "data-theme";
-const STORAGE_KEY = "theme";
 
 export const ThemeProvider = (props: PropsWithChildren) => {
     const [theme, setTheme] = useState<Theme>(THEME.LIGHT);
 
     useEffect(() => {
-        const storedTheme = localStorage.getItem(STORAGE_KEY) as Theme | null;
+        const storedTheme = localStorage.getItem(LOCAL_STORAGE.theme) as Theme | null;
 
         if (storedTheme) {
             setTheme(storedTheme);
@@ -23,7 +24,7 @@ export const ThemeProvider = (props: PropsWithChildren) => {
             : THEME.LIGHT;
 
         setTheme(newTheme);
-        localStorage.setItem(STORAGE_KEY, newTheme);
+        localStorage.setItem(LOCAL_STORAGE.theme, newTheme);
         document.documentElement.setAttribute(DOCUMENT_ATTRIBUTE, newTheme);
     };
 

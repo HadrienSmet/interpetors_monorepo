@@ -1,8 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 
-import { base64ToUint8Array, deriveKey } from "@/utils";
+import { base64ToUint8Array, deriveKey, LOCAL_STORAGE } from "@/utils";
 
-import { AUTH_STORAGE_KEY, CRYPTO_SALT_STORAGE_KEY, REFRESH_STORAGE_KEY, USER_ID_STORAGE_KEY } from "../const";
 import { unlock as callUnlock, verifyAccess } from "../services";
 import { refreshAccessToken } from "../utils";
 
@@ -24,7 +23,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         setIsLocked(false);
     }, [isAuthenticated, userKey]);
     const unlock = async (password: string) => {
-        const userId = localStorage.getItem(USER_ID_STORAGE_KEY);
+        const userId = localStorage.getItem(LOCAL_STORAGE.userId);
         if (!userId) {
             throw new Error("No user id stored");
         }
@@ -34,7 +33,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             ? response.data.isPasswordValid
             : false;
         if (isPasswordValid) {
-            const cryptoSalt = localStorage.getItem(CRYPTO_SALT_STORAGE_KEY);
+            const cryptoSalt = localStorage.getItem(LOCAL_STORAGE.cryptoSalt);
             if (!cryptoSalt) throw new Error("No crypto salt stored");
 
             const saltBytes = base64ToUint8Array(cryptoSalt);
@@ -52,15 +51,16 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     };
     const signout = () => {
         setIsAuthenticated(false);
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-        localStorage.removeItem(REFRESH_STORAGE_KEY);
-        localStorage.removeItem(CRYPTO_SALT_STORAGE_KEY);
-        localStorage.removeItem(USER_ID_STORAGE_KEY);
+        localStorage.removeItem(LOCAL_STORAGE.token);
+        localStorage.removeItem(LOCAL_STORAGE.refresh);
+        localStorage.removeItem(LOCAL_STORAGE.cryptoSalt);
+        localStorage.removeItem(LOCAL_STORAGE.userId);
+		localStorage.removeItem(LOCAL_STORAGE.workspace);
     };
 
     useEffect(() => {
         const checkToken = async () => {
-            const accessToken = localStorage.getItem(AUTH_STORAGE_KEY);
+            const accessToken = localStorage.getItem(LOCAL_STORAGE.token);
             if (accessToken) {
                 const response = await verifyAccess({ accessToken });
 
