@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { useCssVariable } from "@/hooks";
+import { safeJsonParse } from "@/utils";
 
 import { isPdfMetadata, useFoldersManager } from "../../../../contexts";
 
@@ -172,7 +173,7 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
 
         const fileData = e.dataTransfer.getData("application/json");
         if (fileData) {
-            const { fileName } = JSON.parse(fileData);
+            const { fileName } = safeJsonParse<{ fileName: string; }>(fileData);
 
             files.changeDirectory(fileName, fullPath);
         }

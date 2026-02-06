@@ -1,3 +1,5 @@
+import { safeJsonParse } from "../../json";
+
 import { decoder, encoder } from "./constants";
 import { EncryptedResource } from "./types";
 
@@ -36,7 +38,7 @@ export const decryptJson = async <T>(
         new Uint8Array(encrypted.payload).buffer
     );
 	const decoded = decoder.decode(decrypted);
-	const parsed = JSON.parse(decoded);
+	const parsed = safeJsonParse<T>(decoded);
 
-    return (parsed as T);
+    return (parsed);
 };

@@ -27,7 +27,7 @@ export class AuthService {
         });
 
         if (alreadyExists) {
-            throw new ForbiddenException("User already exists");
+            throw new ForbiddenException("already_exists");
         }
 
         const cryptoSalt = randomBytes(16).toString("base64");
@@ -62,14 +62,14 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new ForbiddenException("Wrong credentials");
+            throw new ForbiddenException("wrong_credentials");
         }
 
         const isPasswordValid = await argon2.verify(user.passwordHash, dto.password);
 
         if (!isPasswordValid) {
             await sleep(2000); // Prevent brut force
-            throw new ForbiddenException("Wrong credentials");
+            throw new ForbiddenException("wrong_credentials");
         }
 
         const tokens = await this.generateTokens(user.id, user.email);
@@ -82,22 +82,37 @@ export class AuthService {
                 email: user.email,
                 id: user.id,
             },
-        };;
+        };
     }
 
+	async verifyUser(userId: string) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+			select: { id: true, email: true },
+		});
+
+		if (!user) {
+			throw new ForbiddenException("user_not_found");
+		}
+
+		return {
+			userId: user.id,
+			email: user.email,
+		};
+	}
     async unlock(dto: UnlockDto) {
         const user = await this.prisma.user.findUnique({
             where: { id: dto.userId }
         });
 
         if (!user) {
-            throw new ForbiddenException("User not found");
+            throw new ForbiddenException("user_not_found");
         }
 
         const isPasswordValid = await argon2.verify(user.passwordHash, dto.password);
         if (!isPasswordValid) {
             await sleep(2000); // Prevent brut force
-            throw new Error("Wrong credentials");
+            throw new Error("wrong_credentials");
         }
 
         return { isPasswordValid };
@@ -109,7 +124,7 @@ export class AuthService {
         });
 
         if (!user || !user.hashedRefreshToken) {
-            throw new ForbiddenException("Access denied");
+            throw new ForbiddenException("access_denied");
         }
 
         const tokenMatches = await argon2.verify(
@@ -118,7 +133,7 @@ export class AuthService {
         );
 
         if (!tokenMatches) {
-            throw new ForbiddenException("Invalid token refresh");
+            throw new ForbiddenException("invalid_token");
         }
 
         const tokens = await this.generateTokens(user.id, user.email);

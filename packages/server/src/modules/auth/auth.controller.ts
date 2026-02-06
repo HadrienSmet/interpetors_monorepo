@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard, RefreshTokenGuard } from "src/common";
 
 import { AuthService } from "./auth.service";
-import { SigninDto, SignupDto, UnlockDto } from "./dto";
+import { CheckDto, SigninDto, SignupDto, UnlockDto } from "./dto";
 
 @Controller("auth")
 export class AuthController {
@@ -11,7 +11,7 @@ export class AuthController {
 
     @Post("refresh")
         @UseGuards(RefreshTokenGuard)
-        refreshTokens(@Req() req: any) {
+        refreshTokens(@Req() req: CheckDto) {
         const userId = req.user.sub;
         const refreshToken = req.user.refreshToken;
 
@@ -33,11 +33,7 @@ export class AuthController {
     }
     @Get("verify")
     @UseGuards(JwtAuthGuard)
-    verify(@Req() req: any) {
-        // req.user est injecté par JwtStrategy → contient { sub, email }
-        return {
-            userId: req.user.sub,
-            email: req.user.email,
-        };
+    verify(@Req() req: CheckDto) {
+		return this.authService.verifyUser(req.user.sub);
     }
 }

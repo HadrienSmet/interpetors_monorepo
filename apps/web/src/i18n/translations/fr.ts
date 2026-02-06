@@ -23,8 +23,8 @@ export const fr = {
                 },
             },
             errors: {
-                credentials: "Identifiants incorrects",
-                exists: "Un autre compte utilise déjà cette addresse email.",
+                already_exists: "Un autre compte utilise déjà cette addresse email.",
+                wrong_credentials: "Identifiants incorrects",
             },
             locked: {
                 explanations: "Afin de garantir la sécurité de vos données, veuillez entrer votre mot de passe pour débloquer votre session.",

@@ -6,7 +6,7 @@ import { Button, Input, SecureInput } from "@/components";
 import { UnAuthLayout } from "@/layout";
 import { AUTH, AuthTokens, useAuth } from "@/modules/auth";
 import { useLocaleNavigate, useLocalePath } from "@/modules/router";
-import { LOCAL_STORAGE } from "@/utils";
+import { handleError, LOCAL_STORAGE } from "@/utils";
 
 import "./unauth.scss";
 
@@ -138,10 +138,9 @@ export const Signin = () => {
 
         setIsSigningIn(true);
         const response = await AUTH.signin({ email, password });
-
         if (!response.success) {
             setIsSigningIn(false);
-            setErrorMessage(response.message);
+            setErrorMessage(handleError(response.message));
             return;
         }
 
@@ -210,7 +209,7 @@ export const Signup = () => {
 
         if (!response.success) {
             setIsSigningUp(false);
-            setErrorMessage(response.message);
+            setErrorMessage(handleError(response.message));
             return;
         }
 

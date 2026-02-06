@@ -1,5 +1,7 @@
 import { AUTH_STORAGE_KEY, refreshAccessToken } from "@/modules/auth";
 
+import { safeJsonParse } from "./json";
+
 export const HTTP_METHODS = {
     GET: "GET",
     DELETE: "DELETE",
@@ -50,7 +52,7 @@ const ABORTION_TIMEOUT = 120_000 as const;
 export const call = async <T>({ skipRefresh = false, ...params }: CallParams): Promise<CallOutput<T>> => {
     let token = localStorage.getItem(AUTH_STORAGE_KEY);
 
-    let requestInit: RequestInit = {
+    const requestInit: RequestInit = {
         headers: {
             ...HEADERS,
             ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -108,7 +110,7 @@ export const call = async <T>({ skipRefresh = false, ...params }: CallParams): P
 
         return ({
             success: true,
-            data: JSON.parse(strData),
+            data: safeJsonParse<T>(strData),
         });
     }
 
