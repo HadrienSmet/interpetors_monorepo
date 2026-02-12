@@ -36,7 +36,7 @@
         gap: var(--space-m);
         height: calc(100% - 27.5px);
         max-height: calc(100% - 27.5px);
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .row {
         display: grid;

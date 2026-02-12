@@ -13,9 +13,10 @@
     .button {
         margin-top: var(--space-s);
     }
-    .secure-input {
-        border-radius: var(--radius-s);
-        box-shadow: var(--shadow-default) var(--clr-txt-02);
-        padding: var(--space-m) var(--space-l);
-    }
+    .secure-input input {
+		background-color: var(--clr-bg-light);
+		border-radius: var(--radius-s);
+		box-shadow: var(--shadow-default) var(--clr-txt-02);
+		padding: var(--space-m) var(--space-l);
+	}
 }

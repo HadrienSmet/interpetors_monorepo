@@ -16,6 +16,7 @@ import { PdfTools } from "../tools";
 
 import "./pdfEditor.scss";
 
+const FAKE_MARGIN = 6 as const;
 export const PdfEditor = () => {
     const { canvasRef, drawerRef } = usePdfCanvas();
     const { containerRef, displayLoader } = usePdfFile();
@@ -42,18 +43,19 @@ export const PdfEditor = () => {
 
                     {/** Used to draw on mount */}
                     <canvas
-                        className="on-real-time-displayer"
+                        className="pdf-editor__canvas"
                         key="canvas"
                         ref={canvasRef}
                         style={canvasStyle}
                     />
                     {/** Used to draw on user action */}
                     <canvas
-                        className="on-real-time-displayer"
+                        className="pdf-editor__canvas"
                         key="drawer"
                         ref={drawerRef}
                         style={canvasStyle}
                     />
+					<div style={{ height: FAKE_MARGIN }} />
                 </div>
 
                 <NotesDisplayer />

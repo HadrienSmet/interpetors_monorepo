@@ -26,6 +26,8 @@ import { ActionItem, CustomCursor, EditorContextMenuItem } from "@/modules/files
 import { useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { getRgbColor, getRgbFromString, handleActionColor } from "@/utils";
 
+import { handleRange } from "../../utils";
+
 import { usePdfFile } from "../file";
 import { usePdfHistory } from "../history";
 
@@ -79,8 +81,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
         const pageDimensions = pageRef.current.getBoundingClientRect();
 
-        const rects = range.getClientRects();
-        const rectsArray = Array.from(rects);
+		const rectsArray = handleRange(range);
         const userAction: ElementAction = {
             type: DRAWING_TYPES.RECT,
             element: {
@@ -111,8 +112,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         }
 
         const pageDimensions = pageRef.current.getBoundingClientRect();
-        const rects = currentRange.getClientRects();
-        const rectsArray = Array.from(rects);
+		const rectsArray = handleRange(currentRange);
 
         const isNote = tool === FILE_TOOLS.NOTE;
 

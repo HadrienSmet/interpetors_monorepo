@@ -18,6 +18,7 @@ import {
     convertPathAction,
     convertRectAction,
     convertTextAction,
+    handleRange,
     PathCanvasElement,
     RectCanvasElement,
     TextCanvasElement,
@@ -173,8 +174,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     useEffect(() => {
         if (!currentRange || !tool || tool === FILE_TOOLS.BRUSH) return;
 
-        const rects = currentRange.getClientRects();
-        const rectsArray = Array.from(rects);
+		const rectsArray = handleRange(currentRange);
 
         switch (tool) {
             case FILE_TOOLS.HIGHLIGHT:

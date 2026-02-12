@@ -5,7 +5,8 @@
     padding-left: 40px;
     position: relative;
 
-    .on-real-time-displayer {
+   	&__canvas {
+		margin-top: var(--space-s);
         pointer-events: none;
         position: absolute;
         top: 0;

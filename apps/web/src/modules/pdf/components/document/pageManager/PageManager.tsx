@@ -63,16 +63,18 @@ export const PageManager = () => {
     const isVisible = useVisibilityToggleOnMouseMove(pageRef);
 
     return (
-        <div className={`page-manager ${isVisible ? "visible" : ""}`}>
-            <button onClick={previousPage}>
-                <MdArrowBack />
-            </button>
-            <p>
-                {`${pageIndex} / ${numPages}`}
-            </p>
-            <button onClick={nextPage}>
-                <MdArrowForward />
-            </button>
-        </div>
+		<div className="page-manager-container">
+			<div className={`page-manager ${isVisible ? "visible" : ""}`}>
+				<button onClick={previousPage}>
+					<MdArrowBack />
+				</button>
+				<p>
+					{`${pageIndex} / ${numPages}`}
+				</p>
+				<button onClick={nextPage}>
+					<MdArrowForward />
+				</button>
+			</div>
+		</div>
     );
 };

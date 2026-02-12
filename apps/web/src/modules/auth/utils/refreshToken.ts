@@ -1,8 +1,9 @@
-import { AUTH_STORAGE_KEY, CRYPTO_SALT_STORAGE_KEY, REFRESH_STORAGE_KEY, USER_ID_STORAGE_KEY } from "../const";
+import { LOCAL_STORAGE } from "@/utils";
+
 import { refreshAccess } from "../services";
 
 export const refreshAccessToken = async () => {
-    const refreshToken = localStorage.getItem(REFRESH_STORAGE_KEY);
+    const refreshToken = localStorage.getItem(LOCAL_STORAGE.refresh);
     if (!refreshToken) return (null);
 
     const response = await refreshAccess({ refreshToken });
@@ -15,10 +16,10 @@ export const refreshAccessToken = async () => {
         "access_token" in tokens &&
         "refresh_token" in tokens
     ) {
-        localStorage.setItem(AUTH_STORAGE_KEY, tokens.access_token);
-        localStorage.setItem(REFRESH_STORAGE_KEY, tokens.refresh_token);
-        localStorage.setItem(CRYPTO_SALT_STORAGE_KEY, tokens.user.cryptoSalt);
-        localStorage.setItem(USER_ID_STORAGE_KEY, response.data.user.id);
+        localStorage.setItem(LOCAL_STORAGE.token, tokens.access_token);
+        localStorage.setItem(LOCAL_STORAGE.refresh, tokens.refresh_token);
+        localStorage.setItem(LOCAL_STORAGE.cryptoSalt, tokens.user.cryptoSalt);
+        localStorage.setItem(LOCAL_STORAGE.userId, response.data.user.id);
 
         return (tokens.access_token);
     }

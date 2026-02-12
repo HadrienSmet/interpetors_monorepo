@@ -34,7 +34,6 @@ export const PdfDocument = () => {
     ), [foldersActions, pdfFile.id, pageIndex]);
 
     const displayNoteReferences = (
-        pageActions &&
         pageActions.references &&
         pageActions.references.length > 0
     );
@@ -60,7 +59,6 @@ export const PdfDocument = () => {
 
     return (
         <div className="pdf-document" ref={pageRef}>
-            {displayPageManager && (<PageManager />)}
 
             <Document
                 file={pdfFile.file}
@@ -69,7 +67,8 @@ export const PdfDocument = () => {
                 onLoadSuccess={onDocumentLoadSuccess}
                 onContextMenu={onContextMenu}
                 options={options}
-            >
+			>
+				{displayPageManager && (<PageManager />)}
                 <Page
                     className={`pdf-page ${tool !== null ? "tooling" : ""}`}
                     key={`page_${pageIndex}`}
@@ -80,7 +79,7 @@ export const PdfDocument = () => {
                 />
             </Document>
 
-            {displayNoteReferences && pageActions.references!
+            {displayNoteReferences && pageActions.references
                 .map((ref, i) => {
                     if (ref.type === REFERENCE_TYPES.NOTE) {
                         return (

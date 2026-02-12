@@ -15,27 +15,6 @@ body {
     transition:
         background-color var(--transition-theme),
         color var(--transition-theme);
-    &::-webkit-scrollbar {
-        background-color: transparent;
-        transition: display var(--transition-hover) ease-in-out;
-        width: 16px;
-    }
-    &:not([no-y-overflow])::-webkit-scrollbar-thumb {
-        background-clip: content-box;
-        border: 4px solid transparent;
-        border-radius: 8px;
-        height: 56px;
-    }
-    // &::-webkit-scrollbar-thumb {
-    //     background-clip: content-box;
-    //     background-color: hsl(0, 0%, 67%);
-    //     border: 4px solid transparent;
-    //     border-radius: 8px;
-    //     height: 56px;
-    //     &:hover {
-    //         background-color: lighten(hsl(0, 0%, 67%), 5);
-    //     }
-    // }
 }
 * {
     box-sizing: border-box;

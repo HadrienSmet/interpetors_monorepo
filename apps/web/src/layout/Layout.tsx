@@ -4,7 +4,6 @@ import { ContextMenu } from "@/components";
 import { Navigation } from "@/modules/router";
 
 import { Header } from "./header";
-import { Footer } from "./footer";
 import "./layout.scss";
 
 export const Layout = () => {
@@ -15,7 +14,6 @@ export const Layout = () => {
                 <Navigation />
                 <div className="app-content">
                     <Outlet />
-                    <Footer />
                 </div>
             </div>
             <ContextMenu />
