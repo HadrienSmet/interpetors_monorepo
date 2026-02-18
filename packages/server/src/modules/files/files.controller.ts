@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, UseGuards, UsePipes, Validat
 
 import { JwtAuthGuard } from "src/common";
 
-import { CreatePdfFileDto, PatchPdfFileDto, PatchPdfFilesDto } from "./dto";
+import { CreatePdfFileDto, PatchPdfFileDto, PatchPdfFilesDto, UploadChunkDto } from "./dto";
 import { FilesService } from "./files.service";
 
 @Controller("preparations/:preparationId/files")
@@ -14,10 +14,25 @@ export class FilesController {
 	async create(@Param("preparationId") preparationId: string, @Body() dto: CreatePdfFileDto) {
 		return this.service.create(preparationId, dto);
 	}
+	@Post(":fileId/actions/chunk")
+	async uploadChunk(
+		@Param("preparationId") preparationId: string,
+		@Param("fileId") fileId: string, 
+		@Body() dto: UploadChunkDto
+	) {
+		return this.service.receiveChunk(preparationId, fileId, dto);
+	}
 
 	@Get()
 	async getAll(@Param("preparationId") preparationId: string) {
 		return this.service.getAll(preparationId);
+	}
+	@Get(":fileId/actions")
+	async getActions(
+		@Param("preparationId") preparationId: string,
+		@Param("fileId") fileId: string
+	) {
+		return this.service.getActions(preparationId, fileId);
 	}
 
 	@Patch()

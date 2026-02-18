@@ -1,28 +1,31 @@
 import { Type } from "class-transformer";
-import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { 
+	IsArray, 
+	IsNotEmpty, 
+	IsOptional, 
+	IsString,
+	ValidateNested, 
+} from "class-validator";
 
 export class PatchPdfFileDto {
-    @IsString()
-    @IsOptional()
-    actions: string;
     @IsOptional()
     @IsString()
-    filePath: string;
+    filePath?: string;
     @IsOptional()
     @IsString()
-    name: string;
+    name?: string;
 }
 
 class PatchedPdfFile {
     @IsOptional()
     @IsString()
     actions: string;
-    @IsString()
-    @IsNotEmpty()
-    id: string;
     @IsOptional()
     @IsString()
     filePath: string;
+    @IsString()
+    @IsNotEmpty()
+    id: string;
     @IsOptional()
     @IsString()
     name: string;

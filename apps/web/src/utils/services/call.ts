@@ -1,0 +1,122 @@
+import { refreshAccessToken } from "@/modules/auth";
+
+import { safeJsonParse } from "../json";
+import { LOCAL_STORAGE } from "../localStorage";
+
+export const HTTP_METHODS = {
+    GET: "GET",
+    DELETE: "DELETE",
+    PATCH: "PATCH",
+    POST: "POST",
+    PUT: "PUT",
+} as const;
+type MethodWithBody =
+    | typeof HTTP_METHODS.PATCH
+    | typeof HTTP_METHODS.POST
+    | typeof HTTP_METHODS.PUT;
+type CallWithoutBodyParams = {
+    readonly route: string;
+    readonly method:
+        | typeof HTTP_METHODS.DELETE
+        | typeof HTTP_METHODS.GET;
+};
+type CallWithBodyParams = {
+    readonly body: Record<string, any>;
+    readonly method: MethodWithBody;
+    readonly route: string;
+};
+type CallParams =
+    (
+        | CallWithoutBodyParams
+        | CallWithBodyParams
+    )
+    & {
+        readonly headers?: any;
+        readonly skipRefresh?: boolean;
+    };
+export type CallOutput<T> =
+	| {
+		readonly data: T;
+		readonly success: true;
+	}
+	| {
+		readonly message: string;
+		readonly success: false;
+	};
+
+const HEADERS = {
+	"Content-Type": "application/json",
+} as const;
+
+const ABORTION_TIMEOUT = 120_000 as const;
+
+export const call = async <T>({ skipRefresh = false, ...params }: CallParams): Promise<CallOutput<T>> => {
+	let token = localStorage.getItem(LOCAL_STORAGE.token);
+
+	const requestInit: RequestInit = {
+		headers: {
+			...HEADERS,
+			...(token ? { Authorization: `Bearer ${token}` } : {})
+		},
+		method: params.method,
+	};
+
+	if (params.headers) {
+		requestInit.headers = {
+			...requestInit.headers,
+			...params.headers,
+		};
+	}
+
+	if (
+		params.method === HTTP_METHODS.PATCH ||
+		params.method === HTTP_METHODS.POST ||
+		params.method === HTTP_METHODS.PUT
+	) {
+		requestInit.body = JSON.stringify(params.body);
+	}
+
+	const controller = new AbortController();
+
+	setTimeout(() => controller.abort(), ABORTION_TIMEOUT);
+	let response = await fetch(
+		`${import.meta.env.VITE_API_URL}/${params.route}`,
+		{
+			...requestInit,
+			signal: controller.signal,
+		}
+	);
+
+	// Checking if can be succeeded with new token
+	if ((response.status === 401 || response.status === 403) && !skipRefresh) {
+		token = await refreshAccessToken();
+
+		if (token) {
+			response = await fetch(
+				`${import.meta.env.VITE_API_URL}/${params.route}`,
+				{
+					...requestInit,
+					signal: controller.signal,
+					headers: {
+						...requestInit.headers,
+						Authorization: `Bearer ${token}`,
+					}
+				}
+			);
+		}
+	}
+
+	if (response.ok) {
+		const strData = await response.text();
+
+		return ({
+			success: true,
+			data: safeJsonParse<T>(strData),
+		});
+	}
+
+	return ({
+		success: false,
+		message: await response.text(),
+	});
+};

@@ -5,7 +5,9 @@ import { isPdfMetadata } from "@/modules/folders";
 import { PDF_TYPE } from "@/modules/pdf";
 import { encryptActions, encryptPdfFile, encryptVocabularyTerms } from "@/utils";
 
-type PdfFileJob = Omit<FILES.PostPdfParams, "s3Key">;
+type PdfFileJob = 
+	& Omit<FILES.PostPdfParams, "s3Key">
+	& { readonly actions: string; };
 type FlatJob = {
     pdf: PdfFileJob;
     s3: FILES.UploadParams;
@@ -36,7 +38,7 @@ export const prepareJobs = async (
 ): Promise<Array<FlatJob>> => {
     const jobs: Array<FlatJob> = [];
 
-    const queue: Queue[] = folders.map(node => ({ path: FIRST_LEVEL_PATH, node }));
+    const queue: Array<Queue> = folders.map(node => ({ path: FIRST_LEVEL_PATH, node }));
 
     while (queue.length) {
         const { path, node } = queue.shift()!;

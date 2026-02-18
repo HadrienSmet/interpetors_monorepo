@@ -2,11 +2,13 @@ import { FileAction } from "./actions";
 
 export type PdfFile = {
     readonly actions: Record<number, FileAction>;
+	// @ts-expect-error
     readonly file: File;
     readonly id: string;
     readonly name: string;
 };
 export type PdfMetadata = {
+	// @ts-expect-error
     readonly file: File;
     readonly id: string;
     readonly name: string;

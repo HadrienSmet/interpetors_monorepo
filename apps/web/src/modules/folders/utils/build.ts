@@ -2,22 +2,41 @@ import { FilesActionsStore, SavedFolderStructure } from "@repo/types";
 
 import { FILES } from "@/modules/files";
 import {
+	base64ToBytes,
+	decoder,
     decryptPdfFile,
-    handleServicesConcurrency,
 	decryptActions,
+	gunzipBytes,
+    handleServicesConcurrency,
 } from "@/utils";
 
-const handleFile = async (
-    { actions, ...item }: FILES.FileApiResponse,
-    foldersActions: FilesActionsStore,
-    userKey: CryptoKey
-) => {
+const handleFileActions = async (preparationId: string, fileId: string, userKey: CryptoKey) => {
+	const response = await FILES.getActions(preparationId, fileId);
+	if (!response.success) {
+		throw new Error(response.message);
+	}
+
+	const actionsB64 = response.data.actions;
+	const compressedBytes = base64ToBytes(actionsB64);
+	const jsonBytes = await gunzipBytes(compressedBytes);
+	const jsonString = decoder.decode(jsonBytes);
+
+	return (decryptActions(userKey, jsonString));
+};
+
+type HandleFileParams = {
+	readonly foldersActions: FilesActionsStore;
+	readonly item: FILES.FileApiResponse;
+	readonly preparationId: string;
+	readonly userKey: CryptoKey;
+};
+const handleFile = async ({ foldersActions, item, preparationId, userKey }: HandleFileParams) => {
     const fileRes = await FILES.getOneS3(item.s3Key, item.name);
     if (!fileRes.success) {
         throw new Error(fileRes.message);
     }
 
-	const decryptedActions = await decryptActions(userKey, actions);
+	const decryptedActions = await handleFileActions(preparationId, item.id, userKey);
     const decryptedPdf = await decryptPdfFile(fileRes.data, userKey);
 
     foldersActions[item.id] = decryptedActions;
@@ -41,7 +60,7 @@ export const buildFoldersStructure = async (preparationId: string, userKey: Cryp
     const files = pdfFilesResponse.data;
     const foldersActions: FilesActionsStore = {};
 
-    const hydrated = await Promise.all(files.map(file => limit(() => handleFile(file, foldersActions, userKey))));
+    const hydrated = await Promise.all(files.map(item => limit(() => handleFile({ item, foldersActions, preparationId, userKey }))));
 
     for (const fileData of hydrated) {
         const { id, filePath, name, file } = fileData;

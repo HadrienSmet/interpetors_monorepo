@@ -1,5 +1,5 @@
 import { FILES } from "@/modules/files";
-import { handleServicesConcurrency } from "@/utils";
+import { handleServicesConcurrency, prepareCompressedChunks } from "@/utils";
 
 const runS3 = handleServicesConcurrency(3);
 
@@ -30,10 +30,33 @@ export const uploadFile = async ({
     }
 
     // b) Création PdfFile (DB)
-    const pdfRes = await FILES.postPdf({ actions, filePath, name, preparationId, s3Key: s3Res.data.key });
+    const pdfRes = await FILES.postPdf({ filePath, name, preparationId, s3Key: s3Res.data.key });
     if (!pdfRes.success) {
         throw new Error(`postPdf failed for "${name}": ${pdfRes.message}`);
     }
+
+	const chunks = await prepareCompressedChunks(actions);
+	const responses = await Promise.all([...chunks.map(chunk => FILES.postActionChunk({ preparationId, fileId: pdfRes.data.id, body: chunk }))]);
+	const chunksRes = []
+	for (const res of responses) {
+		if (!res.success) {
+			throw new Error("An error occured while uploading the file actions");
+			// TODO: clean db to prevent stale data or retry
+		}
+
+		chunksRes.push(res.data);
+	}
+
+	const completeIndex = chunksRes.findIndex(el => {
+		if ("completed" in el && el.completed) return (true);
+
+		return (false);
+	});
+	if (completeIndex === -1) {
+		throw new Error("Did not succeed to upload all the actions chunks");
+		// TODO: clean db to prevent stale data or retry
+	}
+
 
     return (pdfRes.data);
 };

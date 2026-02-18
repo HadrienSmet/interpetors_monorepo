@@ -3,7 +3,6 @@ import { call, CallOutput, HTTP_METHODS } from "@/utils";
 import { getPdfRoute } from "./const";
 
 export type PostPdfParams = {
-    readonly actions: string;
     readonly filePath: string;
     readonly name: string;
     readonly preparationId: string;

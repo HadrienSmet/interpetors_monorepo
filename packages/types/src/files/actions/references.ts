@@ -1,4 +1,5 @@
 import { TypedElement } from "../../common";
+import { SerializableRect } from "../../serializable";
 
 import { REFERENCE_TYPES } from "../references";
 
@@ -7,7 +8,7 @@ import { ActionElementBase } from "./common";
 type ReferenceActionElement =
     & ActionElementBase
     & {
-        readonly rectsArray: Array<DOMRect>;
+        readonly rectsArray: Array<SerializableRect>;
         readonly id: string;
     };
 export type NoteAction = TypedElement<REFERENCE_TYPES.NOTE, ReferenceActionElement>;

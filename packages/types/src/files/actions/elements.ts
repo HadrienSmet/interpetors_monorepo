@@ -1,4 +1,5 @@
 import { DRAWING_TYPES, Position, TypedElement } from "../../common";
+import { SerializableRect } from "../../serializable";
 
 import { FileTool } from "../tools";
 
@@ -10,13 +11,13 @@ export type PathActionElement =
 export type RectActionElement =
     & ActionElementBase
     & {
-        readonly rectsArray: Array<DOMRect>;
+        readonly rectsArray: Array<SerializableRect>;
         readonly tool: FileTool;
     };
 export type TextActionElement =
     & ActionElementBase
     & {
-        readonly rect: DOMRect;
+        readonly rect: SerializableRect;
         readonly text: string;
     };
 

@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         localStorage.removeItem(LOCAL_STORAGE.cryptoSalt);
         localStorage.removeItem(LOCAL_STORAGE.userId);
 		localStorage.removeItem(LOCAL_STORAGE.workspace);
+		localStorage.removeItem(LOCAL_STORAGE.coloPanel);
     };
 
     useEffect(() => {

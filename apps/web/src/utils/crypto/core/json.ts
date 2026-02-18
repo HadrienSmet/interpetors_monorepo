@@ -7,7 +7,8 @@ export const encryptJson = async <T>(
     key: CryptoKey,
     data: T
 ): Promise<EncryptedResource> => {
-    const encoded = encoder.encode(JSON.stringify(data));
+	const stringified = JSON.stringify(data);
+    const encoded = encoder.encode(stringified);
     const iv = crypto.getRandomValues(new Uint8Array(12));
 
     const encrypted = await crypto.subtle.encrypt(

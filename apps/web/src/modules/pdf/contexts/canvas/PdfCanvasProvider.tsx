@@ -7,6 +7,7 @@ import {
     HistoryAction,
     PathActionElement,
     Position,
+	SerializableRect,
 } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
@@ -68,7 +69,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
-    const drawLine = useCallback((rects: Array<DOMRect>) => {
+    const drawLine = useCallback((rects: Array<SerializableRect>) => {
         const ctx = drawerContextRef.current;
         const containerDimensions = pageRef.current?.getBoundingClientRect();
 
@@ -84,14 +85,14 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
             const height = STROKE_SIZE;
             const x = (rect.left - containerDimensions.left);
             const y = ((rect.top + rect.height - height) - containerDimensions.top);
-            const width = rect.width;
+            const width: number = rect.width;
 
             ctx.fillRect(x, y, width, height);
         }
 
         ctx.restore();
     }, [color]);
-    const drawRect = useCallback((rects: Array<DOMRect>) => {
+    const drawRect = useCallback((rects: Array<SerializableRect>) => {
         const ctx = drawerContextRef.current;
         const containerDimensions = pageRef.current?.getBoundingClientRect();
         const colorToUse = getColorToUse(HIGLIGHT_OPACITY);
@@ -103,7 +104,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         ctx.fillStyle = colorToUse;
 
         for (const rect of rects) {
-            const { height, width } = rect;
+            const { height, width }: { height: number; width: number; } = rect;
             const x = (rect.left - containerDimensions.left);
             const y = (rect.top - containerDimensions.top);
 

@@ -3,7 +3,6 @@ import { call, HTTP_METHODS } from "@/utils";
 import { getPdfRoute } from "./const";
 
 export type FileApiResponse = {
-    readonly actions: string;
     readonly filePath: string;
     readonly id: string;
     readonly name: string;
