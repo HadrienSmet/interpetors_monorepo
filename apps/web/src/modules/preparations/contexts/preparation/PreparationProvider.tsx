@@ -1,4 +1,5 @@
 import { PropsWithChildren, useEffect, useState } from "react";
+import { useLocation } from "react-router";
 
 import { SavedVocabularyTerm } from "@repo/types";
 
@@ -6,6 +7,7 @@ import { useAuth } from "@/modules/auth";
 import { FILES } from "@/modules/files";
 import { NewFile, useFoldersManager } from "@/modules/folders";
 import { PDF_TYPE, uploadFile } from "@/modules/pdf";
+import { useLocaleNavigate } from "@/modules/router";
 import { useVocabulary, VOCABULARY } from "@/modules/vocabulary";
 import { useWorkspaces } from "@/modules/workspace";
 import { 
@@ -36,6 +38,8 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
 
     const { userKey } = useAuth();
     const { foldersStructure } = useFoldersManager();
+	const location = useLocation();
+	const navigate = useLocaleNavigate();
     const { addPreparation, patchPreparation: patchContext, selectedPreparation } = usePreparations();
     const { groupedVocabulary } = useVocabulary();
     const { currentWorkspace } = useWorkspaces();
@@ -83,6 +87,7 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
             vocabulary: vocabularyTerms,
         });
         setIsSaving(false);
+		navigate(`/preparations${location.search}&pid=${prepRes.data.id}`);
     };
     const patchPreparation = async (params: SavePreparationParams) => {
         const { old, ...updated } = params;

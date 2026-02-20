@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "@/modules/auth";
-import { buildFoldersStructure } from "@/modules/folders";
+import { buildFoldersStructure, countFiles } from "@/modules/folders";
 import { VOCABULARY } from "@/modules/vocabulary";
 import { useWorkspaces } from "@/modules/workspace";
 import { decryptVocabularyTerms } from "@/utils";
@@ -27,10 +27,30 @@ export const PreparationsProvider = ({ children }: PropsWithChildren) => {
         return (preparationsRecord[selectedPreparationId]);
     }, [selectedPreparationId, Object.keys(preparationsRecord).length]);
 
-    const addPreparation = (prep: SavedPreparation) => setPreparationsRecord(state => ({
-		...state,
-		[prep.id]: prep,
-	}));
+    const addPreparation = (prep: SavedPreparation) => {
+		let count = 0;
+		for (const folder of prep.folders) {
+			count += countFiles(folder);
+		}
+
+		setPreparationsOverview(state => ({
+			...state,
+			[prep.id]: {
+				createdAt: prep.createdAt,
+				id: prep.id,
+				title: prep.title,
+				updatedAt: prep.updatedAt,
+				_count: {
+					pdfFiles: count,
+					vocabularyTerms: prep.vocabulary.length,
+				},
+			},
+		}));
+		setPreparationsRecord(state => ({
+			...state,
+			[prep.id]: prep,
+		}));
+	};
     const patchPreparation = (id: string, prep: SavedPreparation) => setPreparationsRecord(prev => ({
         ...prev,
 		[id]: prep,
