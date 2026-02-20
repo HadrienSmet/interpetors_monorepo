@@ -42,9 +42,9 @@ export const uploadPreparation = async ({
                 occurrence: { ...t.occurrence, pdfFileId: fileRes.id },
             }));
             await VOCABULARY.postBulk({
-                workspaceId,
-                preparationId,
+				preparationId,
                 terms,
+                workspaceId,
             });
         }
     }))));

@@ -4,11 +4,18 @@ import { SavedVocabularyTerm } from "@repo/types";
 
 import { useAuth } from "@/modules/auth";
 import { FILES } from "@/modules/files";
-import { useFoldersManager } from "@/modules/folders";
+import { NewFile, useFoldersManager } from "@/modules/folders";
 import { PDF_TYPE, uploadFile } from "@/modules/pdf";
 import { useVocabulary, VOCABULARY } from "@/modules/vocabulary";
 import { useWorkspaces } from "@/modules/workspace";
-import { encryptActions, encryptPdfFile, encryptVocabularyTerms, safeJsonParse } from "@/utils";
+import { 
+	encryptActions, 
+	encryptPdfFile, 
+	encryptVocabularyTerms, 
+	prepareCompressedChunks, 
+	safeJsonParse, 
+	VocToPost, 
+} from "@/utils";
 
 import { create, patch } from "../../services";
 import { ClientPreparation, SavedPreparation } from "../../types";
@@ -66,7 +73,7 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
         });
 
         const now = new Date().toISOString();
-        const savedPreparation: SavedPreparation = {
+        addPreparation({
             createdAt: now,
             id: prepRes.data.id,
             folders,
@@ -74,9 +81,7 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
             title: prepRes.data.title,
             updatedAt: now,
             vocabulary: vocabularyTerms,
-        };
-
-        addPreparation(savedPreparation);
+        });
         setIsSaving(false);
     };
     const patchPreparation = async (params: SavePreparationParams) => {
@@ -101,7 +106,16 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
             });
         }
         if (terms && terms.length > 0) {
-			const encryptedTerms = await encryptVocabularyTerms(userKey, terms) as Array<SavedVocabularyTerm>;
+			const termsWithoutId: Array<VocToPost> = terms.map(el => {
+				if (el.id === el.occurrence.text) {
+					const { id: _id, ...term } = el;
+
+					return (term);
+				}
+
+				return (el);
+			});
+			const encryptedTerms = await encryptVocabularyTerms(userKey, termsWithoutId) as Array<SavedVocabularyTerm>;
             // Patch vocabulary terms
             await VOCABULARY.postBulk({
                 preparationId,
@@ -112,38 +126,60 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
         if (files) {
             if (files.filesToPatch && files.filesToPatch.length > 0) {
 				const encryptedFilesToPatch: Array<FILES.FileToPatch> = [];
+				const actionsToPerform = [];
 				for (const fileToPatch of files.filesToPatch) {
-					const actions = await encryptActions(userKey, safeJsonParse(fileToPatch.actions ?? "{}"));
+					if (fileToPatch.actions) {
+						const actions = await encryptActions(userKey, safeJsonParse(fileToPatch.actions ?? "{}"));
+						const chunks = await prepareCompressedChunks(actions);
 
-					encryptedFilesToPatch.push({
-						...fileToPatch,
-						actions,
-					});
+						actionsToPerform.push(...chunks.map(el => ({ preparationId, fileId: fileToPatch.id, body: el })));
+					}
+
+					if (fileToPatch.filePath || fileToPatch.name) {
+						encryptedFilesToPatch.push(fileToPatch);
+					}
 				}
 
+				const responses = await Promise.all(actionsToPerform.map(chunk => FILES.postActionChunk(chunk)));
+				const chunksRes = [];
+				for (const res of responses) {
+					if (!res.success) {
+						throw new Error("An error occured while uploading the file actions");
+					}
+
+					chunksRes.push(res.data);
+				}
+				const completeIndex = chunksRes.findIndex(el => {
+					if ("completed" in el && el.completed) return (true);
+
+					return (false);
+				});
+				if (completeIndex === -1) {
+					throw new Error("Did not succeed to upload all the actions chunks");
+					// TODO: clean db to prevent stale data or retry
+				}
                 await FILES.patchApi({
                     body: { files: encryptedFilesToPatch },
                     preparationId,
                 });
             }
             if (files.newFiles && files.newFiles.length > 0) {
-				await Promise.all(
-					files.newFiles.map(async newFile => {
-						const actions = await encryptActions(userKey, newFile.pdfFile.actions);
-						const encryptedFile = await encryptPdfFile(newFile.pdfFile.file, userKey);
+				const handleNewFile = async (newFile: NewFile) => {
+					const actions = await encryptActions(userKey, newFile.pdfFile.actions);
+					const encryptedFile = await encryptPdfFile(newFile.pdfFile.file, userKey);
 
-						return (
-							uploadFile({
-								actions,
-								contentType: PDF_TYPE.type,
-								file: encryptedFile,
-								filePath: newFile.filePath,
-								name: newFile.pdfFile.name,
-								preparationId,
-							})
-						);
-					})
-                );
+					return (
+						uploadFile({
+							actions,
+							contentType: PDF_TYPE.type,
+							file: encryptedFile,
+							filePath: newFile.filePath,
+							name: newFile.pdfFile.name,
+							preparationId,
+						})
+					);
+				};
+				await Promise.all(files.newFiles.map(handleNewFile));
             }
         };
 

@@ -27,11 +27,14 @@ export const decryptVocabularyTerms = async (
 
 	return (output);
 };
+export type VocToPost = 
+	& Omit<VocabularyTerm, "id">
+	& { readonly id?: string };
 export const encryptVocabularyTerms = async (
 	userKey: CryptoKey,
-	terms: Array<VocabularyTerm>
+	terms: Array<VocToPost>
 ) => {
-	const output: Array<VocabularyTerm> = [];
+	const output: Array<VocToPost> = [];
 	for (const t of terms) {
 		const encryptedRef = await encryptString(userKey, t.occurrence.text);
 		output.push({

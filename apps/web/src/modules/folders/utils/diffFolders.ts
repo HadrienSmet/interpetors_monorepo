@@ -5,16 +5,19 @@ import {
 	PdfMetadata,
 } from "@repo/types";
 
-import { FileToPatch } from "@/modules/files/services";
+import { FILES } from "@/modules/files";
 
 import { isPdfMetadata } from "../contexts";
 
-type NewFile = {
+export type NewFile = {
 	readonly filePath: string;
 	readonly pdfFile: PdfFile;
 };
+type FileToPatchInDelta = 
+	& FILES.FileToPatch 
+	& { actions?: string; };
 export type Delta = {
-	readonly filesToPatch: Array<FileToPatch>;
+	readonly filesToPatch: Array<FileToPatchInDelta>;
 	readonly newFiles: Array<NewFile>;
 };
 type DiffFoldersItem = {
@@ -101,7 +104,7 @@ export const diffFolderStructures = ({
 	// 2) Détecter nouvelles actions
 	for (const [key, { path: newPath, pdf: newPdf, pages: newPages }] of newIdx.byKey.entries()) {
 		let hasToPatchFile = false;
-		const fileToPatch: FileToPatch = { id: newPdf.id };
+		const fileToPatch: FileToPatchInDelta = { id: newPdf.id };
 		const oldPath = oldIdx.pathByKey.get(key);
 		const oldEntry = oldIdx.byKey.get(key);
 		const splitted = newPath.split("/");

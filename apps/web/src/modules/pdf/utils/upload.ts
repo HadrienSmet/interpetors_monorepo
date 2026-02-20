@@ -37,7 +37,7 @@ export const uploadFile = async ({
 
 	const chunks = await prepareCompressedChunks(actions);
 	const responses = await Promise.all([...chunks.map(chunk => FILES.postActionChunk({ preparationId, fileId: pdfRes.data.id, body: chunk }))]);
-	const chunksRes = []
+	const chunksRes = [];
 	for (const res of responses) {
 		if (!res.success) {
 			throw new Error("An error occured while uploading the file actions");

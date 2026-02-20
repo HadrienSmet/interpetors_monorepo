@@ -3,7 +3,7 @@ import { FilesActionsStore, FolderStructure, VocabularyTerm } from "@repo/types"
 import { FILES } from "@/modules/files";
 import { isPdfMetadata } from "@/modules/folders";
 import { PDF_TYPE } from "@/modules/pdf";
-import { encryptActions, encryptPdfFile, encryptVocabularyTerms } from "@/utils";
+import { encryptActions, encryptPdfFile, encryptVocabularyTerms, VocToPost } from "@/utils";
 
 type PdfFileJob = 
 	& Omit<FILES.PostPdfParams, "s3Key">
@@ -11,7 +11,7 @@ type PdfFileJob =
 type FlatJob = {
     pdf: PdfFileJob;
     s3: FILES.UploadParams;
-    terms: Array<VocabularyTerm>;
+    terms: Array<VocToPost>;
 };
 type Queue = { path: string; node: FolderStructure; };
 

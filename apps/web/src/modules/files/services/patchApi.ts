@@ -24,7 +24,6 @@ export const patchOneApi = async ({ body, fileId, preparationId }: PatchOneApiPa
 };
 
 export type FileToPatch = {
-    actions?: string;
     filePath?: string;
     readonly id: string;
 	name?: string;
