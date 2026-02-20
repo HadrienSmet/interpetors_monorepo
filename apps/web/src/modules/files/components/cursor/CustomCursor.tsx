@@ -14,6 +14,7 @@ type ToolIconParams = {
 
 type CustomCursorProps = {
     readonly color: string;
+	readonly opacity: number;
     readonly position: Position;
     readonly tool: FileTool;
 };
@@ -25,7 +26,7 @@ const TOOLS_ICONS = {
     [FILE_TOOLS.UNDERLINE]: (params: ToolIconParams) => <MdBorderColor {...params} />,
     [FILE_TOOLS.VOCABULARY]: (params: ToolIconParams) => <MdOutlineMenuBook {...params} />,
 };
-const getCursrorIcon = ({ color, tool }: Omit<CustomCursorProps, "position">) => {
+const getCursrorIcon = ({ color, tool }: Omit<CustomCursorProps, "position" | "opacity">) => {
     const toolIcon = TOOLS_ICONS[tool];
 
     const style: React.CSSProperties = {
@@ -36,11 +37,12 @@ const getCursrorIcon = ({ color, tool }: Omit<CustomCursorProps, "position">) =>
     return (toolIcon({ color, style }));
 };
 
-export const CustomCursor = ({ color, position, tool }: CustomCursorProps) => (
+export const CustomCursor = ({ color, opacity, position, tool }: CustomCursorProps) => (
     <div
         className="custom-cursor"
         style={{
             left: position.x - (CURSOR_SIZE/2),
+			opacity,
             top: position.y - (ICON_SIZE/2),
         }}
     >

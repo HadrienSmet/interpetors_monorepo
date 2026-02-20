@@ -11,6 +11,7 @@ export type PdfToolsContextType = {
     readonly onContextMenu: (e: MouseEvent) => void;
     readonly onToolSelection: (tool: FileTool | null) => void;
     readonly setColor: Dispatch<SetStateAction<ActionColor>>;
+    readonly setIsCursorVisible: Dispatch<SetStateAction<boolean>>;
     readonly setTool: Dispatch<SetStateAction<FileTool | null>>;
     readonly tool: FileTool | null;
 };

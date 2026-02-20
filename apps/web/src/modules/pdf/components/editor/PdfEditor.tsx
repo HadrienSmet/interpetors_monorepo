@@ -20,7 +20,7 @@ const FAKE_MARGIN = 6 as const;
 export const PdfEditor = () => {
     const { canvasRef, drawerRef } = usePdfCanvas();
     const { containerRef, displayLoader } = usePdfFile();
-    const { customCursor } = usePdfTools();
+    const { customCursor, setIsCursorVisible } = usePdfTools();
 
     const canvasStyle = useMemo(() => (
         containerRef.current
@@ -36,6 +36,8 @@ export const PdfEditor = () => {
 
             <div
                 className="pdf-editor"
+				onMouseEnter={() => setIsCursorVisible(true)}
+				onMouseLeave={() => setIsCursorVisible(false)}
                 ref={containerRef}
             >
                 <div className="document-drawer">

@@ -51,6 +51,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     /** Text selection range */
     const [currentRange, setCurrentRange] = useState<Range | undefined>(undefined);
     const [customCursor, setCustomCursor] = useState<ReactNode>(null);
+	const [isCursorVisible, setIsCursorVisible] = useState(false);
     const [tool, setTool] = useState<FileTool | null>(null);
 
     const { colorPanel } = useColorPanel();
@@ -297,6 +298,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 			setCustomCursor(
 				<CustomCursor
 					color={getRgbColor(rgbColor)}
+					opacity={isCursorVisible ? 1 : 0}
 					position={{ x, y }}
 					tool={tool!}
 				/>
@@ -332,7 +334,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 			container.removeEventListener("mousemove", onMouseMove);
 			container.removeEventListener("scroll", onScroll);
 		};
-	}, [tool, rgbColor]);
+	}, [isCursorVisible, tool, rgbColor]);
 
     const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
         [TOOLS_ON_SELECTION.UNDERLINE]: {
@@ -400,6 +402,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         onContextMenu,
         onToolSelection,
         setColor,
+		setIsCursorVisible,
         setTool,
         tool,
     };
