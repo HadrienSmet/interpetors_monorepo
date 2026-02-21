@@ -76,10 +76,11 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 			return (
 				action.resourceToGenerate?.type === GENERATED_RESOURCES.NOTE &&
 				action.resourceToGenerate.element.id === id &&
-				currentColor === noteColor
+				JSON.stringify(currentColor) === JSON.stringify(noteColor)
 			);
 		});
 
+		// Updating unsaved action
 		if (userActionIndex !== -1) {
 			setUserActions((state) => {
 				const copy = [...state];
@@ -103,6 +104,8 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 
 				return (copy);
 			});
+
+			return;
 		}
 
 		const savedIndex = savedElements?.generatedResources?.findIndex((resource) => {
@@ -115,6 +118,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 			return (resource.id === id && currentColor === noteColor);
 		}) ?? -1;
 
+		// Updating a saved Element
 		if (savedIndex !== -1) {
 			setSavedElements((prev) => {
 				if (!prev) return (prev);

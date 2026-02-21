@@ -43,7 +43,7 @@ export const PdfNote = ({ note }: PdfNoteProps) => {
 		if (isEditable) setIsUpdating(true);
 	};
     const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter") {
+		if (e.key === "Enter") {
             updateNote();
             setIsUpdating(false);
         }
