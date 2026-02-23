@@ -16,95 +16,7 @@ importers:
         specifier: ^5.4.0
         version: 5.7.3
 
-  apps/web:
-    dependencies:
-      '@repo/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      exceljs:
-        specifier: ^4.4.0
-        version: 4.4.0
-      file-saver:
-        specifier: ^2.0.5
-        version: 2.0.5
-      i18next:
-        specifier: ^24.2.2
-        version: 24.2.3(typescript@5.7.3)
-      i18next-browser-languagedetector:
-        specifier: ^8.0.4
-        version: 8.2.0
-      jszip:
-        specifier: ^3.10.1
-        version: 3.10.1
-      pdf-lib:
-        specifier: ^1.17.1
-        version: 1.17.1
-      pdfjs-dist:
-        specifier: ^5.3.93
-        version: 5.4.530
-      react:
-        specifier: ^19.0.0
-        version: 19.2.3
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.3(react@19.2.3)
-      react-i18next:
-        specifier: ^15.4.1
-        version: 15.7.4(i18next@24.2.3(typescript@5.7.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.7.3)
-      react-icons:
-        specifier: ^5.5.0
-        version: 5.5.0(react@19.2.3)
-      react-pdf:
-        specifier: ^9.2.1
-        version: 9.2.1(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react-router:
-        specifier: ^7.8.1
-        version: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-    devDependencies:
-      '@eslint/js':
-        specifier: ^9.22.0
-        version: 9.39.2
-      '@types/file-saver':
-        specifier: ^2.0.7
-        version: 2.0.7
-      '@types/react':
-        specifier: ^19.0.10
-        version: 19.2.9
-      '@types/react-dom':
-        specifier: ^19.0.4
-        version: 19.2.3(@types/react@19.2.9)
-      '@vitejs/plugin-react':
-        specifier: ^4.3.4
-        version: 4.7.0(vite@6.4.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.2)(terser@5.46.0))
-      eslint:
-        specifier: ^9.22.0
-        version: 9.39.2(jiti@2.6.1)
-      eslint-plugin-react-hooks:
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@9.39.2(jiti@2.6.1))
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.19
-        version: 0.4.26(eslint@9.39.2(jiti@2.6.1))
-      globals:
-        specifier: ^16.0.0
-        version: 16.5.0
-      sass:
-        specifier: ^1.86.0
-        version: 1.97.2
-      typescript:
-        specifier: ~5.7.2
-        version: 5.7.3
-      typescript-eslint:
-        specifier: ^8.26.1
-        version: 8.53.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.7.3)
-      vite:
-        specifier: ^6.3.5
-        version: 6.4.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.2)(terser@5.46.0)
-
-  packages/server:
+  apps/server:
     dependencies:
       '@aws-sdk/client-s3':
         specifier: ^3.908.0
@@ -141,7 +53,7 @@ importers:
         version: 6.19.2(prisma@6.19.2(typescript@5.7.3))(typescript@5.7.3)
       '@repo/types':
         specifier: workspace:*
-        version: link:../types
+        version: link:../../packages/types
       argon2:
         specifier: ^0.44.0
         version: 0.44.0
@@ -263,6 +175,94 @@ importers:
       typescript-eslint:
         specifier: ^8.20.0
         version: 8.53.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.7.3)
+
+  apps/web:
+    dependencies:
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      exceljs:
+        specifier: ^4.4.0
+        version: 4.4.0
+      file-saver:
+        specifier: ^2.0.5
+        version: 2.0.5
+      i18next:
+        specifier: ^24.2.2
+        version: 24.2.3(typescript@5.7.3)
+      i18next-browser-languagedetector:
+        specifier: ^8.0.4
+        version: 8.2.0
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
+      pdf-lib:
+        specifier: ^1.17.1
+        version: 1.17.1
+      pdfjs-dist:
+        specifier: ^5.3.93
+        version: 5.4.530
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+      react-i18next:
+        specifier: ^15.4.1
+        version: 15.7.4(i18next@24.2.3(typescript@5.7.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.7.3)
+      react-icons:
+        specifier: ^5.5.0
+        version: 5.5.0(react@19.2.3)
+      react-pdf:
+        specifier: ^9.2.1
+        version: 9.2.1(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react-router:
+        specifier: ^7.8.1
+        version: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.22.0
+        version: 9.39.2
+      '@types/file-saver':
+        specifier: ^2.0.7
+        version: 2.0.7
+      '@types/react':
+        specifier: ^19.0.10
+        version: 19.2.9
+      '@types/react-dom':
+        specifier: ^19.0.4
+        version: 19.2.3(@types/react@19.2.9)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(vite@6.4.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.2)(terser@5.46.0))
+      eslint:
+        specifier: ^9.22.0
+        version: 9.39.2(jiti@2.6.1)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.39.2(jiti@2.6.1))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.19
+        version: 0.4.26(eslint@9.39.2(jiti@2.6.1))
+      globals:
+        specifier: ^16.0.0
+        version: 16.5.0
+      sass:
+        specifier: ^1.86.0
+        version: 1.97.2
+      typescript:
+        specifier: ~5.7.2
+        version: 5.7.3
+      typescript-eslint:
+        specifier: ^8.26.1
+        version: 8.53.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.7.3)
+      vite:
+        specifier: ^6.3.5
+        version: 6.4.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.2)(terser@5.46.0)
 
   packages/types:
     devDependencies:
@@ -3453,6 +3453,7 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@13.0.0:
@@ -3461,7 +3462,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
@@ -8691,7 +8692,7 @@ snapshots:
 
   dotenv-expand@12.0.1:
     dependencies:
-      dotenv: 16.4.7
+      dotenv: 16.6.1
 
   dotenv@16.4.7: {}
 
