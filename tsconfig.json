@@ -2,6 +2,6 @@
   "files": [],
   "references": [
     { "path": "./packages/types" },
-    { "path": "./packages/server" }
+    { "path": "./apps/server" }
   ]
 }
