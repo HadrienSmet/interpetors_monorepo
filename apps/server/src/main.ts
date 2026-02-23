@@ -5,6 +5,7 @@ import { TimeoutInterceptor } from "./common";
 
 const DEFAULT_PORT = 3000 as const;
 const DEFAULT_HOST = "0.0.0.0";
+
 const bootstrap = async () => {
     const app = await NestFactory.create(AppModule);
 
