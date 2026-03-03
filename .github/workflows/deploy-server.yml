@@ -16,19 +16,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "pnpm"
 
-      - name: Enable pnpm via Corepack
-        shell: bash
-        run: |
-          set -euo pipefail
-          node -v
-          which corepack || true
-          corepack --version
-          corepack enable
-          corepack prepare pnpm@10.29.3 --activate
-          which pnpm
-          pnpm -v
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Install workspace deps
         run: pnpm install --no-frozen-lockfile
@@ -40,9 +30,7 @@ jobs:
         run: pnpm --filter ./apps/server... exec prisma generate
 
       - name: Prepare SSH
-        shell: bash
         run: |
-          set -euo pipefail
           mkdir -p ~/.ssh
           echo "${{ secrets.ALWAYSDATA_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
