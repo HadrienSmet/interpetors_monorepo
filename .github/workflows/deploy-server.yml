@@ -18,8 +18,8 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Enable Corepack (pnpm from packageManager)
+        run: corepack enable
 
       - name: Install workspace deps
         run: pnpm install --no-frozen-lockfile
