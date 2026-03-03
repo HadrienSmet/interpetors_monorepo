@@ -1,0 +1,54 @@
+name: Deploy server to alwaysdata
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10.29.3"
+
+      - name: Install workspace deps
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build server
+        run: pnpm --filter ./apps/server... build
+
+      - name: Prisma generate (server)
+        run: pnpm --filter ./apps/server... exec prisma generate
+
+      - name: Prepare SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ALWAYSDATA_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.ALWAYSDATA_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy files via rsync
+        uses: Burnett01/rsync-deployments@v6.0.0
+        with:
+          switches: -az --delete
+          path: |
+            apps/server/dist/
+            apps/server/prisma/
+            apps/server/package.json
+            apps/server/nest-cli.json
+            apps/server/tsconfig*.json
+          remote_path: ${{ secrets.ALWAYSDATA_PATH }}/apps/server/
+          remote_host: ${{ secrets.ALWAYSDATA_HOST }}
+          remote_user: ${{ secrets.ALWAYSDATA_USER }}
+          remote_key: ${{ secrets.ALWAYSDATA_SSH_KEY }}
