@@ -9,5 +9,3 @@ npx prisma studio
 
 # Creates the PrismaCLI based on schema
 npx prisma generate
-
-This line is just to create a fake commit to trigger github actions
