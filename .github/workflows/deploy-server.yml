@@ -39,16 +39,23 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.ALWAYSDATA_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: Ensure remote directories exist
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.ALWAYSDATA_USER }}@${{ secrets.ALWAYSDATA_HOST }} \
+          "mkdir -p '${{ secrets.ALWAYSDATA_PATH }}/apps/server'"
+
       - name: Deploy files via rsync
         uses: Burnett01/rsync-deployments@v8
         with:
-          switches: -az --delete
-          path: |
-            apps/server/dist/
-            apps/server/prisma/
-            apps/server/package.json
-            apps/server/nest-cli.json
-            apps/server/tsconfig*.json
+          switches: >
+            -az --delete
+            --exclude=node_modules
+            --exclude=src
+            --exclude=test
+            --exclude=.git
+            --exclude=.pnpm-store
+            --exclude=*.log
+          path: apps/server/
           remote_path: ${{ secrets.ALWAYSDATA_PATH }}/apps/server/
           remote_host: ${{ secrets.ALWAYSDATA_HOST }}
           remote_user: ${{ secrets.ALWAYSDATA_USER }}
