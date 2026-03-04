@@ -26,11 +26,11 @@ jobs:
       - name: Build workspace packages (types)
         run: pnpm --filter @repo/types build
 
-      - name: Build server
-        run: pnpm --filter ./apps/server... build
-
       - name: Prisma generate (server)
         run: pnpm --filter ./apps/server... exec prisma generate
+
+      - name: Build server
+        run: pnpm --filter ./apps/server... build
 
       - name: Prepare SSH
         run: |
