@@ -47,14 +47,7 @@ jobs:
       - name: Deploy files via rsync
         uses: Burnett01/rsync-deployments@v8
         with:
-          switches: >
-            -az --delete
-            --exclude=node_modules
-            --exclude=src
-            --exclude=test
-            --exclude=.git
-            --exclude=.pnpm-store
-            --exclude=*.log
+          switches: -az --delete --exclude=node_modules --exclude=src --exclude=test --exclude=.git --exclude=.pnpm-store --exclude=*.log
           path: apps/server/
           remote_path: ${{ secrets.ALWAYSDATA_PATH }}/apps/server/
           remote_host: ${{ secrets.ALWAYSDATA_HOST }}
