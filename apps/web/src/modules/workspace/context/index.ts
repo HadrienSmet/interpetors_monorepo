@@ -1,2 +1,2 @@
-export * from "./WorkspacesContext";
+export * from "./WorkSpacesContext";
 export * from "./WorkspacesProvider";

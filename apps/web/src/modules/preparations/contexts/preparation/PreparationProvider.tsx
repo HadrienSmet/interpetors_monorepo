@@ -1,8 +1,8 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 
-import { SavedVocabularyTerm } from "@repo/types";
-
+import { FileAction, SavedVocabularyTerm } from "@repo/types";
+ 
 import { useAuth } from "@/modules/auth";
 import { FILES } from "@/modules/files";
 import { NewFile, useFoldersManager } from "@/modules/folders";
@@ -170,8 +170,11 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
             }
             if (files.newFiles && files.newFiles.length > 0) {
 				const handleNewFile = async (newFile: NewFile) => {
-					const actions = await encryptActions(userKey, newFile.pdfFile.actions);
-					const encryptedFile = await encryptPdfFile(newFile.pdfFile.file, userKey);
+					const fileActions: Record<number, FileAction> = newFile.pdfFile.actions;
+					const file: File = newFile.pdfFile.file;
+					
+					const actions = await encryptActions(userKey, fileActions);
+					const encryptedFile = await encryptPdfFile(file, userKey);
 
 					return (
 						uploadFile({
