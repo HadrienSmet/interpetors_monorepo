@@ -12,6 +12,7 @@ const bootstrap = async () => {
     app.enableCors({
         // origin: process.env.CLIENT_URL,
 		origin: (origin: string | undefined, callback: (error: Error | null, origin: boolean) => void) => {
+			console.log({ origin })
 			// Autoriser les requêtes sans Origin (curl, server-to-server)
 			if (!origin) return callback(null, true);
 
