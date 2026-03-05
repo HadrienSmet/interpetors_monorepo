@@ -12,8 +12,8 @@ const bootstrap = async () => {
     app.enableCors({
         origin: process.env.CLIENT_URL,
         credentials: true,
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-        allowedHeaders: "Content-Type,Authorization",
+        methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+        allowedHeaders: ["Content-Type","Authorization"],
     });
 
     app.useGlobalInterceptors(new TimeoutInterceptor());
