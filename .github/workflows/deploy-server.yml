@@ -32,6 +32,21 @@ jobs:
       - name: Build server
         run: pnpm --filter ./apps/server... build
 
+      - name: Show server dist output (debug)
+        run: |
+          ls -la apps/server/dist || true
+          find apps/server/dist -maxdepth 4 -type f -name "main.js" -print || true
+
+      - name: Prepare deploy bundle
+        run: |
+          rm -rf .deploy_bundle
+          mkdir -p .deploy_bundle/apps/server
+          cp -r apps/server/dist .deploy_bundle/apps/server/
+          cp -r apps/server/prisma .deploy_bundle/apps/server/
+          cp apps/server/package.json .deploy_bundle/apps/server/
+          cp apps/server/nest-cli.json .deploy_bundle/apps/server/ || true
+          cp apps/server/tsconfig*.json .deploy_bundle/apps/server/ || true
+
       - name: Prepare SSH
         run: |
           mkdir -p ~/.ssh
@@ -44,11 +59,11 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.ALWAYSDATA_USER }}@${{ secrets.ALWAYSDATA_HOST }} \
           "mkdir -p '${{ secrets.ALWAYSDATA_PATH }}/apps/server'"
 
-      - name: Deploy files via rsync
+      - name: Deploy bundle via rsync
         uses: Burnett01/rsync-deployments@v8
         with:
-          switches: -az --delete --exclude=node_modules --exclude=src --exclude=test --exclude=.git --exclude=.pnpm-store --exclude=*.log
-          path: apps/server/
+          switches: -az --delete
+          path: .deploy_bundle/apps/server/
           remote_path: ${{ secrets.ALWAYSDATA_PATH }}/apps/server/
           remote_host: ${{ secrets.ALWAYSDATA_HOST }}
           remote_user: ${{ secrets.ALWAYSDATA_USER }}
