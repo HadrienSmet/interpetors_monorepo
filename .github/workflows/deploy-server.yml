@@ -17,17 +17,15 @@ jobs:
         with:
           node-version: "20"
 
-      # Utilise EXACTEMENT la version de pnpm déclarée dans packageManager
-      - name: Enable Corepack + pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.29.3 --activate
-          pnpm -v
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10.29.3"
 
       - name: Install workspace deps
         run: pnpm install --no-frozen-lockfile
 
-      - name: Build workspace package (types)
+      - name: Build types
         run: pnpm --filter @repo/types build
 
       - name: Prisma generate (server)
@@ -36,34 +34,20 @@ jobs:
       - name: Build server
         run: pnpm --filter ./apps/server... build
 
-      - name: Show server dist output (debug)
-        run: |
-          ls -la apps/server/dist || true
-          find apps/server/dist -maxdepth 4 -type f -name "main.js" -print || true
-
-      - name: Prepare deploy bundle (root-based)
+      # Crée un dossier déployable "autonome" avec node_modules prod
+      - name: Create deployable server package (pnpm deploy)
         run: |
           rm -rf .deploy_bundle
           mkdir -p .deploy_bundle
+          pnpm --filter ./apps/server... deploy .deploy_bundle/server --prod
 
-          # Root workspace files (indispensables pour pnpm + workspace:*)
-          cp package.json .deploy_bundle/
-          cp pnpm-workspace.yaml .deploy_bundle/
-          cp pnpm-lock.yaml .deploy_bundle/
+          # IMPORTANT: on copie aussi le dist généré (selon config, deploy peut ne pas inclure dist)
+          mkdir -p .deploy_bundle/server/dist
+          cp -r apps/server/dist/* .deploy_bundle/server/dist/
 
-          # Server (sources nécessaires + build)
-          mkdir -p .deploy_bundle/apps/server
-          cp -r apps/server/dist .deploy_bundle/apps/server/
-          cp -r apps/server/prisma .deploy_bundle/apps/server/
-          cp apps/server/package.json .deploy_bundle/apps/server/
-          cp apps/server/nest-cli.json .deploy_bundle/apps/server/ || true
-          cp apps/server/tsconfig*.json .deploy_bundle/apps/server/ || true
-
-          # Types (runtime: constants/enum/etc si importés par le server)
-          mkdir -p .deploy_bundle/packages/types
-          cp -r packages/types/dist .deploy_bundle/packages/types/
-          cp packages/types/package.json .deploy_bundle/packages/types/
-          cp packages/types/tsconfig*.json .deploy_bundle/packages/types/ || true
+          # Prisma schema/migrations
+          mkdir -p .deploy_bundle/server/prisma
+          cp -r apps/server/prisma/* .deploy_bundle/server/prisma/
 
       - name: Prepare SSH
         run: |
@@ -72,17 +56,17 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.ALWAYSDATA_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Ensure remote directories exist
+      - name: Ensure remote directory exists
         run: |
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.ALWAYSDATA_USER }}@${{ secrets.ALWAYSDATA_HOST }} \
-          "mkdir -p '${{ secrets.ALWAYSDATA_PATH }}/apps/server' '${{ secrets.ALWAYSDATA_PATH }}/packages/types'"
+          "mkdir -p '${{ secrets.ALWAYSDATA_PATH }}/server'"
 
       - name: Deploy bundle via rsync
         uses: Burnett01/rsync-deployments@v8
         with:
           switches: -az --delete
-          path: .deploy_bundle/
-          remote_path: ${{ secrets.ALWAYSDATA_PATH }}/
+          path: .deploy_bundle/server/
+          remote_path: ${{ secrets.ALWAYSDATA_PATH }}/server/
           remote_host: ${{ secrets.ALWAYSDATA_HOST }}
           remote_user: ${{ secrets.ALWAYSDATA_USER }}
           remote_key: ${{ secrets.ALWAYSDATA_SSH_KEY }}
