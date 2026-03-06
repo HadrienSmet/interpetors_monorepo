@@ -37,7 +37,7 @@ jobs:
         run: |
           rm -rf .deploy_bundle
           mkdir -p .deploy_bundle
-          pnpm --filter ./apps/server... deploy .deploy_bundle/server --prod
+          pnpm --filter ./apps/server... deploy .deploy_bundle/server --prod --legacy
 
           # IMPORTANT: on copie aussi le dist généré (selon config, deploy peut ne pas inclure dist)
           mkdir -p .deploy_bundle/server/dist
