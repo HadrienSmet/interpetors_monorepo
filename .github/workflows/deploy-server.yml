@@ -39,13 +39,23 @@ jobs:
           mkdir -p .deploy_bundle
           pnpm --filter ./apps/server... deploy .deploy_bundle/server --prod --legacy
 
-          # IMPORTANT: on copie aussi le dist généré (selon config, deploy peut ne pas inclure dist)
+          # Copie du build Nest
           mkdir -p .deploy_bundle/server/dist
           cp -r apps/server/dist/* .deploy_bundle/server/dist/
 
           # Prisma schema/migrations
           mkdir -p .deploy_bundle/server/prisma
           cp -r apps/server/prisma/* .deploy_bundle/server/prisma/
+
+          # Copie explicite du client Prisma généré
+          mkdir -p .deploy_bundle/server/node_modules/.prisma
+          find node_modules -path "*/node_modules/.prisma/client" -type d | head -n 1 | while read prisma_dir; do
+            cp -r "$prisma_dir" .deploy_bundle/server/node_modules/.prisma/
+          done
+
+          # Vérification debug
+          ls -la .deploy_bundle/server/node_modules/.prisma || true
+          ls -la .deploy_bundle/server/node_modules/.prisma/client || true
 
       - name: Prepare SSH
         run: |
