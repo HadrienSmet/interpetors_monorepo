@@ -1,12 +1,14 @@
-## CORS
+# CORS
+
+[comment]: <> (file is located at "apps/server/bucket.cors.json")
 ```
 {
   "CORSRules": [
     {
-      "AllowedOrigins": ["http://localhost:5173"],
+      "AllowedOrigins": ["allowedUrl"],
       "AllowedMethods": ["GET", "PUT", "HEAD"],
       "AllowedHeaders": ["*"],
-      "ExposeHeaders": ["ETag"],
+      "ExposeHeaders": ["ETag", "Content-Length", "Content-Type"],
       "MaxAgeSeconds": 3000
     }
   ]
