@@ -7,6 +7,7 @@ import { getContextError } from "@/contexts/utils";
 import { FileData } from "../../types";
 
 export type FoldersManagerContextValue = {
+	readonly isDefiningLng: boolean;
     readonly isEditable: boolean;
     readonly files: {
         readonly changeDirectory: (fileName: string, targetPath: string) => void;
@@ -15,6 +16,7 @@ export type FoldersManagerContextValue = {
         readonly update: (file: PdfMetadata) => void;
     };
     readonly folders: {
+		readonly assignLanguageToFiles: (paths: Array<string>, lng: string) => void;
         readonly changeDirectory: (source: string, destination: string) => void;
         readonly create: (name: string, destination: string) => void;
         readonly delete: (destination: string) => void;
@@ -23,6 +25,7 @@ export type FoldersManagerContextValue = {
     };
     readonly foldersStructure: Array<FolderStructure>;
     readonly selectedFile: FileData;
+	readonly setIsDefiningLng: Dispatch<SetStateAction<boolean>>;
     readonly setIsEditable: Dispatch<SetStateAction<boolean>>;
     readonly setSelectedFilePath: Dispatch<SetStateAction<string | undefined>>;
     readonly setFoldersStructure: Dispatch<SetStateAction<Array<FolderStructure>>>;

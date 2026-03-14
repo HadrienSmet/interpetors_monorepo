@@ -4,9 +4,11 @@ export const en = {
     translation: {
         actions: {
             add: "Add",
+			apply: "Apply",
             confirm: "Confirm",
             download: "Download",
             editOnDoubleClick: "Double click to edit",
+			pass: "Pass",
             save: "Save",
             search: "Search",
             update: "Update",
@@ -76,6 +78,7 @@ export const en = {
             used: "Color panel used: {{name}}",
         },
         commons: {
+			all: "All",
             createdAt: "Created at {{date}}",
         },
         files: {
@@ -120,6 +123,9 @@ export const en = {
             download_other: "Download the folders",
             empty: "No files in this preparation",
             label: "Folders",
+			languagesTree: {
+				title: "Define a language for each files",
+			},
         },
         inputs: {
             folders: {
@@ -157,7 +163,7 @@ export const en = {
         preparations: {
             backToList: "Back to preparations list",
             empty: "No preparations found",
-            new: "Create new préparation",
+            new: "Create new preparation",
             save: "Save preparation",
             stats: {
                 files: "<default><strong>{{amount}}</strong> files</default>",

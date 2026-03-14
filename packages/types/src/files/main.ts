@@ -8,6 +8,7 @@ export type PdfFile = {
     readonly name: string;
 };
 export type PdfMetadata = {
+	readonly lng?: string;
 	// @ts-expect-error
     readonly file: File;
     readonly id: string;

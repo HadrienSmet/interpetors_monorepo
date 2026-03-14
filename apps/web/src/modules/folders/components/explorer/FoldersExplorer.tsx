@@ -60,8 +60,8 @@ export const FoldersExplorer = () => {
             <div className="folders-explorer__header">
                 {buttons.map((btn, index) => (
                     <button
+						{...btn}
                         key={`explorer-btn-${index}`}
-                        {...btn}
                     >
                         {btn.icon}
                     </button>

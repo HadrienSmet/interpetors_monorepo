@@ -6,9 +6,12 @@ import { getDefaultPdfFile, PDF_TYPE } from "@/modules/pdf";
 
 import { isPdfMetadata, useFoldersManager } from "../../contexts";
 
+import { FilesLanguagesTreeModal } from "../filesLanguagesTree";
+
 import "./folderDropzone.scss";
 
 const preventDefault = (e: DragEvent<HTMLDivElement>) => e.preventDefault();
+
 const setNestedFile = (
     root: FolderStructure,
     path: string[],
@@ -27,13 +30,14 @@ const setNestedFile = (
 
     setNestedFile(root[head] as FolderStructure, rest, file);
 };
+
 const readDirectory = async (
     directoryEntry: FileSystemDirectoryEntry,
     root: FolderStructure,
     pathPrefix: string
 ) => {
     const reader = directoryEntry.createReader();
-    const entries = await new Promise<FileSystemEntry[]>((resolve) => reader.readEntries(resolve));
+    const entries = await new Promise<Array<FileSystemEntry>>((resolve) => reader.readEntries(resolve));
 
     for (const entry of entries) {
         const fullPath = `${pathPrefix}/${entry.name}`;
@@ -62,7 +66,7 @@ const readDirectory = async (
     }
 };
 
-const newDoesPathExist = (structure: FolderStructure, path: string[]): boolean => {
+const newDoesPathExist = (structure: FolderStructure, path: Array<string>): boolean => {
     if (path.length === 0) return (false);
 
     const [head, ...rest] = path;
@@ -74,15 +78,20 @@ const newDoesPathExist = (structure: FolderStructure, path: string[]): boolean =
 
     return (newDoesPathExist(node as FolderStructure, rest));
 };
+
 export const FolderDropzone = ({ children }: PropsWithChildren) => {
+    const [droppedFolderIndex, setDroppedFolderIndex] = useState<number | undefined>(undefined);
     const [isDragged, setIsDragged] = useState(false);
 
     const { folders, foldersStructure } = useFoldersManager();
 
-    const doesFolderAlreadyExist = (path: string[]): boolean => foldersStructure.some(structure => newDoesPathExist(structure, path));
+    const doesFolderAlreadyExist = (path: Array<string>): boolean => (
+        foldersStructure.some((structure) => newDoesPathExist(structure, path))
+	);
 
     const handleDragEnter = () => setIsDragged(true);
     const handleDragLeave = () => setIsDragged(false);
+
     const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
         preventDefault(event);
         const items = event.dataTransfer.items;
@@ -91,6 +100,7 @@ export const FolderDropzone = ({ children }: PropsWithChildren) => {
         for (const item of items) {
             if (item.kind === "file") {
                 const entry = item.webkitGetAsEntry();
+
                 if (entry?.isDirectory) {
                     if (!doesFolderAlreadyExist([entry.name])) {
                         await readDirectory(entry as FileSystemDirectoryEntry, newFileTree, entry.name);
@@ -105,7 +115,10 @@ export const FolderDropzone = ({ children }: PropsWithChildren) => {
             }
         }
 
+        const nextIndex = foldersStructure.length;
+
         folders.onDrop(newFileTree);
+        setDroppedFolderIndex(nextIndex);
         handleDragLeave();
     };
 
@@ -118,6 +131,7 @@ export const FolderDropzone = ({ children }: PropsWithChildren) => {
             onDrop={handleDrop}
         >
             {children}
+            <FilesLanguagesTreeModal folderIndex={droppedFolderIndex} />
         </div>
     );
 };

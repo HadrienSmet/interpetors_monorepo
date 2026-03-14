@@ -1,5 +1,4 @@
 const displayNamesCache = new Map<string, Intl.DisplayNames>();
-export const normalizeCode = (code: string): string | null => (code.split(",")[0].trim());
 export const getNativeName = (tag: string): string | undefined => {
     try {
         // canonicalize the tag (ex: "pt-br" -> "pt-BR")

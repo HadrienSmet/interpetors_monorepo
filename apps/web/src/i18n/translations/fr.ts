@@ -4,9 +4,11 @@ export const fr = {
     translation: {
         actions: {
             add: "Ajouter",
+			apply: "Appliquer",
             confirm: "Confirmer",
             download: "Télécharger",
             editOnDoubleClick: "Cliquez deux fois pour éditer",
+			pass: "Passer",
             save: "Sauvegarder",
             search: "Rechercher",
             update: "Mettre à jour",
@@ -76,6 +78,7 @@ export const fr = {
             used: "Palette de couleur utilisée: {{name}}",
         },
         commons: {
+			all: "Tout",
             createdAt: "Créé le {{date}}",
         },
         files: {
@@ -120,6 +123,9 @@ export const fr = {
             download_other: "Télécharger les dossiers",
             empty: "Aucuns fichiers dans cette préparation",
             label: "Dossiers",
+			languagesTree: {
+				title: "Veuillez définir une langue pour chacun des fichiers",
+			},
         },
         inputs: {
             folders: {
