@@ -23,81 +23,70 @@ const getAllLeafPaths = (tree: FolderStructure, parentPath = ""): Array<string> 
     })
 );
 
-const getLockedPaths = (tree: FolderStructure, parentPath = ""): Record<string, boolean> => (
-    Object.entries(tree).reduce<Record<string, boolean>>((acc, [name, node]) => {
-        const currentPath = `${parentPath}/${name}`;
-
-        if (isPdfMetadata(node)) {
-            acc[currentPath] = !!node.lng;
-            return (acc);
-        }
-
-        return ({
-            ...acc,
-            ...getLockedPaths(node, currentPath),
-        });
-    }, {})
-);
-
 type FilesLanguagesTreeProps = {
     readonly folder: FolderStructure;
-    readonly onApply: (paths: Array<string>) => void;
     readonly selectedLanguage?: string;
 };
 
 const FilesLanguagesTree = ({
     folder,
-    onApply,
     selectedLanguage,
 }: FilesLanguagesTreeProps) => {
     const [selectedPaths, setSelectedPaths] = useState<Record<string, boolean>>({});
 
-	const { setIsDefiningLng } = useFoldersManager();
+	const { folders, setIsDefiningLng } = useFoldersManager();
     const { t } = useTranslation();
 
     const leafPaths = useMemo(() => getAllLeafPaths(folder), [folder]);
-    const lockedPaths = useMemo(() => getLockedPaths(folder), [folder]);
 
-    useEffect(() => {
-		const synchronizePaths = (prev: Record<string, boolean>) => leafPaths.reduce<Record<string, boolean>>((acc, path) => {
-            acc[path] = lockedPaths[path] 
-				? true 
-				: (prev[path] ?? false);
+	useEffect(() => {
+		setSelectedPaths((prev) => (
+			leafPaths.reduce<Record<string, boolean>>((acc, path) => {
+				acc[path] = prev[path] ?? false;
 
-            return (acc);
-        }, {});
-        setSelectedPaths(synchronizePaths);
-    }, [leafPaths, lockedPaths]);
-
-    const selectablePaths = leafPaths.filter((path) => !lockedPaths[path]);
+				return (acc);
+			}, {})
+		));
+	}, [leafPaths]);
 
     const allChecked = (
-        selectablePaths.length > 0 &&
-        selectablePaths.every((path) => selectedPaths[path])
+        leafPaths.length > 0 &&
+        leafPaths.every((path) => selectedPaths[path])
 	);
 
-    const someChecked = selectablePaths.some((path) => selectedPaths[path]);
+    const someChecked = leafPaths.some((path) => selectedPaths[path]);
+	const selectedUnlockedPaths = leafPaths.filter((path) => selectedPaths[path]);
 
     const toggleSelection = (path: string) => {
-        if (lockedPaths[path]) return;
-
         setSelectedPaths((prev) => ({
             ...prev,
             [path]: !prev[path],
         }));
     };
 
+	const handleApply = () => {
+		if (!selectedLanguage || selectedUnlockedPaths.length === 0) return;
+		
+        folders.assignLanguageToFiles(selectedUnlockedPaths, selectedLanguage);
+
+		setSelectedPaths((prev) => (
+			Object.keys(prev).reduce<Record<string, boolean>>((acc, path) => {
+				acc[path] = false;
+
+				return (acc);
+			}, {})
+		));
+    };
     const handleToggleAll = (checked: boolean) => setSelectedPaths((prev) => {
         const next = { ...prev };
 
-        selectablePaths.forEach((path) => {
+        leafPaths.forEach((path) => {
             next[path] = checked;
         });
 
         return (next);
     });
 
-    const selectedUnlockedPaths = selectablePaths.filter((path) => selectedPaths[path]);
 
     return (
         <div className="files-languages-tree">
@@ -106,7 +95,6 @@ const FilesLanguagesTree = ({
                     <FilesLanguagesNode
                         depth={0}
                         key={name}
-                        lockedPaths={lockedPaths}
                         name={name}
                         node={node}
                         path=""
@@ -119,7 +107,7 @@ const FilesLanguagesTree = ({
             <div className="global-select">
                 <input
                     checked={allChecked}
-                    disabled={selectablePaths.length === 0}
+                    disabled={leafPaths.length === 0}
                     id="all"
                     onChange={(e) => handleToggleAll(e.target.checked)}
                     ref={(el) => {
@@ -136,11 +124,11 @@ const FilesLanguagesTree = ({
 
             <div className="files-languages-tree__buttons">
 				<Button onClick={() => setIsDefiningLng(false)}>
-                    {t("actions.pass")}
+                    {t("actions.close")}
                 </Button>
                 <Button
                     disabled={!selectedLanguage || selectedUnlockedPaths.length === 0}
-                    onClick={() => onApply(selectedUnlockedPaths)}
+                    onClick={handleApply}
                 >
                     {t("actions.apply")}
                 </Button>
@@ -155,9 +143,7 @@ type FilesLanguagesTreeModalProps = {
 export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModalProps) => {
     const {
         isDefiningLng,
-        setIsDefiningLng,
         foldersStructure,
-        folders,
     } = useFoldersManager();
 
     const { t } = useTranslation();
@@ -170,25 +156,6 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
 
         return (foldersStructure[folderIndex]);
     }, [folderIndex, foldersStructure]);
-
-    const allFilesHaveLanguage = useMemo(() => {
-        if (!folder) return (false);
-
-        return (getAllLeafPaths(folder).every((path) => getLockedPaths(folder)[path]));
-    }, [folder]);
-
-    useEffect(() => {
-        if (isDefiningLng && allFilesHaveLanguage) {
-            setIsDefiningLng(false);
-        }
-    }, [allFilesHaveLanguage, isDefiningLng, setIsDefiningLng]);
-
-	
-    const handleApply = (paths: Array<string>) => {
-		if (!selectedLanguage || paths.length === 0) return;
-		
-        folders.assignLanguageToFiles(paths, selectedLanguage);
-    };
 
 	if (!folder) {
 		return (null);
@@ -212,7 +179,6 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
 
                 <FilesLanguagesTree
                     folder={folder}
-                    onApply={handleApply}
                     selectedLanguage={selectedLanguage}
                 />
             </div>

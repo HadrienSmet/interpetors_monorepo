@@ -5,10 +5,10 @@ export const fr = {
         actions: {
             add: "Ajouter",
 			apply: "Appliquer",
+			close: "Fermer",
             confirm: "Confirmer",
             download: "Télécharger",
             editOnDoubleClick: "Cliquez deux fois pour éditer",
-			pass: "Passer",
             save: "Sauvegarder",
             search: "Rechercher",
             update: "Mettre à jour",
@@ -84,6 +84,7 @@ export const fr = {
         files: {
             "context-menu": {
                 delete: "Supprimer le fichier",
+				language: "Définir la langue du fichier",
                 rename: "Renommer le fichier",
             },
             editor: {

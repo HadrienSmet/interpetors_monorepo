@@ -10,7 +10,6 @@ export const getPaddingLeft = (depth: number) => (depth * 16) + 4;
 
 type FilesLanguagesNodeProps = {
     readonly depth: number;
-    readonly lockedPaths: Record<string, boolean>;
     readonly name: string;
     readonly node: FolderStructure | PdfMetadata;
     readonly path: string;
@@ -20,7 +19,6 @@ type FilesLanguagesNodeProps = {
 
 export const FilesLanguagesNode = ({
     depth,
-    lockedPaths,
     name,
     node,
     path,
@@ -30,8 +28,6 @@ export const FilesLanguagesNode = ({
     const fullPath = useMemo(() => `${path}/${name}`, [name, path]);
 
     if (isPdfMetadata(node)) {
-        const isLocked = lockedPaths[fullPath];
-
         return (
             <div
                 className="files-languages__leaf"
@@ -39,7 +35,6 @@ export const FilesLanguagesNode = ({
             >
                 <input
                     checked={selectedPaths[fullPath]}
-                    disabled={isLocked}
                     id={fullPath}
                     onChange={() => toggleSelection(fullPath)}
                     type="checkbox"
@@ -61,7 +56,6 @@ export const FilesLanguagesNode = ({
                 <FilesLanguagesNode
 					depth={depth + 1}
 					key={childName}
-                    lockedPaths={lockedPaths}
                     name={childName}
                     node={childNode}
                     path={fullPath}

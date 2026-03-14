@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react";
-import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
+import { MdDelete, MdDriveFileRenameOutline, MdTranslate } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { PdfMetadata } from "@repo/types";
@@ -30,7 +30,7 @@ export const FileNode = ({
     const [newFileName, setNewFileName] = useState(name);
 
     const { setContextMenu } = useContextMenu();
-    const { files, isEditable, selectedFile, setSelectedFilePath } = useFoldersManager()
+    const { files, isEditable, selectedFile, setIsDefiningLng, setSelectedFilePath } = useFoldersManager();
     const { t } = useTranslation();
 
     const items = [
@@ -51,6 +51,15 @@ export const FileNode = ({
                 </>
             ),
             onClick: () => files.delete(node),
+        },
+        {
+            children: (
+                <>
+                    <MdTranslate />
+                    <p>{t("files.context-menu.language")}</p>
+                </>
+            ),
+            onClick: () => setIsDefiningLng(true),
         },
     ];
 
@@ -94,7 +103,7 @@ export const FileNode = ({
             onBlur={() => handleDynamicEvent(isEditable, () => setIsEditingFile(false))}
             onClick={onClick}
             onContextMenu={(e) => handleDynamicEvent(isEditable, () => onContextMenu(e))}
-            onDoubleClick={() => handleDynamicEvent(isEditable, () => onDoubleClick())}
+            onDoubleClick={() => handleDynamicEvent(isEditable, onDoubleClick)}
             onDragStart={(e) => handleDynamicEvent(isEditable, () => onDragStart(e))}
             style={{ paddingLeft: getPaddingLeft(depth) }}
         >
