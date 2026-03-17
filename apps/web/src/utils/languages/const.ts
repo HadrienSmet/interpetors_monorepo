@@ -1,3 +1,4 @@
+export const fallbackLanguage = "en";
 export const languages: Array<{ code: string; name: string; }> = [
     { code: 'af', name: 'Afrikaans' },
     { code: 'sq', name: 'Albanian' },

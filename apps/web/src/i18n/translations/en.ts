@@ -124,8 +124,13 @@ export const en = {
             download_other: "Download the folders",
             empty: "No files in this preparation",
             label: "Folders",
-			languagesTree: {
-				title: "Define a language for each files",
+			languages: {
+				confirmation: "Do you confirm that this expression is in {{language}}?",
+				tree: {
+					access: "Define files's language",
+					optional: "Define a language for each files",
+					mandatory: `Please define the language of "{{targetedFileName}}" before filling your vocabulary table`
+				},
 			},
         },
         inputs: {

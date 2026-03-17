@@ -7,6 +7,7 @@ import { getDefaultPdfFile, PDF_TYPE } from "@/modules/pdf";
 import { isPdfMetadata, useFoldersManager } from "../../contexts";
 
 import { FilesLanguagesTreeModal } from "../filesLanguagesTree";
+import { LanguageConfirmation } from "../languageConfirmation";
 
 import "./folderDropzone.scss";
 
@@ -132,6 +133,7 @@ export const FolderDropzone = ({ children }: PropsWithChildren) => {
         >
             {children}
             <FilesLanguagesTreeModal folderIndex={droppedFolderIndex} />
+			<LanguageConfirmation />
         </div>
     );
 };

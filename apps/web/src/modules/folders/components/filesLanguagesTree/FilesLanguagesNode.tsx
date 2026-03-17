@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { FolderStructure, PdfMetadata } from "@repo/types";
 
-import { isPdfMetadata } from "../../contexts";
+import { isPdfMetadata, LANGUAGES_STATE, useFoldersManager } from "../../contexts";
 
 import "./filesLanguagesNode.scss";
 
@@ -16,7 +16,6 @@ type FilesLanguagesNodeProps = {
     readonly selectedPaths: Record<string, boolean>;
     readonly toggleSelection: (path: string) => void;
 };
-
 export const FilesLanguagesNode = ({
     depth,
     name,
@@ -25,16 +24,26 @@ export const FilesLanguagesNode = ({
     selectedPaths,
     toggleSelection,
 }: FilesLanguagesNodeProps) => {
-    const fullPath = useMemo(() => `${path}/${name}`, [name, path]);
+	const { languagesState, selectedFile } = useFoldersManager();
 
+    const fullPath = useMemo(() => (`${path}/${name}`), [name, path]);
+	
     if (isPdfMetadata(node)) {
+		const selectedFilePath = selectedFile.path[0] === "/"
+			? selectedFile.path
+			: `/${selectedFile.path}`;
+
         return (
             <div
                 className="files-languages__leaf"
                 style={{ marginLeft: getPaddingLeft(depth) }}
             >
                 <input
-                    checked={selectedPaths[fullPath]}
+                    checked={selectedPaths[fullPath] ?? false}
+					disabled={(
+						languagesState === LANGUAGES_STATE.MANDATORY && 
+						selectedFilePath === fullPath
+					)}
                     id={fullPath}
                     onChange={() => toggleSelection(fullPath)}
                     type="checkbox"

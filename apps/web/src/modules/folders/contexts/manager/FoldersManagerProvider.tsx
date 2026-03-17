@@ -7,7 +7,7 @@ import { usePreparations } from "@/modules/preparations";
 import { FileData } from "../../types";
 
 import { getTargetKeys, browseStructureToActionOnFile, isPdfMetadata, FileVisitor, findFile } from "./foldersManager.utils";
-import { FoldersManagerContext, FoldersManagerContextValue } from "./FoldersManagerContext";
+import { FoldersManagerContext, FoldersManagerContextValue, LANGUAGES_STATE, LanguagesState } from "./FoldersManagerContext";
 
 type FoldersManagerProviderProps =
     & { readonly editable: boolean; }
@@ -15,7 +15,7 @@ type FoldersManagerProviderProps =
 export const FoldersManagerProvider = ({ children, editable }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
     const [isEditable, setIsEditable] = useState(editable);
-	const [isDefiningLng, setIsDefiningLng] = useState(false);
+	const [languagesState, setLanguagesState] = useState<LanguagesState>(LANGUAGES_STATE.NULL);
     const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);
 
 	const { selectedPreparation } = usePreparations();
@@ -313,7 +313,7 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
     };
 
     const onDrop = (folder: FolderStructure) => {
-		setIsDefiningLng(true);
+		setLanguagesState(LANGUAGES_STATE.OPTIONAL);
 		setFoldersStructure(state => [...state, folder]);
 	};
 
@@ -332,10 +332,9 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
     }, [foldersStructure, selectedFilePath]);
 
     const value: FoldersManagerContextValue = {
-		isDefiningLng,
-        isEditable,
+		isEditable,
         files: {
-            changeDirectory: changeFileDirectory,
+			changeDirectory: changeFileDirectory,
             delete: deleteFile,
             rename: renameFile,
             update: updateFile,
@@ -349,8 +348,9 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
             rename: renameFolder,
         },
         foldersStructure,
+		languagesState,
         selectedFile,
-		setIsDefiningLng,
+		setLanguagesState,
         setIsEditable,
         setSelectedFilePath,
         setFoldersStructure,

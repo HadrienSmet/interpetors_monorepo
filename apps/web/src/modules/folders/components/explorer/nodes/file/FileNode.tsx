@@ -7,7 +7,7 @@ import { PdfMetadata } from "@repo/types";
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { FileIcon } from "@/modules/files";
-import { useFoldersManager } from "@/modules/folders";
+import { LANGUAGES_STATE, useFoldersManager } from "@/modules/folders";
 
 import { TreeNodeProps } from "../nodes.types";
 import { getPaddingLeft } from "../nodes.utils";
@@ -30,7 +30,7 @@ export const FileNode = ({
     const [newFileName, setNewFileName] = useState(name);
 
     const { setContextMenu } = useContextMenu();
-    const { files, isEditable, selectedFile, setIsDefiningLng, setSelectedFilePath } = useFoldersManager();
+    const { files, isEditable, selectedFile, setLanguagesState, setSelectedFilePath } = useFoldersManager();
     const { t } = useTranslation();
 
     const items = [
@@ -59,7 +59,7 @@ export const FileNode = ({
                     <p>{t("files.context-menu.language")}</p>
                 </>
             ),
-            onClick: () => setIsDefiningLng(true),
+            onClick: () => setLanguagesState(LANGUAGES_STATE.OPTIONAL),
         },
     ];
 

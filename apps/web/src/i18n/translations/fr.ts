@@ -124,8 +124,13 @@ export const fr = {
             download_other: "Télécharger les dossiers",
             empty: "Aucuns fichiers dans cette préparation",
             label: "Dossiers",
-			languagesTree: {
-				title: "Veuillez définir une langue pour chacun des fichiers",
+			languages: {
+				confirmation: "Veuillez confirmer que le terme qui s'apprête à être traduit est bien en {{language}}?",
+				tree: {
+					acces: "Définir la langue des fichiers",
+					mandatory: `Veuillez définir une langue au fichier "{{targetedFileName}}" avant de commencer à remplir votre table de vocabulaire`,
+					optional: "Veuillez définir une langue pour chacun des fichiers",
+				},
 			},
         },
         inputs: {

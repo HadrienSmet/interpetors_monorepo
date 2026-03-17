@@ -23,7 +23,7 @@ import {
 import { useContextMenu } from "@/contexts";
 import { useColorPanel } from "@/modules/colorPanel";
 import { ActionItem, CustomCursor, EditorContextMenuItem } from "@/modules/files";
-import { useFoldersActions, useFoldersManager } from "@/modules/folders";
+import { LANGUAGES_STATE, useFoldersActions, useFoldersManager } from "@/modules/folders";
 import { getRgbColor, getRgbFromString, handleActionColor } from "@/utils";
 
 import { handleRange } from "../../utils";
@@ -52,12 +52,15 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     const [currentRange, setCurrentRange] = useState<Range | undefined>(undefined);
     const [customCursor, setCustomCursor] = useState<ReactNode>(null);
 	const [isCursorVisible, setIsCursorVisible] = useState(false);
+	const [languageToConfirm, setLanguageToConfirm] = useState<string | undefined>(undefined);
+	const [languageToUse, setLanguageToUse] = useState<string | undefined>(undefined);
+	const [pendingVocabularyCreation, setPendingVocabularyCreation] = useState(false);
     const [tool, setTool] = useState<FileTool | null>(null);
 
     const { colorPanel } = useColorPanel();
     const { setContextMenu } = useContextMenu();
     const { getPageActions } = useFoldersActions();
-    const { selectedFile } = useFoldersManager();
+    const { languagesState, selectedFile, setLanguagesState } = useFoldersManager();
     const { containerRef, pageIndex, pageRef } = usePdfFile();
     const { pushAction } = usePdfHistory();
     const { t } = useTranslation();
@@ -100,140 +103,180 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         removeSelection();
     };
 
-    const handleInteractiveSelection = (tool: FileTool) => {
-        if (
-            !currentRange ||
-            (
-                tool !== FILE_TOOLS.VOCABULARY &&
-                tool !== FILE_TOOLS.NOTE
-            ) ||
-            !pageRef.current
-        ) {
-            return;
-        }
+	const handleInteractiveSelection = (tool: FileTool) => {
+		if (
+			!currentRange ||
+			(
+				tool !== FILE_TOOLS.VOCABULARY &&
+				tool !== FILE_TOOLS.NOTE
+			) ||
+			!pageRef.current
+		) {
+			return;
+		}
 
-        const pageDimensions = pageRef.current.getBoundingClientRect();
+		const pageDimensions = pageRef.current.getBoundingClientRect();
 		const rectsArray = handleRange(currentRange);
 
-        const isNote = tool === FILE_TOOLS.NOTE;
+		const isNote = tool === FILE_TOOLS.NOTE;
 
-        let colorKey = "";
-        let id = "";
-        let text = "";
-        let element: Note | VocabularyTerm;
+		let colorKey = "";
+		let id = "";
+		let text = "";
+		let element: Note | VocabularyTerm;
 
-        if (isNote) {
-            const { y } = rectsArray[0];
-            colorKey = getRgbColor(rgbColor);
+		if (isNote) {
+			const { y } = rectsArray[0];
+			colorKey = getRgbColor(rgbColor);
 
-            const noteFilter = (elem: Note) => {
-                const toolColor = getRgbColor(rgbColor);
-                const elemColor = getRgbColor(handleActionColor(elem.color, colorPanel));
+			const noteFilter = (elem: Note) => {
+				const toolColor = getRgbColor(rgbColor);
+				const elemColor = getRgbColor(handleActionColor(elem.color, colorPanel));
 
-                return (toolColor === elemColor);
-            };
+				return (toolColor === elemColor);
+			};
 
-            const pageActions = getPageActions(pdfFile.id, pageIndex);
-            const noteGroup = pageActions.generatedResources?.filter(noteFilter);
-            const occurenceText = currentRange.toString().trim();
+			const pageActions = getPageActions(pdfFile.id, pageIndex);
+			const noteGroup = pageActions.generatedResources?.filter(noteFilter);
+			const occurenceText = currentRange.toString().trim();
 
-            if (!noteGroup) return;
+			if (!noteGroup) return;
 
-            text = noteGroup.length > 0
-                ? `${noteGroup.length + 1}`
-                : "1";
-            id = getNoteId(colorKey, text);
-            element = {
-                color,
-                note: "",
-                id,
-                occurrence: {
-                    filePath,
-                    pageIndex,
-                    text: occurenceText,
-                },
-                y: y - pageDimensions.top,
-            };
-        } else {
-            const wordToAdd = currentRange.toString().trim();
+			text = noteGroup.length > 0
+				? `${noteGroup.length + 1}`
+				: "1";
+			id = getNoteId(colorKey, text);
+			element = {
+				color,
+				note: "",
+				id,
+				occurrence: {
+					filePath,
+					pageIndex,
+					text: occurenceText,
+				},
+				y: y - pageDimensions.top,
+			};
+		} else {
+			// Need to define language for the file
+			if (fileInStructure?.lng === undefined) {
+				setPendingVocabularyCreation(true);
+				setLanguagesState(LANGUAGES_STATE.MANDATORY);
+				return;
+			}
+			
+			// Need to confirm that the vocabulary term comes from supposed language
+			if (
+				fileInStructure?.lng !== undefined &&
+				languageToUse === undefined
+			) {
+				setPendingVocabularyCreation(true);
+				setLanguageToConfirm(fileInStructure.lng);
+				return;
+			}
 
-            id = wordToAdd.split(" ").join("-");
-            colorKey = getRgbColor(rgbColor);
-            text = "*";
-            element = {
-                color,
-                id,
-                occurrence: {
-                    filePath,
-                    pageIndex,
-                    text: wordToAdd,
-                },
-                translations: [],
-            };
-        }
+			// Got everything we needed
+			if (pendingVocabularyCreation) {
+				setPendingVocabularyCreation(false);
+			}
 
-        const actionElement = {
-            color,
-            pageDimensions,
-            pageIndex,
-            file: pdfFile.file,
-        };
-        const elementAction: ElementAction = {
-            type: DRAWING_TYPES.RECT,
-            element: {
-                ...actionElement,
-                rectsArray,
-                tool,
-            },
-        };
-        const textAction: ElementAction = {
-            type: DRAWING_TYPES.TEXT,
-            element: {
-                ...actionElement,
-                rect: rectsArray[rectsArray.length - 1],
-                text,
-            },
-        };
-        const interractiveText: ReferenceAction = isNote
-            ? {
-                type: REFERENCE_TYPES.NOTE,
-                element: {
-                    ...actionElement,
-                    id,
-                    rectsArray,
-                },
-            }
-            : {
-                type: REFERENCE_TYPES.VOCABULARY,
-                element: {
-                    ...actionElement,
-                    id,
-                    rectsArray,
-                },
-            };
-        const generatedElement: GenerateResourceHistoryAction = isNote
-            ? {
-                element: element as Note,
-                type: GENERATED_RESOURCES.NOTE,
-            }
-            : {
-                element: element as VocabularyTerm,
-                type: GENERATED_RESOURCES.VOCABULARY,
-            };
-        const historyAction: HistoryAction = {
-            elements: [elementAction, textAction],
-            reference: interractiveText,
-            resourceToGenerate: generatedElement,
-        };
+			const wordToAdd = currentRange.toString().trim();
+			id = wordToAdd.split(" ").join("-");
+			colorKey = getRgbColor(rgbColor);
+			text = "*";
+			element = {
+				color,
+				id,
+				occurrence: {
+					filePath,
+					pageIndex,
+					text: wordToAdd,
+				},
+				translations: [],
+			};
+		}
 
-        removeSelection();
-        pushAction(historyAction);
-        setCurrentRange(undefined);
-        setTool(null);
-    };
+		const actionElement = {
+			color,
+			pageDimensions,
+			pageIndex,
+			file: pdfFile.file,
+		};
+		const elementAction: ElementAction = {
+			type: DRAWING_TYPES.RECT,
+			element: {
+				...actionElement,
+				rectsArray,
+				tool,
+			},
+		};
+		const textAction: ElementAction = {
+			type: DRAWING_TYPES.TEXT,
+			element: {
+				...actionElement,
+				rect: rectsArray[rectsArray.length - 1],
+				text,
+			},
+		};
+		const interractiveText: ReferenceAction = isNote
+			? {
+				type: REFERENCE_TYPES.NOTE,
+				element: {
+					...actionElement,
+					id,
+					rectsArray,
+				},
+			}
+			: {
+				type: REFERENCE_TYPES.VOCABULARY,
+				element: {
+					...actionElement,
+					id,
+					rectsArray,
+				},
+			};
+		const generatedElement: GenerateResourceHistoryAction = isNote
+			? {
+				element: element as Note,
+				type: GENERATED_RESOURCES.NOTE,
+			}
+			: {
+				element: element as VocabularyTerm,
+				type: GENERATED_RESOURCES.VOCABULARY,
+			};
+		const historyAction: HistoryAction = {
+			elements: [elementAction, textAction],
+			reference: interractiveText,
+			resourceToGenerate: generatedElement,
+		};
 
-    // Responsible to store the text selection
+		removeSelection();
+		pushAction(historyAction);
+		setCurrentRange(undefined);
+		setTool(null);
+		setLanguageToUse(undefined);
+	};
+
+    // Responsible to add the new vocabulary term after defining and cofirming language
     useEffect(() => {
+		if (
+			!pendingVocabularyCreation ||
+			languagesState !== LANGUAGES_STATE.NULL ||
+			!selectedFile.fileInStructure?.lng
+		) {
+			return;
+		}
+
+		handleInteractiveSelection(FILE_TOOLS.VOCABULARY);
+	}, [
+		languagesState,
+		languageToConfirm,
+		languageToUse,
+		pendingVocabularyCreation,
+		selectedFile.fileInStructure?.lng,
+	]);
+	// Responsible to store the text selection
+	useEffect(() => {
         document.addEventListener("selectionchange", () => {
             const range = getRange();
 
@@ -399,10 +442,13 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         color,
         currentRange,
         customCursor,
+		languageToConfirm,
         onContextMenu,
         onToolSelection,
         setColor,
 		setIsCursorVisible,
+		setLanguageToConfirm,
+		setLanguageToUse,
         setTool,
         tool,
     };

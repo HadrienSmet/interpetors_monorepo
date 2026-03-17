@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MdClose } from "react-icons/md";
 
 import { FolderStructure } from "@repo/types";
 
 import { Button, LanguageSelect, Modal } from "@/components";
 import { useWorkspaces } from "@/modules/workspace";
 
-import { isPdfMetadata, useFoldersManager } from "../../contexts";
+import { isPdfMetadata, LANGUAGES_STATE, useFoldersManager } from "../../contexts";
 
 import { FilesLanguagesNode } from "./FilesLanguagesNode";
 import "./filesLanguagesTree.scss";
@@ -23,6 +24,7 @@ const getAllLeafPaths = (tree: FolderStructure, parentPath = ""): Array<string> 
     })
 );
 
+type SelectedPaths = Record<string, boolean>;
 type FilesLanguagesTreeProps = {
     readonly folder: FolderStructure;
     readonly selectedLanguage?: string;
@@ -32,22 +34,16 @@ const FilesLanguagesTree = ({
     folder,
     selectedLanguage,
 }: FilesLanguagesTreeProps) => {
-    const [selectedPaths, setSelectedPaths] = useState<Record<string, boolean>>({});
+    const [selectedPaths, setSelectedPaths] = useState<SelectedPaths>({});
 
-	const { folders, setIsDefiningLng } = useFoldersManager();
+	const { folders, languagesState, selectedFile, setLanguagesState } = useFoldersManager();
     const { t } = useTranslation();
 
     const leafPaths = useMemo(() => getAllLeafPaths(folder), [folder]);
 
-	useEffect(() => {
-		setSelectedPaths((prev) => (
-			leafPaths.reduce<Record<string, boolean>>((acc, path) => {
-				acc[path] = prev[path] ?? false;
-
-				return (acc);
-			}, {})
-		));
-	}, [leafPaths]);
+	const targetedFilePath = selectedFile.path;
+    const targetedFileHasLanguage = !!selectedFile.fileInStructure?.lng;
+    const isMandatory = languagesState === LANGUAGES_STATE.MANDATORY;
 
     const allChecked = (
         leafPaths.length > 0 &&
@@ -70,7 +66,7 @@ const FilesLanguagesTree = ({
         folders.assignLanguageToFiles(selectedUnlockedPaths, selectedLanguage);
 
 		setSelectedPaths((prev) => (
-			Object.keys(prev).reduce<Record<string, boolean>>((acc, path) => {
+			Object.keys(prev).reduce<SelectedPaths>((acc, path) => {
 				acc[path] = false;
 
 				return (acc);
@@ -87,6 +83,32 @@ const FilesLanguagesTree = ({
         return (next);
     });
 
+	// Responsible to set the default value
+    useEffect(() => {
+        setSelectedPaths((prev) => {
+            const next = leafPaths.reduce<SelectedPaths>((acc, path) => {
+				const target = targetedFilePath[0] === "/"
+					? targetedFilePath
+					: `/${targetedFilePath}`;
+
+				if (isMandatory && target === path) {
+					acc[path] = true;
+				} else {
+					acc[path] = prev[path] ?? false;
+				}
+
+                return (acc);
+            }, {});
+
+            return (next);
+        });
+    }, [leafPaths, isMandatory, targetedFilePath]);
+	// Responsible to close the modal when a language has been defined for the targeted file
+    useEffect(() => {
+        if (isMandatory && targetedFileHasLanguage) {
+            setLanguagesState(LANGUAGES_STATE.NULL);
+        }
+    }, [isMandatory, targetedFileHasLanguage, setLanguagesState]);
 
     return (
         <div className="files-languages-tree">
@@ -123,9 +145,14 @@ const FilesLanguagesTree = ({
             </div>
 
             <div className="files-languages-tree__buttons">
-				<Button onClick={() => setIsDefiningLng(false)}>
-                    {t("actions.close")}
-                </Button>
+				{languagesState === LANGUAGES_STATE.MANDATORY && (
+					<Button
+						disabled={!targetedFileHasLanguage}
+						onClick={() => setLanguagesState(LANGUAGES_STATE.NULL)}
+					>
+						{t("actions.close")}
+					</Button>
+				)}
                 <Button
                     disabled={!selectedLanguage || selectedUnlockedPaths.length === 0}
                     onClick={handleApply}
@@ -142,10 +169,11 @@ type FilesLanguagesTreeModalProps = {
 };
 export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModalProps) => {
     const {
-        isDefiningLng,
+        languagesState,
         foldersStructure,
+		selectedFile,
+		setLanguagesState,
     } = useFoldersManager();
-
     const { t } = useTranslation();
     const { currentWorkspace } = useWorkspaces();
 
@@ -156,6 +184,7 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
 
         return (foldersStructure[folderIndex]);
     }, [folderIndex, foldersStructure]);
+	const targetedFileName = selectedFile.fileInStructure?.name;
 
 	if (!folder) {
 		return (null);
@@ -163,13 +192,22 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
 
     return (
         <Modal
-            isOpen={isDefiningLng}
+            isOpen={(languagesState !== LANGUAGES_STATE.NULL)}
             onClose={() => null}
             persistant
             width="40%"
         >
             <div className="files-languages-tree__modal">
-                <h3>{t("folders.languagesTree.title")}</h3>
+				<div className="files-languages-tree__header">
+					<h3>
+						{t(`folders.languagesTree.${languagesState}`, { targetedFileName })}
+					</h3>
+					{languagesState === LANGUAGES_STATE.OPTIONAL && (
+						<button onClick={() => setLanguagesState(LANGUAGES_STATE.NULL)}>
+							<MdClose />
+						</button>
+					)}
+				</div>
 
                 <LanguageSelect
                     name="files-languages-tree__select"

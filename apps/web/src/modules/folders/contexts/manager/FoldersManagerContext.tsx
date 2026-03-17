@@ -6,11 +6,15 @@ import { getContextError } from "@/contexts/utils";
 
 import { FileData } from "../../types";
 
+export const LANGUAGES_STATE = {
+	MANDATORY: "mandatory",
+	NULL: "null",
+	OPTIONAL: "optional",
+} as const;
+export type LanguagesState = typeof LANGUAGES_STATE[keyof typeof LANGUAGES_STATE];
 export type FoldersManagerContextValue = {
-	readonly isDefiningLng: boolean;
-    readonly isEditable: boolean;
-    readonly files: {
-        readonly changeDirectory: (fileName: string, targetPath: string) => void;
+	readonly files: {
+		readonly changeDirectory: (fileName: string, targetPath: string) => void;
         readonly delete: (file: PdfMetadata) => void;
         readonly rename: (file: PdfMetadata, newName: string) => void;
         readonly update: (file: PdfMetadata) => void;
@@ -24,9 +28,11 @@ export type FoldersManagerContextValue = {
         readonly rename: (targetPath: string, newName: string) => void;
     };
     readonly foldersStructure: Array<FolderStructure>;
+	readonly isEditable: boolean;
+	readonly languagesState: LanguagesState;
     readonly selectedFile: FileData;
-	readonly setIsDefiningLng: Dispatch<SetStateAction<boolean>>;
     readonly setIsEditable: Dispatch<SetStateAction<boolean>>;
+	readonly setLanguagesState: Dispatch<SetStateAction<LanguagesState>>;
     readonly setSelectedFilePath: Dispatch<SetStateAction<string | undefined>>;
     readonly setFoldersStructure: Dispatch<SetStateAction<Array<FolderStructure>>>;
 };
