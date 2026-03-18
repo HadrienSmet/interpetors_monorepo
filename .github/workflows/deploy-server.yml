@@ -2,7 +2,7 @@ name: Deploy server to alwaysdata
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "staging"]
 
 jobs:
   deploy:
@@ -32,7 +32,6 @@ jobs:
       - name: Build server
         run: pnpm --filter ./apps/server... build
 
-      # Crée un dossier déployable "autonome" avec node_modules prod
       - name: Create deployable server package (pnpm deploy)
         run: |
           rm -rf .deploy_bundle
@@ -57,6 +56,20 @@ jobs:
           ls -la .deploy_bundle/server/node_modules/.prisma || true
           ls -la .deploy_bundle/server/node_modules/.prisma/client || true
 
+      - name: Select deployment target
+        id: target
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "remote_path=${{ secrets.ALWAYSDATA_PATH_PRD }}/server" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [ "${GITHUB_REF_NAME}" = "staging" ]; then
+            echo "remote_path=${{ secrets.ALWAYSDATA_PATH_DEV }}/server" >> $GITHUB_OUTPUT
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          else
+            echo "Unsupported branch: ${GITHUB_REF_NAME}"
+            exit 1
+          fi
+
       - name: Prepare SSH
         run: |
           mkdir -p ~/.ssh
@@ -67,14 +80,20 @@ jobs:
       - name: Ensure remote directory exists
         run: |
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.ALWAYSDATA_USER }}@${{ secrets.ALWAYSDATA_HOST }} \
-          "mkdir -p '${{ secrets.ALWAYSDATA_PATH }}/server'"
+          "mkdir -p '${{ steps.target.outputs.remote_path }}'"
 
       - name: Deploy bundle via rsync
         uses: Burnett01/rsync-deployments@v8
         with:
           switches: -az --delete
           path: .deploy_bundle/server/
-          remote_path: ${{ secrets.ALWAYSDATA_PATH }}/server/
+          remote_path: ${{ steps.target.outputs.remote_path }}/
           remote_host: ${{ secrets.ALWAYSDATA_HOST }}
           remote_user: ${{ secrets.ALWAYSDATA_USER }}
           remote_key: ${{ secrets.ALWAYSDATA_SSH_KEY }}
+
+      - name: Deployment summary
+        run: |
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Environment: ${{ steps.target.outputs.environment }}"
+          echo "Remote path: ${{ steps.target.outputs.remote_path }}"
