@@ -1,0 +1,80 @@
+name: Deploy server to alwaysdata
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install workspace deps
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build types
+        run: pnpm --filter @repo/types build
+
+      - name: Prisma generate (server)
+        run: pnpm --filter ./apps/server... exec prisma generate
+
+      - name: Build server
+        run: pnpm --filter ./apps/server... build
+
+      # Crée un dossier déployable "autonome" avec node_modules prod
+      - name: Create deployable server package (pnpm deploy)
+        run: |
+          rm -rf .deploy_bundle
+          mkdir -p .deploy_bundle
+          pnpm --filter ./apps/server... deploy .deploy_bundle/server --prod --legacy
+
+          # Copie du build Nest
+          mkdir -p .deploy_bundle/server/dist
+          cp -r apps/server/dist/* .deploy_bundle/server/dist/
+
+          # Prisma schema/migrations
+          mkdir -p .deploy_bundle/server/prisma
+          cp -r apps/server/prisma/* .deploy_bundle/server/prisma/
+
+          # Copie explicite du client Prisma généré
+          mkdir -p .deploy_bundle/server/node_modules/.prisma
+          find node_modules -path "*/node_modules/.prisma/client" -type d | head -n 1 | while read prisma_dir; do
+            cp -r "$prisma_dir" .deploy_bundle/server/node_modules/.prisma/
+          done
+
+          # Vérification debug
+          ls -la .deploy_bundle/server/node_modules/.prisma || true
+          ls -la .deploy_bundle/server/node_modules/.prisma/client || true
+
+      - name: Prepare SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ALWAYSDATA_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.ALWAYSDATA_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Ensure remote directory exists
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.ALWAYSDATA_USER }}@${{ secrets.ALWAYSDATA_HOST }} \
+          "mkdir -p '${{ secrets.ALWAYSDATA_PATH }}/server'"
+
+      - name: Deploy bundle via rsync
+        uses: Burnett01/rsync-deployments@v8
+        with:
+          switches: -az --delete
+          path: .deploy_bundle/server/
+          remote_path: ${{ secrets.ALWAYSDATA_PATH }}/server/
+          remote_host: ${{ secrets.ALWAYSDATA_HOST }}
+          remote_user: ${{ secrets.ALWAYSDATA_USER }}
+          remote_key: ${{ secrets.ALWAYSDATA_SSH_KEY }}

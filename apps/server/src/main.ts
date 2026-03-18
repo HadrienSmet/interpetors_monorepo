@@ -10,10 +10,19 @@ const bootstrap = async () => {
     const app = await NestFactory.create(AppModule);
 
     app.enableCors({
-        origin: process.env.CLIENT_URL,
-        credentials: true,
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-        allowedHeaders: "Content-Type,Authorization",
+        // origin: process.env.CLIENT_URL,
+		origin: (origin: string | undefined, callback: (error: Error | null, origin: boolean) => void) => {
+			// Autoriser les requêtes sans Origin (curl, server-to-server)
+			if (!origin) return callback(null, true);
+
+			const allowed = (process.env.CLIENT_URL ?? "").replace(/\/$/, "");
+			const incoming = origin.replace(/\/$/, "");
+
+			if (incoming === allowed) return callback(null, true);
+			return callback(new Error(`CORS blocked: ${origin}`), false);
+		},
+        methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type","Authorization"],
     });
 
     app.useGlobalInterceptors(new TimeoutInterceptor());
