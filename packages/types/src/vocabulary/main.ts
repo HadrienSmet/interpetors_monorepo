@@ -2,6 +2,7 @@ import { ActionColor } from "../colors";
 
 export type VocabularyOccurence = {
     readonly filePath: string;
+	readonly language: string;
     readonly pageIndex: number;
     readonly text: string;
 };

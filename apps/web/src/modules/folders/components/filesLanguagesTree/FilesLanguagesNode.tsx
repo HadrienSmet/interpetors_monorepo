@@ -49,7 +49,7 @@ export const FilesLanguagesNode = ({
                     type="checkbox"
                 />
                 <label htmlFor={fullPath}>
-                    {name} {node.lng ? ` - (${node.lng})` : ""}
+                    {name} {node.language ? ` - (${node.language})` : ""}
                 </label>
             </div>
         );

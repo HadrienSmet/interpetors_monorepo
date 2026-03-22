@@ -25,35 +25,48 @@ export const VocabularyProvider = ({ children, vocabulary: savedVoc }: Vocabular
         ))
     );
 
-    const addToVocabulary = (word: WordToAdd) => {
-        // Should be defined by the API
-        const termId = word.text;
+    const addToVocabulary = ({ color, ...rest }: WordToAdd) => {
+		if (!currentWorkspace) {
+			return;
+		}
+		const { languages, nativeLanguage } = currentWorkspace;
+
+		const translations = Array<string>(languages.length).fill("");
+
+		const orderedLanguages = nativeLanguage
+			? [nativeLanguage, ...languages.filter((lng) => lng !== nativeLanguage)]
+			: [...languages];
+
+		const localeIndex = orderedLanguages.indexOf(rest.language);
+
+		if (localeIndex >= 0) {
+			translations[localeIndex] = rest.text;
+		}
 
         const term: SavedVocabularyTerm = {
-            color: word.color,
-            id: termId,
+            color,
+            id: rest.text,
             occurrence: {
-                filePath: word.filePath,
-                pdfFileId: word.pdfFileId ?? "",
-                pageIndex: word.pageIndex,
-                text: word.text,
-            },
-            translations: Array(currentWorkspace?.languages.length ?? 0).fill(""),
+				...rest, 
+				pdfFileId: rest.pdfFileId ?? "",
+			},
+			translations,
         };
 
         setGroupedVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
-            const groupIndex = getRightGroupIndex(copy, word.color);
+            const groupIndex = getRightGroupIndex(copy, color);
 
             if (groupIndex === -1) {
-                return ([...copy, { colorToUse: word.color, terms: [term] }]);
+                return ([...copy, { colorToUse: color, terms: [term] }]);
             }
 
             const group = copy[groupIndex];
-            if (group.terms.some(term => term.id === termId)) return (copy);
+            if (group.terms.some(term => term.id === rest.text)) return (copy);
 
             group.terms.push(term);
             copy[groupIndex] = group;
+			
             return (copy);
         });
     };

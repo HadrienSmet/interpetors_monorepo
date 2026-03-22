@@ -42,7 +42,7 @@ const FilesLanguagesTree = ({
     const leafPaths = useMemo(() => getAllLeafPaths(folder), [folder]);
 
 	const targetedFilePath = selectedFile.path;
-    const targetedFileHasLanguage = !!selectedFile.fileInStructure?.lng;
+    const targetedFileHasLanguage = !!selectedFile.fileInStructure?.language;
     const isMandatory = languagesState === LANGUAGES_STATE.MANDATORY;
 
     const allChecked = (

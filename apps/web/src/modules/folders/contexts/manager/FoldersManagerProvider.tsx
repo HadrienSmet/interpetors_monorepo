@@ -124,7 +124,7 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
     };
 
     // ---------- Folders methods ----------
-	const assignLanguageToFiles = (paths: Array<string>, lng: string) => {
+	const assignLanguageToFiles = (paths: Array<string>, language: string) => {
 		const targetPaths = new Set(paths);
 
 		const updateStructure = (structure: FolderStructure, parentPath = ""): FolderStructure => {
@@ -135,7 +135,7 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
 
 				if (isPdfMetadata(value)) {
 					updated[key] = targetPaths.has(currentPath)
-						? { ...value, lng }
+						? { ...value, language }
 						: value;
 					continue;
 				}

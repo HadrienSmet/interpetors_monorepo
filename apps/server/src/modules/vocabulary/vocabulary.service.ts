@@ -18,6 +18,7 @@ type TermItem = {
     colorJson: Prisma.JsonValue;
     translations: Array<string>;
     occurrences: Array<{
+		language: string;
         pdfFileId: string;
         pageIndex: number;
         text: string;
@@ -37,14 +38,7 @@ export class VocabularyService {
 
         return {
             id: term.id,
-            occurrence: firstOcc
-                ? {
-                    filePath: firstOcc.filePath,
-                    pageIndex: firstOcc.pageIndex,
-                    pdfFileId: firstOcc.pdfFileId,
-                    text: firstOcc.text,
-                }
-                : undefined,
+            occurrence: firstOcc,
             color: term.colorJson, // colorJson correspond exactement à ton type ActionColor
             translations: term.translations,
         };
@@ -79,6 +73,7 @@ export class VocabularyService {
                         occurrences: {
                             select: {
                                 filePath: true,
+								language: true,
                                 pageIndex: true,
                                 pdfFileId: true,
                                 text: true,
@@ -107,6 +102,7 @@ export class VocabularyService {
                 occurrences: {
                     select: {
                         filePath: true,
+						language: true,
                         pageIndex: true,
                         pdfFileId: true,
                         text: true,
@@ -205,11 +201,12 @@ export class VocabularyService {
                             filePath: occurrence.filePath,
                         },
                         create: {
-                            termId: term.id,
-                            pdfFileId: occurrence.pdfFileId,
-                            pageIndex: occurrence.pageIndex,
-                            text: occurrence.text,
                             filePath: occurrence.filePath,
+							language: occurrence.language,
+                            pageIndex: occurrence.pageIndex,
+                            pdfFileId: occurrence.pdfFileId,
+                            termId: term.id,
+                            text: occurrence.text,
                         },
                     });
                 }

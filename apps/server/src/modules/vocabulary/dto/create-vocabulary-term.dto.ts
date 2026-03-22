@@ -2,15 +2,18 @@ import { Transform, Type } from "class-transformer";
 import { IsArray, ArrayNotEmpty, IsString, IsObject, IsOptional, ValidateNested } from "class-validator";
 
 class OccurrenceDto {
-    @IsString()
-    pdfFileId!: string;
-
-    @IsString()
+	@IsString()
     filePath!: string;
 
+	@IsString()
+	language!: string;
+	
     @IsArray()
     @IsOptional()
     pageIndex!: number;
+
+	@IsString()
+    pdfFileId!: string;
 
     @IsString()
     text!: string;

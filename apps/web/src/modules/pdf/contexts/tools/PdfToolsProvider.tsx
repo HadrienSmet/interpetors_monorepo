@@ -159,7 +159,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 			};
 		} else {
 			// Need to define language for the file
-			if (fileInStructure?.lng === undefined) {
+			if (fileInStructure?.language === undefined) {
 				setPendingVocabularyCreation(true);
 				setLanguagesState(LANGUAGES_STATE.MANDATORY);
 				return;
@@ -167,11 +167,11 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 			
 			// Need to confirm that the vocabulary term comes from supposed language
 			if (
-				fileInStructure?.lng !== undefined &&
+				fileInStructure?.language !== undefined &&
 				languageToUse === undefined
 			) {
 				setPendingVocabularyCreation(true);
-				setLanguageToConfirm(fileInStructure.lng);
+				setLanguageToConfirm(fileInStructure.language);
 				return;
 			}
 
@@ -189,6 +189,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 				id,
 				occurrence: {
 					filePath,
+					language: languageToUse!,
 					pageIndex,
 					text: wordToAdd,
 				},
@@ -244,6 +245,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 				element: element as VocabularyTerm,
 				type: GENERATED_RESOURCES.VOCABULARY,
 			};
+
 		const historyAction: HistoryAction = {
 			elements: [elementAction, textAction],
 			reference: interractiveText,
@@ -262,7 +264,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 		if (
 			!pendingVocabularyCreation ||
 			languagesState !== LANGUAGES_STATE.NULL ||
-			!selectedFile.fileInStructure?.lng
+			!selectedFile.fileInStructure?.language
 		) {
 			return;
 		}
@@ -273,7 +275,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 		languageToConfirm,
 		languageToUse,
 		pendingVocabularyCreation,
-		selectedFile.fileInStructure?.lng,
+		selectedFile.fileInStructure?.language,
 	]);
 	// Responsible to store the text selection
 	useEffect(() => {
