@@ -77,7 +77,6 @@ export const VocabularyTableRow = ({ index, isEditable, pdfVocabulary }: Vocabul
             <CellToFill
 				isEditable={isEditable}
                 locale={nativeLanguage}
-                localeIndex={0}
                 pdfVocabulary={pdfVocabulary}
             />
             {languages
@@ -87,9 +86,6 @@ export const VocabularyTableRow = ({ index, isEditable, pdfVocabulary }: Vocabul
 						isEditable={isEditable}
                         key={`cell-to-fill-${lng}-${pdfVocabulary.occurrence.text}`}
                         locale={lng}
-                        localeIndex={currentWorkspace!.languages
-                            .filter(lng => lng !== nativeLanguage)
-                            .findIndex(el => el === lng) + 1}
                         pdfVocabulary={pdfVocabulary}
                     />
                 ))

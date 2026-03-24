@@ -16,7 +16,7 @@ type SlimTerm =
 type TermItem = {
     id: string;
     colorJson: Prisma.JsonValue;
-    translations: Array<string>;
+    translations: Prisma.JsonValue;
     occurrences: Array<{
 		language: string;
         pdfFileId: string;
@@ -31,15 +31,13 @@ export class VocabularyService {
     constructor(private readonly prisma: PrismaService) { }
 
     private formatTerm(term: TermItem) {
-        //  tu peux choisir ici quelle occurrence renvoyer :
-        //  soit la première (souvent c’est le cas d’usage)
-        //  soit toutes les occurrences si tu veux un tableau
+        // TODO: Handling different occurences 
         const firstOcc = term.occurrences?.[0];
 
         return {
             id: term.id,
             occurrence: firstOcc,
-            color: term.colorJson, // colorJson correspond exactement à ton type ActionColor
+            color: term.colorJson,
             translations: term.translations,
         };
     };
@@ -121,8 +119,7 @@ export class VocabularyService {
     async createOne(workspaceId: string, preparationId: string, dto: UpsertVocabularyTermDto): Promise<SlimTerm> {
         await this.assertWorkspaceAndPreparation(workspaceId, preparationId);
 
-        const translations = dedupeTranslations(dto.translations);
-        if (translations.length === 0) throw new BadRequestException("translations must not be empty");
+        if (Object.keys(dto.translations).length === 0) throw new BadRequestException("translations must not be empty");
 
         return this.prisma.$transaction(async (tx) => {
             // 1) Créer ou récupérer le term
@@ -177,12 +174,11 @@ export class VocabularyService {
             const results: SlimTerm[] = [];
 
             for (const item of deduped) {
-                const translations = dedupeTranslations(item.translations);
-                if (translations.length === 0) {
+                if (Object.keys(item.translations).length === 0) {
                     throw new BadRequestException("Each term must have at least one translation");
                 }
 
-                const term = await upsertTerm(tx, { ...item, translations });
+                const term = await upsertTerm(tx, item);
 
                 // 4) Lier les occurrences (fichier + page)
                 if (item.occurrence) {
@@ -249,23 +245,11 @@ export class VocabularyService {
 
 /** Helpers **/
 
-function dedupeTranslations(translations: string[]): string[] {
-    const set = new Set(
-        translations
-            .map((t) => t?.trim())
-            .filter((t): t is string => !!t)
-            .map((t) => t.toLowerCase()),
-    );
-    // on renvoie en minuscule; si tu veux conserver la casse d"origine, stocke à part
-    return Array.from(set);
-}
-
 function signatureFromItem(item: UpsertVocabularyTermDto): string | null {
     if (item.id) return `id:${item.id}`;
-    const tr = dedupeTranslations(item.translations);
-    if (tr.length === 0) return null;
-    // signature simple basée sur translations + colorJson (optionnel)
-    return `t:${tr.join("|")}|c:${JSON.stringify(item.colorJson ?? {})}`;
+    if (Object.keys(item.translations).length === 0) return null;
+	
+    return `t:${Object.values(item.translations).join("|")}|c:${JSON.stringify(item.colorJson ?? {})}`;
 }
 
 function dedupePayload(items: UpsertVocabularyTermDto[]): UpsertVocabularyTermDto[] {
@@ -287,14 +271,13 @@ async function upsertTerm(
     dto: UpsertVocabularyTermDto,
 ) {
     // Si un termId est fourni on considère que c’est ce terme que l’on met à jour (pas d’unicité sur translations globalement)
-    const translations = dedupeTranslations(dto.translations);
     if ("id" in dto && dto.id) {
         // Update minimal (ou no-op)
         return tx.vocabularyTerm.update({
             where: { id: dto.id },
             data: {
                 colorJson: dto.colorJson,
-                translations,
+                translations: dto.translations,
             },
         }).catch((err) => {
             if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
@@ -308,7 +291,7 @@ async function upsertTerm(
     return tx.vocabularyTerm.create({
         data: {
             colorJson: dto.colorJson,
-            translations,
+            translations: dto.translations,
         },
     });
 }

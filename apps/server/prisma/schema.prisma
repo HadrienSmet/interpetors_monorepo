@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_DEV")
 }
 
 /////////////////////
@@ -90,11 +90,12 @@ model Preparation {
 }
 
 model PdfFile {
-  id       String @id @default(cuid())
-  name     String
-  s3Key    String
+  actions   String
   filePath  String
-  actions  String
+  id        String @id @default(cuid())
+  language  String?
+  name      String
+  s3Key     String
 
   preparationId String
   preparation   Preparation @relation("PreparationFiles", fields: [preparationId], references: [id])
@@ -115,7 +116,7 @@ model PdfFile {
 model VocabularyTerm {
   id           String   @id @default(cuid())
   colorJson    Json
-  translations String[] @default([])
+  translations Json
 
   preparations PreparationVocabularyTerm[]
   workspaces   WorkspaceVocabularyTerm[]
@@ -166,7 +167,9 @@ model VocabularyOccurrence {
   pageIndex Int
 
   // Le texte exact sur lequel porte l’occurrence
-  text String
+  text     String
+  // Langue du texte sur lequel porte l'occurrence
+  language String
 
   // Si tu veux garder une redondance du filePath du front (peut servir pour dénormaliser)
   filePath String

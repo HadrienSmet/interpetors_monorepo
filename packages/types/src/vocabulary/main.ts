@@ -10,7 +10,7 @@ export type VocabularyTerm = {
     readonly color: ActionColor;
     readonly id: string;
     readonly occurrence: VocabularyOccurence;
-    readonly translations: Array<string>;
+	readonly translations: Record<string, string>;
 };
 type SavedVocabularyOccurrence =
     & VocabularyOccurence

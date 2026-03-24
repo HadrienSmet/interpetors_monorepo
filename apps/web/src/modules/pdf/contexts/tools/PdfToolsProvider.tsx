@@ -193,7 +193,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 					pageIndex,
 					text: wordToAdd,
 				},
-				translations: [],
+				translations: {},
 			};
 		}
 

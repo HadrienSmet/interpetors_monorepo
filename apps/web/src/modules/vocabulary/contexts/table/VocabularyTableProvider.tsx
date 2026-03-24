@@ -3,16 +3,15 @@ import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "re
 import { SavedVocabularyTerm, VocabularyTerm } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
-import { useWorkspaces } from "@/modules/workspace";
 import { getRgbColor, handleActionColor } from "@/utils";
 
 import { useVocabulary } from "../voc";
 
 import { SortingIndex, sortingStateRecord, VocabularyTableContext, VocabularyTableContextValue } from "./VocabularyTableContext";
 
-const getItemValue = (voc: VocabularyTerm, key: string, languages: Array<string>) => key === "sources"
+const getItemValue = (voc: VocabularyTerm, key: string) => key === "sources"
     ? voc.occurrence.text
-    : voc.translations[languages.findIndex(lang => lang === key)];
+    : voc.translations[key];
 
 export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
     const [searchingColumn, setSearchingColumn] = useState<string>("sources");
@@ -22,11 +21,6 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
 
     const { colorPanel } = useColorPanel();
     const { groupedVocabulary } = useVocabulary();
-    const { currentWorkspace } = useWorkspaces();
-
-    const languages = useMemo(() => (
-        currentWorkspace!.languages
-    ), [currentWorkspace?.languages]);
 
     const baseVocabulary: Record<string, Array<SavedVocabularyTerm>> = useMemo(() => {
         const output: Record<string, Array<SavedVocabularyTerm>> = {};
@@ -53,13 +47,13 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
 
             current.filter(term => {
                 if (searchingColumn) {
-                    const columnValue = getItemValue(term, searchingColumn, languages);
+                    const columnValue = getItemValue(term, searchingColumn);
 
                     return (columnValue?.toLowerCase().includes(normalizedSearch));
                 }
 
                 return (Object.keys(term).some((key) => {
-                    const value = getItemValue(term, key, languages);
+                    const value = getItemValue(term, key);
 
                     return (value?.toLowerCase().includes(normalizedSearch));
                 }));
@@ -85,8 +79,8 @@ export const VocabularyTableProvider = ({ children }: PropsWithChildren) => {
         };
 
         return ([...vocList].sort((a, b) => {
-            const aValue = getItemValue(a, sortingColumn, languages)?.toLowerCase() ?? "";
-            const bValue = getItemValue(b, sortingColumn, languages)?.toLowerCase() ?? "";
+            const aValue = getItemValue(a, sortingColumn)?.toLowerCase() ?? "";
+            const bValue = getItemValue(b, sortingColumn)?.toLowerCase() ?? "";
 
             if (aValue < bValue) return (sortDirection === "ASC" ? -1 : 1);
             if (aValue > bValue) return (sortDirection === "ASC" ? 1 : -1);

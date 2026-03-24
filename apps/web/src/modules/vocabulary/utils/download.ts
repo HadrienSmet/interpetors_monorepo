@@ -25,10 +25,7 @@ export const downloadVocabulary = async (list: Array<VocabularyTerm>, header: Ar
     sheet.columns = header.map(() => ({ width: CELL_WIDTH }));
 
     list.forEach((voc) => {
-        const rowValues = [
-            voc.occurrence.text,
-            ...voc.translations,
-        ];
+		const rowValues = [voc.occurrence.text,...Object.values(voc.translations)];
         const row = sheet.addRow(rowValues);
 
         row.height = CELL_HEIGHT;
