@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FaArrowDownAZ, FaArrowDownZA } from "react-icons/fa6";
-import { useTranslation } from "react-i18next";
 
 import { useWorkspaces } from "@/modules/workspace";
 import { capitalize, getNativeName } from "@/utils";
@@ -58,33 +57,23 @@ const VocabularyTableHeaderCell = ({ id, label }: VocabularyTableHeaderCellProps
 };
 
 export const VocabularyTableHeader = () => {
-    const { t } = useTranslation();
     const { currentWorkspace } = useWorkspaces();
 
-    const { languages, nativeLanguage } = currentWorkspace!
+    const { languages, nativeLanguage } = currentWorkspace!;
+	const languagesList = useMemo(() => (
+		[nativeLanguage, ...languages.filter(lng => lng !== nativeLanguage)]
+	), [nativeLanguage, languages]);
 
     return (
         <thead>
             <tr className="vocabulary-table-header">
-                {/** TODO Columns should only be defined once */}
-                <VocabularyTableHeaderCell
-                    id="sources"
-                    label={t("vocabulary.sources")}
-                />
-                <VocabularyTableHeaderCell
-                    id={nativeLanguage}
-                    label={capitalize(getNativeName(nativeLanguage) ?? "")}
-                />
-                {languages
-                    .filter(lng => lng !== nativeLanguage)
-                    .map(lng => (
-                        <VocabularyTableHeaderCell
-                            id={lng}
-                            key={lng}
-                            label={capitalize(getNativeName(lng) ?? "")}
-                        />
-                    ))
-                }
+                {languagesList.map(lng => (
+                    <VocabularyTableHeaderCell
+                        id={lng}
+                        key={lng}
+                        label={capitalize(getNativeName(lng) ?? "")}
+                    />
+                ))}
             </tr>
         </thead>
     );

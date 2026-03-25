@@ -5,6 +5,7 @@ import { capitalize, getNativeName, languages, normalizeCode } from "@/utils";
 import { Select, SelectOption } from "../core";
 
 type LanguageSelectProps = {
+	readonly id?: string;
     readonly name: string;
     readonly onChange: (language: string) => void;
 	/** List of languages code to put in front of rest of languages */

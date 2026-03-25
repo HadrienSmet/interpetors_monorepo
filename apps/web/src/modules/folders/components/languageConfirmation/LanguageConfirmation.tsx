@@ -1,22 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useLocale } from "@/hooks";
 import { Button, LanguageSelect, Modal } from "@/components";
-import { usePdfTools } from "@/modules/pdf";
+import { usePdfCanvas, usePdfTools } from "@/modules/pdf";
 import { useWorkspaces } from "@/modules/workspace";
-import { getLocaleName } from "@/utils";
 
 import "./languageConfirmation.scss";
 
 export const LanguageConfirmation = () => {
-	const { locale } = useLocale();
-	const { languageToConfirm, setLanguageToConfirm, setLanguageToUse } = usePdfTools();
+	const { clearDrawer } = usePdfCanvas();
+	const { cancelVocabularyCreation, currentRange, languageToConfirm, setLanguageToConfirm, setLanguageToUse } = usePdfTools();
 	const { t } = useTranslation();
 	const { currentWorkspace } = useWorkspaces();
 	
 	const [selectedLanguage, setSelectedLanguage] = useState(languageToConfirm);
 
+	const cancel = () => {
+		clearDrawer();
+		cancelVocabularyCreation();
+	};
 	const confirm = () => {
 		setLanguageToUse(selectedLanguage);
 		setLanguageToConfirm(undefined);
@@ -43,18 +45,23 @@ export const LanguageConfirmation = () => {
 			width="40%"
 		>
 			<div className="language-confirmation">
-				<h3>
-					{t("folders.languages.confirmation", { language: getLocaleName(languageToConfirm ?? "", locale)?.toLowerCase()})}
-				</h3>
+				<h3>{t("vocabulary.confirmation", { expression: currentRange?.toString().trim() })}</h3>
 				
+				<label htmlFor="vocabulary-language">
+					{t("vocabulary.origin")}
+				</label>
 				<LanguageSelect
+					id="vocabulary-language"
 					name="vocabulary-language"
 					onChange={(val) => setSelectedLanguage(val)}
 					recommandedItems={recommandedItems}
 					value={selectedLanguage}
 				/>
 
-				<Button onClick={confirm}>{t("actions.confirm")}</Button>
+				<div className="language-confirmation__actions">			
+					<Button onClick={cancel}>{t("actions.cancel")}</Button>
+					<Button onClick={confirm}>{t("actions.translate")}</Button>
+				</div>
 			</div>
 		</Modal>
 	);

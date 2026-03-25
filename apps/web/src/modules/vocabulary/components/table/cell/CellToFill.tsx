@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useMemo, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { VocabularyTerm } from "@repo/types";
@@ -15,7 +15,7 @@ type CellToFillProps = {
     readonly pdfVocabulary: VocabularyTerm;
 };
 export const CellToFill = ({ isEditable, locale, pdfVocabulary }: CellToFillProps) => {
-    const [customTranslation, setCustomTranslation] = useState(pdfVocabulary.translations[locale] ?? "");
+    const [customTranslation, setCustomTranslation] = useState("");
     const [isEditing, setIsEditing] = useState(false);
 
 	const { colorPanel } = useColorPanel();
@@ -36,6 +36,10 @@ export const CellToFill = ({ isEditable, locale, pdfVocabulary }: CellToFillProp
             setIsEditing(false);
         };
     };
+
+	useEffect(() => {
+		setCustomTranslation(pdfVocabulary.translations[locale]);
+	}, [locale, pdfVocabulary.translations]);
 
 	const isFetching = useMemo(() => {
 		if (automatedTranslations.length === 0) {

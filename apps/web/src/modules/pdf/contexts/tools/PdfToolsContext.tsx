@@ -5,6 +5,7 @@ import { ActionColor, FileTool } from "@repo/types";
 import { getContextError } from "@/contexts/utils";
 
 export type PdfToolsContextType = {
+	readonly cancelVocabularyCreation: () => void;
     readonly color: ActionColor;
     readonly currentRange: Range | undefined;
     readonly customCursor: ReactNode;

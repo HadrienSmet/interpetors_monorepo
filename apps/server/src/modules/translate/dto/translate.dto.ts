@@ -7,10 +7,10 @@ export class TranslateDto {
 
 	@IsString()
 	@IsNotEmpty()
-	origin!: string;
+	origin!: string; // Origin lng
 
 	@IsArray()
 	@ArrayNotEmpty()
 	@IsString({ each: true })
-	targets: Array<string>;
+	targets: Array<string>; // Toutes les langues vers lesquelles on souhaite traduire
 }

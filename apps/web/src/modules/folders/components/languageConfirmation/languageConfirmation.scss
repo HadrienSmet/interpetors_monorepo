@@ -3,6 +3,15 @@
 	flex-direction: column;
 	gap: var(--space-l);
 
+	&__actions {
+		display: flex;
+		gap: var(--space-m);
+
+		button {
+			flex: 1
+		}
+	}
+
 	select {
 		background-color: var(--clr-bg-light);
 	}

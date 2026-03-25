@@ -5,12 +5,14 @@ export const en = {
         actions: {
             add: "Add",
 			apply: "Apply",
+			cancel: "Cancel",
 			close: "Close",
             confirm: "Confirm",
             download: "Download",
             editOnDoubleClick: "Double click to edit",
             save: "Save",
             search: "Search",
+			translate: "Translate",
             update: "Update",
             workspaces: {
                 create: "Create work space",
@@ -201,14 +203,15 @@ export const en = {
             },
         },
         vocabulary: {
+			confirmation: "Do confirm that you want to translate \"{{expression}}\"?",
             empty: "No vocabulary generated yet",
             filterLabel: "Column on wich to apply the filter",
             label: "Vocabulary",
+			origin: "Origin language",
             placeholders: {
                 cell: "Translate {{ word }} ({{ language }})",
                 search: "Search in the generated vocabulary",
             },
-            sources: "Sources",
         },
         workspaces: {
             create: {

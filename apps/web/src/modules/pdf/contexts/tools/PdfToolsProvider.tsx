@@ -72,6 +72,15 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
     const removeSelection = () => window.getSelection()?.removeAllRanges();
     // ------ HANDLERS ------
+	const cancelVocabularyCreation = () => {
+		removeSelection();
+		setCurrentRange(undefined);
+		setTool(null);
+		setPendingVocabularyCreation(false);
+		setLanguageToConfirm(undefined);
+		setLanguageToUse(undefined);
+		setLanguagesState(LANGUAGES_STATE.NULL);	
+	};
     /** Updates the pdf file and clean the tools */
     const handleSelection = (tool: FileTool) => {
         if (!pageRef.current) {
@@ -441,6 +450,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
     };
 
     const value: PdfToolsContextType = {
+		cancelVocabularyCreation,
         color,
         currentRange,
         customCursor,

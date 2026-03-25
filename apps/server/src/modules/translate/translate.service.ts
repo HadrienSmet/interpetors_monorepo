@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
+import { DEEP_L } from "./deepL";
 import { TranslateDto } from "./dto";
 
 @Injectable()
@@ -7,13 +8,9 @@ export class TranslateService {
 	constructor() {}
 
 	async translate(dto: TranslateDto) {
+		const text = dto.text.trim();
+		if (!text) throw new BadRequestException("Text cannot be empty.");
 
-		const output = {};
-
-		for (const target of dto.targets) {
-			output[target] = `${dto.text} in ${target}`;
-		}
-
-		return (output);
+		return DEEP_L.handleTranslation(dto);
 	}
 }

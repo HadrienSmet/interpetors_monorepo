@@ -69,6 +69,15 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
+	const clearDrawer = () => {
+		const drawer = drawerRef.current;
+		const ctx = drawerContextRef.current;
+		if (!ctx || !drawer) return;
+
+		ctx.save();
+		ctx.clearRect(0, 0, drawer.width, drawer.height);
+		ctx.restore();
+	};
     const drawLine = useCallback((rects: Array<SerializableRect>) => {
         const ctx = drawerContextRef.current;
         const containerDimensions = pageRef.current?.getBoundingClientRect();
@@ -333,7 +342,7 @@ export const PdfCanvasProvider = ({ children }: PropsWithChildren) => {
     ]);
 
     return (
-        <PdfCanvasContext value={{ canvasRef, drawerRef, clear }}>
+        <PdfCanvasContext value={{ canvasRef, drawerRef, clear, clearDrawer }}>
             {children}
         </PdfCanvasContext>
     );
