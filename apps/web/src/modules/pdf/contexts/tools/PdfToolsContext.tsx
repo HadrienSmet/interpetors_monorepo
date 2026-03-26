@@ -18,6 +18,7 @@ export type PdfToolsContextType = {
 	readonly setLanguageToUse: Dispatch<SetStateAction<string | undefined>>;
     readonly setTool: Dispatch<SetStateAction<FileTool | null>>;
     readonly tool: FileTool | null;
+	readonly updateVocabularyRangeFromText: (nextText: string) => boolean;
 };
 
 export const PdfToolsContext = createContext<PdfToolsContextType | null>(null);

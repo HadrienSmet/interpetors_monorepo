@@ -127,7 +127,6 @@ export const en = {
             empty: "No files in this preparation",
             label: "Folders",
 			languages: {
-				confirmation: "Do you confirm that this expression is in {{language}}?",
 				tree: {
 					access: "Define files's language",
 					optional: "Define a language for each files",
@@ -203,8 +202,17 @@ export const en = {
             },
         },
         vocabulary: {
-			confirmation: "Do confirm that you want to translate \"{{expression}}\"?",
+			conditions: {
+				backToLine: "Line breaks",
+				length: "Strings that are too long (maximum {{max}} characters)",
+				punctuation: "Certain punctuation characters ({{list}})",
+				sourceMismatch: "The changes made to the selected text do not match the source file.",
+				title: "The vocabulary grid is designed to accept words or short expressions, which is why it does not allow:",
+				words: "Too many words (maximum {{max}})"
+			},
+			confirmation: "Please confirm the following informations before retrieving the translations",
             empty: "No vocabulary generated yet",
+			expression: "Selected text",
             filterLabel: "Column on wich to apply the filter",
             label: "Vocabulary",
 			origin: "Origin language",

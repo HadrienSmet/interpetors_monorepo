@@ -32,7 +32,7 @@ import { usePdfFile } from "../file";
 import { usePdfHistory } from "../history";
 
 import { PdfToolsContext, PdfToolsContextType } from "./PdfToolsContext";
-import { getRange } from "./utils";
+import { adjustedRange, getRange } from "./utils";
 
 const NEW_DEFAULT_COLOR: ActionColor = {
     kind: ColorKind.INLINE,
@@ -56,6 +56,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 	const [languageToUse, setLanguageToUse] = useState<string | undefined>(undefined);
 	const [pendingVocabularyCreation, setPendingVocabularyCreation] = useState(false);
     const [tool, setTool] = useState<FileTool | null>(null);
+	const [vocabularyBaseRange, setVocabularyBaseRange] = useState<Range | undefined>(undefined);
 
     const { colorPanel } = useColorPanel();
     const { setContextMenu } = useContextMenu();
@@ -75,6 +76,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 	const cancelVocabularyCreation = () => {
 		removeSelection();
 		setCurrentRange(undefined);
+		setVocabularyBaseRange(undefined);
 		setTool(null);
 		setPendingVocabularyCreation(false);
 		setLanguageToConfirm(undefined);
@@ -111,7 +113,6 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
         setCurrentRange(undefined);
         removeSelection();
     };
-
 	const handleInteractiveSelection = (tool: FileTool) => {
 		if (
 			!currentRange ||
@@ -180,6 +181,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 				languageToUse === undefined
 			) {
 				setPendingVocabularyCreation(true);
+				setVocabularyBaseRange(currentRange.cloneRange());
 				setLanguageToConfirm(fileInStructure.language);
 				return;
 			}
@@ -264,8 +266,27 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 		removeSelection();
 		pushAction(historyAction);
 		setCurrentRange(undefined);
+		setVocabularyBaseRange(undefined);
 		setTool(null);
 		setLanguageToUse(undefined);
+	};
+	const updateVocabularyRangeFromText = (nextText: string) => {
+		if (!pageRef.current || !vocabularyBaseRange) {
+			return (false);
+		}
+
+		const nextRange = adjustedRange(
+			pageRef.current,
+			vocabularyBaseRange,
+			nextText,
+		);
+
+		if (!nextRange) {
+			return (false);
+		}
+
+		setCurrentRange(nextRange);
+		return (true);
 	};
 
     // Responsible to add the new vocabulary term after defining and cofirming language
@@ -288,20 +309,29 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 	]);
 	// Responsible to store the text selection
 	useEffect(() => {
-        document.addEventListener("selectionchange", () => {
-            const range = getRange();
+		const handleSelectionChange = () => {
+			const range = getRange();
 
-            setCurrentRange(range);
-        });
+			if (!range || !pageRef.current) {
+				return;
+			}
 
-        return () => {
-            document.removeEventListener("selectionchange", () => {
-                const range = getRange();
+			const startInPage = pageRef.current.contains(range.startContainer);
+			const endInPage = pageRef.current.contains(range.endContainer);
 
-                setCurrentRange(range);
-            });
-        };
-    }, []);
+			if (!startInPage || !endInPage) {
+				return;
+			}
+
+			setCurrentRange(range);
+		};
+
+		document.addEventListener("selectionchange", handleSelectionChange);
+
+		return () => {
+			document.removeEventListener("selectionchange", handleSelectionChange);
+		};
+	}, []);
     // Handles the stop text selection
     useEffect(() => {
         const handleMouseUp = () => {
@@ -463,6 +493,7 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 		setLanguageToUse,
         setTool,
         tool,
+		updateVocabularyRangeFromText,
     };
 
     return (

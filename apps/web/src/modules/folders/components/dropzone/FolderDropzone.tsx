@@ -3,11 +3,11 @@ import { DragEvent, PropsWithChildren, useState } from "react";
 import type { FolderStructure, PdfFile } from "@repo/types";
 
 import { getDefaultPdfFile, PDF_TYPE } from "@/modules/pdf";
+import { VocabularyConfirmation } from "@/modules/vocabulary";
 
 import { isPdfMetadata, useFoldersManager } from "../../contexts";
 
 import { FilesLanguagesTreeModal } from "../filesLanguagesTree";
-import { LanguageConfirmation } from "../languageConfirmation";
 
 import "./folderDropzone.scss";
 
@@ -133,7 +133,7 @@ export const FolderDropzone = ({ children }: PropsWithChildren) => {
         >
             {children}
             <FilesLanguagesTreeModal folderIndex={droppedFolderIndex} />
-			<LanguageConfirmation />
+			<VocabularyConfirmation />
         </div>
     );
 };

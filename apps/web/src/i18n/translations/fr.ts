@@ -127,7 +127,6 @@ export const fr = {
             empty: "Aucuns fichiers dans cette préparation",
             label: "Dossiers",
 			languages: {
-				confirmation: "Veuillez confirmer que le terme qui s'apprête à être traduit est bien en {{language}}?",
 				tree: {
 					acces: "Définir la langue des fichiers",
 					mandatory: `Veuillez définir une langue au fichier "{{targetedFileName}}" avant de commencer à remplir votre table de vocabulaire`,
@@ -203,8 +202,17 @@ export const fr = {
             },
         },
         vocabulary: {
-			confirmation: 'Confirmez-vous vouloir traduire "{{expression}}"?',
+			conditions: {
+				backToLine: "Les retours à la ligne",
+				length: "Les chaînes de caractères trop longue ({{max}} caractères maximum)",
+				punctuation: "Certains caractères de ponctuation ({{ list }})",
+				sourceMismatch: "Les modifications apportées au texte sélectionné ne correspondent pas au fichier source",
+				title: "La grille de vocabulaire est pensée pour accepter des mots ou des expressions, c'est pourquoi elle ne tolère pas:",
+				words: "Un trop grand nombre de mots ({{ max }} maximum)"
+			},
+			confirmation: "Veuillez confirmer les informations suivantes avant de récupérer les traductions",
             empty: "Pas de vocabulaire généré pour le moment",
+			expression: "Texte sélectionné",
             filterLabel: "Colonne sur laquelle appliquer le filtre",
             label: "Vocabulaire",
 			origin: "Langue d'origine",
@@ -215,7 +223,6 @@ export const fr = {
         },
         workspaces: {
             create: {
-                title: "Crées ton environnement de travail personnalisé.",
                 inputs: {
                     title: {
                         label: "Définissez un titre à votre espace de travail",
@@ -233,6 +240,7 @@ export const fr = {
                         label: "Choisissez-en une en tant que langue maternelle.",
                     },
                 },
+                title: "Crées ton environnement de travail personnalisé.",
             },
             new: "Créer un nouvel espace de travail",
             stats: {
