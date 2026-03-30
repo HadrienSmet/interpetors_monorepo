@@ -10,6 +10,7 @@ import {
     PresignModule,
     PrismaModule,
     PrismaService,
+	TranslateModule,
     UserModule,
     VocabularyModule,
     WorkspaceModule,
@@ -18,16 +19,17 @@ import {
 @Module({
     imports: [
         AuthModule,
+        ColorPanelModule,
         ConfigModule.forRoot(),
         FilesModule,
         NotesModule,
         PreparationsModule,
         PresignModule,
+        PrismaModule,
         UserModule,
+		TranslateModule,
         VocabularyModule,
         WorkspaceModule,
-        ColorPanelModule,
-        PrismaModule
     ],
     providers: [PrismaService],
 })

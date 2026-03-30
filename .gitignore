@@ -45,3 +45,4 @@ apps/**/.parcel-cache/
 *.swn
 
 bucket.cors.json
+dev.bucket.cors.json

@@ -2,6 +2,7 @@ import { ActionColor } from "../colors";
 
 export type VocabularyOccurence = {
     readonly filePath: string;
+	readonly language: string;
     readonly pageIndex: number;
     readonly text: string;
 };
@@ -9,7 +10,7 @@ export type VocabularyTerm = {
     readonly color: ActionColor;
     readonly id: string;
     readonly occurrence: VocabularyOccurence;
-    readonly translations: Array<string>;
+	readonly translations: Record<string, string>;
 };
 type SavedVocabularyOccurrence =
     & VocabularyOccurence

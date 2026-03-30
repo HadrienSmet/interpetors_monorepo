@@ -5,11 +5,11 @@
     color: var(--clr-bg-light);
     display: flex;
     font-weight: 500;
+	gap: var(--space-m);
     justify-content: center;
     letter-spacing: 1.5px;
     min-width: 300px;
     padding: var(--space-l) var(--space-h);
-    text-transform: uppercase;
     transition: var(--transition-theme);
 
     &:hover {

@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { MdDownload, MdHorizontalRule } from "react-icons/md";
+import { MdDownload, MdHorizontalRule, MdTranslate } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { useColorPanel } from "@/modules/colorPanel";
 import { ResizableSection } from "@/modules/resizableLayout";
 
-import { useFoldersManager } from "../../contexts";
+import { LANGUAGES_STATE, useFoldersManager } from "../../contexts";
 import { downloadFolderAsZip } from "../../utils";
 
 import { TreeNode } from "./nodes";
@@ -19,7 +19,7 @@ export const FoldersExplorer = () => {
     const [highlightedFolderPath, setHighlightedFolderPath] = useState<string | null>(null);
 
     const { colorPanel } = useColorPanel();
-    const { foldersStructure } = useFoldersManager();
+    const { foldersStructure, setLanguagesState } = useFoldersManager();
     const { t } = useTranslation();
 
     const foldersTree = useMemo(() => (
@@ -41,7 +41,14 @@ export const FoldersExplorer = () => {
 
     const buttons = [
         {
+            icon: <MdTranslate size={BUTTON_SIZE} />,
+			isDisabled: foldersStructure.length === 0,
+            onClick: () => setLanguagesState(LANGUAGES_STATE.OPTIONAL),
+            title: t("folders.languages.tree.access"),
+        },
+        {
             icon: <MdDownload size={BUTTON_SIZE} />,
+			isDisabled: foldersStructure.length === 0,
             onClick: () => downloadFolderAsZip(foldersStructure, colorPanel),
             title: t("folders.download", { count: foldersStructure.length }),
         },
@@ -58,10 +65,11 @@ export const FoldersExplorer = () => {
             id="folders-explorer"
         >
             <div className="folders-explorer__header">
-                {buttons.map((btn, index) => (
+                {buttons.map(({ isDisabled, ...btn }, index) => (
                     <button
+						{...btn}
+						disabled={isDisabled ?? false}
                         key={`explorer-btn-${index}`}
-                        {...btn}
                     >
                         {btn.icon}
                     </button>

@@ -5,12 +5,15 @@ import "./accordion.scss";
 
 const ICON_SIZE = 32 as const;
 
-type AccordionItemProps = {
+type AccordionItemType = {
     readonly content: ReactNode;
     readonly title: ReactNode;
 };
+type AccordionItemProps =
+	& AccordionItemType 
+	& { readonly defaultExpanded: boolean; };
 const AccordionItem = (props: AccordionItemProps) => {
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(props.defaultExpanded);
 
     const toggleExpansion = () => setIsExpanded(state => !state);
 
@@ -33,8 +36,15 @@ const AccordionItem = (props: AccordionItemProps) => {
 };
 
 type AccordionProps = {
-    readonly items: Array<AccordionItemProps>;
+	readonly defaultExpanded?: boolean;
+    readonly items: Array<AccordionItemType>;
 };
-export const Accordion = ({ items }: AccordionProps) => (
-    items.map((item, index) => (<AccordionItem {...item} key={`accordion-item-${index}`} />))
+export const Accordion = ({ defaultExpanded = false, items }: AccordionProps) => (
+    items.map((item, index) => (
+		<AccordionItem 
+			{...item} 
+			defaultExpanded={defaultExpanded} 
+			key={`accordion-item-${index}`} 
+		/>
+	))
 );

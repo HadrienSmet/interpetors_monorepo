@@ -1,5 +1,6 @@
+import { fallbackLanguage } from "./const";
+
 const displayNamesCache = new Map<string, Intl.DisplayNames>();
-export const normalizeCode = (code: string): string | null => (code.split(",")[0].trim());
 export const getNativeName = (tag: string): string | undefined => {
     try {
         // canonicalize the tag (ex: "pt-br" -> "pt-BR")
@@ -10,7 +11,7 @@ export const getNativeName = (tag: string): string | undefined => {
             // Locale = Native name (fallback "en" if unavailable)
             displayNamesCache.set(
                 key,
-                new Intl.DisplayNames([key, "en"], { type: "language" })
+                new Intl.DisplayNames([key, fallbackLanguage], { type: "language" })
             );
         }
 

@@ -6,6 +6,7 @@ export type PdfCanvasContextType = {
     readonly canvasRef: RefObject<HTMLCanvasElement | null>;
     readonly drawerRef: RefObject<HTMLCanvasElement | null>;
     readonly clear: () => void;
+	readonly clearDrawer: () => void;
 };
 export const PdfCanvasContext = createContext<PdfCanvasContextType | null>(null);
 export const usePdfCanvas = () => {

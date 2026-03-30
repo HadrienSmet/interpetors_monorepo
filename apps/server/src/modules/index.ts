@@ -5,6 +5,7 @@ export * from "./notes";
 export * from "./preparations";
 export * from "./prisma";
 export * from "./storage";
+export * from "./translate";
 export * from "./user";
 export * from "./vocabulary";
 export * from "./workspace";

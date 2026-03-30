@@ -237,11 +237,9 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 			if (currentIndex > prev) {
 				for (let i = prev + 1; i <= currentIndex; i++) {
 					const userAction = userActions[i];
-					if (
-						userAction?.resourceToGenerate?.type ===
-						GENERATED_RESOURCES.VOCABULARY
-					) {
+					if (userAction?.resourceToGenerate?.type === GENERATED_RESOURCES.VOCABULARY) {
 						const { element } = userAction.resourceToGenerate;
+						// Might need to wait
 						addToVocabulary({
 							color: element.color,
 							pdfFileId: selectedFile.fileInStructure!.id,
@@ -252,10 +250,7 @@ export const PdfHistoryProvider = ({ children }: PropsWithChildren) => {
 			} else if (currentIndex < prev) {
 				for (let i = prev; i > currentIndex; i--) {
 					const userAction = userActions[i];
-					if (
-						userAction?.resourceToGenerate?.type ===
-						GENERATED_RESOURCES.VOCABULARY
-					) {
+					if (userAction?.resourceToGenerate?.type === GENERATED_RESOURCES.VOCABULARY) {
 						const e = userAction.resourceToGenerate.element;
 						remove(e.color, e.occurrence.text); // cf. clé d’ID ci-dessous
 					}

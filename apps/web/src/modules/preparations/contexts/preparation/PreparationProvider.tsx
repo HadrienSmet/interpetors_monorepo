@@ -140,29 +140,32 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
 						actionsToPerform.push(...chunks.map(el => ({ preparationId, fileId: fileToPatch.id, body: el })));
 					}
 
-					if (fileToPatch.filePath || fileToPatch.name) {
+					if (fileToPatch.filePath || fileToPatch.name || fileToPatch.language) {
 						encryptedFilesToPatch.push(fileToPatch);
 					}
 				}
 
-				const responses = await Promise.all(actionsToPerform.map(chunk => FILES.postActionChunk(chunk)));
-				const chunksRes = [];
-				for (const res of responses) {
-					if (!res.success) {
-						throw new Error("An error occured while uploading the file actions");
+				if (actionsToPerform.length > 0) {
+					const responses = await Promise.all(actionsToPerform.map(chunk => FILES.postActionChunk(chunk)));
+					const chunksRes = [];
+					for (const res of responses) {
+						if (!res.success) {
+							throw new Error("An error occured while uploading the file actions");
+						}
+	
+						chunksRes.push(res.data);
 					}
-
-					chunksRes.push(res.data);
+					const completeIndex = chunksRes.findIndex(el => {
+						if ("completed" in el && el.completed) return (true);
+	
+						return (false);
+					});
+					if (completeIndex === -1) {
+						throw new Error("Did not succeed to upload all the actions chunks");
+						// TODO: clean db to prevent stale data or retry
+					}
 				}
-				const completeIndex = chunksRes.findIndex(el => {
-					if ("completed" in el && el.completed) return (true);
 
-					return (false);
-				});
-				if (completeIndex === -1) {
-					throw new Error("Did not succeed to upload all the actions chunks");
-					// TODO: clean db to prevent stale data or retry
-				}
                 await FILES.patchApi({
                     body: { files: encryptedFilesToPatch },
                     preparationId,
@@ -182,6 +185,7 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
 							contentType: PDF_TYPE.type,
 							file: encryptedFile,
 							filePath: newFile.filePath,
+							language: newFile.pdfFile.language,
 							name: newFile.pdfFile.name,
 							preparationId,
 						})

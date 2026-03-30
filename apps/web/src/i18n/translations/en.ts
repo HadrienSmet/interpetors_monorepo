@@ -4,11 +4,15 @@ export const en = {
     translation: {
         actions: {
             add: "Add",
+			apply: "Apply",
+			cancel: "Cancel",
+			close: "Close",
             confirm: "Confirm",
             download: "Download",
             editOnDoubleClick: "Double click to edit",
             save: "Save",
             search: "Search",
+			translate: "Translate",
             update: "Update",
             workspaces: {
                 create: "Create work space",
@@ -76,11 +80,13 @@ export const en = {
             used: "Color panel used: {{name}}",
         },
         commons: {
+			all: "All",
             createdAt: "Created at {{date}}",
         },
         files: {
             "context-menu": {
                 delete: "Delete the file",
+				language: "Define the language of the file",
                 rename: "Rename the file",
             },
             editor: {
@@ -120,6 +126,13 @@ export const en = {
             download_other: "Download the folders",
             empty: "No files in this preparation",
             label: "Folders",
+			languages: {
+				tree: {
+					access: "Define files's language",
+					optional: "Define a language for each files",
+					mandatory: `Please define the language of "{{targetedFileName}}" before filling your vocabulary table`
+				},
+			},
         },
         inputs: {
             folders: {
@@ -157,7 +170,7 @@ export const en = {
         preparations: {
             backToList: "Back to preparations list",
             empty: "No preparations found",
-            new: "Create new préparation",
+            new: "Create new preparation",
             save: "Save preparation",
             stats: {
                 files: "<default><strong>{{amount}}</strong> files</default>",
@@ -189,14 +202,24 @@ export const en = {
             },
         },
         vocabulary: {
+			conditions: {
+				backToLine: "Line breaks",
+				length: "Strings that are too long (maximum {{max}} characters)",
+				punctuation: "Certain punctuation characters ({{list}})",
+				sourceMismatch: "The changes made to the selected text do not match the source file.",
+				title: "The vocabulary grid is designed to accept words or short expressions, which is why it does not allow:",
+				words: "Too many words (maximum {{max}})"
+			},
+			confirmation: "Please confirm the following informations before retrieving the translations",
             empty: "No vocabulary generated yet",
+			expression: "Selected text",
             filterLabel: "Column on wich to apply the filter",
             label: "Vocabulary",
+			origin: "Origin language",
             placeholders: {
                 cell: "Translate {{ word }} ({{ language }})",
                 search: "Search in the generated vocabulary",
             },
-            sources: "Sources",
         },
         workspaces: {
             create: {

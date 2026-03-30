@@ -4,6 +4,7 @@ import { getPdfRoute } from "./const";
 
 export type PostPdfParams = {
     readonly filePath: string;
+	readonly language?: string;
     readonly name: string;
     readonly preparationId: string;
     readonly s3Key: string;

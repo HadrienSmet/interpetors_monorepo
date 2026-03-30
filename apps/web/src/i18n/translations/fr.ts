@@ -4,11 +4,15 @@ export const fr = {
     translation: {
         actions: {
             add: "Ajouter",
+			apply: "Appliquer",
+			cancel: "Annuler",
+			close: "Fermer",
             confirm: "Confirmer",
             download: "Télécharger",
             editOnDoubleClick: "Cliquez deux fois pour éditer",
             save: "Sauvegarder",
             search: "Rechercher",
+			translate: "Traduire",
             update: "Mettre à jour",
             workspaces: {
                 create: "Créer mon espace de travail",
@@ -76,11 +80,13 @@ export const fr = {
             used: "Palette de couleur utilisée: {{name}}",
         },
         commons: {
+			all: "Tout",
             createdAt: "Créé le {{date}}",
         },
         files: {
             "context-menu": {
                 delete: "Supprimer le fichier",
+				language: "Définir la langue du fichier",
                 rename: "Renommer le fichier",
             },
             editor: {
@@ -120,6 +126,13 @@ export const fr = {
             download_other: "Télécharger les dossiers",
             empty: "Aucuns fichiers dans cette préparation",
             label: "Dossiers",
+			languages: {
+				tree: {
+					acces: "Définir la langue des fichiers",
+					mandatory: `Veuillez définir une langue au fichier "{{targetedFileName}}" avant de commencer à remplir votre table de vocabulaire`,
+					optional: "Veuillez définir une langue pour chacun des fichiers",
+				},
+			},
         },
         inputs: {
             folders: {
@@ -189,18 +202,27 @@ export const fr = {
             },
         },
         vocabulary: {
+			conditions: {
+				backToLine: "Les retours à la ligne",
+				length: "Les chaînes de caractères trop longue ({{max}} caractères maximum)",
+				punctuation: "Certains caractères de ponctuation ({{ list }})",
+				sourceMismatch: "Les modifications apportées au texte sélectionné ne correspondent pas au fichier source",
+				title: "La grille de vocabulaire est pensée pour accepter des mots ou des expressions, c'est pourquoi elle ne tolère pas:",
+				words: "Un trop grand nombre de mots ({{ max }} maximum)"
+			},
+			confirmation: "Veuillez confirmer les informations suivantes avant de récupérer les traductions",
             empty: "Pas de vocabulaire généré pour le moment",
+			expression: "Texte sélectionné",
             filterLabel: "Colonne sur laquelle appliquer le filtre",
             label: "Vocabulaire",
+			origin: "Langue d'origine",
             placeholders: {
                 cell: "Traduis {{ word }} ({{ language }})",
                 search: "Rechercher dans le vocabulaire généré",
             },
-            sources: "Sources",
         },
         workspaces: {
             create: {
-                title: "Crées ton environnement de travail personnalisé.",
                 inputs: {
                     title: {
                         label: "Définissez un titre à votre espace de travail",
@@ -218,6 +240,7 @@ export const fr = {
                         label: "Choisissez-en une en tant que langue maternelle.",
                     },
                 },
+                title: "Crées ton environnement de travail personnalisé.",
             },
             new: "Créer un nouvel espace de travail",
             stats: {

@@ -3,17 +3,27 @@ import { PropsWithChildren, useEffect, useState } from "react";
 import { ActionColor, SavedVocabularyTerm } from "@repo/types";
 
 import { useColorPanel } from "@/modules/colorPanel";
+import { TRANSLATION } from "@/modules/translate";
 import { useWorkspaces } from "@/modules/workspace";
 import { getRgbColor, handleActionColor } from "@/utils";
 
 import { GroupedVocabulary, WordToAdd } from "../../types";
 
-import { AddTranslationParams, VocabularyContext } from "./VocabularyContext";
+import { AddTranslationParams, TranslationHelper, VocabularyContext } from "./VocabularyContext";
+
+type HandleTranslationsParams = {
+	readonly color: ActionColor;
+	readonly id: string;
+	readonly language: string;
+	readonly text: string;
+	readonly translations: Record<string, string>;
+};
 
 type VocabularyProviderProps =
     & { readonly vocabulary?: Array<GroupedVocabulary>; }
     & PropsWithChildren;
 export const VocabularyProvider = ({ children, vocabulary: savedVoc }: VocabularyProviderProps) => {
+	const [automatedTranslations, setAutomatedTranslations] = useState<Array<TranslationHelper>>([]);
     const [groupedVocabulary, setGroupedVocabulary] = useState<Array<GroupedVocabulary>>([]);
 
     const { colorPanel } = useColorPanel();
@@ -25,35 +35,108 @@ export const VocabularyProvider = ({ children, vocabulary: savedVoc }: Vocabular
         ))
     );
 
-    const addToVocabulary = (word: WordToAdd) => {
-        // Should be defined by the API
-        const termId = word.text;
+	const handleTranslations = async ({ color, id, language, text, translations }: HandleTranslationsParams) => {
+		setAutomatedTranslations(prev => {
+			const next = [...prev];
+
+			const current: TranslationHelper = {
+				color,
+				id,
+			};
+
+			next.push(current);
+
+			return (next);
+		});
+
+		const response = await TRANSLATION.translate({
+			origin: language,
+			targets: currentWorkspace!.languages.filter(el => el !== language),
+			text,
+		});
+
+		if (!response.success) {
+			throw new Error(`An error occured while retrieving translations - ${response.message}`);
+		}
+
+		const allTranslations = { 
+			...translations,
+			...response.data,
+		};
+
+		setGroupedVocabulary(prev => {
+			const next = prev.map(group => ({ ...group, terms: [...group.terms] }));
+			const groupIndex= getRightGroupIndex(next, color);
+			if (groupIndex < 0) return (next);
+
+			const group = next[groupIndex];
+			const termIndex = group.terms.findIndex(term => term.id === id);
+			if (termIndex < 0) return (next);
+
+			const updatedTerm = { ...group.terms[termIndex] };
+			updatedTerm.translations = allTranslations;
+			
+			group.terms[termIndex] = updatedTerm;
+			next[groupIndex] = { ...group };
+			return (next);
+		});
+		setAutomatedTranslations(prev => {
+			const next = [...prev];
+
+			const currentIndex = next.findIndex(el => (
+				getRgbColor(handleActionColor(el.color, colorPanel))) === getRgbColor(handleActionColor(color, colorPanel)) &&
+				el.id === id
+			);
+			if (currentIndex < 0) {
+				return (next);
+			}
+			next.splice(currentIndex, 1);
+
+			return (next);
+		})
+	};
+    const addToVocabulary = async ({ color, ...rest }: WordToAdd) => {
+		if (!currentWorkspace) {
+			return;
+		}
+		const { languages } = currentWorkspace;
+
+		const translations = Object.fromEntries(languages.map((lang) => [lang, ""]));
+
+		translations[rest.language] = rest.text;
 
         const term: SavedVocabularyTerm = {
-            color: word.color,
-            id: termId,
+            color,
+            id: rest.text,
             occurrence: {
-                filePath: word.filePath,
-                pdfFileId: word.pdfFileId ?? "",
-                pageIndex: word.pageIndex,
-                text: word.text,
-            },
-            translations: Array(currentWorkspace?.languages.length ?? 0).fill(""),
+				...rest, 
+				pdfFileId: rest.pdfFileId ?? "",
+			},
+			translations,
         };
+
+		handleTranslations({
+			color,
+			id: rest.text,
+			language: rest.language,
+			text: rest.text,
+			translations,
+		});
 
         setGroupedVocabulary(state => {
             const copy = state.map(group => ({ ...group, terms: [...group.terms] }));
-            const groupIndex = getRightGroupIndex(copy, word.color);
+            const groupIndex = getRightGroupIndex(copy, color);
 
             if (groupIndex === -1) {
-                return ([...copy, { colorToUse: word.color, terms: [term] }]);
+                return ([...copy, { colorToUse: color, terms: [term] }]);
             }
 
             const group = copy[groupIndex];
-            if (group.terms.some(term => term.id === termId)) return (copy);
+            if (group.terms.some(term => term.id === rest.text)) return (copy);
 
             group.terms.push(term);
             copy[groupIndex] = group;
+			
             return (copy);
         });
     };
@@ -69,8 +152,8 @@ export const VocabularyProvider = ({ children, vocabulary: savedVoc }: Vocabular
             if (termIndex < 0) return (copy);
 
             const updated = { ...group.terms[termIndex] };
-            const translations = [...updated.translations];
-            translations[params.localeIndex] = params.translation;
+            const translations = { ...updated.translations };
+            translations[params.locale] = params.translation;
             updated.translations = translations;
 
             group.terms[termIndex] = updated;
@@ -113,6 +196,7 @@ export const VocabularyProvider = ({ children, vocabulary: savedVoc }: Vocabular
     }, [savedVoc]);
 
     const value = {
+		automatedTranslations,
         groupedVocabulary,
         addTranslation,
         addToVocabulary,

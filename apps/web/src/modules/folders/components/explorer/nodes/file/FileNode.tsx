@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react";
-import { MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
+import { MdDriveFileRenameOutline, MdTranslate } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { PdfMetadata } from "@repo/types";
@@ -7,7 +7,7 @@ import { PdfMetadata } from "@repo/types";
 import { InputStyleLess } from "@/components";
 import { useContextMenu } from "@/contexts";
 import { FileIcon } from "@/modules/files";
-import { useFoldersManager } from "@/modules/folders";
+import { LANGUAGES_STATE, useFoldersManager } from "@/modules/folders";
 
 import { TreeNodeProps } from "../nodes.types";
 import { getPaddingLeft } from "../nodes.utils";
@@ -30,7 +30,7 @@ export const FileNode = ({
     const [newFileName, setNewFileName] = useState(name);
 
     const { setContextMenu } = useContextMenu();
-    const { files, isEditable, selectedFile, setSelectedFilePath } = useFoldersManager()
+    const { files, isEditable, selectedFile, setLanguagesState, setSelectedFilePath } = useFoldersManager();
     const { t } = useTranslation();
 
     const items = [
@@ -43,14 +43,23 @@ export const FileNode = ({
             ),
             onClick: () => setIsEditingFile(true),
         },
+        // {
+        //     children: (
+        //         <>
+        //             <MdDelete />
+        //             <p>{t("files.context-menu.delete")}</p>
+        //         </>
+        //     ),
+        //     onClick: () => files.delete(node),
+        // },
         {
             children: (
                 <>
-                    <MdDelete />
-                    <p>{t("files.context-menu.delete")}</p>
+                    <MdTranslate />
+                    <p>{t("files.context-menu.language")}</p>
                 </>
             ),
-            onClick: () => files.delete(node),
+            onClick: () => setLanguagesState(LANGUAGES_STATE.OPTIONAL),
         },
     ];
 
@@ -94,7 +103,7 @@ export const FileNode = ({
             onBlur={() => handleDynamicEvent(isEditable, () => setIsEditingFile(false))}
             onClick={onClick}
             onContextMenu={(e) => handleDynamicEvent(isEditable, () => onContextMenu(e))}
-            onDoubleClick={() => handleDynamicEvent(isEditable, () => onDoubleClick())}
+            onDoubleClick={() => handleDynamicEvent(isEditable, onDoubleClick)}
             onDragStart={(e) => handleDynamicEvent(isEditable, () => onDragStart(e))}
             style={{ paddingLeft: getPaddingLeft(depth) }}
         >

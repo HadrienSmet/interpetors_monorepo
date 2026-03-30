@@ -7,7 +7,7 @@ import { usePreparations } from "@/modules/preparations";
 import { FileData } from "../../types";
 
 import { getTargetKeys, browseStructureToActionOnFile, isPdfMetadata, FileVisitor, findFile } from "./foldersManager.utils";
-import { FoldersManagerContext, FoldersManagerContextValue } from "./FoldersManagerContext";
+import { FoldersManagerContext, FoldersManagerContextValue, LANGUAGES_STATE, LanguagesState } from "./FoldersManagerContext";
 
 type FoldersManagerProviderProps =
     & { readonly editable: boolean; }
@@ -15,6 +15,7 @@ type FoldersManagerProviderProps =
 export const FoldersManagerProvider = ({ children, editable }: FoldersManagerProviderProps) => {
     const [foldersStructure, setFoldersStructure] = useState<Array<FolderStructure>>([]);
     const [isEditable, setIsEditable] = useState(editable);
+	const [languagesState, setLanguagesState] = useState<LanguagesState>(LANGUAGES_STATE.NULL);
     const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);
 
 	const { selectedPreparation } = usePreparations();
@@ -87,7 +88,7 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
                     lastModified: value.file.lastModified,
                 });
 
-                return ([newName, { ...value, file: updatedFile }]);
+                return ([newName, { ...value, file: updatedFile, name: newName }]);
             }
 
             return ([key, value]);
@@ -123,6 +124,30 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
     };
 
     // ---------- Folders methods ----------
+	const assignLanguageToFiles = (paths: Array<string>, language: string) => {
+		const targetPaths = new Set(paths);
+
+		const updateStructure = (structure: FolderStructure, parentPath = ""): FolderStructure => {
+			const updated: FolderStructure = {};
+
+			for (const [key, value] of Object.entries(structure)) {
+				const currentPath = `${parentPath}/${key}`;
+
+				if (isPdfMetadata(value)) {
+					updated[key] = targetPaths.has(currentPath)
+						? { ...value, language }
+						: value;
+					continue;
+				}
+
+				updated[key] = updateStructure(value, currentPath);
+			}
+
+			return (updated);
+		};
+
+		setFoldersStructure((state) => state.map((folder) => updateStructure(folder)));
+	};
     const changeFolderDirectory = (sourcePath: string, destinatationPath: string) => {
         const sourceParts = getTargetKeys(sourcePath);
         const destinationParts = getTargetKeys(destinatationPath);
@@ -287,7 +312,10 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
         setFoldersStructure(state => state.map(str => changeName(str, pathParts)));
     };
 
-    const onDrop = (folder: FolderStructure) => setFoldersStructure(state => [...state, folder]);
+    const onDrop = (folder: FolderStructure) => {
+		setLanguagesState(LANGUAGES_STATE.OPTIONAL);
+		setFoldersStructure(state => [...state, folder]);
+	};
 
     useEffect(() => {
         if (selectedPreparation) {
@@ -304,14 +332,15 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
     }, [foldersStructure, selectedFilePath]);
 
     const value: FoldersManagerContextValue = {
-        isEditable,
+		isEditable,
         files: {
-            changeDirectory: changeFileDirectory,
+			changeDirectory: changeFileDirectory,
             delete: deleteFile,
             rename: renameFile,
             update: updateFile,
         },
         folders: {
+			assignLanguageToFiles,
             changeDirectory: changeFolderDirectory,
             create: createFolder,
             delete: deleteFolder,
@@ -319,7 +348,9 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
             rename: renameFolder,
         },
         foldersStructure,
+		languagesState,
         selectedFile,
+		setLanguagesState,
         setIsEditable,
         setSelectedFilePath,
         setFoldersStructure,

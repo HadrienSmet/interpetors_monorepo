@@ -13,9 +13,13 @@ export type NewFile = {
 	readonly filePath: string;
 	readonly pdfFile: PdfFile;
 };
-type FileToPatchInDelta = 
-	& FILES.FileToPatch 
-	& { actions?: string; };
+type FileToPatchInDelta =
+	& FILES.FileToPatch
+	& {
+		actions?: string;
+		language?: string;
+	};
+
 export type Delta = {
 	readonly filesToPatch: Array<FileToPatchInDelta>;
 	readonly newFiles: Array<NewFile>;
@@ -28,12 +32,18 @@ type DiffFoldersItem = {
 /** Clé "identité" du fichier. On privilégie la référence File, sinon fallback (name|size|lastModified). */
 const makeFileKey = (pdf: PdfMetadata): string => {
 	const file = pdf.file as any;
+
+	// Cas idéal : référence stable injectée sur l'objet File
 	const refId = file.__refId ?? undefined;
 	if (refId) return (`ref:${refId}`);
 
+	// Encore mieux si ton PdfMetadata/PdfFile a déjà un id stable
+	if (pdf.id) return (`pdf:${pdf.id}`);
+
+	// Fallback stable au renommage
 	const size = file.size ?? "unk";
 	const lastModified = file.lastModified ?? "unk";
-	return (`sig:${pdf.name}|${size}|${lastModified}`);
+	return (`sig:${size}|${lastModified}`);
 };
 
 type ActionMeta = {
@@ -43,7 +53,7 @@ type ActionMeta = {
 };
 type Indexed = {
 	byKey: Map<string, { path: string; pdf: PdfFile; pages: Map<number, ActionMeta> }>;
-	pathByKey: Map<string, string>; // Usefull for moves
+	pathByKey: Map<string, string>;
 };
 /** Aplati un FolderStructure[] en map: fileKey -> infos (chemin, pdf, métadonnées d'actions) */
 const indexStructures = (item: DiffFoldersItem) => {
@@ -55,21 +65,25 @@ const indexStructures = (item: DiffFoldersItem) => {
 	const walk = (node: FolderStructure, base: string) => {
 		for (const [name, value] of Object.entries(node)) {
 			const currentPath = base ? `${base}/${name}` : `/${name}`;
+
 			if (isPdfMetadata(value)) {
 				const key = makeFileKey(value);
 				const pages = new Map<number, ActionMeta>();
-				const fileActions = item.actions[value.id];
+				const fileActions = item.actions[value.id] ?? {};
+
 				for (const [k, action] of Object.entries(fileActions)) {
 					const idx = Number(k);
 					const elementsLen = action?.elements?.length ?? 0;
 					const referencesLen = action?.references?.length ?? 0;
 					const resourcesLen = action?.generatedResources?.length ?? 0;
+
 					pages.set(idx, {
 						elementsLen,
 						referencesLen,
 						resourcesLen,
 					});
 				}
+
 				output.byKey.set(key, {
 					path: currentPath,
 					pdf: { ...value, actions: fileActions },
@@ -84,6 +98,24 @@ const indexStructures = (item: DiffFoldersItem) => {
 
 	for (const root of item.folders) walk(root, "");
 	return (output);
+};
+const shouldPatchLanguage = (oldPdf: PdfFile, newPdf: PdfFile): boolean => {
+	const oldLanguage = oldPdf.language;
+	const newLanguage = newPdf.language;
+
+	// On ne patch que l’attribution initiale d’une langue
+	return (
+		(oldLanguage === undefined || oldLanguage === null) &&
+		typeof newLanguage === "string" &&
+		newLanguage.trim().length > 0
+	);
+};
+
+const getParentPath = (fullPath: string): string => {
+	const parts = fullPath.split("/");
+	parts.pop();
+
+	return (parts.join("/") || "/");
 };
 
 type DiffFoldersParams = {
@@ -101,25 +133,40 @@ export const diffFolderStructures = ({
 	const newFiles: Delta["newFiles"] = [];
 	const filesToPatch: Delta["filesToPatch"] = [];
 
-	// 2) Détecter nouvelles actions
 	for (const [key, { path: newPath, pdf: newPdf, pages: newPages }] of newIdx.byKey.entries()) {
 		let hasToPatchFile = false;
 		const fileToPatch: FileToPatchInDelta = { id: newPdf.id };
 		const oldPath = oldIdx.pathByKey.get(key);
 		const oldEntry = oldIdx.byKey.get(key);
-		const splitted = newPath.split("/");
-		splitted.pop();
-		const pathWithoutName = splitted.join("/");
+
+		const newParentPath = getParentPath(newPath);
+		const oldParentPath = oldPath ? getParentPath(oldPath) : undefined;
 
 		if (!oldPath || !oldEntry) {
-			newFiles.push({ filePath: pathWithoutName, pdfFile: newPdf });
+			newFiles.push({ filePath: newParentPath, pdfFile: newPdf });
 			continue;
-		} else if (oldPath !== newPath) {
-			hasToPatchFile = true;
-			fileToPatch.filePath = pathWithoutName;
 		}
 
-		// Sinon, comparer page par page (append only)
+		// Déplacement du fichier
+		if (oldParentPath !== newParentPath) {
+			hasToPatchFile = true;
+			fileToPatch.filePath = newParentPath;
+		}
+
+		// Renommage du fichier
+		// Le plus fiable ici est de comparer le nom métier
+		if (oldEntry.pdf.name !== newPdf.name) {
+			hasToPatchFile = true;
+			fileToPatch.name = newPdf.name;
+		}
+
+		// Nouveau : on patch si la langue vient d’être définie
+		if (shouldPatchLanguage(oldEntry.pdf, newPdf)) {
+			hasToPatchFile = true;
+			fileToPatch.language = newPdf.language;
+		}
+
+		// Comparaison page par page
 		for (const [pageIndex] of newPages.entries()) {
 			const oldMeta = oldEntry.pages.get(pageIndex);
 			const actionNew = newPdf.actions[pageIndex];
@@ -128,13 +175,11 @@ export const diffFolderStructures = ({
 			if (!actionNew) continue;
 
 			if (!oldMeta) {
-				// page nouvelle -> tout le contenu est “nouveau”
 				hasToPatchFile = true;
 				fileToPatch.actions = JSON.stringify(newPdf.actions);
 				break;
 			}
 
-			// éléments ajoutés
 			const elemsNewLen = actionNew.elements?.length ?? 0;
 			if (elemsNewLen > oldMeta.elementsLen) {
 				const slice = actionNew.elements.slice(oldMeta.elementsLen);
@@ -145,12 +190,9 @@ export const diffFolderStructures = ({
 				}
 			}
 
-			// références ajoutées
 			const refsNewLen = actionNew.references?.length ?? 0;
 			if (refsNewLen > oldMeta.referencesLen) {
-				const slice = actionNew.references!.slice(
-					oldMeta.referencesLen,
-				);
+				const slice = actionNew.references!.slice(oldMeta.referencesLen);
 				if (slice.length) {
 					hasToPatchFile = true;
 					fileToPatch.actions = JSON.stringify(newPdf.actions);
@@ -158,14 +200,12 @@ export const diffFolderStructures = ({
 				}
 			}
 
-			// ressources (notes) ajoutées
 			const newResources = actionNew.generatedResources ?? [];
-			const oldResources = actionOld.generatedResources ?? [];
-			const resourcesNewLength = newResources.length ?? 0;
+			const oldResources = actionOld?.generatedResources ?? [];
+			const resourcesNewLength = newResources.length;
+
 			if (resourcesNewLength > oldMeta.resourcesLen) {
-				const slice = actionNew.generatedResources!.slice(
-					oldMeta.resourcesLen,
-				);
+				const slice = newResources.slice(oldMeta.resourcesLen);
 				if (slice.length) {
 					hasToPatchFile = true;
 					fileToPatch.actions = JSON.stringify(newPdf.actions);
@@ -182,6 +222,10 @@ export const diffFolderStructures = ({
 					fileToPatch.actions = JSON.stringify(newPdf.actions);
 					break;
 				}
+			}
+
+			if (hasToPatchFile && fileToPatch.actions) {
+				break;
 			}
 		}
 

@@ -4,6 +4,7 @@ import { ActionColor, SavedVocabularyTerm } from "@repo/types";
 export type WordToAdd = {
     readonly color: ActionColor;
     readonly filePath: string;
+	readonly language: string;
     readonly pdfFileId?: string;
     readonly pageIndex: number;
     readonly text: string;

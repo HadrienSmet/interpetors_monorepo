@@ -63,7 +63,7 @@ export const buildFoldersStructure = async (preparationId: string, userKey: Cryp
     const hydrated = await Promise.all(files.map(item => limit(() => handleFile({ item, foldersActions, preparationId, userKey }))));
 
     for (const fileData of hydrated) {
-        const { id, filePath, name, file } = fileData;
+        const { id, filePath, language, name, file } = fileData;
         const parts = filePath ? filePath.split("/").filter(Boolean) : [];
 
         let currentLevel: SavedFolderStructure;
@@ -94,7 +94,7 @@ export const buildFoldersStructure = async (preparationId: string, userKey: Cryp
         }
 
         // insère le PdfFile
-        currentLevel[name] = { id, file, name };
+        currentLevel[name] = { id, file, language: language ?? undefined, name };
     }
 
     return ({ foldersActions, foldersStructures });

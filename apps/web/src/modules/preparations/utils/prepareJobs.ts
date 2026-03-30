@@ -69,6 +69,7 @@ export const prepareJobs = async (
                     pdf: {
                         actions,
                         filePath,
+						language: value.language,
                         name: value.name,
                         preparationId,
                     },

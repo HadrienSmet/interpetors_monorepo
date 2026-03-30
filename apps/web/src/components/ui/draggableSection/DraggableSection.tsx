@@ -12,7 +12,7 @@ import "./draggableSection.scss";
 
 const DraggableSectionChild = ({ children, expansionEnabled, rotateEnabled }: DraggableSectionProps) => {
     const [isDragging, setIsDragging] = useState(false);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState({ x: 8, y: 8 });
 
     const defaultBg = useCssVariable("--clr-txt-02");
     const {

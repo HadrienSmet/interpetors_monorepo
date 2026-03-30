@@ -11,6 +11,9 @@ export class PatchPdfFileDto {
     @IsOptional()
     @IsString()
     filePath?: string;
+	@IsOptional()
+	@IsString()
+	language?: string;
     @IsOptional()
     @IsString()
     name?: string;
@@ -26,6 +29,9 @@ class PatchedPdfFile {
     @IsString()
     @IsNotEmpty()
     id: string;
+	@IsOptional()
+	@IsString()
+	language?: string;
     @IsOptional()
     @IsString()
     name: string;

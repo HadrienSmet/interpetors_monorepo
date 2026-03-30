@@ -57,43 +57,42 @@ export const VocabularyTableRow = ({ index, isEditable, pdfVocabulary }: Vocabul
 
         return (next);
     });
+	const languagesList = [nativeLanguage, ...languages.filter(lng => lng !== nativeLanguage)];
 
-    return (
+    return ( 
         <tr
             className="vocabulary-table-row"
             style={{ backgroundColor }}
         >
-            <td className="vocabulary-table-cell">
-                <button
-                    className="vocabulary-table__link"
-                    onClick={toFile}
-                    style={{ maxWidth: "100%" }}
-                    title={pdfVocabulary.occurrence.text}
-                >
-                    <MdLink />
-                    <em>{pdfVocabulary.occurrence.text}</em>
-                </button>
-            </td>
-            <CellToFill
-				isEditable={isEditable}
-                locale={nativeLanguage}
-                localeIndex={0}
-                pdfVocabulary={pdfVocabulary}
-            />
-            {languages
-                .filter(lng => lng !== nativeLanguage)
-                .map(lng => (
-                    <CellToFill
+            {languagesList.map(lng => {
+				if (lng === pdfVocabulary.occurrence.language) {
+					return (
+						<td 
+							className="vocabulary-table-cell"
+							key={`voc-occurence-${lng}-${pdfVocabulary.occurrence.text}`}
+						>
+							<button
+								className="vocabulary-table__link"
+								onClick={toFile}
+								style={{ maxWidth: "100%" }}
+								title={pdfVocabulary.occurrence.text}
+							>
+								<MdLink />
+								<em>{pdfVocabulary.occurrence.text}</em>
+							</button>
+						</td>
+					);
+				}
+
+				return (
+					<CellToFill
 						isEditable={isEditable}
-                        key={`cell-to-fill-${lng}-${pdfVocabulary.occurrence.text}`}
-                        locale={lng}
-                        localeIndex={currentWorkspace!.languages
-                            .filter(lng => lng !== nativeLanguage)
-                            .findIndex(el => el === lng) + 1}
-                        pdfVocabulary={pdfVocabulary}
-                    />
-                ))
-            }
+						key={`cell-to-fill-${lng}-${pdfVocabulary.occurrence.text}`}
+						locale={lng}
+						pdfVocabulary={pdfVocabulary}
+					/>
+				);
+			})}
         </tr>
     );
 };

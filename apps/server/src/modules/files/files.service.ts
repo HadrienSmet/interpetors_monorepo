@@ -62,12 +62,13 @@ export class FilesService {
 			where: { preparationId },
 			orderBy: { filePath: "asc" },
 			select: {
-				id: true,
-				name: true,
-				s3Key: true,
-				filePath: true,
-				preparationId: true,
 				createdAt: true,
+				filePath: true,
+				id: true,
+				language: true,
+				name: true,
+				preparationId: true,
+				s3Key: true,
 				updatedAt: true,
 			},
 		});
