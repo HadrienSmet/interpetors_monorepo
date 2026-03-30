@@ -88,7 +88,7 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
                     lastModified: value.file.lastModified,
                 });
 
-                return ([newName, { ...value, file: updatedFile }]);
+                return ([newName, { ...value, file: updatedFile, name: newName }]);
             }
 
             return ([key, value]);

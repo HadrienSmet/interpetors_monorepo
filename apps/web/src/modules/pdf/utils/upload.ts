@@ -8,6 +8,7 @@ type UploadFileParams = {
     readonly contentType: string;
     readonly file: File;
     readonly filePath: string;
+	readonly language?: string;
     readonly name: string;
     readonly preparationId: string;
 };
@@ -16,6 +17,7 @@ export const uploadFile = async ({
     contentType,
     file,
     filePath,
+	language,
     name,
     preparationId,
 }: UploadFileParams) => {
@@ -30,7 +32,7 @@ export const uploadFile = async ({
     }
 
     // b) Création PdfFile (DB)
-    const pdfRes = await FILES.postPdf({ filePath, name, preparationId, s3Key: s3Res.data.key });
+    const pdfRes = await FILES.postPdf({ filePath, language, name, preparationId, s3Key: s3Res.data.key });
     if (!pdfRes.success) {
         throw new Error(`postPdf failed for "${name}": ${pdfRes.message}`);
     }

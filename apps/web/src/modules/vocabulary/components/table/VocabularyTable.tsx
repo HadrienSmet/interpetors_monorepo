@@ -21,7 +21,7 @@ export const VocabularyTable= ({ isEditable = false }: VocabularyTableProps) => 
                         <VocabularyTableRow
                             index={index}
 							isEditable={isEditable}
-                            key={`${elem.id}`}
+                            key={`${elem.id}-${index}`}
                             pdfVocabulary={elem}
                         />
                     ))}

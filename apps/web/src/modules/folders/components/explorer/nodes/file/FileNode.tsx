@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react";
-import { MdDelete, MdDriveFileRenameOutline, MdTranslate } from "react-icons/md";
+import { MdDriveFileRenameOutline, MdTranslate } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
 import { PdfMetadata } from "@repo/types";
@@ -43,15 +43,15 @@ export const FileNode = ({
             ),
             onClick: () => setIsEditingFile(true),
         },
-        {
-            children: (
-                <>
-                    <MdDelete />
-                    <p>{t("files.context-menu.delete")}</p>
-                </>
-            ),
-            onClick: () => files.delete(node),
-        },
+        // {
+        //     children: (
+        //         <>
+        //             <MdDelete />
+        //             <p>{t("files.context-menu.delete")}</p>
+        //         </>
+        //     ),
+        //     onClick: () => files.delete(node),
+        // },
         {
             children: (
                 <>

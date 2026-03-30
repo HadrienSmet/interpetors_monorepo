@@ -67,7 +67,10 @@ export const VocabularyTableRow = ({ index, isEditable, pdfVocabulary }: Vocabul
             {languagesList.map(lng => {
 				if (lng === pdfVocabulary.occurrence.language) {
 					return (
-						<td className="vocabulary-table-cell">
+						<td 
+							className="vocabulary-table-cell"
+							key={`voc-occurence-${lng}-${pdfVocabulary.occurrence.text}`}
+						>
 							<button
 								className="vocabulary-table__link"
 								onClick={toFile}

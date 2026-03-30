@@ -4,28 +4,29 @@ import { call, HTTP_METHODS } from "@/utils";
 
 import { getPdfRoute } from "./const";
 
-type PatchOneApiBody = {
-    readonly filePath?: string;
-    readonly name?: string;
-};
-type PatchOneApiParams = {
-    readonly body: PatchOneApiBody;
-    readonly fileId: string;
-    readonly preparationId: string;
-};
-export const patchOneApi = async ({ body, fileId, preparationId }: PatchOneApiParams) => {
-    const response = await call<PdfFileApi>({
-        body,
-        method: HTTP_METHODS.PATCH,
-        route: `${getPdfRoute(preparationId)}/${fileId}`,
-    });
-
-    return (response);
-};
+// type PatchOneApiBody = {
+//     readonly filePath?: string;
+// 	readonly language?: string;
+//     readonly name?: string;
+// };
+// type PatchOneApiParams = {
+//     readonly body: PatchOneApiBody;
+//     readonly fileId: string;
+//     readonly preparationId: string;
+// };
+// export const patchOneApi = async ({ body, fileId, preparationId }: PatchOneApiParams) => {
+//     const response = await call<PdfFileApi>({
+//         body,
+//         method: HTTP_METHODS.PATCH,
+//         route: `${getPdfRoute(preparationId)}/${fileId}`,
+//     });
+//     return (response);
+// };
 
 export type FileToPatch = {
     filePath?: string;
     readonly id: string;
+	language?: string;
 	name?: string;
 };
 type PatchApiParams = {

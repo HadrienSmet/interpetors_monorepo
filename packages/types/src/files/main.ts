@@ -2,6 +2,7 @@ import { FileAction } from "./actions";
 
 export type PdfFile = {
     readonly actions: Record<number, FileAction>;
+	readonly language?: string;
 	// @ts-expect-error
     readonly file: File;
     readonly id: string;

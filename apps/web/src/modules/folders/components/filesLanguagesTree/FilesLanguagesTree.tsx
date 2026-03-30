@@ -168,8 +168,8 @@ type FilesLanguagesTreeModalProps = {
     readonly folderIndex?: number;
 };
 export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModalProps) => {
-    const {
-        languagesState,
+	const {
+		languagesState,
         foldersStructure,
 		selectedFile,
 		setLanguagesState,
@@ -180,15 +180,11 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
     const [selectedLanguage, setSelectedLanguage] = useState<string>(currentWorkspace?.languages[0] ?? "");
 
     const folder = useMemo(() => {
-        if (folderIndex === undefined) return (undefined);
-
+		if (folderIndex === undefined) return (undefined);
+		
         return (foldersStructure[folderIndex]);
     }, [folderIndex, foldersStructure]);
 	const targetedFileName = selectedFile.fileInStructure?.name;
-
-	if (!folder) {
-		return (null);
-	}
 
     return (
         <Modal
@@ -200,7 +196,7 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
             <div className="files-languages-tree__modal">
 				<div className="files-languages-tree__header">
 					<h3>
-						{t(`folders.languagesTree.${languagesState}`, { targetedFileName })}
+						{t(`folders.languages.tree.${languagesState}`, { targetedFileName })}
 					</h3>
 					{languagesState === LANGUAGES_STATE.OPTIONAL && (
 						<button onClick={() => setLanguagesState(LANGUAGES_STATE.NULL)}>
@@ -215,10 +211,21 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
                     recommandedItems={currentWorkspace?.languages}
                 />
 
-                <FilesLanguagesTree
-                    folder={folder}
-                    selectedLanguage={selectedLanguage}
-                />
+				{folder 
+					? (
+						<FilesLanguagesTree
+							folder={folder}
+							selectedLanguage={selectedLanguage}
+						/>
+					)
+					: foldersStructure.map((folder, index) => (
+						<FilesLanguagesTree
+							folder={folder}
+							key={index}
+							selectedLanguage={selectedLanguage}
+						/>
+					))
+				}
             </div>
         </Modal>
     );

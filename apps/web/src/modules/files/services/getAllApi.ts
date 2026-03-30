@@ -5,6 +5,7 @@ import { getPdfRoute } from "./const";
 export type FileApiResponse = {
     readonly filePath: string;
     readonly id: string;
+	readonly language: string | null;
     readonly name: string;
     readonly s3Key: string;
 };

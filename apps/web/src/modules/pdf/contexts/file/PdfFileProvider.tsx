@@ -112,10 +112,10 @@ export const PdfFileProvider = ({ children }: PropsWithChildren) => {
     // Removes the loader when the pdf is displayed
     useEffect(() => {
         if (isPdfRendered) {
-            // Between 400 and 700 ms
-            const randomTimeout = Math.ceil((Math.random() * 300)) + 400;
+			// Between 200 and 400 ms
+            const randomTimeout = Math.ceil((Math.random() * 200)) + 200;
             setTimeout(() => {
-                setDisplayLoader(false);
+				setDisplayLoader(false);
             }, randomTimeout);
         }
         if (selectedFile.path !== "") {
