@@ -29,7 +29,10 @@ const LanguagesList = ({ handleNative, languages, nativeLanguage, removeLanguage
                 >
                     <p>{capitalize(getNativeName(language) ?? "")}</p>
                     {removeLanguage && (
-                        <MdClear onClick={() => removeLanguage(language)} />
+                        <MdClear onClick={(e) => {
+							e.stopPropagation();
+							removeLanguage(language);
+						}} />
                     )}
                 </div>
             ))}
@@ -109,9 +112,9 @@ const WorkspaceContainer = (props: WorkspaceContainerProps) => {
                 {workspace.colorPanelId && (
                     <p>{t("colorPanel.user", { name: workspace.name })}</p>
                 )}
-                <p>{t("workspaces.stats.preparation", { count: 0 })}</p>
-                <p>{t("workspaces.stats.vocabulary", { count: 0 })}</p>
-                <p>{t("workspaces.stats.encyclopedy", { count: 0 })}</p>
+                <p>{t("workspaces.stats.preparation", { count: workspace._count.preparations })}</p>
+                <p>{t("workspaces.stats.vocabulary", { count: workspace._count.vocabularyTerms })}</p>
+                {/* <p>{t("workspaces.stats.encyclopedy", { count: 0 })}</p> */}
                 {isEditing && (
                     <Button
                         isPending={isPending}

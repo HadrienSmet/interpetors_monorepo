@@ -41,7 +41,7 @@ export const DictionaryProvider = ({ children }: PropsWithChildren) => {
         if (shouldFetch) {
             fetchTerms();
         }
-    }, [shouldFetch]);
+    }, [shouldFetch, currentWorkspace?.languages]);
 
     const groupedTerms = useMemo(() => (groupVocabularyByColor(terms)), [terms]);
 

@@ -5,4 +5,8 @@ export type Workspace = {
     readonly name: string;
     readonly nativeLanguage: string;
     readonly userId: string;
+	readonly _count: {
+		readonly preparations: number;
+		readonly vocabularyTerms: number;
+	}
 };
