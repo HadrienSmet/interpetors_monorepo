@@ -1,85 +1,22 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { MdExitToApp, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight, MdMenu } from "react-icons/md";
-import { useTranslation } from "react-i18next";
-
-
-import { useAuth } from "@/modules/auth";
-import { ResizableSection, useResizableLayout } from "@/modules/resizableLayout";
-
-import { NavigationButton } from "./NavigationButton";
+import { NavigationButton } from "./button";
 import { NAVIGATION } from "./navigation.types";
 import "./navigation.scss";
 
-const ICON_SIZE = 24 as const;
-const UnexpandedNavigation = (props: { setIsExpanded: Dispatch<SetStateAction<boolean>> }) => {
-    const [isHovered, setHovered] = useState(false);
-
-    return (
-        <div
-            className={`navigation-padding  ${isHovered ? "hover" : ""}`}
-            onClick={() => props.setIsExpanded(true)}
-            onMouseOver={() => setHovered(true)}
-            onMouseOut={() => setHovered(false)}
-        >
-            {isHovered
-                ? <MdKeyboardDoubleArrowRight size={ICON_SIZE} />
-                : <MdMenu size={ICON_SIZE} />
-            }
-        </div>
-    );
-};
-
-const NAVIGATION_DEFAULT_WIDTH = 275 as const;
-const SECTION_ID = "navigation";
 type NavigationProps = { readonly displayNested?: boolean; };
-export const Navigation = ({ displayNested = false }: NavigationProps) => {
-    const [isExpanded, setIsExpanded] = useState(true);
+export const Navigation = ({ displayNested = false }: NavigationProps) => (
+    <div className="navigation navigation-padding">
+        <div className="navigation-buttons">
+            {Object.keys(NAVIGATION).map(key => {
+                const current = NAVIGATION[key as keyof typeof NAVIGATION];
 
-    const { signout } = useAuth();
-    const { setSectionVisibility } = useResizableLayout();
-    const { t } = useTranslation();
-
-    useEffect(() => {
-        setSectionVisibility(SECTION_ID, isExpanded);
-    }, [isExpanded]);
-
-    if (!isExpanded) {
-        return (<UnexpandedNavigation setIsExpanded={setIsExpanded} />);
-    }
-
-    return (
-        <ResizableSection
-            initialWidth={NAVIGATION_DEFAULT_WIDTH}
-            id={SECTION_ID}
-        >
-            <div className="navigation navigation-padding">
-                <div className="navigation-header">
-                    <MdKeyboardDoubleArrowLeft
-                        size={ICON_SIZE}
-                        onClick={() => setIsExpanded(false)}
+                return (
+                    <NavigationButton
+                        {...current}
+                        displayNested={displayNested}
+                        key={current.id}
                     />
-                </div>
-                <div className="navigation-buttons">
-                    {Object.keys(NAVIGATION).map(key => {
-                        const current = NAVIGATION[key as keyof typeof NAVIGATION];
-
-                        return (
-                            <NavigationButton
-                                {...current}
-                                displayNested={displayNested}
-                                key={current.id}
-                            />
-                        );
-                    })}
-                </div>
-                <button
-                    className="navigation-log-out"
-                    onClick={signout}
-                >
-                    <MdExitToApp />
-                    <span>{t("auth.signout")}</span>
-                </button>
-            </div>
-        </ResizableSection>
-    );
-};
+                );
+            })}
+        </div>
+    </div>
+);

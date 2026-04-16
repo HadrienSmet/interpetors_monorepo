@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { MdDownload, MdSearch } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { PiDownloadSimple, PiMagnifyingGlass } from "react-icons/pi";
 
 import { DraggableSection, SearchInput, useDraggableSection } from "@/components";
 import { useColorPanel } from "@/modules/colorPanel";
@@ -104,13 +104,13 @@ const VocabularyTableToolsChild = () => {
                     className="vocabulary-table-tool"
                     onClick={toggleSearch}
                 >
-                    <MdSearch />
+                    <PiMagnifyingGlass />
                 </button>
                 <button
                     className="vocabulary-table-tool"
                     onClick={download}
                     >
-                    <MdDownload />
+                    <PiDownloadSimple />
                 </button>
             </div>
             <div className={`vocabulary-table-filter-container ${isSearching ? "expanded" : ""}`}>

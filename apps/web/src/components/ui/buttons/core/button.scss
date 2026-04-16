@@ -1,18 +1,18 @@
 .button {
-    background-color: var(--clr-txt);
+    background-color: var(--clr-button);
     border-radius: var(--radius-s);
     color: var(--clr-bg);
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 1.1;
     outline: none;
-    padding: var(--space-m) var(--space-xl);
+    padding: var(--space-xl);
     transition:
         background-color var(--transition-theme),
         color var(--transition-theme),
         transform 0.18s;
 
     &:not(:disabled) {
-        border: var(--border-s) solid var(--clr-txt);
+        border: var(--border-s) solid var(--clr-button);
     }
     &:disabled {
         background-color: var(--clr-txt-04);
@@ -20,7 +20,7 @@
         cursor:not-allowed;
     }
     &:hover:not(:disabled) {
-        background-color: var(--clr-bg-light);
-        color: var(--clr-txt);
+        background-color: var(--clr-button-hover);
+		border-color: var(--clr-button-hover);
     }
 }

@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from "react";
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
+import { PiArrowLeft, PiArrowRight } from "react-icons/pi";
 
 import { usePdfFile } from "../../../contexts";
 
@@ -66,13 +66,13 @@ export const PageManager = () => {
 		<div className="page-manager-container">
 			<div className={`page-manager ${isVisible ? "visible" : ""}`}>
 				<button onClick={previousPage}>
-					<MdArrowBack />
+					<PiArrowLeft />
 				</button>
 				<p>
 					{`${pageIndex} / ${numPages}`}
 				</p>
 				<button onClick={nextPage}>
-					<MdArrowForward />
+					<PiArrowRight />
 				</button>
 			</div>
 		</div>

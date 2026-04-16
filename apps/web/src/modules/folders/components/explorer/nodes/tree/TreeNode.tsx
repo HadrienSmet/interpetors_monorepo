@@ -1,6 +1,5 @@
 import { ChangeEvent, DragEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useRef, useState } from "react";
-import { MdCreateNewFolder, MdDelete, MdDriveFileRenameOutline } from "react-icons/md";
-import { VscFolder, VscFolderOpened } from "react-icons/vsc";
+import { PiFolder, PiFolderOpen, PiFolderPlus, PiPencilLine, PiTrash } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 import { InputStyleLess } from "@/components";
@@ -92,7 +91,7 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
         {
             children: (
                 <>
-                    <MdCreateNewFolder />
+                    <PiFolderPlus />
                     <p>{t("folders.context-menu.create")}</p>
                 </>
             ),
@@ -104,7 +103,7 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
         {
             children: (
                 <>
-                    <MdDriveFileRenameOutline />
+                    <PiPencilLine />
                     <p>{t("folders.context-menu.rename")}</p>
                 </>
             ),
@@ -113,7 +112,7 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
         {
             children: (
                 <>
-                    <MdDelete />
+                    <PiTrash />
                     <p>{t("folders.context-menu.delete")}</p>
                 </>
             ),
@@ -234,8 +233,8 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
                 style={{ paddingLeft: getPaddingLeft(depth) }}
             >
                 {isOpen
-                    ? <VscFolderOpened />
-                    : <VscFolder />
+                    ? <PiFolderOpen />
+                    : <PiFolder />
                 }
                 {(isEditable && isRenaming)
                     ? (
@@ -259,7 +258,7 @@ export const TreeNode = (props: CurrentTreeNodeProps) => {
                             className="folders-explorer__item folder"
                             style={{ marginLeft: getPaddingLeft(depth + 1) }}
                         >
-                            <VscFolder />
+                            <PiFolder />
                             <InputStyleLess
                                 autoFocus
                                 name="folder-create-name"

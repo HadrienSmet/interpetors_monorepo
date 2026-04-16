@@ -19,7 +19,7 @@ type PreparationContextValue = {
 	readonly isNew: boolean;
     readonly isSaving: boolean;
     readonly patchPreparation: (params: SavePreparationParams) => Promise<void>;
-    readonly preparation: ClientPreparation;
+    readonly preparation: Omit<ClientPreparation, "folders">;
     readonly setTitle: Dispatch<SetStateAction<string>>;
 };
 

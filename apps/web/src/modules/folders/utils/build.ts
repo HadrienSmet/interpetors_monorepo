@@ -1,4 +1,4 @@
-import { FilesActionsStore, SavedFolderStructure } from "@repo/types";
+import { FilesActionsStore, FolderStructure } from "@repo/types";
 
 import { FILES } from "@/modules/files";
 import {
@@ -50,7 +50,7 @@ const handleFile = async ({ foldersActions, item, preparationId, userKey }: Hand
 const limit = handleServicesConcurrency(4);
 
 export const buildFoldersStructure = async (preparationId: string, userKey: CryptoKey) => {
-    const foldersStructures: Array<SavedFolderStructure> = [];
+    const foldersStructures: Array<FolderStructure> = [];
 
     const pdfFilesResponse = await FILES.getAllApi(preparationId);
     if (!pdfFilesResponse.success) {
@@ -66,7 +66,7 @@ export const buildFoldersStructure = async (preparationId: string, userKey: Cryp
         const { id, filePath, language, name, file } = fileData;
         const parts = filePath ? filePath.split("/").filter(Boolean) : [];
 
-        let currentLevel: SavedFolderStructure;
+        let currentLevel: FolderStructure;
 
         // Trouve ou crée la racine correspondante
         if (parts.length === 0) {
@@ -81,7 +81,7 @@ export const buildFoldersStructure = async (preparationId: string, userKey: Cryp
                 root = { [rootName]: {} };
                 foldersStructures.push(root);
             }
-            currentLevel = root[rootName] as SavedFolderStructure;
+            currentLevel = root[rootName] as FolderStructure;
 
             // crée récursivement les sous-dossiers
             for (let i = 1; i < parts.length; i++) {
@@ -89,7 +89,7 @@ export const buildFoldersStructure = async (preparationId: string, userKey: Cryp
                 if (!(folder in currentLevel)) {
                     currentLevel[folder] = {};
                 }
-                currentLevel = currentLevel[folder] as SavedFolderStructure;
+                currentLevel = currentLevel[folder] as FolderStructure;
             }
         }
 

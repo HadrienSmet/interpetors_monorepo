@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
-import { MdSearch } from "react-icons/md";
+import { PiMagnifyingGlass } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 import { InputStyleLess } from "../styleLess";
@@ -31,7 +31,7 @@ export const SearchInput = ({
         <div className="search-input-container">
             <div className={`search-input ${isFocused ? "focused" : ""}`}>
                 <div className="icon-container">
-                    <MdSearch />
+                    <PiMagnifyingGlass />
                 </div>
                 <InputStyleLess
                     onBlur={onBlur}

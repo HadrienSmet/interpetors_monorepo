@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { PiEye, PiEyeSlash } from "react-icons/pi";
 
 import { Input, InputProps } from "../core";
 
@@ -18,8 +18,8 @@ export const SecureInput = (props: InputProps) => {
             />
             <button onClick={toggleVisibility}>
                 {hidden
-                    ? <FaRegEye />
-                    : <FaRegEyeSlash />
+                    ? <PiEye />
+                    : <PiEyeSlash />
                 }
             </button>
         </div>

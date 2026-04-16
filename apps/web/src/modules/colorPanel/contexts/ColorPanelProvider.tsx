@@ -33,8 +33,9 @@ export const ColorPanelProvider = (props: PropsWithChildren) => {
         fetchColorPanel(storedItem);
     }, []);
 
-    const createPanel = async (params: ColorPanelInCreation) => {
-        setIsLoading(true);
+    const createPanel = async (params: ColorPanelInCreation & { readonly workspaceId: string }) => {
+		setIsLoading(true);
+
         const response = await create({
             ...params,
             name: params.name ?? "default",

@@ -54,17 +54,7 @@ footer {
         width: 50%;
     }
 }
-header {
-    align-items: center;
-    background-color: var(--clr-bg-dark);
-    box-shadow: var(--shadow-default) var(--clr-txt-02);
-    display: flex;
-    font-family: --font-title;
-    justify-content: space-between;
-    padding: var(--space-xl) var(--space-h);
-    transition: background-color var(--transition-theme);
-    z-index: 2;
-}
+
 img {
     object-fit: cover;
 }
@@ -73,6 +63,7 @@ main {
     flex: 1;
     flex-direction: column;
     height: auto;
+	overflow: hidden;
 }
 h1,
 h2,

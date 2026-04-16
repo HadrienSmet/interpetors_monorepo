@@ -12,6 +12,7 @@ type ResizableSectionProps =
     }
     & PropsWithChildren;
 
+const NAVIGATION_WIDTH = 50 as const;
 const RESIZER_WIDTH = 3 as const;
 
 export const ResizableSection = ({
@@ -31,7 +32,7 @@ export const ResizableSection = ({
         e.preventDefault();
 
         const onMouseMove = (moveEvent: MouseEvent) => {
-            updateWidth(id, moveEvent.clientX);
+            updateWidth(id, moveEvent.clientX - NAVIGATION_WIDTH);
         };
 
         const onMouseUp = () => {

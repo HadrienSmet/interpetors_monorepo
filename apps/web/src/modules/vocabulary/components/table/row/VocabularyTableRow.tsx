@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { MdLink } from "react-icons/md";
+import { PiLink } from "react-icons/pi";
 import { useSearchParams } from "react-router";
 
 import { VocabularyTerm } from "@repo/types";
@@ -77,7 +77,7 @@ export const VocabularyTableRow = ({ index, isEditable, pdfVocabulary }: Vocabul
 								style={{ maxWidth: "100%" }}
 								title={pdfVocabulary.occurrence.text}
 							>
-								<MdLink />
+								<PiLink />
 								<em>{pdfVocabulary.occurrence.text}</em>
 							</button>
 						</td>

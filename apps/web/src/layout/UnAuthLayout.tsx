@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 
-import { Header } from "./header";
+import { UnauthHeader } from "./header";
 import { Footer } from "./footer";
 
 import "./layout.scss";
@@ -8,7 +8,7 @@ import "./layout.scss";
 export const UnAuthLayout = ({ children }: PropsWithChildren) => {
     return (
         <div className="app">
-            <Header />
+            <UnauthHeader />
             <div className="app-content">
                 {children}
             </div>

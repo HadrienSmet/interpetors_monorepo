@@ -1,0 +1,66 @@
+.workspaces {
+	&__body {
+		display: flex;
+		flex: 1;
+		gap: var(--space-giga);
+		justify-content: space-around;
+		position: relative;
+	}
+	&__footer {
+		display: flex;
+		padding: var(--space-giga);
+		position: relative;
+
+		&::before {
+			background-color: var(--clr-txt-02);
+			content: "";
+			height: 1px;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;
+		}
+	}
+	&__kpi {
+		.key {
+			color: var(--clr-txt-04);
+			font-size: var(--size-xs);
+			font-weight: 600;
+			text-transform: uppercase;
+		}
+		.value {
+			color: var(--clr-txt-06);
+			font-weight: 800;
+		}
+	}
+	&__section {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-giga);
+		height: 100%;
+		padding-inline: var(--space-h);
+		width: 100%;
+
+		a {
+			align-items: center;
+			background-color: var(--clr-txt);
+			border-radius: var(--radius-s);
+			color: var(--clr-bg-light);
+			display: flex;
+			justify-content: center;
+			padding: var(--space-l) var(--space-s);
+			transition: var(--transition-theme);
+		}
+	}
+	&__security {
+		align-items: center;
+		display: flex;
+		font-size: var(--size-s);
+		gap: var(--space-s);
+	}
+	&__stats {
+		display: flex;
+		flex: 1;
+		gap: var(--space-h);
+	}
+}

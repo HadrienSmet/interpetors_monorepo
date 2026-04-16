@@ -13,6 +13,8 @@
     //=====================
     //=       COLORS      =
     //=====================
+	--clr-button:      		rgba(0, 216, 72, 0.7);
+	--clr-button-hover:          rgba(0, 216, 72);
     --clr-bg:                    rgb(238,240,242);
     --clr-bg-01:            rgba(238,240,242,0.1);
     --clr-bg-04:            rgba(238,240,242,0.4);
@@ -23,7 +25,8 @@
     --clr-bg-light-05:   rgba(255, 255, 255, 0.5);
     --clr-bg-light-08:   rgba(255, 255, 255, 0.8);
     --clr-disabled:               rgba(0,0,0,0.4);
-    --clr-txt:                         rgb(0,0,0);
+    --clr-txt:                    rgb(22, 21, 21);
+    --clr-txt-08:                rgba(0,0,0, 0.8);
     --clr-txt-06:                rgba(0,0,0, 0.6);
     --clr-txt-04:                 rgba(0,0,0,0.4);
     --clr-txt-02:                 rgba(0,0,0,0.2);
@@ -43,11 +46,12 @@
     //=   SHADIOW POSITION   =
     //========================
     --shadow-default: 0 2px 8px;
+    --shadow-light: 0 1px 5px;
 
     //=================
     //=     SIZES     =
     //=================
-    --size-xs:         8px;
+    --size-xs:        10px;
     --size-s:         12px;
     --size-m:         16px;
     --size-l:         24px;
@@ -91,6 +95,7 @@
     --clr-disabled:     rgba(0, 28, 52,0.4);
 
     --clr-txt:             rgb(238,240,242);
+	--clr-txt-08:    rgba(255,255,255, 0.8);
     --clr-txt-06:    rgba(255,255,255, 0.6);
     --clr-txt-04:     rgba(255,255,255,0.4);
     --clr-txt-02:     rgba(255,255,255,0.2);

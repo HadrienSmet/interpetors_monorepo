@@ -8,6 +8,10 @@
         align-items: center;
         display: flex;
         gap: var(--space-s);
+
+		p {
+			font-size: var(--size-l);
+		}
     }
 
     .button {

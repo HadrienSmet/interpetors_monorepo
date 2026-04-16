@@ -23,22 +23,52 @@ export class ColorPanelService {
         return (panel);
     }
 
-    async create(userId: string, dto: CreateColorPanelDto) {
-        const panel = await this.prisma.colorPanel.create({
-            data: {
-                name: dto.name,
+	async create(userId: string, dto: CreateColorPanelDto) {
+        const workspace = await this.prisma.workspace.findFirst({
+            where: {
+                id: dto.workspaceId,
                 userId,
-                colors: {
-                    create: dto.colors.map(c => ({
-                        name: c.name,
-                        value: c.value,
-                    })),
-                },
             },
-            include: { colors: { orderBy: { name: "asc" } } },
+            select: {
+                id: true,
+                colorPanelId: true,
+            },
         });
 
-        return (panel);
+        if (!workspace) {
+            throw new NotFoundException("Workspace not found");
+        }
+
+        const panel = await this.prisma.$transaction(async (tx) => {
+            const createdPanel = await tx.colorPanel.create({
+                data: {
+                    name: dto.name,
+                    userId,
+                    colors: {
+                        create: dto.colors.map((c) => ({
+                            name: c.name,
+                            value: c.value,
+                        })),
+                    },
+                },
+                include: {
+                    colors: {
+                        orderBy: { name: "asc" },
+                    },
+                },
+            });
+
+            await tx.workspace.update({
+                where: { id: dto.workspaceId },
+                data: {
+                    colorPanelId: createdPanel.id,
+                },
+            });
+
+            return createdPanel;
+        });
+
+        return panel;
     }
 
     async findAll(userId: string) {

@@ -4,7 +4,10 @@ import { ColorPanelInCreation, ColorPanelType } from "../types";
 
 import { ROUTE } from "./const";
 
-export const create = async (params: ColorPanelInCreation) => {
+type CreateColorPanelParams = 
+	& ColorPanelInCreation 
+	& { readonly workspaceId: string; };
+export const create = async (params: CreateColorPanelParams) => {
     const response = await call<ColorPanelType>({
         body: params,
         method: HTTP_METHODS.POST,

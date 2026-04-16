@@ -1,0 +1,42 @@
+.settings {
+	gap: calc(var(--space-xh) * 3);
+	padding: calc(var(--space-giga) * 4) var(--space-giga);
+
+	&-grid {
+		align-items: center;
+		column-gap: calc(var(--space-giga) * 4);
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		row-gap: var(--space-xh);
+
+		&__label,
+		&__value {
+			margin: 0;
+		}
+
+		&__label {
+			font-weight: 600;
+			white-space: nowrap;
+		}
+		&__value {
+			align-items: center;
+			display: flex;
+			justify-content: end;
+			min-width: 0;
+		}
+
+		.select-container {
+			width: 60px;
+		}
+	}
+
+	button {
+		align-items: center;
+		display: flex;
+		gap: var(--space-xl);
+	}
+	p {
+		font-family: --font-title;
+		font-size: var(--size-xl);
+	}
+}

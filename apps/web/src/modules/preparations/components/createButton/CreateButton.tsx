@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { MdAdd } from "react-icons/md";
+import { PiPlus } from "react-icons/pi";
 import { Link } from "react-router";
 
 import { useLocalePath } from "@/modules/router";
@@ -15,7 +15,7 @@ export const CreateButton = () => {
 			className="create-preparation" 
 			to={localePath("preparations/new")}
 		>
-			<MdAdd />
+			<PiPlus />
             {t("preparations.new")}
         </Link>
     );

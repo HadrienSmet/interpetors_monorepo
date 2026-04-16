@@ -9,8 +9,9 @@
         display: flex;
         flex-direction: column;
 
-        button {
-            width: 300px;
+        a {
+            max-width: 800px;
+    		width: 100%;
         }
     }
     &-viewport {

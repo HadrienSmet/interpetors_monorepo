@@ -1,6 +1,6 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MdLock } from "react-icons/md";
+import { PiLock } from "react-icons/pi";
 
 import { Button, Modal, SecureInput } from "@/components";
 
@@ -43,8 +43,8 @@ export const UnlockLayout = () => {
         >
             <div className="unlock-layout">
                 <div className="unlock-layout__header">
-                    <MdLock size={20} />
-                    <h3>{t("auth.locked.title")}</h3>
+                    <PiLock size={20} />
+                    <p>{t("auth.locked.title")}</p>
                 </div>
                 <p>{t("auth.locked.explanations")}</p>
                 <SecureInput

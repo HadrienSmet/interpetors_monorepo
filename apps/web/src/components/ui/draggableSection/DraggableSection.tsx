@@ -1,5 +1,5 @@
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
-import { MdDragIndicator, MdExpandLess, MdExpandMore, MdOutlineMoreHoriz, MdOutlineMoreVert } from "react-icons/md";
+import { PiCaretDown, PiCaretUp, PiDotsSix, PiDotsThree, PiDotsThreeVertical } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 import { Position } from "@repo/types";
@@ -113,18 +113,18 @@ const DraggableSectionChild = ({ children, expansionEnabled, rotateEnabled }: Dr
                     }}
                     title={t("files.editor.tools.drag")}
                 >
-                    <MdDragIndicator />
+                    <PiDotsSix />
                 </button>
                 {rotateEnabled && (
                     isLandscape
                         ? (
                             <button title={t("files.editor.tools.vertical")}>
-                                <MdOutlineMoreVert onClick={toggleDirection} />
+                                <PiDotsThreeVertical onClick={toggleDirection} />
                             </button>
                         )
                         : (
                             <button title={t("files.editor.tools.horizontal")}>
-                                <MdOutlineMoreHoriz onClick={toggleDirection} />
+                                <PiDotsThree onClick={toggleDirection} />
                             </button>
                         )
                 )}
@@ -135,7 +135,7 @@ const DraggableSectionChild = ({ children, expansionEnabled, rotateEnabled }: Dr
                                 className={isLandscape ? "expansion-row" : ""}
                                 title={t("files.editor.tools.close")}
                             >
-                                <MdExpandLess onClick={toggleOpen} />
+                                <PiCaretUp onClick={toggleOpen} />
                             </button>
                         )
                         : (
@@ -143,7 +143,7 @@ const DraggableSectionChild = ({ children, expansionEnabled, rotateEnabled }: Dr
                                 className={isLandscape ? "expansion-row" : ""}
                                 title={t("files.editor.tools.open")}
                             >
-                                <MdExpandMore onClick={toggleOpen} />
+                                <PiCaretDown onClick={toggleOpen} />
                             </button>
                         )
                 )}
@@ -165,7 +165,12 @@ type DraggableSectionProps =
         readonly rotateEnabled?: boolean;
     }
     & PropsWithChildren;
-export const DraggableSection = ({ children, defaultRotation = "column", expansionEnabled = false, rotateEnabled = false }: DraggableSectionProps) => (
+export const DraggableSection = ({ 
+	children, 
+	defaultRotation = "column", 
+	expansionEnabled = false, 
+	rotateEnabled = false, 
+}: DraggableSectionProps) => (
     <DraggableSectionProvider defaultRotation={defaultRotation}>
         <DraggableSectionChild
             expansionEnabled={expansionEnabled}

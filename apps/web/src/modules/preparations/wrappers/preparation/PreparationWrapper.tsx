@@ -18,16 +18,16 @@ export const PreparationWrapper = ({ children, editable = false, isNew }: Prepar
     const grouped = useMemo(() => (groupVocabularyByColor(selectedPreparation?.vocabulary)), [selectedPreparation?.vocabulary]);
  
     return (
-        <FoldersManagerProvider editable={editable}>
-            <FoldersActionsProvider>
-                    <VocabularyWrapper groupedVocabulary={grouped}>
-                        <PreparationProvider isNew={isNew}>
-                            <PdfWrapper>
-                                {children}
-                            </PdfWrapper>
-                        </PreparationProvider>
-                    </VocabularyWrapper>
-            </FoldersActionsProvider>
-        </FoldersManagerProvider>
+		<FoldersActionsProvider>
+            <VocabularyWrapper groupedVocabulary={grouped}>
+                <PreparationProvider isNew={isNew}>
+					<FoldersManagerProvider editable={editable}>
+                        <PdfWrapper>
+                            {children}
+                        </PdfWrapper>
+        			</FoldersManagerProvider>
+                </PreparationProvider>
+            </VocabularyWrapper>
+        </FoldersActionsProvider>
     );
 };

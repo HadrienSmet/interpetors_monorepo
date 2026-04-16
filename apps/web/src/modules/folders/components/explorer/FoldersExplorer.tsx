@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { MdDownload, MdHorizontalRule, MdTranslate } from "react-icons/md";
+import { PiDownloadSimple, PiMinus, PiTranslate } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 import { useColorPanel } from "@/modules/colorPanel";
@@ -11,7 +11,7 @@ import { downloadFolderAsZip } from "../../utils";
 import { TreeNode } from "./nodes";
 import "./foldersExplorer.scss";
 
-const BUTTON_SIZE = 14 as const;
+const BUTTON_SIZE = 16 as const;
 const INITIAL_WIDTH = 200 as const;
 
 export const FoldersExplorer = () => {
@@ -39,21 +39,23 @@ export const FoldersExplorer = () => {
         ))
     ), [collapseSignal, foldersStructure, highlightedFolderPath]);
 
+	const isDisabled = foldersStructure.length === 0;
+
     const buttons = [
         {
-            icon: <MdTranslate size={BUTTON_SIZE} />,
-			isDisabled: foldersStructure.length === 0,
+            icon: <PiTranslate size={BUTTON_SIZE} />,
+			isDisabled,
             onClick: () => setLanguagesState(LANGUAGES_STATE.OPTIONAL),
             title: t("folders.languages.tree.access"),
         },
         {
-            icon: <MdDownload size={BUTTON_SIZE} />,
-			isDisabled: foldersStructure.length === 0,
+            icon: <PiDownloadSimple size={BUTTON_SIZE} />,
+			isDisabled,
             onClick: () => downloadFolderAsZip(foldersStructure, colorPanel),
             title: t("folders.download", { count: foldersStructure.length }),
         },
         {
-            icon: <MdHorizontalRule size={BUTTON_SIZE} />,
+            icon: <PiMinus size={BUTTON_SIZE} />,
             onClick: () => setCollapseSignal(state => state + 1),
             title: t("folders.close", { count: foldersStructure.length }),
         },

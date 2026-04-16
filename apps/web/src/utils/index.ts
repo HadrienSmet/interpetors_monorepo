@@ -6,6 +6,7 @@ export * from "./crypto";
 export * from "./date";
 export * from "./errors";
 export * from "./json";
+export * from "./jwt";
 export * from "./languages";
 export * from "./localStorage";
 export * from "./serializable";

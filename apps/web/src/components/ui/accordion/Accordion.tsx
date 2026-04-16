@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { MdExpandLess } from "react-icons/md";
+import { PiCaretUp } from "react-icons/pi";
 
 import "./accordion.scss";
 
@@ -18,13 +18,13 @@ const AccordionItem = (props: AccordionItemProps) => {
     const toggleExpansion = () => setIsExpanded(state => !state);
 
     return (
-        <div className="accordion-item">
+        <div className={`accordion-item ${isExpanded ? "expanded" : "closed"}`}>
             <div
                 className={`accordion-item__header ${isExpanded ? "expanded" : "closed"}`}
                 onClick={toggleExpansion}
             >
                 {props.title}
-                <MdExpandLess size={ICON_SIZE} />
+                <PiCaretUp size={ICON_SIZE} />
             </div>
             <div className={`accordion-item__content-wrapper ${isExpanded ? "expanded" : ""}`}>
                 <div className="accordion-item__content">

@@ -3,11 +3,8 @@ import { ChangeEvent, useState } from "react";
 import { useLocaleNavigate } from "@/modules/router";
 import { CreateWorkspaceParams, useWorkspaces } from "@/modules/workspace";
 
-const EMPTY_WORKSPACE: CreateWorkspaceParams = {
-    name: "Default",
-    languages: [],
-    nativeLanguage: "",
-};
+import { EMPTY_WORKSPACE } from "../utils";
+
 export const creationSteps = [
     "WORK",
     "NATIVE",

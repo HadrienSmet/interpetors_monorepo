@@ -1,5 +1,5 @@
 import { ChangeEventHandler, CSSProperties } from "react";
-import { MdOutlineExpandMore  } from "react-icons/md";
+import { PiCaretDown } from "react-icons/pi";
 
 import "./select.scss";
 
@@ -39,7 +39,7 @@ export const Select = (props: SelectProps) => {
                     </option>
                 ))}
             </select>
-            <MdOutlineExpandMore />
+            <PiCaretDown />
         </div>
     );
 };

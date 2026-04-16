@@ -3,20 +3,19 @@ import { Outlet } from "react-router";
 import { ContextMenu } from "@/components";
 import { Navigation } from "@/modules/router";
 
-import { Header } from "./header";
+import { AppHeader } from "./header/AppHeader";
+
 import "./layout.scss";
 
-export const Layout = () => {
-    return (
-        <div className="app">
-            <Header />
-            <div className="app-container">
-                <Navigation />
-                <div className="app-content">
-                    <Outlet />
-                </div>
-            </div>
-            <ContextMenu />
-        </div>
-    );
-};
+export const Layout = () => (
+	<div className="app">
+		<AppHeader />
+		<div className="app-container">
+			<Navigation />
+			<div className="app-content">
+				<Outlet />
+			</div>
+		</div>
+		<ContextMenu />
+	</div>
+ );

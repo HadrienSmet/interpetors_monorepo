@@ -2,7 +2,7 @@ import { PropsWithChildren, useEffect, useMemo, useState } from "react";
 
 import { FolderStructure, PdfMetadata } from "@repo/types";
 
-import { usePreparations } from "@/modules/preparations";
+import { usePreparation, usePreparations } from "@/modules/preparations";
 
 import { FileData } from "../../types";
 
@@ -18,6 +18,7 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
 	const [languagesState, setLanguagesState] = useState<LanguagesState>(LANGUAGES_STATE.NULL);
     const [selectedFilePath, setSelectedFilePath] = useState<string | undefined>(undefined);
 
+	const { preparation, setTitle } = usePreparation();
 	const { selectedPreparation } = usePreparations();
 
     // ---------- Files methods ----------
@@ -313,8 +314,22 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
     };
 
     const onDrop = (folder: FolderStructure) => {
-		setLanguagesState(LANGUAGES_STATE.OPTIONAL);
-		setFoldersStructure(state => [...state, folder]);
+		const entries = Object.entries(folder);
+
+		const hasNoTitle = preparation.title.trim() === "";
+
+		if (hasNoTitle && entries.length === 1) {
+			const [rootName, rootValue] = entries[0];
+
+			if (!isPdfMetadata(rootValue)) {
+				setTitle(rootName);
+
+				setFoldersStructure((state) => [...state, rootValue]);
+				return;
+			}
+		}
+
+		setFoldersStructure((state) => [...state, folder]);
 	};
 
     useEffect(() => {
@@ -325,7 +340,7 @@ export const FoldersManagerProvider = ({ children, editable }: FoldersManagerPro
 
     const selectedFile: FileData = useMemo(() => {
         if (!selectedFilePath) {
-            return ({ fileInStructure: null, path: "" });
+            return ({ fileInStructure: null, path: "" }); 
         }
 
         return (findFile(foldersStructure, selectedFilePath));

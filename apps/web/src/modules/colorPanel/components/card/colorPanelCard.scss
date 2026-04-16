@@ -1,0 +1,46 @@
+.color-panel-card {
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow-light) var(--clr-txt-02);
+	display: flex;
+	padding: var(--space-h);
+
+	max-width: 800px;
+	width: 100%;
+
+	&__body {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+	}
+
+	> p {
+		font-size: var(--size-l);
+	}
+
+    .buttons-column {
+        display: flex;
+        flex-direction: column;
+        font-size: var(--size-l);
+        gap: var(--space-m);
+
+        button {
+            align-items: center;
+            border-radius: var(--radius-round);
+            box-shadow: var(--shadow-default) var(--clr-txt-02);
+            display: flex;
+            height: 40px;
+            justify-content: center;
+            width: 40px;
+        }
+    }
+	.color-badge {
+		font-weight: 700;
+		padding: var(--space-s) var(--space-l);
+	}
+	.color-badges {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		gap: var(--space-m);
+	}
+}

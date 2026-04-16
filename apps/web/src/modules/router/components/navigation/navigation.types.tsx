@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { MdAdd, MdHistory, MdHome, MdMenuBook, MdOtherHouses } from "react-icons/md";
+import { PiBookOpen, PiGear, PiGraduationCap, PiHouse, PiPlus } from "react-icons/pi";
 
 export type NavigationItem = {
     readonly icon: ReactNode;
@@ -7,29 +7,30 @@ export type NavigationItem = {
     readonly nestedNav?: NavigationRecord;
 };
 type NavigationRecord = Record<string, NavigationItem>;
+const ICON_SIZE = 28 as const;
 export const NAVIGATION = {
     HOME: {
-        icon: <MdHome />,
+        icon: <PiHouse size={ICON_SIZE} />,
         id: "home",
     },
-    WORKSPACES: {
-        icon: <MdOtherHouses />,
-        id: "workspaces",
-    },
     PREPARATIONS: {
-        icon: <MdHistory />,
+        icon: <PiGraduationCap size={ICON_SIZE} />,
         id: "preparations",
-        nestedNav: {
+		nestedNav: {
             NEW: {
-                icon: <MdAdd />,
+                icon: <PiPlus />,
                 id: "new",
             },
         },
     },
     DICTIONARY: {
-        icon: <MdMenuBook />,
+        icon: <PiBookOpen size={ICON_SIZE} />,
         id: "dictionary",
     },
+	SETTINS: {
+		icon: <PiGear size = {ICON_SIZE} />,
+		id: "settings",
+	},
 } as const;
 
 type ExtractPaths<T extends NavigationRecord> = {

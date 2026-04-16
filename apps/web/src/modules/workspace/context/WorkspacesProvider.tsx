@@ -1,5 +1,8 @@
 import { PropsWithChildren, useEffect, useState } from "react";
+import { PiDesk } from "react-icons/pi";
 
+import { Select } from "@/components";
+import { useAppHeader } from "@/layout/header";
 import { useAuth } from "@/modules/auth";
 import { useLocaleNavigate } from "@/modules/router";
 import { LOCAL_STORAGE } from "@/utils";
@@ -16,6 +19,7 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
     const [workspaceId, setWorkspaceId] = useState<string | undefined>(undefined);
     const [workspaces, setWorkspaces] = useState<Record<string, Workspace>>({});
 
+	const { setWorkspaceNode } = useAppHeader();
     const { isAuthenticated } = useAuth();
     const navigate = useLocaleNavigate();
 
@@ -123,6 +127,21 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
 
         if (hasValidWorkspace) {
             setCurrentWorkspace(workspaces[workspaceId]);
+			setWorkspaceNode(
+				<div className="header-workspace">
+					<PiDesk size={24} />
+
+					<Select 
+						defaultValue={workspaces[workspaceId].name}
+						name="workspace-select"
+						options={Object.values(workspaces).map(workspace => ({
+							label: workspace.name,
+							value: workspace.id
+						}))}
+						onChange={(e) => console.log({ e })}
+					/>
+				</div>
+			);
         }
 
         setIsReady(true);

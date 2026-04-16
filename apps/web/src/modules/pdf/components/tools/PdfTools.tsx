@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-    MdArrowBack,
-    MdArrowForward,
-    MdBorderColor,
-    MdBrush,
-    MdComment,
-    MdDownload,
-    MdEdit,
-    MdFormatColorFill,
-    MdSave,
-    MdTranslate,
-} from "react-icons/md";
+import { 
+	PiArrowLeft, 
+	PiArrowRight, 
+	PiChatText, 
+	PiDownloadSimple, 
+	PiFloppyDisk, 
+	PiPaintBrush, 
+	PiPaintBucket, 
+	PiPencil, 
+	PiPencilLine, 
+	PiTranslate, 
+} from "react-icons/pi";
 
 import { ColorKind, FILE_TOOLS, RgbColor } from "@repo/types";
 
@@ -33,34 +33,34 @@ const COLOR_PICKER_DIMENSION = PANEL_SIZE - (PANEL_PADDING * 2);
 
 const HISTORY_BUTTONS: Array<HistoryButtonItem> = [
     {
-        icon: <MdArrowBack />,
+        icon: <PiArrowLeft />,
         id: "backward",
     },
     {
-        icon: <MdArrowForward />,
+        icon: <PiArrowRight />,
         id: "forward",
     },
 ];
 // TODO: Need to have one source of truth for tools icons
 const TOOLS_BUTTONS: Array<ToolButtonItem> = [
     {
-        icon: <MdBorderColor />,
+        icon: <PiPencilLine />,
         id: FILE_TOOLS.UNDERLINE,
     },
     {
-        icon: <MdFormatColorFill />,
+        icon: <PiPaintBucket />,
         id: FILE_TOOLS.HIGHLIGHT,
     },
     {
-        icon: <MdBrush />,
+        icon: <PiPaintBrush />,
         id: FILE_TOOLS.BRUSH,
     },
     {
-        icon: <MdComment />,
+        icon: <PiChatText />,
         id: FILE_TOOLS.NOTE,
     },
     {
-        icon: <MdTranslate />,
+        icon: <PiTranslate />,
         id: FILE_TOOLS.VOCABULARY,
     },
 ];
@@ -130,7 +130,7 @@ const PdfToolsChild = () => {
                     onClick={downloadPdfFile}
                     title={t("actions.download")}
                 >
-                    <MdDownload />
+                    <PiDownloadSimple />
                 </button>
                 <button
                     onClick={onSave}
@@ -138,7 +138,7 @@ const PdfToolsChild = () => {
                 >
                     {isSaving
                         ? (<Loader size="small" />)
-                        : (<MdSave />)
+                        : (<PiFloppyDisk />)
                     }
                 </button>
                 <button
@@ -178,7 +178,7 @@ export const PdfTools = () => {
                 className="pdf-edit"
                 onClick={onClick}
             >
-                <MdEdit />
+                <PiPencil />
             </button>
         );
     }

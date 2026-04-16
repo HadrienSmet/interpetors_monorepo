@@ -7,7 +7,7 @@ import { ColorPanelInCreation, ColorPanelType } from "../types";
 /** Provides basic methods to interacts with the color panels */
 type ColorPanelContextType = {
     readonly colorPanel: ColorPanelType | null;
-    readonly createPanel: (colorPanel: ColorPanelInCreation) => Promise<void>;
+    readonly createPanel: (colorPanel: ColorPanelInCreation & { readonly workspaceId: string; }) => Promise<void>;
     readonly deletePanel: (id: string) => Promise<void>;
     readonly hasFetched: boolean;
     readonly isLoading: boolean;

@@ -2,6 +2,7 @@ import { PropsWithChildren } from "react";
 import { Navigate } from "react-router";
 
 import { Loader } from "@/components";
+import { AppHeaderProvider } from "@/layout/header";
 import { UnlockLayout, useAuth } from "@/modules/auth";
 import { PreparationsProvider } from "@/modules/preparations";
 import { DictionaryProvider } from "@/modules/vocabulary";
@@ -18,15 +19,17 @@ export const ProtectedRoute = ({ children }: PropsWithChildren) => {
     }
 
     return (
-        <WorkspacesProvider>
-            <WorkspaceWrapper>
-                <PreparationsProvider>
-                    <DictionaryProvider>
-                        <UnlockLayout />
-                        {children}
-                    </DictionaryProvider>
-                </PreparationsProvider>
-            </WorkspaceWrapper>
-        </WorkspacesProvider>
+		<AppHeaderProvider>
+			<WorkspacesProvider>
+				<WorkspaceWrapper>
+					<PreparationsProvider>
+						<DictionaryProvider>
+							<UnlockLayout />
+							{children}
+						</DictionaryProvider>
+					</PreparationsProvider>
+				</WorkspaceWrapper>
+			</WorkspacesProvider>
+		</AppHeaderProvider>
     );
 };

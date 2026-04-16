@@ -5,7 +5,6 @@ import { Loader } from "@/components";
 import { useAuth } from "@/modules/auth";
 import {
     PreparationLayout,
-    PreparationsEmpty,
     PreparationsFilled,
     usePreparations,
 } from "@/modules/preparations";
@@ -38,7 +37,7 @@ export const Preparations = () => {
 
     if (isLoading || !userKey) return (<Loader />);
 
-    if (currentView === "new") {
+    if (currentView === "new" || !preparationsOverview || Object.keys(preparationsOverview).length === 0) {
         return (
             <PreparationLayout
                 backToList={() => navigate("/preparations")}
@@ -53,10 +52,7 @@ export const Preparations = () => {
             style={{ overflow: "hidden" }}
             className="preparations-view"
         >
-            {(!preparationsOverview || Object.keys(preparationsOverview).length === 0)
-                ? (<PreparationsEmpty />)
-                : (<PreparationsFilled />)
-            }
+            <PreparationsFilled />
         </main>
     );
 };

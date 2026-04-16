@@ -109,6 +109,7 @@ export const PreparationsFilled = () => {
                 >
                     <PreparationLayout
                         backToList={backToList}
+						editable
                         scrollableParentRef={viewportRef}
                     />
                 </div>

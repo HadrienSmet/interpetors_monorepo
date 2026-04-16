@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { MdComment } from "react-icons/md";
+import { PiChatText } from "react-icons/pi";
 import { Trans } from "react-i18next";
 
 import { Note } from "@repo/types";
@@ -142,7 +142,7 @@ export const GroupedNotes = ({ group, y }: GroupedEditableNotesProps) => {
                 <div className="notes-poc__content">
                     <div className="notes-poc__circle-content">
                         <span className="notes-poc__count">{group.length}</span>
-                        <MdComment className="notes-poc__icon" />
+                        <PiChatText className="notes-poc__icon" />
                     </div>
 
                     <div className="notes-poc__header-content">

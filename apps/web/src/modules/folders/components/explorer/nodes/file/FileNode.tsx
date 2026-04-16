@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, MouseEvent, useMemo, useState } from "react";
-import { MdDriveFileRenameOutline, MdTranslate } from "react-icons/md";
+import { PiPencilLine, PiTranslate } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 import { PdfMetadata } from "@repo/types";
@@ -37,7 +37,7 @@ export const FileNode = ({
         {
             children: (
                 <>
-                    <MdDriveFileRenameOutline />
+                    <PiPencilLine />
                     <p>{t("files.context-menu.rename")}</p>
                 </>
             ),
@@ -55,7 +55,7 @@ export const FileNode = ({
         {
             children: (
                 <>
-                    <MdTranslate />
+                    <PiTranslate />
                     <p>{t("files.context-menu.language")}</p>
                 </>
             ),

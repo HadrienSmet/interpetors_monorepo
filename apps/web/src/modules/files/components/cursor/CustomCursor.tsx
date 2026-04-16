@@ -1,4 +1,4 @@
-import { MdBorderColor, MdBrush, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
+import { PiChatText, PiPaintBrush, PiPaintBucket, PiPencilLine, PiTranslate } from "react-icons/pi";
 
 import { FILE_TOOLS, FileTool, Position } from "@repo/types";
 
@@ -20,11 +20,11 @@ type CustomCursorProps = {
 };
 // TODO: Need to have one source of truth for tools icons
 const TOOLS_ICONS = {
-    [FILE_TOOLS.BRUSH]: (params: ToolIconParams) => <MdBrush {...params} />,
-    [FILE_TOOLS.HIGHLIGHT]: (params: ToolIconParams) => <MdFormatColorFill {...params} />,
-    [FILE_TOOLS.NOTE]: (params: ToolIconParams) => <MdComment {...params} />,
-    [FILE_TOOLS.UNDERLINE]: (params: ToolIconParams) => <MdBorderColor {...params} />,
-    [FILE_TOOLS.VOCABULARY]: (params: ToolIconParams) => <MdOutlineMenuBook {...params} />,
+    [FILE_TOOLS.BRUSH]: (params: ToolIconParams) => <PiPaintBrush {...params} />,
+    [FILE_TOOLS.HIGHLIGHT]: (params: ToolIconParams) => <PiPaintBucket {...params} />,
+    [FILE_TOOLS.NOTE]: (params: ToolIconParams) => <PiChatText {...params} />,
+    [FILE_TOOLS.UNDERLINE]: (params: ToolIconParams) => <PiPencilLine {...params} />,
+    [FILE_TOOLS.VOCABULARY]: (params: ToolIconParams) => <PiTranslate {...params} />,
 };
 const getCursrorIcon = ({ color, tool }: Omit<CustomCursorProps, "position" | "opacity">) => {
     const toolIcon = TOOLS_ICONS[tool];

@@ -1,41 +1,66 @@
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 
-import { ColorPanel, useWorkspaces } from "@/modules";
-import { capitalize, getNativeName } from "@/utils";
+import { TabsBar, TabsPanels, useTabs } from "@/components";
+import { useLocale } from "@/hooks";
+import { useAppHeader } from "@/layout/header";
+import { ColorPanelsSection } from "@/modules/colorPanel";
+import { WorkspacesSection } from "@/modules/workspace";
+import { URL_PARAMETERS } from "@/utils";
 
 import "./home.scss";
 
 export const Home = () => {
-    const { t } = useTranslation();
-    const { currentWorkspace } = useWorkspaces();
+	const [initialTabIndex, setInitialTabIndex] = useState(0);
 
-    if (!currentWorkspace) {
-        return (<p>Error</p>);
-    }
+	const { setViewNode } = useAppHeader();
+	const { locale } = useLocale();
+	const [searchParams, setSearchParams] = useSearchParams();
+	const { t } = useTranslation();
 
-    return (
-        <main className="home">
-            <p className="home-title">{t("views.home.title")}</p>
-            <section>
-                <p className="home-subtitle">{t("views.home.sections.languages")}</p>
-                <div className="languages">
-                    {currentWorkspace.languages.map(language => (
-                        <div
-                            className={`language ${language === currentWorkspace.nativeLanguage
-                                ? "selected"
-                                : ""
-                            }`}
-                            key={language}
-                        >
-                            <p>{capitalize(getNativeName(language) ?? "")}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-            <section>
-                <p className="home-subtitle">{t("views.home.sections.colorPanel")}</p>
-                <ColorPanel />
-            </section>
-        </main>
-    );
+	const views = useMemo(() => [
+		{
+			buttonTitle: t("workspaces.title"),
+			content: <WorkspacesSection />,
+			title: (<p>{t("workspaces.title")}</p>),
+		},
+		{
+			buttonTitle: t("colorPanel.title"),
+			content: <ColorPanelsSection />,
+			title: (<p>{t("colorPanel.title")}</p>),
+		},
+	], [locale]);
+	const viewTitles = ["workspaces", "color-panels"];
+
+	const tabs = useTabs({ views });
+
+	const headerNode = useMemo(() => (
+		<div className="view-navigation">
+			<div className="divider" />
+			<TabsBar items={tabs.items} />
+		</div>
+	), [tabs.tabIndex, tabs.items]);
+
+	useEffect(() => {
+		setViewNode(headerNode);
+		return () => setViewNode(null);
+	}, [setViewNode, headerNode]);
+
+	useEffect(() => {
+		const path = searchParams.get(URL_PARAMETERS.view);
+		if (!path) return;
+
+		setInitialTabIndex(Math.max(viewTitles.findIndex(elem => elem === path), 0));
+	}, [searchParams.toString(), views]);
+
+	return (
+		<main className="home">
+			<TabsPanels
+				activeIndex={tabs.tabIndex}
+				ids={tabs.ids}
+				views={tabs.views}
+			/>
+		</main>
+	);
 };

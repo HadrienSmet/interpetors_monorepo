@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { useLocaleNavigate } from "@/modules/router";
@@ -26,7 +25,6 @@ export const NavigationButton = ({
 
     const navigate = useLocaleNavigate();
     const location = useLocation();
-    const { t } = useTranslation();
 
     const navigation = location.pathname
         .split("/")
@@ -81,7 +79,7 @@ export const NavigationButton = ({
                 ref={buttonRef}
                 style={buttonStyle}
             >
-                {icon} {t(`navigation.buttons.${id}`)}
+                {icon} 
             </button>
 
             {(displayNested && isSelected && nestedNav) && (

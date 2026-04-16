@@ -7,10 +7,10 @@ import {
     Home,
     NotFound,
     Preparations,
+    Settings,
     Signin,
     Signup,
     WorkspaceCreator,
-    Workspaces
 } from "@/views";
 
 import { LocaleLayout } from "../layouts";
@@ -22,7 +22,7 @@ const PROTECTED_ROUTES = {
         { path: "home", element: <Home /> },
         { path: "preparations/*", element: <Preparations /> },
         { path: "dictionary", element: <Dictionary /> },
-        { path: "workspaces", element: <Workspaces /> },
+		{ path: "settings", element: <Settings /> },
         { path: "*", element: <NotFound /> },
     ],
     withoutLayout: [

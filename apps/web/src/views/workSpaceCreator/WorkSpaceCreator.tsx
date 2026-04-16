@@ -1,4 +1,4 @@
-import { MdClear } from "react-icons/md";
+import { PiX } from "react-icons/pi";
 import { Trans, useTranslation } from "react-i18next";
 
 import { Button, LanguageSelect } from "@/components";
@@ -38,7 +38,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
                         key={language}
                     >
                         <p>{capitalize(getNativeName(language) ?? "")}</p>
-                        <MdClear onClick={() => removeWorkLanguage(language)} />
+                        <PiX onClick={() => removeWorkLanguage(language)} />
                     </div>
                 ))}
             </div>
@@ -47,7 +47,7 @@ const WorkLanguagesList = (props: WorkLanguagesListProps) => {
 
     return (
         <>
-            <p>{t("workspaces.create.inputs.native-language.label")}</p>
+            <p>{t("workspaces.onboarding.inputs.native-language.label")}</p>
             <div className="work-languages__list active">
                 {workspace.languages.map(language => (
                     <div
@@ -90,11 +90,11 @@ export const WorkspaceCreator = () => {
                     <p className="workspace-subtitle">{t("onBoarding.subtitle")}</p>
                 </div>
                 <div className="workspace-content">
-                    <p className="workspace-create-title">{t("workspaces.create.title")}</p>
+                    <p className="workspace-create-title">{t("workspaces.onboarding.title")}</p>
                     <div className="workspace-fields">
                         <div className={`step work-languages ${creationStep === creationSteps[0] ? "active" : ""}`}>
                             <p>
-                                1. {t("workspaces.create.inputs.work-languages.label")}
+                                1. {t("workspaces.onboarding.inputs.work-languages.label")}
                             </p>
                             <LanguageSelect
                                 name="work-languages"
@@ -117,7 +117,7 @@ export const WorkspaceCreator = () => {
                     <Button
                         label={t(creationStep === creationSteps[0]
                             ? "actions.confirm"
-                            : "actions.workspaces.create"
+                            : "actions.workspaces.onboarding"
                         )}
                         disabled={creationStep === creationSteps[0]
                             ? workspace.languages.length < 2

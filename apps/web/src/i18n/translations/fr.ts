@@ -8,7 +8,9 @@ export const fr = {
 			cancel: "Annuler",
 			close: "Fermer",
             confirm: "Confirmer",
+			delete: "Supprimer",
             download: "Télécharger",
+			edit: "Modifier",
             editOnDoubleClick: "Cliquez deux fois pour éditer",
             save: "Sauvegarder",
             search: "Rechercher",
@@ -61,16 +63,19 @@ export const fr = {
                 action: "Créer une palette de couleur",
                 title: "Création d'une palette de couleur"
             },
+			colorPanels: {
+				tips: "Astuce : utilisez des couleurs sémantiques pour mettre en évidence des structures grammaticales spécifiques dans vos transcriptions.",
+				title: "Palettes de couleur",
+			},
             colors: {
                 label: "Définis tes couleurs",
                 placeholder: "Sources",
             },
-            displayer: {
-                color: "COULEUR",
-                name: "NOM",
-            },
+			colorTitle: "Titre de la couleur",
             missing: "Aucune palette de couleur n'a été trouvée",
-            title: {
+			subtitle: "Définissez vos marqueurs de couleur personnalisés pour une meilleure organisation visuelle.",
+			title: "Palette de couleur",
+            titles: {
                 label: "Défini un titre",
                 placeholder: "Palette par défaut",
             },
@@ -145,13 +150,8 @@ export const fr = {
         navigation: {
             buttons: {
                 dictionary: "Dictionnaire",
-                files: "Dossiers sources",
-                home: "Mon espace de travail",
-                manager: "Manager",
-                preparations: "Mes préparations",
-                prepare: "Nouvelle préparation",
-                vocabulary: "Vocabulaire",
-                workspaces: "Mes espaces de travail",
+                home: "Accueil",
+                preparations: "Préparations",
             },
         },
         notes: {
@@ -177,25 +177,12 @@ export const fr = {
                 terms: "<default><strong>{{amount}}</strong> termes de vocabulaires</default>",
             },
         },
+		settings: {
+			language: "Langue",
+			mail: "Adresse email",
+			theme: "Thème",
+		},
         views: {
-            dic: {
-                title: "Dictionnaire généré",
-            },
-            home: {
-                title: "Mon espace de travail",
-                sections: {
-                    languages: "Langages",
-                    colorPanel: "Palette de couleur",
-                },
-            },
-            new: {
-                buttons: {
-                    downloadFiles: "Télécharger les fichiers",
-                    downloadVocabulary: "Télécharger le vocabulaire",
-                    save: "Sauvegarder la préparation",
-                },
-                title: "Définissez un titre à votre préparation.",
-            },
             notFound: {
                 title: "Oops, on s'est perdu ?",
                 buttonLabel: "Retour en sécurité"
@@ -222,7 +209,33 @@ export const fr = {
             },
         },
         workspaces: {
-            create: {
+			create: {
+				inputs: {
+					colorPanels: {
+						label: "Séléctionnes une palette de couleur (optionnel)"
+					},
+					languages: {
+						label: "Langues de l'espace de travail",
+						more: "Ajouter une langue"
+					},
+					title: {
+						label: "Titre",
+						placeholder: "Économie"
+					},
+				},
+				subtitle: "Crées un environnement d’interprétation ciblé",
+				title: "Nouvel espace de travail",
+			},
+			encryption: "Les données des espaces de travail sont chiffrées de bout en bout",
+			kpis: {
+				preparations_one: "Préparation",
+				preparations_other: "Préparations",
+				terms_one: "Terme de vocabulaire",
+				terms_other: "Termes de vocabulaire",
+			},
+			list: "Espaces de travail existants",
+			new: "Créer un nouvel espace de travail",
+            onboarding: {
                 inputs: {
                     title: {
                         label: "Définissez un titre à votre espace de travail",
@@ -242,7 +255,10 @@ export const fr = {
                 },
                 title: "Crées ton environnement de travail personnalisé.",
             },
-            new: "Créer un nouvel espace de travail",
+			selector: {
+				selected: "Espace de travail actuel",
+				unselected: "Aller dans l'espace de travail",
+			},
             stats: {
                 encyclopedy_one: "{{count}} définition dans l'encyclopédie",
                 encyclopedy_other: "{{count}} définitions dans l'encyclopédie",
@@ -250,7 +266,8 @@ export const fr = {
                 preparation_other: "{{count}} préparations",
                 vocabulary_one: "{{count}} mot de vocabulaire généré",
                 vocabulary_other: "{{count}} mots de vocabulaire générés",
-            }
+            },
+			title: "Espaces de travail",
         },
     },
 };

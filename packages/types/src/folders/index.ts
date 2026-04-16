@@ -3,12 +3,7 @@ import { PdfMetadata } from "../files";
 export type FolderStructure = {
     [key: string]: PdfMetadata | FolderStructure;
 };
-/** When retrieving an old preparation from Api */
-export type SavedFolderStructure = {
-    [key: string]:
-        | (PdfMetadata & { readonly id: string; })
-        | SavedFolderStructure;
-};
+
 export type FlatFolder = {
     readonly createdAt: Date;
     readonly id: string;

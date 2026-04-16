@@ -1,2 +1,2 @@
 export * from "./colorPicker";
-export * from "./ColorPanel";
+export * from "./section";

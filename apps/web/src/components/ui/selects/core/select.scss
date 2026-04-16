@@ -8,8 +8,13 @@ select {
     align-items: center;
     display: flex;
     position: relative;
+	
+	* {
+		font-family: "--font-default";
+	}
 
     select {
+		border-radius: var(--radius-s);
         width: 100%;
     }
 

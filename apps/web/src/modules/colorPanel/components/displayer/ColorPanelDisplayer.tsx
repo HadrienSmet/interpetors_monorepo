@@ -1,4 +1,4 @@
-import { MdClose } from "react-icons/md";
+import { PiX } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 import { ColorSwatch } from "../../types";
@@ -23,7 +23,7 @@ const ColorPanelItem = ({ color, name, onRemove }: ColorPanelItemProps) => (
         </div>
         {onRemove && (
             <button onClick={() => onRemove(color)}>
-                <MdClose />
+                <PiX />
             </button>
         )}
     </div>
@@ -31,7 +31,6 @@ const ColorPanelItem = ({ color, name, onRemove }: ColorPanelItemProps) => (
 
 type ColorPanelDisplayerProps = {
     readonly backgroundColor?: string;
-    readonly name?: string;
     readonly onRemove?: (key: string) => void;
     readonly paddingBottom?: number;
     readonly colors: Array<Omit<ColorSwatch, "id">>;
@@ -39,7 +38,6 @@ type ColorPanelDisplayerProps = {
 export const ColorPanelDisplayer = ({
     backgroundColor,
     colors,
-    name,
     onRemove,
     paddingBottom = 0,
 }: ColorPanelDisplayerProps) => {
@@ -53,7 +51,6 @@ export const ColorPanelDisplayer = ({
                 : {}
             }
         >
-            <p>{name}</p>
             <div className="row">
                 <div className="cell">
                     <p>{t("colorPanel.displayer.color")}</p>

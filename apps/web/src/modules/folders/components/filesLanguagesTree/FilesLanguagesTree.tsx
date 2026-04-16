@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MdClose } from "react-icons/md";
+import { PiX } from "react-icons/pi";
 
 import { FolderStructure } from "@repo/types";
 
@@ -200,7 +200,7 @@ export const FilesLanguagesTreeModal = ({ folderIndex }: FilesLanguagesTreeModal
 					</h3>
 					{languagesState === LANGUAGES_STATE.OPTIONAL && (
 						<button onClick={() => setLanguagesState(LANGUAGES_STATE.NULL)}>
-							<MdClose />
+							<PiX />
 						</button>
 					)}
 				</div>

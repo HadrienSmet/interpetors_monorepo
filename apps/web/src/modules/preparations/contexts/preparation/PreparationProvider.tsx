@@ -5,7 +5,7 @@ import { FileAction, SavedVocabularyTerm } from "@repo/types";
  
 import { useAuth } from "@/modules/auth";
 import { FILES } from "@/modules/files";
-import { NewFile, useFoldersManager } from "@/modules/folders";
+import { NewFile } from "@/modules/folders";
 import { PDF_TYPE, uploadFile } from "@/modules/pdf";
 import { useLocaleNavigate } from "@/modules/router";
 import { useVocabulary, VOCABULARY } from "@/modules/vocabulary";
@@ -20,14 +20,12 @@ import {
 } from "@/utils";
 
 import { create, patch } from "../../services";
-import { ClientPreparation, SavedPreparation } from "../../types";
+import { SavedPreparation } from "../../types";
 import { diffPreparations, uploadPreparation } from "../../utils";
 
 import { usePreparations } from "../preparations";
 
 import { PreparationContext, SavePreparationParams } from "./PreparationContext";
-
-export const DEFAULT_TITLE = "Default title";
 
 type PreparationProviderProps = 
 	& { readonly isNew: boolean; }
@@ -37,7 +35,6 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
     const [title, setTitle] = useState("");
 
     const { userKey } = useAuth();
-    const { foldersStructure } = useFoldersManager();
 	const location = useLocation();
 	const navigate = useLocaleNavigate();
     const { addPreparation, patchPreparation: patchContext, selectedPreparation } = usePreparations();
@@ -210,11 +207,10 @@ export const PreparationProvider = ({ children, isNew }: PreparationProviderProp
     };
 
     useEffect(() => {
-        setTitle(selectedPreparation?.title ?? DEFAULT_TITLE);
+        setTitle(selectedPreparation?.title ?? "");
     }, [selectedPreparation]);
 
-    const preparation: ClientPreparation = {
-        folders: foldersStructure,
+    const preparation = {
         id: selectedPreparation?.id ?? "",
         title,
         vocabulary: groupedVocabulary,

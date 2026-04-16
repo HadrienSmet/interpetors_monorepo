@@ -9,8 +9,6 @@
         display: flex;
         flex: 1;
         flex-direction: column;
-        gap: var(--space-m);
-        margin-top: var(--space-h);
 
         button {
             align-items: center;
@@ -19,14 +17,13 @@
             font-weight: 500;
             font-size: var(--size-m);
             gap: var(--space-m);
-            min-width: 250px;
-            padding: var(--space-l) var(--space-m);
+            padding: var(--space-l);
             transition: var(--transition-theme);
             white-space: nowrap;
             width: 100%;
             &.selected {
                 background-color: var(--clr-bg-light);
-                color: var(--clr-txt);
+                color: var(--clr-button);
             }
 
             svg {
@@ -74,7 +71,7 @@
         }
     }
     &-padding {
-        padding: var(--space-l) var(--space-m);
+        padding-block: var(--space-l);
         > svg {
             cursor: pointer;
         }

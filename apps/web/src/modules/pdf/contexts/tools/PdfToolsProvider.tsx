@@ -1,5 +1,5 @@
 import { PropsWithChildren, ReactNode, useEffect, useMemo, useState } from "react";
-import { MdBorderColor, MdComment, MdFormatColorFill, MdOutlineMenuBook } from "react-icons/md";
+import { PiChatText, PiPaintBucket, PiPencilLine, PiTranslate } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -422,19 +422,19 @@ export const PdfToolsProvider = ({ children }: PropsWithChildren) => {
 
     const actionsRecord: Record<TOOLS_ON_SELECTION, ActionItem> = {
         [TOOLS_ON_SELECTION.UNDERLINE]: {
-            icon: <MdBorderColor />,
+            icon: <PiPencilLine />,
             onClick: () => handleSelection(FILE_TOOLS.UNDERLINE),
         },
         [TOOLS_ON_SELECTION.HIGHLIGHT]: {
-            icon: <MdFormatColorFill />,
+            icon: <PiPaintBucket />,
             onClick: () => handleSelection(FILE_TOOLS.HIGHLIGHT),
         },
         [TOOLS_ON_SELECTION.NOTE]: {
-            icon: <MdComment />,
+            icon: <PiChatText />,
             onClick: () => handleInteractiveSelection(FILE_TOOLS.NOTE),
         },
         [TOOLS_ON_SELECTION.VOCABULARY]: {
-            icon: <MdOutlineMenuBook />,
+            icon: <PiTranslate />,
             onClick: () => handleInteractiveSelection(FILE_TOOLS.VOCABULARY),
         },
     };

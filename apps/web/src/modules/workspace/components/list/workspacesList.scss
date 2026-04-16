@@ -1,0 +1,15 @@
+.workspaces-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xl);
+	overflow: auto;
+	padding-inline: var(--space-s);
+	width: 55%;
+
+	.accordion-item {
+		border-radius: var(--radius-s);
+		box-shadow: var(--shadow-light) var(--clr-txt-02);
+		padding: var(--space-m) var(--space-l);
+		width: 100%;
+	}
+}

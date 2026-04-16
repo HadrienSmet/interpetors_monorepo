@@ -1,12 +1,11 @@
 .color-panel-displayer {
     background-color: var(--clr-bg);
 	border-radius: var(--radius-m);
-    height: 100%;
+	flex: 1;
 	padding: var(--space-m) var(--space-l);
 	position: relative;
     transition: background-color var(--transition-theme);
-    width: 300px;
-
+	
     > .row {
         font-size: var(--size-m);
         font-weight: 500;
