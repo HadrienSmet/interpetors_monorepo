@@ -21,6 +21,11 @@
 		flex-direction: column;
 		width: 400px;
 		min-height: 0;
+
+		&.missing {
+			align-items: center;
+			justify-content: center;
+		}
 	}
 
 	&__list-container {
@@ -58,16 +63,11 @@
 			}
 		}
 	}
-
-	&__missing {
+	&__loader {
 		align-items: center;
 		display: flex;
-		flex: 1;
+		height: 100%;
 		justify-content: center;
-
-		p {
-			padding-block: var(--space-l);
-		}
 	}
 
 	&__scd-col {

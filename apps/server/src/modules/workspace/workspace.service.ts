@@ -58,6 +58,7 @@ export class WorkspaceService {
 		const { addedLanguages, removedLanguages } = this.getLanguagesDiff(previousLanguages, nextLanguages);
 
 		const data = {
+			colorPanelId: dto.colorPanelId,
 			languages: dto.languages,
 			name: dto.name,
 			nativeLanguage: dto.nativeLanguage,

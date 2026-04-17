@@ -2,7 +2,7 @@ import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PiLock } from "react-icons/pi";
 
-import { Button, Modal, SecureInput } from "@/components";
+import { Button, Input, Modal, SecureInput } from "@/components";
 
 import { useAuth } from "../../context";
 
@@ -47,7 +47,16 @@ export const UnlockLayout = () => {
                     <p>{t("auth.locked.title")}</p>
                 </div>
                 <p>{t("auth.locked.explanations")}</p>
+				<Input
+					autoComplete="username"
+					hidden
+					name="username"
+					readOnly
+					type="email"
+				/>
                 <SecureInput
+					autoComplete="current-password"
+					name="current-password"
                     onChange={onChange}
                     onKeyDown={onKeyDown}
                     placeholder="********"

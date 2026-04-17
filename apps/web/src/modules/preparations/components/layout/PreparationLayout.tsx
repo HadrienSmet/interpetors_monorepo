@@ -1,9 +1,9 @@
-import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PiFolderFill } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
-import { TabsBar, TabsPanels, useTabs } from "@/components/ui";
+import { InputStyleLess, TabsBar, TabsPanels, useTabs } from "@/components/ui";
 import { useAppHeader } from "@/layout/header";
 import { FOLDERS_TYPES, FoldersDisplayer, FolderDropzone, useFoldersManager } from "@/modules/folders";
 import { VocabularyTable } from "@/modules/vocabulary";
@@ -15,14 +15,9 @@ import { PreparationWrapper } from "../../wrappers";
 import "./preparationLayout.scss";
 
 type PreparationLayoutProps = {
-	readonly backToList: () => void;
 	readonly editable?: boolean;
 	readonly isNew?: boolean;
-	readonly scrollableParentRef?: RefObject<HTMLDivElement | null>;
 };
-
-// type PreparationLayoutContentProps = Omit<PreparationLayoutProps, "preparation">;
-
 const PreparationLayoutContent = () => {
 	const [initialTabIndex, setInitialTabIndex] = useState(0);
 
@@ -30,7 +25,7 @@ const PreparationLayoutContent = () => {
 
 	const { setViewNode } = useAppHeader();
 	const { isEditable } = useFoldersManager();
-	const { preparation } = usePreparation();
+	const { preparation, setTitle } = usePreparation();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const { t } = useTranslation();
 
@@ -90,7 +85,10 @@ const PreparationLayoutContent = () => {
 			<div className="divider" />
 			<div className="header-preparation-data">
 				<PiFolderFill />
-				{preparation.title === "" ? "New Preparation" : preparation.title}
+				<InputStyleLess
+					value={preparation.title === "" ? "New Preparation" : preparation.title}
+					onChange={e => setTitle(e.target.value)}
+				/>
 			</div>
 			<div className="divider" />
 			<TabsBar items={tabs.items} />

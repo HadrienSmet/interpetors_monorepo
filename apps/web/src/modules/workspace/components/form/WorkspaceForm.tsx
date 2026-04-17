@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import { PiPlus } from "react-icons/pi";
 
 import { Button, Input, LanguageSelect, Select } from "@/components";
+import { useColorPanels } from "@/modules/colorPanel";
 
+import { useWorkspaces } from "../../context";
 import { EMPTY_WORKSPACE } from "../../utils";
 
 import { WorkspaceLanguages } from "../languages";
@@ -14,8 +16,14 @@ export const WorkspaceForm = () => {
 	const [isPending, setIsPending] = useState(false);
 	const [workspace, setWorkspace] = useState(EMPTY_WORKSPACE);
 
+	const { colorPanels } = useColorPanels();
 	const { t } = useTranslation();
+	const { addNewWorkspace } = useWorkspaces();
 
+	const handleColorPanelId = (e: ChangeEvent<HTMLSelectElement>) => setWorkspace(state => ({
+		...state,
+		colorPanelId: e.target.value,
+	}));
 	const handleNative = (lng: string) => setWorkspace(state => ({
 		...state,
 		nativeLanguage: lng,
@@ -24,8 +32,10 @@ export const WorkspaceForm = () => {
 		...state,
 		name: e.target.value,
 	}));
-	const onSubmit = () => {
-		console.log({ workspace });
+	const onSubmit = async () => {
+		setIsPending(true);
+		await addNewWorkspace(workspace);
+		setIsPending(false);
 	}
 	const pushLanguage = (lng: string) => setWorkspace(state => ({
 		...state,
@@ -38,7 +48,7 @@ export const WorkspaceForm = () => {
 
 	const languagesListProps = useMemo(() => ({
 		handleNative,
-		removeLanguage
+		removeLanguage,
 	}), []);
 
 	return (
@@ -79,15 +89,19 @@ export const WorkspaceForm = () => {
 						}
 					</div>
 
-					<div className="workspace-form__input">
-						<label htmlFor="workspace_color-panels">{t("workspaces.create.inputs.colorPanels.label")}</label>
-						<Select 
-							id="workspace_color-panels"
-							name="workspace_color-panels"
-							onChange={() => null} 
-							options={[{ label: "Default Color Panel", value: "fakeId" }]} 
-						/>
-					</div>
+					{colorPanels.length > 0 && (
+						<div className="workspace-form__input">
+							<label htmlFor="workspace_color-panels">
+								{t("workspaces.create.inputs.colorPanels.label")}
+							</label>
+							<Select 
+								id="workspace_color-panels"
+								name="workspace_color-panels"
+								onChange={handleColorPanelId} 
+								options={colorPanels.map(elem => ({ label: elem.name, value: elem.id }))} 
+							/>
+						</div>
+					)}
 
 					<Button
 						isPending={isPending}

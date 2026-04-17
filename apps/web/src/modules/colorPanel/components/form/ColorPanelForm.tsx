@@ -13,7 +13,13 @@ import { ColorPicker } from "../colorPicker";
 
 import "./colorPanelForm.scss";
 
+const COLOR_PANEL_HEIGHT = 300 as const;
 const DEFAULT_COLOR = { r: .1, g: .2, b: 1 } as const;
+const EMPTY_PANEL: ColorPanelInCreation = {
+	name: undefined,
+	colors: [],
+} as const;
+
 type ColorPanelFormProps = {
     readonly colorPanel?: ColorPanelType;
     readonly isPending: boolean;
@@ -23,10 +29,7 @@ export const ColorPanelForm = ({ colorPanel, isPending, onSubmit }: ColorPanelFo
     const [color, setColor] = useState<RgbColor>(DEFAULT_COLOR);
     const [colorName, setColorName] = useState("");
     const [colorPickerWidth, setColorPickerWidth] = useState(0);
-    const [colorPanelInCreation, setColorPanelInCreation] = useState<ColorPanelInCreation>({
-        name: undefined,
-        colors: [],
-    });
+    const [colorPanelInCreation, setColorPanelInCreation] = useState<ColorPanelInCreation>({ ...EMPTY_PANEL });
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -69,21 +72,28 @@ export const ColorPanelForm = ({ colorPanel, isPending, onSubmit }: ColorPanelFo
 
     useEffect(() => {
         if (colorPanel) setColorPanelInCreation(colorPanel);
+		else setColorPanelInCreation({ ...EMPTY_PANEL });
     }, [colorPanel]);
-    useEffect(() => {
-        if (containerRef.current) {
-            const resizeObserver = new ResizeObserver(() => {
-                setColorPickerWidth(containerRef.current!.getBoundingClientRect().width);
-            });
+	useEffect(() => {
+		if (!containerRef.current) {
+			return;
+		}
 
-            resizeObserver.observe(containerRef.current);
+		const updateWidth = () => {
+			const nextWidth = containerRef.current?.getBoundingClientRect().width ?? 0;
 
-            // Set initial width
-            setColorPickerWidth(containerRef.current.getBoundingClientRect().width);
+			setColorPickerWidth(prev => (prev !== nextWidth ? nextWidth : prev));
+		};
 
-            return () => resizeObserver.disconnect();
-        }
-    }, []);
+		const resizeObserver = new ResizeObserver(() => {
+			updateWidth();
+		});
+
+		resizeObserver.observe(containerRef.current);
+		updateWidth();
+
+		return () => resizeObserver.disconnect();
+	}, []);
 
     return (
         <div className="color-panel-form">
@@ -102,14 +112,14 @@ export const ColorPanelForm = ({ colorPanel, isPending, onSubmit }: ColorPanelFo
 					id="panel-title"
                     onChange={onChange}
                     placeholder={t("colorPanel.titles.placeholder")}
-                    value={colorPanelInCreation.name}
+                    value={colorPanelInCreation.name ?? ""}
                 />
             </div>
             <div className="form-section">
                 <label>{t("colorPanel.colors.label")}</label>
                 <div
                     className="color-panel-form__color-section"
-                    style={{ maxHeight: 300 }}
+                    style={{ maxHeight: COLOR_PANEL_HEIGHT }}
                 >
                     <div
                         className="color-picker-container"
@@ -118,22 +128,27 @@ export const ColorPanelForm = ({ colorPanel, isPending, onSubmit }: ColorPanelFo
                         <ColorPicker
                             color={color}
                             handlePickerColor={setColor}
+                            height={COLOR_PANEL_HEIGHT}
                             width={colorPickerWidth}
-                            height={300}
                         />
                     </div>
 
 					<div className="color-panel-form__color-details">
 						<div className="color-row">
-							<div className="color" style={{ backgroundColor: getRgbColor(color) }} />
+							<div 
+								className="color" 
+								style={{ backgroundColor: getRgbColor(color) }} 
+							/>
 							<p>{getRoundedRgbColor(color)}</p>
 						</div>
 						<div className="title-row">
 							<label htmlFor="color-title">{t("colorPanel.colorTitle")}</label>
 							<Input 
-								placeholder="Technical" 
+								autoComplete="off"
+								id="color-title"
 								onChange={handleColorName}
 								onKeyDown={onKeyDown}
+								placeholder="Technical"
 								value={colorName}
 							/>
 						</div>
@@ -143,7 +158,10 @@ export const ColorPanelForm = ({ colorPanel, isPending, onSubmit }: ColorPanelFo
 					<div className="color-panel-form__colors-container">
 						<div className="color-panel-form__colors">
 							{colorPanelInCreation.colors.map(clr => (
-								<div className="color-panel-form__color-card">
+								<div 
+									className="color-panel-form__color-card"
+									key={`${clr.name}-${clr.value}`}
+								>
 									<div className="color-panel-form__color-card-data">
 										<div
 											className="color-panel-form__color-indicator" 

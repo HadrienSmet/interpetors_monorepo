@@ -6,6 +6,7 @@ import { UpdateParams } from "../services";
 import { Workspace } from "../types";
 
 export type CreateWorkspaceParams = {
+	readonly colorPanelId?: string;
     readonly languages: Array<string>;
     readonly name: string;
     readonly nativeLanguage: string;

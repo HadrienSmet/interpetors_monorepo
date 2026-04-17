@@ -2,8 +2,8 @@ import { PropsWithChildren, useEffect, useState } from "react";
 
 import { LOCAL_STORAGE } from "@/utils";
 
-import { create, getOne, patch, remove } from "../service";
-import { ColorPanelInCreation, ColorPanelType } from "../types";
+import { create, getOne, patch, remove } from "../../service";
+import { ColorPanelInCreation, ColorPanelType } from "../../types";
 
 import { ColorPanelContext } from "./ColorPanelContext";
 

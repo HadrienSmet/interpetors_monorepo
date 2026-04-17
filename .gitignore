@@ -46,3 +46,4 @@ apps/**/.parcel-cache/
 
 bucket.cors.json
 dev.bucket.cors.json
+.kilocode/package-lock.json

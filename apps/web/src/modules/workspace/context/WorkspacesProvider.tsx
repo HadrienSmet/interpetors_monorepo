@@ -27,7 +27,13 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
         const response = await create(params);
 
         if (response.success) {
-            const workspace = response.data;
+            const workspace = {
+				...response.data,
+				_count: {
+					preparations: 0,
+					vocabularyTerms: 0,
+				},
+			};
 
             setWorkspaceId(workspace.id);
             setWorkspaces(state => ({ ...state, [workspace.id]: workspace }));
@@ -131,15 +137,20 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
 				<div className="header-workspace">
 					<PiDesk size={24} />
 
-					<Select 
-						defaultValue={workspaces[workspaceId].name}
-						name="workspace-select"
-						options={Object.values(workspaces).map(workspace => ({
-							label: workspace.name,
-							value: workspace.id
-						}))}
-						onChange={(e) => console.log({ e })}
-					/>
+					{Object.keys(workspaces).length > 1
+						? (
+							<Select 
+								defaultValue={workspaces[workspaceId].name}
+								name="workspace-select"
+								options={Object.values(workspaces).map(workspace => ({
+									label: workspace.name,
+									value: workspace.id
+								}))}
+								onChange={(e) => changeWorkspace(e.target.value)}
+							/>
+						)
+						: (<p className="input">{Object.values(workspaces)[0].name}</p>)
+					}
 				</div>
 			);
         }
@@ -147,18 +158,18 @@ export const WorkspacesProvider = (props: PropsWithChildren) => {
         setIsReady(true);
     }, [hasFetch, workspaceId, workspaces]);
 
+	const value = {
+		addNewWorkspace,
+		changeWorkspace,
+		currentWorkspace,
+		isReady,
+		removeWorkspace,
+		updateWorkspace,
+		workspaces,
+	};
+
     return (
-        <WorkspacesContext.Provider
-            value={{
-                addNewWorkspace,
-                changeWorkspace,
-                currentWorkspace,
-                isReady,
-                removeWorkspace,
-                updateWorkspace,
-                workspaces,
-            }}
-        >
+        <WorkspacesContext.Provider value={value}>
             {props.children}
         </WorkspacesContext.Provider>
     );

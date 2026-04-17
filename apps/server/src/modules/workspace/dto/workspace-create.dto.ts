@@ -1,13 +1,14 @@
-import { IsNotEmpty, IsArray, IsString } from "class-validator";
+import { IsNotEmpty, IsArray, IsString, IsOptional } from "class-validator";
 
 export class CreateWorkspaceDto {
+	@IsOptional()
+	@IsString()
+	colorPanelId: string;
+    @IsArray()
+    languages: Array<string>;
     @IsString()
     @IsNotEmpty()
     name: string;
-
-    @IsArray()
-    languages: Array<string>;
-
     @IsString()
     nativeLanguage: string;
 }

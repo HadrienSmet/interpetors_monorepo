@@ -8,7 +8,7 @@ import {
     PreparationsFilled,
     usePreparations,
 } from "@/modules/preparations";
-import { NavigationState, useLocaleNavigate } from "@/modules/router";
+import { NavigationState } from "@/modules/router";
 
 import "./preparations.scss";
 
@@ -16,7 +16,6 @@ const SCREEN_NAVIGATION_LEVEL = 1 as const;
 
 export const Preparations = () => {
     const { userKey } = useAuth();
-    const navigate = useLocaleNavigate();
     const location = useLocation();
     const { isLoading, preparationsOverview, setShouldFetch } = usePreparations();
 
@@ -37,10 +36,13 @@ export const Preparations = () => {
 
     if (isLoading || !userKey) return (<Loader />);
 
-    if (currentView === "new" || !preparationsOverview || Object.keys(preparationsOverview).length === 0) {
+    if (
+		currentView === "new" || 
+		!preparationsOverview || 
+		Object.keys(preparationsOverview).length === 0
+	) {
         return (
             <PreparationLayout
-                backToList={() => navigate("/preparations")}
                 editable
 				isNew
             />

@@ -12,6 +12,8 @@ import { WorkspaceLanguages } from "../languages";
 
 import "./workspaceCard.scss";
 
+const ACTION_ICON_SIZE = 16 as const;
+
 type WorkspaceCardProps = {
 	readonly editingItem: string | undefined;
 	readonly setEditingItem: (id: string | undefined) => void;
@@ -31,7 +33,7 @@ const WorkspaceCardContent = ({
 	pushLanguage, 
 	removeLanguage, 
 	setEditingItem, 
-	workspace 
+	workspace,
 }: WorkspaceCardContentProps) => {
 	const [isPending, setIsPending] = useState(false);
 
@@ -45,6 +47,7 @@ const WorkspaceCardContent = ({
 		workspaces, 
 	} = useWorkspaces();
 
+	// TODO: Loader here
 	const remove = () => removeWorkspace(workspace.id);
 
 	const onSubmit = async () => {
@@ -110,20 +113,20 @@ const WorkspaceCardContent = ({
 					onClick={() => changeWorkspace(workspace.id)}
 					title={t(`workspaces.selector.${isCurrent ? "selected" : "unselected"}`)}
 				>
-					<PiCheck size={16} />
+					<PiCheck size={ACTION_ICON_SIZE} />
 				</button>
 				<button 
 					onClick={toggleEdit}
 					title={t("actions.edit")}
 				>
-					<PiPencil size={16} />
+					<PiPencil size={ACTION_ICON_SIZE} />
 				</button>
 				<button
 					disabled={Object.keys(workspaces).length < 2}
 					onClick={remove}
 					title={t("actions.delete")}
 				>
-					<PiTrash size={16} />
+					<PiTrash size={ACTION_ICON_SIZE} />
 				</button>
 			</div>
 		</div>
@@ -133,9 +136,7 @@ const WorkspaceCardContent = ({
 export const WorkspaceCard = ({ editingItem, setEditingItem, ...props }: WorkspaceCardProps) => {
 	const [workspace, setWorkspace] = useState({ ...props.workspace });
 
-	const { 
-		currentWorkspace, 
-	} = useWorkspaces();
+	const { currentWorkspace } = useWorkspaces();
 
 	const handleNative = (lng: string) => setWorkspace(state => ({
 		...state,

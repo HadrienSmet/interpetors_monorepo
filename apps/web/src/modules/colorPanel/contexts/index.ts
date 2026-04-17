@@ -1,2 +1,2 @@
-export * from "./ColorPanelContext";
-export * from "./ColorPanelProvider";
+export * from "./colorPanel";
+export * from "./colorPanels";

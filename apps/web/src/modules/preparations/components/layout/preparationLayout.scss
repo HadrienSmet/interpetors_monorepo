@@ -2,6 +2,11 @@
 	align-items: center;
 	display: flex;
 	gap: var(--space-m);
+	
+	input {
+		font-size: var(--size-m);
+		font-weight: 500;
+	}
 }
 .preparation {
     &-folders {
@@ -18,12 +23,6 @@
             display: flex;
             gap: var(--space-m);
             min-width: 200px;
-        }
-
-        input {
-            flex: 1;
-            font-size: var(--size-xl);
-            font-weight: 600;
         }
     }
     &-tabs-view {

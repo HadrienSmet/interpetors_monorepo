@@ -1,6 +1,8 @@
 import { PiShield } from "react-icons/pi";
 import { useTranslation } from "react-i18next";
 
+import { useWorkspaces } from "../../context";
+
 import { WorkspaceForm } from "../form";
 import { WorkspacesList } from "../list";
 
@@ -8,9 +10,10 @@ import "./workspacesSection.scss";
 
 export const WorkspacesSection = () => {
 	const { t } = useTranslation();
+	const { workspaces } = useWorkspaces();
 
-	const prepLength = 6 as const;
-	const termsLength = 64 as const;
+	const prepLength = Object.values(workspaces).reduce((sum, workspace) => sum + workspace._count.preparations, 0);
+	const termsLength = Object.values(workspaces).reduce((sum, workspace) => sum + workspace._count.vocabularyTerms, 0);
 
 	return (
 		<section className="workspaces__section">

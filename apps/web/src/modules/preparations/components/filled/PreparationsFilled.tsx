@@ -24,7 +24,7 @@ export const PreparationsFilled = () => {
     const viewportRef = useRef<HTMLDivElement>(null);
 
     const { setSelectedPreparation } = usePreparations();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
 
     const scrollTo = (targetRef: RefObject<HTMLDivElement | null>, targetName: TabsNames) => {
         const viewport = viewportRef.current;
@@ -35,22 +35,7 @@ export const PreparationsFilled = () => {
         scrollToChild(viewport, target, true);
     };
 
-    const scrollToList = () => scrollTo(listRef, TABS_NAMES.list);
     const scrollToTabs = () => scrollTo(tabsRef, TABS_NAMES.tabs);
-
-    const backToList = () => {
-        setSearchParams(prev => {
-            const next = new URLSearchParams(prev);
-
-            next.delete(URL_PARAMETERS.preparationid);
-            next.delete(URL_PARAMETERS.view);
-
-            return (next);
-        });
-
-        setSelectedPreparation(undefined);
-        scrollToList();
-    };
 
     useEffect(() => {
         const viewport = viewportRef.current;
@@ -107,11 +92,7 @@ export const PreparationsFilled = () => {
                     className="preparation-tabs-container"
                     ref={tabsRef}
                 >
-                    <PreparationLayout
-                        backToList={backToList}
-						editable
-                        scrollableParentRef={viewportRef}
-                    />
+                    <PreparationLayout editable />
                 </div>
             </div>
         </div>

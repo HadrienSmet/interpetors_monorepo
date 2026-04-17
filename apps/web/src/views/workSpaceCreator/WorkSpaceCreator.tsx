@@ -117,7 +117,7 @@ export const WorkspaceCreator = () => {
                     <Button
                         label={t(creationStep === creationSteps[0]
                             ? "actions.confirm"
-                            : "actions.workspaces.onboarding"
+                            : "actions.workspaces.create"
                         )}
                         disabled={creationStep === creationSteps[0]
                             ? workspace.languages.length < 2

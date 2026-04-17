@@ -17,8 +17,18 @@
 .app-header {
 	border-bottom: var(--border-s) solid var(--clr-txt-02);
 	display: flex;
-	gap: var(--space-giga);
+	justify-content: space-between;
 	padding: var(--space-l);
+	
+	&__data {
+		display: flex;
+		flex: 1;
+		gap: var(--space-giga);
+	}
+
+	> p {
+		font-family: --font-title;
+	}
 	
 	.divider {
 		background-color: var(--clr-txt-02);

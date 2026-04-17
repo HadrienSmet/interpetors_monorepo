@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 
 import { getContextError } from "@/contexts/utils";
 
-import { ColorPanelInCreation, ColorPanelType } from "../types";
+import { ColorPanelInCreation, ColorPanelType } from "../../types";
 
 /** Provides basic methods to interacts with the color panels */
 type ColorPanelContextType = {

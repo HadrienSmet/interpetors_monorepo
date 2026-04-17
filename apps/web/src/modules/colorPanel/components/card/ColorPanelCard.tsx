@@ -1,35 +1,30 @@
-import { useState } from "react";
 import { PiPencil, PiTrash } from "react-icons/pi";
 
-import { Modal } from "@/components";
 import { rgbToRgba, stringToRgbColor } from "@/utils";
 
 import { useColorPanel } from "../../contexts";
 import { ColorPanelType } from "../../types";
 
-import { ColorPanelForm } from "../form";
-
 import "./colorPanelCard.scss";
 
 type ColorPanelCardProps = {
     readonly colorPanel: ColorPanelType;
+	readonly panelToUpdate: ColorPanelType | undefined;
+	readonly setPanelToUpdate: (id: ColorPanelType | undefined) => void; 
 };
-export const ColorPanelCard = ({ colorPanel }: ColorPanelCardProps) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [isPending, setIsPending] = useState(false);
+export const ColorPanelCard = ({ colorPanel, panelToUpdate, setPanelToUpdate }: ColorPanelCardProps) => {
+    const { deletePanel } = useColorPanel();
 
-    const { deletePanel, updatePanel } = useColorPanel();
-
-    const close = () => setIsEditing(false);
     // TODO BACK-END: Should trigger an update in the server for: folders, notes and vocabulary
     const handleDelete = () => deletePanel(colorPanel.id);
-    const open = () => setIsEditing(true);
-    const submit = async (params: Omit<ColorPanelType, "id">) => {
-        setIsPending(true);
-        await updatePanel({ ...params, id: colorPanel.id });
-        setIsPending(false);
-        close();
-    };
+	const toggleEdit = () => {
+		if (panelToUpdate?.id === colorPanel.id) {
+			setPanelToUpdate(undefined);
+			return;
+		}
+
+		setPanelToUpdate(colorPanel);
+	};
 
 	return (
 		<div className="color-panel-card">
@@ -51,28 +46,13 @@ export const ColorPanelCard = ({ colorPanel }: ColorPanelCardProps) => {
 				</div>
 			</div>
 			<div className="buttons-column">
-				<button onClick={open}>
+				<button onClick={toggleEdit}>
 					<PiPencil />
 				</button>
-				<button
-					onClick={handleDelete}
-				>
+				<button onClick={handleDelete}>
 					<PiTrash />
 				</button>
 			</div>
-			<Modal
-				isOpen={isEditing}
-				onClose={close}
-				width="60%"
-			>
-				<ColorPanelForm
-					colorPanel={colorPanel}
-					isOpen={isEditing}
-					isPending={isPending}
-					//@ts-expect-error
-					onSubmit={submit}
-				/>
-			</Modal>
 		</div>
 	);
 };
