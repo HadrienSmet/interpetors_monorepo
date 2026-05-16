@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 
@@ -31,9 +31,29 @@ export const Home = () => {
 			title: (<p>{t("colorPanel.title")}</p>),
 		},
 	], [locale]);
-	const viewTitles = ["workspaces", "color-panels"];
+	const viewTitles = useMemo(() => (["workspaces", "color-panels"]), []);
 
-	const tabs = useTabs({ views });
+	const onTabsChange = useCallback((index: number) => {
+		const nextView = viewTitles[index];
+		if (!nextView) return;
+
+		setSearchParams(prev => {
+			if (prev.get(URL_PARAMETERS.view) === nextView) {
+				return (prev);
+			}
+
+			const next = new URLSearchParams(prev);
+			next.set(URL_PARAMETERS.view, nextView);
+
+			return (next);
+		})
+	}, [setSearchParams, viewTitles]);
+
+	const tabs = useTabs({
+		initialIndex: initialTabIndex,
+		onChange: onTabsChange,
+		views,
+	});
 
 	const headerNode = useMemo(() => (
 		<div className="view-navigation">
@@ -43,16 +63,16 @@ export const Home = () => {
 	), [tabs.tabIndex, tabs.items]);
 
 	useEffect(() => {
-		setViewNode(headerNode);
-		return () => setViewNode(null);
-	}, [setViewNode, headerNode]);
-
-	useEffect(() => {
 		const path = searchParams.get(URL_PARAMETERS.view);
 		if (!path) return;
 
 		setInitialTabIndex(Math.max(viewTitles.findIndex(elem => elem === path), 0));
 	}, [searchParams.toString(), views]);
+	useEffect(() => {
+		setViewNode(headerNode);
+
+		return () => setViewNode(null);
+	}, [setViewNode, headerNode]);
 
 	return (
 		<main className="home">

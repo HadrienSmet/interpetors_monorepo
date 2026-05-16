@@ -7,19 +7,17 @@
         align-items: center;
         background-color: var(--clr-txt-02);
         display: flex;
-        gap: var(--space-m);
         justify-content: end;
-        padding: var(--space-m);
-        padding-right: var(--space-m);
         transition: var(--transition-theme);
 
-        input {
-            min-width: 0px;
-            width: 100%;
-        }
-        svg {
-            flex-shrink: 0;
-        }
+		button{
+			padding: var(--space-m);
+			transition: var(--transition-hover);
+			
+			&:hover {
+				background-color: var(--clr-bg-light-05);
+			} 
+		}
     }
     &__item {
         align-items: center;

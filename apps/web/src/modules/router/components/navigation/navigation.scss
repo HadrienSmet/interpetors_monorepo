@@ -1,5 +1,6 @@
 .navigation {
-    background-color: var(--clr-bg);
+    background-color: var(--clr-bg-light);
+	border-right: var(--border-s) solid var(--clr-txt-02);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -9,18 +10,23 @@
         display: flex;
         flex: 1;
         flex-direction: column;
+        position: relative;
 
         button {
             align-items: center;
+            background-color: transparent;
             color: var(--clr-txt-04);
             display: flex;
             font-weight: 500;
             font-size: var(--size-m);
             gap: var(--space-m);
             padding: var(--space-l);
-            transition: var(--transition-theme);
+            transition:
+                color var(--transition-theme),
+                background-color var(--transition-theme);
             white-space: nowrap;
             width: 100%;
+
             &.selected {
                 background-color: var(--clr-bg-light);
                 color: var(--clr-button);
@@ -31,11 +37,29 @@
             }
 
             &:not(.selected):hover {
-                background-color: var(--clr-bg-light-05);
+                background-color: var(--clr-bg);
                 color: var(--clr-txt-06);
             }
         }
     }
+
+    &-indicator {
+        background-color: var(--clr-bg-light);
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        right: -1px;
+        top: 0;
+        transform: translateY(0);
+        transition:
+            transform 180ms ease,
+            height 180ms ease,
+            opacity 180ms ease;
+        width: 1px;
+        z-index: 2;
+    }
+
     &-header {
         align-items: center;
         display: flex;
@@ -57,6 +81,7 @@
             transition: var(--transition-theme);
         }
     }
+
     &-log-out {
         align-items: center;
         color: var(--clr-txt);
@@ -70,8 +95,10 @@
             flex-shrink: 0;
         }
     }
+
     &-padding {
         padding-block: var(--space-l);
+
         > svg {
             cursor: pointer;
         }

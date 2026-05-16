@@ -29,8 +29,6 @@ const PreparationLayoutContent = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const { t } = useTranslation();
 
-	const viewTitles = useMemo(() => ["folders", "vocabulary"], []);
-
 	const views = useMemo(() => [
 		{
 			content: (
@@ -49,13 +47,7 @@ const PreparationLayoutContent = () => {
 			title: t("vocabulary.label"),
 		},
 	], [isEditable, t]);
-
-	useEffect(() => {
-		const path = searchParams.get(URL_PARAMETERS.view);
-		if (!path) return;
-
-		setInitialTabIndex(Math.max(viewTitles.findIndex((elem) => elem === path), 0));
-	}, [searchParams, viewTitles]);
+	const viewTitles = useMemo(() => ["folders", "vocabulary"], []);
 
 	const onTabsChange = useCallback((index: number) => {
 		const nextView = viewTitles[index];
@@ -95,6 +87,12 @@ const PreparationLayoutContent = () => {
 		</div>
 	), [preparation.title, tabs.items]);
 
+	useEffect(() => {
+		const path = searchParams.get(URL_PARAMETERS.view);
+		if (!path) return;
+
+		setInitialTabIndex(Math.max(viewTitles.findIndex((elem) => elem === path), 0));
+	}, [searchParams, viewTitles]);
 	useEffect(() => {
 		setViewNode(headerNode);
 		

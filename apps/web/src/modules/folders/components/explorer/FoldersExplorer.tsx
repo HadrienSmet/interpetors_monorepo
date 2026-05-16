@@ -12,7 +12,7 @@ import { TreeNode } from "./nodes";
 import "./foldersExplorer.scss";
 
 const BUTTON_SIZE = 16 as const;
-const INITIAL_WIDTH = 200 as const;
+const INITIAL_WIDTH = 270 as const;
 
 export const FoldersExplorer = () => {
     const [collapseSignal, setCollapseSignal] = useState(0);

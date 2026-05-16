@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 
@@ -14,8 +14,6 @@ type NavigationButtonProps =
         readonly displayNested: boolean;
     };
 
-const SELECTED_CLASS = "selected";
-
 export const NavigationButton = ({
     depth = 0,
     icon,
@@ -23,8 +21,6 @@ export const NavigationButton = ({
     nestedNav,
     displayNested,
 }: NavigationButtonProps) => {
-    const buttonRef = useRef<HTMLButtonElement>(null);
-
 	const { locale } = useLocale();
     const navigate = useLocaleNavigate();
     const location = useLocation();
@@ -34,20 +30,13 @@ export const NavigationButton = ({
         .split("/")
         .filter(Boolean)
 		.filter(el => el !== locale);
+
     const buttonStyle = useMemo(() => ({
         fontSize: `${16 - (2 * depth)}px`,
         paddingLeft: `${12 + (depth * 16)}px`,
     }), [depth]);
-    const isSelected = useMemo(() => (navigation[depth] === id), [navigation, depth, id]);
 
-    useEffect(() => {
-        if (isSelected) {
-            buttonRef.current?.classList.add(SELECTED_CLASS);
-            return;
-        }
-
-        buttonRef.current?.classList.remove(SELECTED_CLASS);
-    }, [isSelected]);
+    const isSelected = useMemo(() => navigation[depth] === id, [navigation, depth, id]);
 
     const handleClick = () => {
         const newPath = navigation.slice(0, depth);
@@ -80,12 +69,14 @@ export const NavigationButton = ({
     return (
         <div className="navigation-button">
             <button
+                className={isSelected ? "selected" : ""}
+                data-navigation-selected={isSelected ? "true" : "false"}
                 onClick={handleClick}
-                ref={buttonRef}
                 style={buttonStyle}
 				title={t(`navigation.buttons.${id}`)}
+                type="button"
             >
-                {icon} 
+                {icon}
             </button>
 
             {(displayNested && isSelected && nestedNav) && (

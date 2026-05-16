@@ -26,6 +26,7 @@ const bootstrap = async () => {
     });
 
     app.useGlobalInterceptors(new TimeoutInterceptor());
+    app.enableShutdownHooks();
 
     await app.listen(process.env.PORT ?? DEFAULT_PORT, process.env.HOST ?? DEFAULT_HOST);
 };

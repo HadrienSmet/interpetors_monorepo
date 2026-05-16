@@ -1,0 +1,45 @@
+# Git
+.git
+.github
+
+# Éditeurs / IDE
+.vscode
+.idea
+.kilocode
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# node_modules (réinstallés dans Docker)
+node_modules
+**/node_modules
+
+# Outputs compilés (reconstruits dans Docker)
+# packages/types/dist est reconstruit depuis les sources via tsc dans le Dockerfile
+packages/*/dist
+apps/*/dist
+apps/*/build
+**/*.tsbuildinfo
+
+# Frontend web (non nécessaire pour l'image backend)
+apps/web
+
+# Fichiers d'environnement (les secrets ne doivent jamais être intégrés dans l'image)
+**/.env
+**/.env.*
+
+# Tests
+**/test
+**/*.spec.ts
+**/*.e2e-spec.ts
+**/coverage
+**/.nyc_output
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# Docker (évite les inclusions circulaires dans le contexte)
+apps/server/Dockerfile
+.dockerignore
